@@ -1,0 +1,105 @@
+{
+  "version": "v2",
+  "universe": "russell1000",
+  "ic_full": {
+    "reg": {
+      "mean_ic": 0.003,
+      "ic_std": 0.1324,
+      "icir": 0.023,
+      "n_months": 66,
+      "pct_positive": 0.545
+    },
+    "rank": {
+      "mean_ic": 0.0031,
+      "ic_std": 0.1595,
+      "icir": 0.019,
+      "n_months": 66,
+      "pct_positive": 0.545
+    },
+    "linear": {
+      "mean_ic": 0.0107,
+      "ic_std": 0.2006,
+      "icir": 0.054,
+      "n_months": 66,
+      "pct_positive": 0.515
+    }
+  },
+  "ic_backtest": {
+    "reg": {
+      "mean_ic": -0.0182,
+      "ic_std": 0.1191,
+      "icir": -0.152,
+      "n_months": 33,
+      "pct_positive": 0.545
+    },
+    "rank": {
+      "mean_ic": -0.0096,
+      "ic_std": 0.1531,
+      "icir": -0.062,
+      "n_months": 33,
+      "pct_positive": 0.455
+    },
+    "linear": {
+      "mean_ic": 0.0164,
+      "ic_std": 0.1995,
+      "icir": 0.082,
+      "n_months": 33,
+      "pct_positive": 0.545
+    }
+  },
+  "backtest": {
+    "reg": {
+      "gross": {
+        "ann_return": 0.0758,
+        "sharpe": 0.25,
+        "max_drawdown": -0.3699,
+        "n_days": 689
+      },
+      "net": {
+        "ann_return": 0.0516,
+        "sharpe": 0.17,
+        "max_drawdown": -0.3801,
+        "n_days": 689
+      },
+      "total_cost": 0.0662,
+      "period": "2022-04-01~2024-12-27"
+    },
+    "rank": {
+      "gross": {
+        "ann_return": 0.1601,
+        "sharpe": 0.51,
+        "max_drawdown": -0.2619,
+        "n_days": 689
+      },
+      "net": {
+        "ann_return": 0.1374,
+        "sharpe": 0.44,
+        "max_drawdown": -0.2689,
+        "n_days": 689
+      },
+      "total_cost": 0.0622,
+      "period": "2022-04-01~2024-12-27"
+    },
+    "linear": {
+      "gross": {
+        "ann_return": 0.1376,
+        "sharpe": 0.63,
+        "max_drawdown": -0.21,
+        "n_days": 689
+      },
+      "net": {
+        "ann_return": 0.1209,
+        "sharpe": 0.56,
+        "max_drawdown": -0.2146,
+        "n_days": 689
+      },
+      "total_cost": 0.0456,
+      "period": "2022-04-01~2024-12-27"
+    }
+  },
+  "ref_locked_baseline": {
+    "gross_ann": 0.3004,
+    "gross_sharpe": 1.77,
+    "net_ann": 0.2869
+  }
+}

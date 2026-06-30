@@ -13,15 +13,17 @@ from qlib.backtest import backtest
 from qlib.contrib.strategy.signal_strategy import WeightStrategyBase
 
 ROOT = Path(__file__).resolve().parent.parent
-PROVIDER = ROOT / "qlib_data" / "sp500"
-_INIT = {"done": False}
+DEFAULT_PROVIDER = ROOT / "qlib_data" / "sp500"
+_INIT = {"done": False, "uri": None}
 
 
-def ensure_qlib():
-    if not _INIT["done"]:
-        qlib.init(provider_uri=str(PROVIDER), region="us",
+def ensure_qlib(provider_uri=None):
+    uri = str(provider_uri or DEFAULT_PROVIDER)
+    if not _INIT["done"] or _INIT["uri"] != uri:
+        qlib.init(provider_uri=uri, region="us",
                   expression_cache=None, dataset_cache=None)
         _INIT["done"] = True
+        _INIT["uri"] = uri
 
 
 class MonthlyEqualWeight(WeightStrategyBase):
@@ -75,9 +77,9 @@ def _perf(r):
             "max_drawdown": round(float(mdd), 4), "n_days": int(r.notna().sum())}
 
 
-def run_backtest(holdings_map, cost=0.001, start=None, end=None):
+def run_backtest(holdings_map, cost=0.001, start=None, end=None, provider_uri=None):
     """holdings_map: {pd.Timestamp(month_end): [TICKERS]}. 返回 gross/net 绩效 dict。"""
-    ensure_qlib()
+    ensure_qlib(provider_uri)
     holdings_map = {pd.Timestamp(k): [t.upper() for t in v] for k, v in holdings_map.items()}
     rebal = sorted(holdings_map.keys())
     cal = [pd.Timestamp(d) for d in D.calendar(freq="day")]
