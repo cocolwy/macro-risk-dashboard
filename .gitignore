@@ -1,0 +1,26 @@
+__pycache__/
+*.pyc
+*.pyo
+.DS_Store
+*.egg-info/
+.env
+
+# Virtual environments
+.venv/
+.venv-qlib/
+
+# Qlib binary market data (regenerable via dump_to_qlib.py)
+qlib_data/
+
+# Large parquet / data outputs (regenerable)
+*.parquet
+qlib_migration/qlib_daily_returns.csv
+
+# Runtime workspace outputs
+workspace/
+
+# Legacy output
+output/
+
+# Claude settings
+.claude/

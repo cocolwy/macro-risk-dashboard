@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quant Team Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+            background: #0d1117;
+            color: #c9d1d9;
+            min-height: 100vh;
+        }
+        .header {
+            background: linear-gradient(135deg, #161b22, #1c2333);
+            border-bottom: 1px solid #30363d;
+            padding: 20px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .header h1 {
+            font-size: 22px;
+            color: #58a6ff;
+            font-weight: 600;
+        }
+        .header .status-badge {
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        .status-running { background: #1f3a1f; color: #3fb950; border: 1px solid #238636; }
+        .status-done { background: #1a2332; color: #58a6ff; border: 1px solid #1f6feb; }
+        .status-idle { background: #1c1c1c; color: #8b949e; border: 1px solid #30363d; }
+
+        .container { padding: 24px 32px; display: grid; gap: 20px; }
+
+        /* ── Pipeline 流程图 ── */
+        .pipeline {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            padding: 24px;
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 12px;
+            overflow-x: auto;
+        }
+        .pipeline-node {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 120px;
+            position: relative;
+        }
+        .pipeline-icon {
+            width: 52px; height: 52px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            border: 3px solid #30363d;
+            transition: all 0.5s;
+        }
+        .pipeline-icon.idle { background: #161b22; border-color: #30363d; }
+        .pipeline-icon.running { background: #1f3a1f; border-color: #3fb950; animation: pulse 1.5s infinite; }
+        .pipeline-icon.success { background: #1a2332; border-color: #58a6ff; }
+        .pipeline-icon.failed { background: #3d1f1f; border-color: #f85149; }
+        .pipeline-icon.blocked { background: #3d2f1f; border-color: #d29922; }
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(63, 185, 80, 0.4); }
+            50% { box-shadow: 0 0 0 12px rgba(63, 185, 80, 0); }
+        }
+        .pipeline-label { font-size: 11px; margin-top: 8px; color: #8b949e; text-align: center; }
+        .pipeline-arrow {
+            flex: 1; min-width: 40px; height: 2px;
+            background: #30363d; position: relative; margin: 0 4px;
+        }
+        .pipeline-arrow::after {
+            content: ''; position: absolute; right: -1px; top: -4px;
+            border: 5px solid transparent; border-left: 7px solid #30363d;
+        }
+        .pipeline-arrow.active { background: #3fb950; }
+        .pipeline-arrow.active::after { border-left-color: #3fb950; }
+
+        /* ── 两栏布局 ── */
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        @media (max-width: 1200px) { .two-col { grid-template-columns: 1fr; } }
+
+        .card {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .card-header {
+            padding: 14px 20px;
+            border-bottom: 1px solid #30363d;
+            font-weight: 600;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .card-body { padding: 16px 20px; }
+
+        /* ── 日志 ── */
+        .log-list { max-height: 500px; overflow-y: auto; }
+        .log-item {
+            padding: 8px 0;
+            border-bottom: 1px solid #21262d;
+            display: grid;
+            grid-template-columns: 95px 90px 1fr;
+            gap: 10px;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+        .log-item:last-child { border-bottom: none; }
+        .log-time { color: #484f58; }
+        .log-agent {
+            padding: 1px 8px;
+            border-radius: 10px;
+            font-size: 11px;
+            text-align: center;
+            white-space: nowrap;
+        }
+        .log-detail { color: #c9d1d9; word-break: break-all; }
+        .log-detail.error { color: #f85149; }
+        .log-detail.success { color: #3fb950; }
+        .log-detail.warning { color: #d29922; }
+
+        /* ── 指标卡片 ── */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 12px;
+        }
+        .metric {
+            background: #0d1117;
+            border: 1px solid #21262d;
+            border-radius: 8px;
+            padding: 14px;
+            text-align: center;
+        }
+        .metric-value {
+            font-size: 22px;
+            font-weight: 700;
+            color: #58a6ff;
+            margin: 4px 0;
+        }
+        .metric-label { font-size: 11px; color: #8b949e; }
+        .metric-value.positive { color: #3fb950; }
+        .metric-value.negative { color: #f85149; }
+
+        /* ── 图表区 ── */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
+            gap: 16px;
+        }
+        .chart-card {
+            background: #0d1117;
+            border: 1px solid #21262d;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .chart-card img {
+            width: 100%;
+            display: block;
+        }
+        .chart-card .chart-title {
+            padding: 10px 14px;
+            font-size: 12px;
+            color: #8b949e;
+            border-bottom: 1px solid #21262d;
+        }
+
+        /* ── 审查 ── */
+        .review-item {
+            padding: 8px 12px;
+            margin: 6px 0;
+            border-radius: 6px;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+        .review-issue { background: #3d1f1f; border-left: 3px solid #f85149; }
+        .review-warning { background: #2d2a1f; border-left: 3px solid #d29922; }
+        .review-ok { background: #1f3a1f; border-left: 3px solid #3fb950; }
+
+        /* ── 策略说明 ── */
+        .strategy-card {
+            background: linear-gradient(135deg, #161b22, #1a1f2e);
+            border: 1px solid #1f6feb44;
+        }
+        .strategy-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+        }
+        @media (max-width: 1100px) { .strategy-grid { grid-template-columns: 1fr; } }
+        .strategy-section h3 {
+            font-size: 13px;
+            color: #58a6ff;
+            margin-bottom: 10px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid #21262d;
+        }
+        .strategy-section p, .strategy-section li {
+            font-size: 12px;
+            line-height: 1.8;
+            color: #b0b8c4;
+        }
+        .strategy-section ul { padding-left: 16px; }
+        .strategy-section .tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            margin: 2px 3px;
+            font-weight: 600;
+        }
+        .tag-mom  { background: #1a3a5c; color: #58a6ff; }
+        .tag-val  { background: #3a2a1a; color: #d29922; }
+        .tag-size { background: #1a3a2a; color: #3fb950; }
+        .tag-vol  { background: #2a1a3a; color: #bc8cff; }
+        .tag-rev  { background: #3a1a2a; color: #f78166; }
+        .strategy-flow {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
+        }
+        .flow-step {
+            background: #0d1117;
+            border: 1px solid #30363d;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            color: #c9d1d9;
+        }
+        .flow-arrow { color: #3fb950; font-size: 14px; }
+
+        .agent-colors {
+            --de: #4CAF50; --re: #2196F3; --bt: #FF9800;
+            --cr: #F44336; --rm: #9C27B0; --pm: #E91E63;
+        }
+    </style>
+</head>
+<body class="agent-colors">
+    <div class="header">
+        <h1>&#9881; Quant Multi-Agent Dashboard</h1>
+        <span id="globalStatus" class="status-badge status-idle">Idle</span>
+    </div>
+
+    <div class="container">
+        <!-- Pipeline -->
+        <div class="pipeline" id="pipeline"></div>
+
+        <!-- 策略说明 -->
+        <div class="card strategy-card">
+            <div class="card-header">&#128214; Strategy Overview</div>
+            <div class="card-body">
+                <div class="strategy-grid">
+                    <div class="strategy-section">
+                        <h3>Alpha Factors (5)</h3>
+                        <ul>
+                            <li><span class="tag tag-mom">Momentum</span> ret(2~12M) — 跳过近1月，捕捉中期趋势延续</li>
+                            <li><span class="tag tag-val">Value</span> B/P — 高账面市值比，买入"便宜"股</li>
+                            <li><span class="tag tag-size">Size</span> log(MarketCap) — 规模因子，捕捉大/小盘溢价</li>
+                            <li><span class="tag tag-vol">LowVol</span> -std(ret,20d) — 低波动异象，稳定股更优</li>
+                            <li><span class="tag tag-rev">Reversal</span> -ret(1M) — 短期反转，跌多了会反弹</li>
+                        </ul>
+                    </div>
+                    <div class="strategy-section">
+                        <h3>Processing Pipeline</h3>
+                        <p style="font-size:11px;margin-bottom:6px;color:#8b949e;">因子从原始值到选股的完整处理链：</p>
+                        <div class="strategy-flow">
+                            <span class="flow-step">5 原始因子</span>
+                            <span class="flow-arrow">&#10140;</span>
+                            <span class="flow-step" style="border-color:#3fb950">行业内 Z-score</span>
+                            <span class="flow-arrow">&#10140;</span>
+                            <span class="flow-step" style="border-color:#bc8cff">PCA 正交化</span>
+                            <span class="flow-arrow">&#10140;</span>
+                            <span class="flow-step">5 正交 PC</span>
+                        </div>
+                        <div class="strategy-flow" style="margin-top:6px;">
+                            <span class="flow-step">滚动 6M IC</span>
+                            <span class="flow-arrow">&#10140;</span>
+                            <span class="flow-step">动态加权</span>
+                            <span class="flow-arrow">&#10140;</span>
+                            <span class="flow-step">Top 20</span>
+                            <span class="flow-arrow">&#10140;</span>
+                            <span class="flow-step">扣成本</span>
+                        </div>
+                        <p style="margin-top:8px;font-size:11px;color:#8b949e;">
+                            行业中性化消除结构偏差 &#10140; PCA 消除共线性 &#10140; 组合更分散
+                        </p>
+                    </div>
+                    <div class="strategy-section">
+                        <h3>Key Parameters</h3>
+                        <ul>
+                            <li><strong>股票池:</strong> Russell 1000 (~460 只，流动性过滤)</li>
+                            <li><strong>流动性:</strong> 20 日均成交额 > $5M</li>
+                            <li><strong>行业中性化:</strong> 行业内 Z-score</li>
+                            <li><strong>正交化:</strong> PCA (5 &#10140; 5 PC)</li>
+                            <li><strong>IC 窗口:</strong> 滚动 6 个月</li>
+                            <li><strong>持仓:</strong> Top 20 等权，月末调仓</li>
+                            <li><strong>交易成本:</strong> 单边 0.1%</li>
+                            <li><strong>基本面延迟:</strong> 2 个月</li>
+                            <li><strong>回测:</strong> 2022.01 ~ 2024.12</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 策略逻辑（精简） -->
+        <div class="card" style="background:linear-gradient(135deg,#161b22,#1c1f2e);border:1px solid #30363d;">
+            <div class="card-header">&#128173; How It Works — 策略逻辑</div>
+            <div class="card-body" style="font-size:13px;line-height:2.0;color:#b0b8c4;">
+                <p>
+                    <strong style="color:#58a6ff;">一句话：</strong>
+                    每月从 Russell 1000 中选"综合评分最高"的 20 只股票等权持有，月末调仓。
+                </p>
+                <p style="margin-top:10px;">
+                    <strong style="color:#58a6ff;">完整流程：</strong>
+                    五因子（动量/价值/规模/低波动/反转）
+                    &#10140; 行业内 Z-score（银行和科技不直接比 B/P）
+                    &#10140; PCA 正交化（消除因子共线性）
+                    &#10140; 滚动 6 月 IC 加权（最近押对多的因子权重大）
+                    &#10140; 综合评分排序 &#10140; Top 20 等权买入
+                </p>
+                <p style="margin-top:10px;">
+                    <strong style="color:#58a6ff;">关键设计决策：</strong>
+                </p>
+                <p style="padding-left:12px;line-height:1.9;">
+                    <strong style="color:#3fb950;">&#10003;</strong> <strong>滚动 IC</strong> — 只用过去 6 月已知信息加权，不偷看未来<br>
+                    <strong style="color:#3fb950;">&#10003;</strong> <strong>PCA 正交化</strong> — 动量和规模相关 0.27，正交化后 Sharpe +0.52<br>
+                    <strong style="color:#3fb950;">&#10003;</strong> <strong>行业中性化 + R1000 扩池</strong> — 中盘股因子噪音大，行业内排名后信号可用，超额 +6.3%<br>
+                    <strong style="color:#3fb950;">&#10003;</strong> <strong>前视偏差修复</strong> — 基本面延迟 2 月使用<br>
+                    <strong style="color:#3fb950;">&#10003;</strong> <strong>交易成本</strong> — 单边 0.1%，年化拖累 ~1%<br>
+                    <strong style="color:#d29922;">&#9888;</strong> <strong>生存偏差</strong> — 未用历史成分股，收益可能高估 1~2%/年
+                </p>
+            </div>
+        </div>
+
+        <!-- 指标概览 -->
+        <div class="card" id="metricsCard" style="display:none">
+            <div class="card-header">&#128202; Performance Metrics</div>
+            <div class="card-body">
+                <div class="metrics-grid" id="metricsGrid"></div>
+            </div>
+        </div>
+
+        <!-- PCA 正交化结果 -->
+        <div class="card" id="pcaCard" style="display:none">
+            <div class="card-header">&#128256; PCA Orthogonalization Results</div>
+            <div class="card-body">
+                <div class="two-col">
+                    <div>
+                        <h4 style="color:#58a6ff;font-size:13px;margin-bottom:10px;">Factor Correlation (Before)</h4>
+                        <img id="corrBeforeImg" src="" style="width:100%;border-radius:8px;border:1px solid #21262d;" alt="Loading...">
+                    </div>
+                    <div>
+                        <h4 style="color:#58a6ff;font-size:13px;margin-bottom:10px;">Factor Correlation (After PCA)</h4>
+                        <img id="corrAfterImg" src="" style="width:100%;border-radius:8px;border:1px solid #21262d;" alt="Loading...">
+                    </div>
+                </div>
+                <div style="margin-top:16px;">
+                    <h4 style="color:#58a6ff;font-size:13px;margin-bottom:10px;">PCA Loadings & Explained Variance</h4>
+                    <img id="pcaLoadingsImg" src="" style="width:100%;max-width:900px;border-radius:8px;border:1px solid #21262d;" alt="Loading...">
+                </div>
+                <div id="pcaStats" style="margin-top:16px;"></div>
+            </div>
+        </div>
+
+        <!-- 实验对比 -->
+        <div class="card" id="experimentsCard" style="display:none">
+            <div class="card-header">&#128300; Experiment Results</div>
+            <div class="card-body">
+                <div class="charts-grid" id="experimentsGrid"></div>
+            </div>
+        </div>
+
+        <div class="two-col">
+            <!-- 日志 -->
+            <div class="card">
+                <div class="card-header">&#128220; Agent Activity Log</div>
+                <div class="card-body log-list" id="logList"></div>
+            </div>
+
+            <!-- 审查 -->
+            <div class="card">
+                <div class="card-header">&#128270; Review & Risk</div>
+                <div class="card-body" id="reviewPanel">
+                    <p style="color:#484f58">等待审查结果...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 图表 -->
+        <div class="card" id="chartsCard" style="display:none">
+            <div class="card-header">&#128200; Analysis Charts</div>
+            <div class="card-body">
+                <div class="charts-grid" id="chartsGrid"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const AGENT_META = {
+            data_engineer:  { label: '数据工程师', icon: '&#128451;', color: '#4CAF50' },
+            researcher:     { label: '因子研究员', icon: '&#128300;', color: '#2196F3' },
+            backtester:     { label: '回测工程师', icon: '&#9201;',  color: '#FF9800' },
+            critic:         { label: '审核员',     icon: '&#128065;', color: '#F44336' },
+            risk_manager:   { label: '风控经理',   icon: '&#128737;', color: '#9C27B0' },
+            pm:             { label: '组合经理',   icon: '&#127919;', color: '#E91E63' },
+        };
+        const AGENT_ORDER = ['data_engineer','researcher','backtester','critic','risk_manager','pm'];
+
+        function buildPipeline(agents) {
+            const el = document.getElementById('pipeline');
+            el.innerHTML = '';
+            AGENT_ORDER.forEach((key, i) => {
+                const meta = AGENT_META[key];
+                const status = (agents && agents[key]) || 'idle';
+
+                const node = document.createElement('div');
+                node.className = 'pipeline-node';
+                node.innerHTML = `
+                    <div class="pipeline-icon ${status}" style="border-color:${status==='idle'?'#30363d':meta.color}">${meta.icon}</div>
+                    <div class="pipeline-label">${meta.label}</div>
+                `;
+                el.appendChild(node);
+
+                if (i < AGENT_ORDER.length - 1) {
+                    const arrow = document.createElement('div');
+                    const nextStatus = (agents && agents[AGENT_ORDER[i+1]]) || 'idle';
+                    arrow.className = 'pipeline-arrow' + (status === 'success' ? ' active' : '');
+                    el.appendChild(arrow);
+                }
+            });
+        }
+
+        function renderLogs(logs) {
+            const el = document.getElementById('logList');
+            el.innerHTML = '';
+            logs.slice().reverse().forEach(l => {
+                const meta = AGENT_META[l.agent] || { label: l.agent, color: '#8b949e' };
+                const statusClass = (l.status === 'error') ? 'error' :
+                                    (l.status === 'success') ? 'success' :
+                                    (l.status === 'warning') ? 'warning' : '';
+                const div = document.createElement('div');
+                div.className = 'log-item';
+                div.innerHTML = `
+                    <span class="log-time">${l.timestamp.split(' ')[1] || l.timestamp}</span>
+                    <span class="log-agent" style="background:${meta.color}22;color:${meta.color};border:1px solid ${meta.color}44">${meta.label}</span>
+                    <span class="log-detail ${statusClass}">${l.action}${l.detail ? ': '+l.detail : ''}</span>
+                `;
+                el.appendChild(div);
+            });
+        }
+
+        function renderMetrics(report) {
+            if (!report || !report.performance) return;
+            const card = document.getElementById('metricsCard');
+            card.style.display = 'block';
+            const grid = document.getElementById('metricsGrid');
+            const p = report.performance;
+            const net = p['\u7ec4\u5408\u5e74\u5316\u6536\u76ca(\u51c0)'] ?? p['组合年化收益(净)'] ?? 0;
+            const gross = p['\u7ec4\u5408\u5e74\u5316\u6536\u76ca(\u6bdb)'] ?? p['组合年化收益(毛)'] ?? 0;
+            const excess = p['\u8d85\u989d\u6536\u76ca(\u51c0)'] ?? p['超额收益(净)'] ?? 0;
+            const turnover = p['\u5e73\u5747\u6708\u6362\u624b\u7387'] ?? p['平均月换手率'] ?? 0;
+            const costDrag = p['\u5e74\u5316\u6210\u672c\u62d6\u7d2f'] ?? p['年化成本拖累'] ?? (gross - net);
+            const items = [
+                { label: '年化收益(净)', value: (net*100).toFixed(2)+'%', cls: net>=0?'positive':'negative' },
+                { label: '年化收益(毛)', value: (gross*100).toFixed(2)+'%', cls: gross>=0?'positive':'' },
+                { label: '超额收益(净)', value: (excess*100).toFixed(2)+'%', cls: excess>=0?'positive':'negative' },
+                { label: 'Sharpe', value: p['组合Sharpe'], cls: p['组合Sharpe']>=1?'positive':'' },
+                { label: '最大回撤', value: (p['最大回撤']*100).toFixed(2)+'%', cls: 'negative' },
+                { label: '月均换手率', value: (turnover*100).toFixed(1)+'%', cls: turnover>0.5?'negative':'' },
+                { label: '年化成本', value: (costDrag*100).toFixed(2)+'%', cls: 'negative' },
+                { label: 'Critic', value: report.review_verdict, cls: report.review_verdict==='PASS'?'positive':'negative' },
+                { label: 'Risk', value: report.risk_verdict, cls: report.risk_verdict==='OK'?'positive':'negative' },
+            ];
+            grid.innerHTML = items.map(m => `
+                <div class="metric">
+                    <div class="metric-label">${m.label}</div>
+                    <div class="metric-value ${m.cls}">${m.value}</div>
+                </div>
+            `).join('');
+        }
+
+        function renderReview(data) {
+            const el = document.getElementById('reviewPanel');
+            let html = '';
+
+            if (data.review) {
+                const r = data.review;
+                html += `<div class="review-item ${r.verdict==='PASS'?'review-ok':'review-issue'}">
+                    <strong>Critic 判定: ${r.verdict}</strong> — ${r.summary}</div>`;
+                (r.issues||[]).forEach(i => {
+                    html += `<div class="review-item review-issue">&#10060; ${i}</div>`;
+                });
+                (r.warnings||[]).forEach(w => {
+                    html += `<div class="review-item review-warning">&#9888;&#65039; ${w}</div>`;
+                });
+            }
+
+            if (data.risk_report) {
+                const rr = data.risk_report;
+                html += `<div class="review-item ${rr.verdict==='OK'?'review-ok':'review-warning'}">
+                    <strong>Risk 判定: ${rr.verdict}</strong></div>`;
+                if (rr.market_risk) {
+                    html += '<div class="review-item review-ok" style="font-size:12px">';
+                    Object.entries(rr.market_risk).forEach(([k,v]) => {
+                        html += `${k}: <strong>${v}</strong> &nbsp;|&nbsp; `;
+                    });
+                    html += '</div>';
+                }
+                (rr.alerts||[]).forEach(a => {
+                    html += `<div class="review-item review-warning">&#9888;&#65039; ${a}</div>`;
+                });
+            }
+
+            el.innerHTML = html || '<p style="color:#484f58">等待审查结果...</p>';
+        }
+
+        function renderCharts(charts) {
+            if (!charts || charts.length === 0) return;
+
+            // 分类图表
+            const pcaFiles = ['corr_before.png','corr_after.png','pca_loadings.png'];
+            const experimentFiles = ['ortho_comparison.png','universe_comparison.png','neutral_comparison.png'];
+            // 跳过单因子 alphalens 图（信息量低，IC 已在 metrics 体现）
+            const skipFiles = [...pcaFiles, ...experimentFiles,
+                'bp_analysis.png','log_mcap_analysis.png','low_vol_analysis.png',
+                'momentum_analysis.png','reversal_analysis.png',
+                'PC1_analysis.png','PC2_analysis.png','PC3_analysis.png',
+                'PC4_analysis.png','PC5_analysis.png'];
+
+            // 核心图表：portfolio_report + risk_dashboard
+            const mainCharts = charts.filter(c => !skipFiles.includes(c.file));
+            if (mainCharts.length > 0) {
+                document.getElementById('chartsCard').style.display = 'block';
+                document.getElementById('chartsGrid').innerHTML = mainCharts.map(c => `
+                    <div class="chart-card">
+                        <div class="chart-title">${c.name}</div>
+                        <img src="/chart/${c.file}" alt="${c.name}">
+                    </div>
+                `).join('');
+            }
+
+            // 实验对比图
+            const expCharts = charts.filter(c => experimentFiles.includes(c.file));
+            if (expCharts.length > 0) {
+                document.getElementById('experimentsCard').style.display = 'block';
+                document.getElementById('experimentsGrid').innerHTML = expCharts.map(c => `
+                    <div class="chart-card">
+                        <div class="chart-title">${c.name}</div>
+                        <img src="/chart/${c.file}" alt="${c.name}">
+                    </div>
+                `).join('');
+            }
+        }
+
+        function renderPCA(charts, data) {
+            const files = (charts||[]).map(c => c.file);
+            const hasCorr = files.includes('corr_before.png');
+            const hasPCA = files.includes('pca_loadings.png');
+            if (!hasCorr && !hasPCA) return;
+
+            const card = document.getElementById('pcaCard');
+            card.style.display = 'block';
+
+            if (hasCorr) {
+                document.getElementById('corrBeforeImg').src = '/chart/corr_before.png';
+            }
+            if (files.includes('corr_after.png')) {
+                document.getElementById('corrAfterImg').src = '/chart/corr_after.png';
+            }
+            if (hasPCA) {
+                document.getElementById('pcaLoadingsImg').src = '/chart/pca_loadings.png';
+            }
+
+            // PCA 统计信息
+            const pca = data.pca_info;
+            if (pca) {
+                const el = document.getElementById('pcaStats');
+                const evr = pca.explained_variance_ratio || [];
+                const cum = pca.cumulative_variance || [];
+                let html = '<div style="display:flex;gap:16px;flex-wrap:wrap;">';
+                evr.forEach((v, i) => {
+                    html += `<div class="metric" style="min-width:120px;">
+                        <div class="metric-label">PC${i+1}</div>
+                        <div class="metric-value" style="font-size:18px;">${(v*100).toFixed(1)}%</div>
+                        <div class="metric-label">cumul: ${(cum[i]*100).toFixed(0)}%</div>
+                    </div>`;
+                });
+                html += '</div>';
+                el.innerHTML = html;
+            }
+        }
+
+        function updateGlobalStatus(agents) {
+            const el = document.getElementById('globalStatus');
+            const statuses = Object.values(agents || {});
+            if (statuses.includes('running')) {
+                el.textContent = 'Running'; el.className = 'status-badge status-running';
+            } else if (statuses.length && statuses.every(s => s==='success'||s==='idle')) {
+                el.textContent = 'Done'; el.className = 'status-badge status-done';
+            } else {
+                el.textContent = 'Idle'; el.className = 'status-badge status-idle';
+            }
+        }
+
+        // 轮询
+        async function poll() {
+            try {
+                const resp = await fetch('/api/state');
+                const data = await resp.json();
+                buildPipeline(data.agents);
+                updateGlobalStatus(data.agents);
+                renderLogs(data.logs || []);
+                renderReview(data);
+                renderMetrics(data.final_report);
+                renderCharts(data.charts || []);
+                renderPCA(data.charts || [], data);
+            } catch(e) {}
+        }
+
+        buildPipeline({});
+        setInterval(poll, 1500);
+        poll();
+    </script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+{
+  "qlib_gross": {
+    "ann_return": 0.3004,
+    "sharpe": 1.77,
+    "max_drawdown": -0.1481,
+    "n_days": 689
+  },
+  "qlib_net_ann": 0.2869,
+  "baseline_gross_ann": 0.298,
+  "baseline_net_ann": 0.2867,
+  "abs_diff_gross": 0.0024,
+  "abs_diff_net": 0.0002,
+  "cost": 0.001,
+  "total_cost": 0.0369
+}
