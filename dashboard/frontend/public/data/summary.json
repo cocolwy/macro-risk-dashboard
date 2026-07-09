@@ -1,0 +1,34 @@
+{
+  "alerts": {
+    "term_spread": {
+      "level": "ok",
+      "message": "Normal: 0.35%"
+    },
+    "credit_spread": {
+      "level": "ok",
+      "message": "Normal: 3bps"
+    },
+    "vix": {
+      "level": "ok",
+      "message": "Normal: 16.9"
+    },
+    "absorption_ratio": {
+      "level": "ok",
+      "message": "Normal (z=0.9)"
+    },
+    "turbulence": {
+      "level": "ok",
+      "message": "Normal: 16.7"
+    }
+  },
+  "last_updated": "2026-07-09T20:14:25.906956",
+  "indicators_available": [
+    "term_spread",
+    "credit_spread",
+    "vix",
+    "sp500",
+    "breadth",
+    "absorption_ratio",
+    "turbulence"
+  ]
+}

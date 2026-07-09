@@ -1,0 +1,93 @@
+name: Update Macro Risk Data
+
+on:
+  schedule:
+    # Run daily at 00:30 UTC (after US market close + settlement)
+    - cron: '30 0 * * 1-6'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  fetch-data:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          pip install pandas numpy yfinance akshare scikit-learn requests
+
+      - name: Fetch macro data
+        run: python dashboard/fetch_macro_data.py
+
+      - name: Check for alerts and notify
+        id: check_alerts
+        run: |
+          python -c "
+          import json
+          with open('dashboard/data/summary.json') as f:
+              summary = json.load(f)
+          alerts = summary.get('alerts', {})
+          danger = [k for k, v in alerts.items() if v['level'] == 'danger']
+          warning = [k for k, v in alerts.items() if v['level'] == 'warning']
+          if danger:
+              msgs = [f\"🔴 {k}: {alerts[k]['message']}\" for k in danger]
+              print(f\"::set-output name=has_danger::true\")
+              print(f\"::set-output name=danger_msg::{'  |  '.join(msgs)}\")
+          if warning:
+              msgs = [f\"🟡 {k}: {alerts[k]['message']}\" for k in warning]
+              print(f\"::set-output name=has_warning::true\")
+              print(f\"::set-output name=warning_msg::{'  |  '.join(msgs)}\")
+          "
+
+      - name: Send email notification (danger)
+        if: steps.check_alerts.outputs.has_danger == 'true'
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{ secrets.ALERT_EMAIL_USER }}
+          password: ${{ secrets.ALERT_EMAIL_PASS }}
+          subject: "🔴 MACRO RISK ALERT - Danger Level Triggered"
+          body: |
+            Macro Risk Dashboard has detected DANGER-level signals:
+
+            ${{ steps.check_alerts.outputs.danger_msg }}
+
+            View dashboard: https://${{ github.repository_owner }}.github.io/quant/
+          to: ${{ secrets.ALERT_EMAIL_TO }}
+          from: Macro Risk Bot <${{ secrets.ALERT_EMAIL_USER }}>
+
+      - name: Send email notification (warning)
+        if: steps.check_alerts.outputs.has_warning == 'true' && steps.check_alerts.outputs.has_danger != 'true'
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{ secrets.ALERT_EMAIL_USER }}
+          password: ${{ secrets.ALERT_EMAIL_PASS }}
+          subject: "🟡 MACRO RISK WARNING - Elevated Readings"
+          body: |
+            Macro Risk Dashboard has detected WARNING-level signals:
+
+            ${{ steps.check_alerts.outputs.warning_msg }}
+
+            View dashboard: https://${{ github.repository_owner }}.github.io/quant/
+          to: ${{ secrets.ALERT_EMAIL_TO }}
+          from: Macro Risk Bot <${{ secrets.ALERT_EMAIL_USER }}>
+
+      - name: Commit updated data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add dashboard/data/
+          git diff --staged --quiet || git commit -m "chore: update macro risk data $(date -u +%Y-%m-%d)"
+          git push
