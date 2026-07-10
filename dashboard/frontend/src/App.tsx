@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
-import { fetchAllData, DataPoint, Summary } from './api';
+import { fetchAllData, DataPoint, Summary, MomentumData } from './api';
 import { ChartCard } from './components/ChartCard';
 import { MultiLineChart } from './components/MultiLineChart';
 import { AlertsPanel } from './components/AlertsPanel';
 import { CausalFlow } from './components/CausalFlow';
 import { SectorTable } from './components/SectorTable';
+import { ScoreGauge } from './components/ScoreGauge';
 
 interface DashboardData {
   summary: Summary;
@@ -16,6 +17,8 @@ interface DashboardData {
   sectors: DataPoint[];
   absorptionRatio: DataPoint[];
   turbulence: DataPoint[];
+  compositeScore: DataPoint[];
+  momentum: MomentumData;
 }
 
 function getLatestValue(data: DataPoint[], key: string): string {
@@ -79,6 +82,34 @@ export default function App() {
       </header>
 
       <AlertsPanel alerts={summary.alerts} />
+
+      {summary.composite_score && (
+        <ScoreGauge
+          score={summary.composite_score.score}
+          label={summary.composite_score.label}
+          level={summary.composite_score.level}
+          action={summary.composite_score.action}
+          components={summary.composite_score.components}
+          momentum={data.momentum}
+        />
+      )}
+
+      {data.compositeScore.length > 0 && (
+        <div className="charts-grid" style={{ marginBottom: '20px' }}>
+          <ChartCard
+            title="Risk Score History"
+            subtitle="Composite score over time — higher = more dangerous"
+            data={data.compositeScore}
+            dataKey="composite_score"
+            color="#fb923c"
+            type="area"
+            gradientId="scoreGrad"
+            referenceLine={{ y: 60, label: 'High Risk', color: '#f87171' }}
+            className="full-width"
+            explanation={"综合风险评分的历史走势。高于60分=高风险区间（橙红色），需要认真对待。注意观察评分上升的速度——缓慢上升可能只是波动，突然跳升更值得警惕。"}
+          />
+        </div>
+      )}
 
       <CausalFlow alerts={summary.alerts} />
 

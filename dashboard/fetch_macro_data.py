@@ -195,6 +195,33 @@ def df_to_json(df: pd.DataFrame) -> list:
     return records
 
 
+def compute_momentum(all_data: dict) -> dict:
+    """Compute weekly and monthly rate of change for each indicator."""
+    key_fields = {
+        "term_spread": "term_spread_10y2y",
+        "credit_spread": "high_yield_spread",
+        "vix": "vix",
+        "absorption_ratio": "absorption_ratio",
+        "turbulence": "turbulence",
+        "breadth": "pct_above_200ma",
+    }
+    momentum = {}
+    for name, field in key_fields.items():
+        data = all_data.get(name, [])
+        if len(data) < 22:
+            continue
+        latest = data[-1].get(field)
+        week_ago = data[-5].get(field) if len(data) > 5 else None
+        month_ago = data[-22].get(field) if len(data) > 22 else None
+        if latest is not None and week_ago is not None and month_ago is not None:
+            momentum[name] = {
+                "current": round(float(latest), 2),
+                "week_change": round(float(latest - week_ago), 2),
+                "month_change": round(float(latest - month_ago), 2),
+            }
+    return momentum
+
+
 def compute_alert_status(data: dict) -> dict:
     """Compute current alert levels for each indicator."""
     alerts = {}
@@ -357,8 +384,27 @@ def main():
     all_data["alerts"] = alerts
     all_data["last_updated"] = datetime.datetime.now().isoformat()
 
+    # Compute composite score
+    print("[*] Computing composite risk score...")
+    try:
+        from composite_score import compute_composite_score, get_score_label
+        scores = compute_composite_score(all_data)
+        all_data["composite_score"] = scores
+        if scores:
+            latest_score = scores[-1]
+            label = get_score_label(latest_score["composite_score"])
+            print(f"  ✓ Score: {latest_score['composite_score']:.0f}/100 [{label['label']}]")
+    except Exception as e:
+        print(f"  ✗ Failed: {e}")
+        all_data["composite_score"] = []
+
+    # Compute momentum
+    print("[*] Computing momentum...")
+    momentum = compute_momentum(all_data)
+    all_data["momentum"] = momentum
+
     # Save individual JSON files for each indicator
-    for key in ["term_spread", "credit_spread", "vix", "sp500", "breadth", "sectors", "absorption_ratio", "turbulence"]:
+    for key in ["term_spread", "credit_spread", "vix", "sp500", "breadth", "sectors", "absorption_ratio", "turbulence", "composite_score", "momentum"]:
         filepath = DATA_DIR / f"{key}.json"
         with open(filepath, "w") as f:
             json.dump(all_data[key], f)

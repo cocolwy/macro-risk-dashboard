@@ -12,6 +12,19 @@ export interface Summary {
   alerts: Record<string, AlertInfo>;
   last_updated: string;
   indicators_available: string[];
+  composite_score?: {
+    score: number;
+    label: string;
+    level: string;
+    color: string;
+    action: string;
+    components: Record<string, number>;
+    date: string;
+  };
+}
+
+export interface MomentumData {
+  [key: string]: { current: number; week_change: number; month_change: number };
 }
 
 const DATA_BASE_URL = import.meta.env.PROD
@@ -42,8 +55,10 @@ export async function fetchAllData(): Promise<{
   sectors: DataPoint[];
   absorptionRatio: DataPoint[];
   turbulence: DataPoint[];
+  compositeScore: DataPoint[];
+  momentum: MomentumData;
 }> {
-  const [summary, termSpread, creditSpread, vix, sp500, breadth, sectors, absorptionRatio, turbulence] =
+  const [summary, termSpread, creditSpread, vix, sp500, breadth, sectors, absorptionRatio, turbulence, compositeScore, momentum] =
     await Promise.all([
       fetchSummary(),
       fetchIndicator('term_spread').catch(() => []),
@@ -54,7 +69,9 @@ export async function fetchAllData(): Promise<{
       fetchIndicator('sectors').catch(() => []),
       fetchIndicator('absorption_ratio').catch(() => []),
       fetchIndicator('turbulence').catch(() => []),
+      fetchIndicator('composite_score').catch(() => []),
+      fetchJson<MomentumData>('momentum.json').catch(() => ({})),
     ]);
 
-  return { summary, termSpread, creditSpread, vix, sp500, breadth, sectors, absorptionRatio, turbulence };
+  return { summary, termSpread, creditSpread, vix, sp500, breadth, sectors, absorptionRatio, turbulence, compositeScore, momentum };
 }
