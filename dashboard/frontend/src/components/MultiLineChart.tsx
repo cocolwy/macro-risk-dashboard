@@ -16,9 +16,10 @@ interface MultiLineChartProps {
   data: DataPoint[];
   lines: { key: string; color: string; name: string }[];
   className?: string;
+  explanation?: string;
 }
 
-export function MultiLineChart({ title, subtitle, data, lines, className = '' }: MultiLineChartProps) {
+export function MultiLineChart({ title, subtitle, data, lines, className = '', explanation }: MultiLineChartProps) {
   const displayData = data.length > 500
     ? data.filter((_, i) => i % Math.ceil(data.length / 500) === 0 || i === data.length - 1)
     : data;
@@ -47,6 +48,20 @@ export function MultiLineChart({ title, subtitle, data, lines, className = '' }:
           ))}
         </LineChart>
       </ResponsiveContainer>
+      {explanation && (
+        <div style={{
+          marginTop: '12px',
+          padding: '10px 12px',
+          background: 'rgba(74, 158, 255, 0.04)',
+          border: '1px solid rgba(74, 158, 255, 0.12)',
+          borderRadius: '8px',
+          fontSize: '12px',
+          lineHeight: '1.6',
+          color: 'var(--text-secondary)',
+        }}>
+          {explanation}
+        </div>
+      )}
     </div>
   );
 }
