@@ -39,10 +39,11 @@ export async function fetchAllData(): Promise<{
   vix: DataPoint[];
   sp500: DataPoint[];
   breadth: DataPoint[];
+  sectors: DataPoint[];
   absorptionRatio: DataPoint[];
   turbulence: DataPoint[];
 }> {
-  const [summary, termSpread, creditSpread, vix, sp500, breadth, absorptionRatio, turbulence] =
+  const [summary, termSpread, creditSpread, vix, sp500, breadth, sectors, absorptionRatio, turbulence] =
     await Promise.all([
       fetchSummary(),
       fetchIndicator('term_spread').catch(() => []),
@@ -50,9 +51,10 @@ export async function fetchAllData(): Promise<{
       fetchIndicator('vix').catch(() => []),
       fetchIndicator('sp500').catch(() => []),
       fetchIndicator('breadth').catch(() => []),
+      fetchIndicator('sectors').catch(() => []),
       fetchIndicator('absorption_ratio').catch(() => []),
       fetchIndicator('turbulence').catch(() => []),
     ]);
 
-  return { summary, termSpread, creditSpread, vix, sp500, breadth, absorptionRatio, turbulence };
+  return { summary, termSpread, creditSpread, vix, sp500, breadth, sectors, absorptionRatio, turbulence };
 }

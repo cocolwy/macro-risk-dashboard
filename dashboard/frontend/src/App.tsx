@@ -4,6 +4,7 @@ import { ChartCard } from './components/ChartCard';
 import { MultiLineChart } from './components/MultiLineChart';
 import { AlertsPanel } from './components/AlertsPanel';
 import { CausalFlow } from './components/CausalFlow';
+import { SectorTable } from './components/SectorTable';
 
 interface DashboardData {
   summary: Summary;
@@ -12,6 +13,7 @@ interface DashboardData {
   vix: DataPoint[];
   sp500: DataPoint[];
   breadth: DataPoint[];
+  sectors: DataPoint[];
   absorptionRatio: DataPoint[];
   turbulence: DataPoint[];
 }
@@ -166,6 +168,8 @@ export default function App() {
           className="full-width"
           explanation={"市场宽度：11个标普行业ETF中，有多少比例当前价格在各自的200日均线之上。100%=所有行业都在上升趋势中，0%=全部跌破趋势线。关键信号：如果S&P 500还在涨但这个比例在下降 =「顶部背离」，说明上涨只靠少数行业撑着，多数行业已经走弱。"}
         />
+
+        <SectorTable data={data.sectors} />
       </div>
 
       <footer className="footer">

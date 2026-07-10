@@ -76,6 +76,34 @@ def compute_market_breadth(period="5y") -> pd.DataFrame:
     return df
 
 
+def compute_sector_vs_ma(period="1y") -> list:
+    """
+    Compute each sector ETF's % distance from its 200-day MA.
+    Returns a time series so the frontend can show historical sector health.
+    """
+    import yfinance as yf
+
+    sector_etfs = ["XLB", "XLC", "XLE", "XLF", "XLI", "XLK", "XLP", "XLRE", "XLU", "XLV", "XLY"]
+    data = yf.download(sector_etfs, period="2y", auto_adjust=True)["Close"]
+
+    ma200 = data.rolling(200).mean()
+    pct_diff = ((data / ma200) - 1) * 100
+    pct_diff = pct_diff.dropna()
+
+    # Keep last 1 year of data
+    pct_diff = pct_diff.iloc[-252:]
+
+    records = []
+    for date, row in pct_diff.iterrows():
+        entry = {"date": date.strftime("%Y-%m-%d")}
+        for col in sector_etfs:
+            if pd.notna(row[col]):
+                entry[col] = round(float(row[col]), 2)
+        records.append(entry)
+
+    return records
+
+
 def compute_absorption_ratio(period="5y", n_components=5, window=60) -> pd.DataFrame:
     """
     Compute Absorption Ratio on a basket of sector ETFs.
@@ -293,6 +321,16 @@ def main():
         print(f"  ✗ Failed: {e}")
         all_data["breadth"] = []
 
+    # 5b. Sector vs 200MA (latest snapshot)
+    print("\n[5b/7] Computing Sector vs 200MA...")
+    try:
+        sector_data = compute_sector_vs_ma()
+        all_data["sectors"] = sector_data
+        print(f"  ✓ {len(sector_data)} data points")
+    except Exception as e:
+        print(f"  ✗ Failed: {e}")
+        all_data["sectors"] = []
+
     # 6. Absorption Ratio
     print("\n[6/7] Computing Absorption Ratio...")
     try:
@@ -320,7 +358,7 @@ def main():
     all_data["last_updated"] = datetime.datetime.now().isoformat()
 
     # Save individual JSON files for each indicator
-    for key in ["term_spread", "credit_spread", "vix", "sp500", "breadth", "absorption_ratio", "turbulence"]:
+    for key in ["term_spread", "credit_spread", "vix", "sp500", "breadth", "sectors", "absorption_ratio", "turbulence"]:
         filepath = DATA_DIR / f"{key}.json"
         with open(filepath, "w") as f:
             json.dump(all_data[key], f)
