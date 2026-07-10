@@ -51,27 +51,29 @@ def fetch_yfinance_history(ticker: str, period: str = "5y") -> pd.DataFrame:
 
 def compute_market_breadth(period="5y") -> pd.DataFrame:
     """
-    Compute market breadth using % of S&P 500 stocks above 200-day MA.
-    Uses MMTH (% above 200d MA) from StockCharts via FRED or proxy.
-    Fallback: compute from SPY components approximation.
+    Compute market breadth: % of sector ETFs trading above their 200-day MA.
+    Uses 11 SPDR sector ETFs as a proxy for market internal health.
     """
-    try:
-        s = fetch_fred_series("MMTH")
-        return s.to_frame("pct_above_200ma")
-    except Exception:
-        pass
+    import yfinance as yf
 
-    try:
-        import yfinance as yf
-        spy = yf.Ticker("^GSPC")
-        hist = spy.history(period=period, auto_adjust=True)
-        ma200 = hist["Close"].rolling(200).mean()
-        above = (hist["Close"] > ma200).astype(int)
-        rolling_breadth = above.rolling(20).mean() * 100
-        df = pd.DataFrame({"pct_above_200ma": rolling_breadth}, index=hist.index)
-        return df.dropna()
-    except Exception:
-        return pd.DataFrame()
+    sector_etfs = ["XLB", "XLC", "XLE", "XLF", "XLI", "XLK", "XLP", "XLRE", "XLU", "XLV", "XLY"]
+    data = yf.download(sector_etfs, period=period, auto_adjust=True)["Close"]
+
+    breadth_values = []
+    dates = []
+
+    for i in range(200, len(data)):
+        row = data.iloc[i]
+        ma200 = data.iloc[i - 200:i].mean()
+        above_count = (row > ma200).sum()
+        total = row.notna().sum()
+        if total > 0:
+            pct = (above_count / total) * 100
+            breadth_values.append(pct)
+            dates.append(data.index[i])
+
+    df = pd.DataFrame({"pct_above_200ma": breadth_values}, index=pd.DatetimeIndex(dates))
+    return df
 
 
 def compute_absorption_ratio(period="5y", n_components=5, window=60) -> pd.DataFrame:

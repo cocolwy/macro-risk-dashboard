@@ -158,13 +158,13 @@ export default function App() {
 
         <ChartCard
           title="Market Breadth"
-          subtitle="S&P 500: % days above 200-day MA (rolling 20d)"
+          subtitle="% of 11 sector ETFs above their 200-day moving average"
           data={data.breadth}
           dataKey="pct_above_200ma"
           color="#34d399"
           currentValue={`${getLatestValue(data.breadth, 'pct_above_200ma')}%`}
           className="full-width"
-          explanation={"市场宽度：衡量S&P 500中有多少比例的交易日收盘价在200日均线之上。高值=大部分时间处于上升趋势，低值=趋势走弱。关键信号：如果指数还在创新高，但宽度指标持续走低 =「顶部背离」，说明上涨只靠少数大股票撑着，内部已经在垮。"}
+          explanation={"市场宽度：11个标普行业ETF中，有多少比例当前价格在各自的200日均线之上。100%=所有行业都在上升趋势中，0%=全部跌破趋势线。关键信号：如果S&P 500还在涨但这个比例在下降 =「顶部背离」，说明上涨只靠少数行业撑着，多数行业已经走弱。"}
         />
       </div>
 
