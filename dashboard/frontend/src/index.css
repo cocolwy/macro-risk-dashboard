@@ -636,10 +636,115 @@ body {
 .ab-chart-section {
   margin-top: 20px;
 }
-.ab-chart-section h3 {
+.ab-chart-section h3, .ab-chart-section h4 {
   font-size: 14px;
   color: var(--text-2);
   margin-bottom: 12px;
+}
+.ab-group {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+.ab-group-title {
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.ab-tables-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 16px;
+}
+.ab-table-half h4 {
+  font-size: 13px;
+  color: var(--text-2);
+  margin-bottom: 8px;
+}
+.lab-table-compact {
+  font-size: 12px;
+}
+.lab-table-compact th, .lab-table-compact td {
+  padding: 5px 6px;
+}
+.ab-overview-table {
+  margin: 16px 0;
+}
+.ab-best-tag {
+  display: inline-block;
+  background: rgba(34, 197, 94, 0.15);
+  color: #16a34a;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 9px;
+  font-weight: 700;
+  margin-right: 6px;
+  letter-spacing: 0.5px;
+}
+
+/* === Pairwise Comparison === */
+.ab-pair {
+  margin-top: 28px;
+  padding-top: 24px;
+  border-top: 2px solid var(--border);
+}
+.ab-pair-header {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.ab-pair-header h3 {
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0;
+}
+.ab-pair-variable {
+  font-size: 12px;
+  color: var(--text-2);
+  background: var(--bg-2);
+  padding: 2px 10px;
+  border-radius: 12px;
+}
+.ab-pair-cards {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.ab-pair-card {
+  flex: 1;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-top: 3px solid;
+  border-radius: 10px;
+  padding: 14px 16px;
+}
+.ab-pair-card.winner {
+  box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.3);
+}
+.ab-pair-role {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--text-2);
+  margin-bottom: 6px;
+}
+.ab-pair-vs {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--text-2);
+  flex-shrink: 0;
+}
+.ab-winner-tag {
+  display: inline-block;
+  background: rgba(34, 197, 94, 0.15);
+  color: #16a34a;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 9px;
+  margin-left: 6px;
 }
 
 /* === Weight Comparison === */

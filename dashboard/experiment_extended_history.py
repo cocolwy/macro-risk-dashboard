@@ -35,7 +35,7 @@ START_DATE = '2005-01-01'
 
 FRED_SERIES = {
     'term_spread': 'T10Y2Y',
-    'credit_spread': 'BAMLH0A0HYM2',
+    'credit_spread': 'BAA10Y',
 }
 
 SECTOR_ETFS = ['XLB', 'XLC', 'XLE', 'XLF', 'XLI', 'XLK', 'XLP', 'XLRE', 'XLU', 'XLV', 'XLY']
@@ -163,9 +163,19 @@ def load_extended_data() -> pd.DataFrame:
     return df
 
 
-def human_model_probs(X: pd.DataFrame, scaler: StandardScaler) -> np.ndarray:
+def human_model_probs(X: pd.DataFrame, scaler: StandardScaler, ml_model=None, y_train=None) -> np.ndarray:
     weights = np.array([HUMAN_WEIGHTS.get(col, 0.0) for col in X.columns])
-    scores = scaler.transform(X) @ weights
+    raw_scores = scaler.transform(X) @ weights
+    if y_train is not None and len(y_train) > 0:
+        base_rate = float(y_train.mean())
+        target_logit = np.log(base_rate / (1 - base_rate))
+        median_score = np.median(raw_scores)
+        std_score = np.std(raw_scores)
+        if std_score > 0:
+            scale = 1.5 / std_score
+            bias = target_logit - median_score * scale
+            return 1 / (1 + np.exp(-(raw_scores * scale + bias)))
+    scores = raw_scores
     return 1 / (1 + np.exp(-scores))
 
 
@@ -226,7 +236,7 @@ def main():
     ml_probs_test = ml_model.predict_proba(X_test_s)[:, 1]
     ml_probs_all = ml_model.predict_proba(scaler.transform(X))[:, 1]
 
-    human_probs_all = human_model_probs(X, scaler)
+    human_probs_all = human_model_probs(X, scaler, ml_model, y_train)
     human_probs_test = human_probs_all[split:]
 
     ml_auc = auc(*roc_curve(y_test, ml_probs_test)[:2])

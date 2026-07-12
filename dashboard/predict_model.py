@@ -91,6 +91,37 @@ def build_features(df: pd.DataFrame) -> pd.DataFrame:
     return features
 
 
+def build_features_slim(df: pd.DataFrame) -> pd.DataFrame:
+    """Deduplicated feature set: 1 best window per indicator, 11 features total."""
+    features = pd.DataFrame(index=df.index)
+
+    if 'vix' in df.columns:
+        features['vix_level'] = df['vix']
+        features['vix_20d_chg'] = df['vix'].pct_change(20)
+
+    if 'turbulence' in df.columns:
+        features['turbulence_20d_chg'] = df['turbulence'].pct_change(20)
+
+    if 'absorption_ratio' in df.columns:
+        features['absorption_ratio_20d_chg'] = df['absorption_ratio'].pct_change(20)
+
+    if 'term_spread' in df.columns:
+        features['term_spread_level'] = df['term_spread']
+        features['term_spread_20d_chg'] = df['term_spread'].diff(20)
+
+    if 'credit_spread' in df.columns:
+        features['credit_spread_10d_chg'] = df['credit_spread'].diff(10)
+
+    if 'breadth' in df.columns:
+        features['breadth_level'] = df['breadth']
+        features['breadth_10d_chg'] = df['breadth'].diff(10)
+
+    if 'sp500' in df.columns:
+        features['sp500_vs_50ma'] = df['sp500'] / df['sp500'].rolling(50).mean() - 1
+
+    return features
+
+
 def compute_target(sp500: pd.Series, horizon: int = 20, threshold: float = -0.05) -> pd.Series:
     """Binary target: 1 if max drawdown in next `horizon` days exceeds `threshold`."""
     future_max_dd = pd.Series(index=sp500.index, dtype=float)
@@ -132,11 +163,21 @@ def train_and_evaluate(X: pd.DataFrame, y: pd.Series, split_ratio: float = 0.7):
     return model, scaler, X_train, X_test, y_train, y_test, y_prob
 
 
-def human_model_probs(X: pd.DataFrame, scaler: StandardScaler) -> np.ndarray:
-    """Compute crash probabilities using manually designed weights."""
+def human_model_probs(X: pd.DataFrame, scaler: StandardScaler, ml_model=None, y_train=None) -> np.ndarray:
+    """Compute crash probabilities using manually designed weights.
+    Auto-calibrates scale + bias so mean probability matches base rate."""
     weights = np.array([HUMAN_WEIGHTS.get(col, 0.0) for col in X.columns])
-    scores = scaler.transform(X) @ weights
-    return 1 / (1 + np.exp(-scores))
+    raw_scores = scaler.transform(X) @ weights
+    if y_train is not None and len(y_train) > 0:
+        base_rate = float(y_train.mean())
+        target_logit = np.log(base_rate / (1 - base_rate))
+        median_score = np.median(raw_scores)
+        std_score = np.std(raw_scores)
+        if std_score > 0:
+            scale = 1.5 / std_score
+            bias = target_logit - median_score * scale
+            return 1 / (1 + np.exp(-(raw_scores * scale + bias)))
+    return 1 / (1 + np.exp(-raw_scores))
 
 
 def build_metrics(model, scaler, X, y, X_train, X_test, y_test, y_prob, sp500):
@@ -320,7 +361,7 @@ def main():
 
     print("Building Human Logic model...")
     split = int(len(X_clipped) * 0.7)
-    human_probs_all = human_model_probs(X_clipped, scaler)
+    human_probs_all = human_model_probs(X_clipped, scaler, model, y_train)
     human_probs_test = human_probs_all[split:]
     human_comparison = build_comparison_metrics(
         y_test, human_probs_test, human_probs_all,
@@ -351,6 +392,35 @@ def main():
         weight_comparison.append({"feature": col, "ml_weight": round(mc, 4), "human_weight": hc, "agree": agree})
     metrics["weight_comparison"] = weight_comparison
 
+    # --- Slim features experiment (deduplicated, 11 features) ---
+    print("Building Slim ML model (dedup features)...")
+    features_slim = build_features_slim(df)
+    combined_slim = features_slim.copy()
+    combined_slim['target'] = target
+    combined_slim = combined_slim.dropna()
+    X_slim = combined_slim.drop('target', axis=1).clip(-10, 10)
+    y_slim = combined_slim['target']
+
+    split_slim = int(len(X_slim) * 0.7)
+    X_train_s, X_test_s = X_slim.iloc[:split_slim], X_slim.iloc[split_slim:]
+    y_train_s, y_test_s = y_slim.iloc[:split_slim], y_slim.iloc[split_slim:]
+
+    scaler_slim = StandardScaler()
+    X_train_ss = scaler_slim.fit_transform(X_train_s)
+    X_test_ss = scaler_slim.transform(X_test_s)
+
+    model_slim = LogisticRegression(C=0.1, max_iter=1000, class_weight='balanced')
+    model_slim.fit(X_train_ss, y_train_s)
+    slim_probs_test = model_slim.predict_proba(X_test_ss)[:, 1]
+    slim_probs_all = model_slim.predict_proba(scaler_slim.transform(X_slim))[:, 1]
+
+    slim_comparison = build_comparison_metrics(
+        y_test_s, slim_probs_test, slim_probs_all,
+        X_slim, df['sp500'], f"ML Slim ({len(X_slim.columns)}feat)", KEY_EVENTS,
+    )
+    metrics["experiments"].append(slim_comparison)
+    print(f"  Slim AUC: {slim_comparison['auc']} ({len(X_slim.columns)} features vs {len(X_clipped.columns)} original)")
+
     # Save outputs
     with open(DATA_DIR / 'model_metrics.json', 'w') as f:
         json.dump(metrics, f)
@@ -362,7 +432,7 @@ def main():
 
     print(f"\n  ML prediction:    {metrics['current_prediction']['probability']*100:.1f}% ({metrics['current_prediction']['signal']})")
     print(f"  Human prediction: {human_comparison['current_probability']*100:.1f}% ({human_comparison['current_signal']})")
-    print(f"  ML AUC: {metrics['model_info']['roc_auc']}  Human AUC: {human_comparison['auc']}")
+    print(f"  ML AUC: {metrics['model_info']['roc_auc']}  Human AUC: {human_comparison['auc']}  Slim AUC: {slim_comparison['auc']}")
     print("=== Done ===")
 
 

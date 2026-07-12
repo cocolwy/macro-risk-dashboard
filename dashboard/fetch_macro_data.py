@@ -310,19 +310,31 @@ def main():
         print(f"  ✗ Failed: {e}")
         all_data["term_spread"] = []
 
-    # 2. Credit Spread (ICE BofA US High Yield)
+    # 2. Credit Spread
+    # Primary: Moody's BAA-10Y and AAA-10Y (daily, 2005+, always available)
+    # Fallback: ICE BofA HY/IG (limited to ~3yr on free CSV endpoint)
     print("\n[2/7] Fetching Credit Spreads...")
     try:
-        hy_spread = fetch_fred_series("BAMLH0A0HYM2")
-        ig_spread = fetch_fred_series("BAMLC0A0CM")
-        hy_df = hy_spread.to_frame("high_yield_spread")
-        ig_df = ig_spread.to_frame("investment_grade_spread")
-        merged = hy_df.join(ig_df, how="outer").ffill()
+        baa10y = fetch_fred_series("BAA10Y")
+        aaa10y = fetch_fred_series("AAA10Y")
+        baa_df = baa10y.to_frame("high_yield_spread")
+        aaa_df = aaa10y.to_frame("investment_grade_spread")
+        merged = baa_df.join(aaa_df, how="outer").ffill()
         all_data["credit_spread"] = df_to_json(merged)
-        print(f"  ✓ {len(all_data['credit_spread'])} data points")
+        print(f"  ✓ {len(all_data['credit_spread'])} data points (Moody's BAA/AAA-10Y)")
     except Exception as e:
-        print(f"  ✗ Failed: {e}")
-        all_data["credit_spread"] = []
+        print(f"  Moody's failed ({e}), falling back to ICE BofA...")
+        try:
+            hy_spread = fetch_fred_series("BAMLH0A0HYM2")
+            ig_spread = fetch_fred_series("BAMLC0A0CM")
+            hy_df = hy_spread.to_frame("high_yield_spread")
+            ig_df = ig_spread.to_frame("investment_grade_spread")
+            merged = hy_df.join(ig_df, how="outer").ffill()
+            all_data["credit_spread"] = df_to_json(merged)
+            print(f"  ✓ {len(all_data['credit_spread'])} data points (ICE BofA fallback)")
+        except Exception as e2:
+            print(f"  ✗ Failed: {e2}")
+            all_data["credit_spread"] = []
 
     # 3. VIX
     print("\n[3/7] Fetching VIX...")

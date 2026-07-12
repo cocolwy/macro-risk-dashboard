@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import {
   XAxis, YAxis, Tooltip, ResponsiveContainer,
   BarChart, Bar, Cell, ReferenceLine, Area, AreaChart,
-  ComposedChart, CartesianGrid, Line
+  ComposedChart, CartesianGrid, Line, Legend
 } from 'recharts';
 
 interface ModelInfo {
@@ -119,33 +119,34 @@ function signalColor(signal: string) {
   return signal === 'elevated' ? '#dc2626' : signal === 'watch' ? '#b45309' : '#16a34a';
 }
 
-function ABComparisonSection({ experiments, sp500Timeline }: { experiments: ExperimentData[]; sp500Timeline: SP500Point[] }) {
+function ExperimentGroup({ title, desc, experiments, sp500Timeline, colors }: {
+  title: string; desc: string; experiments: ExperimentData[]; sp500Timeline: SP500Point[]; colors: string[];
+}) {
   const sp500Map = new Map(sp500Timeline.map(s => [s.date, s.sp500]));
+  const baseTimeline = experiments.reduce((longest, e) =>
+    e.probability_timeline.length > longest.length ? e.probability_timeline : longest, [] as ProbPoint[]);
 
-  const mergedTimeline = experiments[0]?.probability_timeline.map(p => {
+  const mergedTimeline = baseTimeline.map(p => {
     const row: Record<string, unknown> = { date: p.date, sp500: sp500Map.get(p.date) };
     experiments.forEach((exp, i) => {
       const match = exp.probability_timeline.find(ep => ep.date === p.date);
       row[`prob_${i}`] = match?.probability;
     });
     return row;
-  }) ?? [];
+  });
+
+  const allEvents = new Map<string, EventBacktest>();
+  experiments.forEach(exp => exp.events_backtest.forEach(e => { if (!allEvents.has(e.name)) allEvents.set(e.name, e); }));
 
   return (
-    <section className="lab-card ab-section">
-      <div className="ab-header">
-        <h2>AB Test: 模型对比实验</h2>
-        <span className="ab-badge">EXPERIMENT</span>
-      </div>
-      <p className="lab-card-desc">
-        ML自动学习权重 vs 人工逻辑设定权重，同一数据集、同一目标、同一阈值
-      </p>
+    <div className="ab-group">
+      <h3 className="ab-group-title">{title}</h3>
+      <p className="lab-card-desc">{desc}</p>
 
-      {/* Summary cards */}
       <div className="ab-summary-row">
         {experiments.map((exp, i) => (
-          <div key={exp.name} className="ab-summary-card" style={{ borderTopColor: EXP_COLORS[i] }}>
-            <div className="ab-model-name" style={{ color: EXP_COLORS[i] }}>{exp.name}</div>
+          <div key={exp.name} className="ab-summary-card" style={{ borderTopColor: colors[i] }}>
+            <div className="ab-model-name" style={{ color: colors[i] }}>{exp.name}</div>
             <div className="ab-metric-row">
               <span className="ab-metric-label">AUC</span>
               <span className="ab-metric-value">{exp.auc}</span>
@@ -157,7 +158,7 @@ function ABComparisonSection({ experiments, sp500Timeline }: { experiments: Expe
               </span>
             </div>
             <div className="ab-metric-row">
-              <span className="ab-metric-label">当前信号</span>
+              <span className="ab-metric-label">信号</span>
               <span className="ab-signal-badge" style={{ background: signalColor(exp.current_signal) + '22', color: signalColor(exp.current_signal) }}>
                 {exp.current_signal === 'elevated' ? 'ELEVATED' : exp.current_signal === 'watch' ? 'WATCH' : 'LOW'}
               </span>
@@ -166,117 +167,265 @@ function ABComparisonSection({ experiments, sp500Timeline }: { experiments: Expe
         ))}
       </div>
 
-      {/* Overlaid probability chart */}
       <div className="ab-chart-section">
-        <h3>概率对比时间线</h3>
-        <ResponsiveContainer width="100%" height={300}>
+        <ResponsiveContainer width="100%" height={280}>
           <ComposedChart data={mergedTimeline} margin={{ top: 10, right: 40, left: 10, bottom: 0 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#f1d8e2" />
-            <XAxis dataKey="date" tick={{ fill: '#8a7882', fontSize: 10 }} interval={Math.floor(mergedTimeline.length / 8)} />
+            <XAxis dataKey="date" tick={{ fill: '#8a7882', fontSize: 10 }} interval={Math.floor(mergedTimeline.length / 6)} />
             <YAxis yAxisId="prob" domain={[0, 1]} tick={{ fill: '#8a7882', fontSize: 11 }} tickFormatter={(v: number) => `${(v * 100).toFixed(0)}%`} />
             <YAxis yAxisId="sp" orientation="right" tick={{ fill: '#3a82d6', fontSize: 11 }} />
-            <Tooltip contentStyle={{ background: '#ffffff', border: '1px solid #f1d8e2', borderRadius: 8, boxShadow: '0 4px 12px rgba(255,168,196,0.12)' }}
+            <Tooltip contentStyle={{ background: '#fff', border: '1px solid #f1d8e2', borderRadius: 8 }}
               formatter={(value: number, name: string) => {
                 if (name === 'sp500') return [value?.toFixed(0), 'S&P 500'];
                 const idx = parseInt(name.replace('prob_', ''));
                 return [`${(value * 100).toFixed(1)}%`, experiments[idx]?.name ?? name];
               }} />
-            <ReferenceLine yAxisId="prob" y={0.5} stroke="#dc2626" strokeDasharray="5 5" />
+            <Legend verticalAlign="top" height={32}
+              formatter={(value: string) => {
+                if (value === 'sp500') return 'S&P 500';
+                const idx = parseInt(value.replace('prob_', ''));
+                return experiments[idx]?.name ?? value;
+              }} />
+            <ReferenceLine yAxisId="prob" y={0.5} stroke="#dc2626" strokeDasharray="5 5"
+              label={{ value: "50%", fill: '#dc2626', fontSize: 10, position: 'right' }} />
             {experiments.map((_, i) => (
-              <Area key={i} yAxisId="prob" dataKey={`prob_${i}`} fill={EXP_COLORS[i]} fillOpacity={0.15}
-                stroke={EXP_COLORS[i]} strokeWidth={1.5} />
+              <Line key={i} yAxisId="prob" dataKey={`prob_${i}`}
+                stroke={colors[i]} strokeWidth={1.5} dot={false} />
             ))}
-            <Line yAxisId="sp" dataKey="sp500" stroke="#3a82d6" strokeWidth={1.5} dot={false} />
+            <Line yAxisId="sp" dataKey="sp500" stroke="#3a82d6" strokeWidth={1.5} dot={false} strokeDasharray="4 2" />
           </ComposedChart>
         </ResponsiveContainer>
       </div>
 
-      {/* Threshold comparison table */}
-      <div className="ab-chart-section">
-        <h3>阈值对比 (50% threshold)</h3>
-        <div className="lab-table-wrap">
-          <table className="lab-table">
-            <thead>
-              <tr>
-                <th>阈值</th>
-                {experiments.map((exp, i) => (
-                  <th key={i} colSpan={3} style={{ color: EXP_COLORS[i], borderBottom: `2px solid ${EXP_COLORS[i]}` }}>
-                    {exp.name}
-                  </th>
-                ))}
-              </tr>
-              <tr>
-                <th></th>
-                {experiments.map((_, i) => (
-                  <><th key={`p${i}`}>精确率</th><th key={`r${i}`}>召回率</th><th key={`f${i}`}>F1</th></>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {[0.3, 0.4, 0.5, 0.6, 0.7, 0.8].map(thresh => (
-                <tr key={thresh} className={thresh === 0.5 ? 'lab-row-highlight' : ''}>
-                  <td className="lab-td-mono">{(thresh * 100).toFixed(0)}%</td>
-                  {experiments.map((exp, i) => {
-                    const row = exp.threshold_analysis.find(r => r.threshold === thresh);
-                    if (!row) return <><td key={`p${i}`}>-</td><td key={`r${i}`}>-</td><td key={`f${i}`}>-</td></>;
-                    return (<>
-                      <td key={`p${i}`} style={{ color: row.precision > 0.3 ? '#16a34a' : row.precision > 0.15 ? '#b45309' : '#dc2626' }}>
-                        {(row.precision * 100).toFixed(1)}%
-                      </td>
-                      <td key={`r${i}`} style={{ color: row.recall > 0.7 ? '#16a34a' : row.recall > 0.4 ? '#b45309' : '#dc2626' }}>
-                        {(row.recall * 100).toFixed(1)}%
-                      </td>
-                      <td key={`f${i}`}>{row.f1.toFixed(3)}</td>
-                    </>);
-                  })}
+      <div className="ab-tables-row">
+        <div className="ab-table-half">
+          <h4>阈值对比</h4>
+          <div className="lab-table-wrap">
+            <table className="lab-table lab-table-compact">
+              <thead>
+                <tr>
+                  <th>阈值</th>
+                  {experiments.map((exp, i) => (
+                    <th key={i} colSpan={2} style={{ color: colors[i] }}>
+                      {exp.name.length > 16 ? exp.name.replace('Logistic Regression', 'LR').replace('Extended', 'Ext') : exp.name}
+                    </th>
+                  ))}
                 </tr>
-              ))}
-            </tbody>
-          </table>
+                <tr><th></th>{experiments.map((_, i) => (<><th key={`p${i}`}>P</th><th key={`r${i}`}>R</th></>))}</tr>
+              </thead>
+              <tbody>
+                {[0.3, 0.5, 0.7].map(thresh => (
+                  <tr key={thresh} className={thresh === 0.5 ? 'lab-row-highlight' : ''}>
+                    <td className="lab-td-mono">{(thresh * 100).toFixed(0)}%</td>
+                    {experiments.map((exp, i) => {
+                      const row = exp.threshold_analysis.find(r => r.threshold === thresh);
+                      if (!row) return <><td key={`p${i}`}>-</td><td key={`r${i}`}>-</td></>;
+                      return (<>
+                        <td key={`p${i}`} style={{ color: row.precision > 0.3 ? '#16a34a' : row.precision > 0.15 ? '#b45309' : '#dc2626' }}>
+                          {(row.precision * 100).toFixed(0)}%
+                        </td>
+                        <td key={`r${i}`} style={{ color: row.recall > 0.7 ? '#16a34a' : row.recall > 0.4 ? '#b45309' : '#dc2626' }}>
+                          {(row.recall * 100).toFixed(0)}%
+                        </td>
+                      </>);
+                    })}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
+        <div className="ab-table-half">
+          <h4>历史事件</h4>
+          <div className="lab-table-wrap">
+            <table className="lab-table lab-table-compact">
+              <thead>
+                <tr>
+                  <th>事件</th>
+                  {experiments.map((exp, i) => (
+                    <th key={i} colSpan={2} style={{ color: colors[i] }}>
+                      {exp.name.length > 16 ? exp.name.replace('Logistic Regression', 'LR').replace('Extended', 'Ext') : exp.name}
+                    </th>
+                  ))}
+                </tr>
+                <tr><th></th>{experiments.map((_, i) => (<><th key={`a${i}`}>提前</th><th key={`m${i}`}>峰值</th></>))}</tr>
+              </thead>
+              <tbody>
+                {[...allEvents.values()].map(evt => (
+                  <tr key={evt.name}>
+                    <td style={{ fontSize: 11 }}>{evt.name}</td>
+                    {experiments.map((exp, i) => {
+                      const e = exp.events_backtest.find(b => b.name === evt.name);
+                      if (!e) return <><td key={`a${i}`} style={{ color: '#aaa' }}>-</td><td key={`m${i}`} style={{ color: '#aaa' }}>-</td></>;
+                      return (<>
+                        <td key={`a${i}`} style={{ color: e.lead_days ? '#16a34a' : '#dc2626' }}>
+                          {e.lead_days ? `${e.lead_days}d` : 'miss'}
+                        </td>
+                        <td key={`m${i}`}>{(e.max_probability * 100).toFixed(0)}%</td>
+                      </>);
+                    })}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+interface PairwiseTest {
+  label: string;
+  variable: string;
+  baseline: ExperimentData;
+  challenger: ExperimentData;
+  baseColor: string;
+  challColor: string;
+}
+
+function buildPairwiseTests(experiments: ExperimentData[]): PairwiseTest[] {
+  const find = (substr: string) => experiments.find(e => e.name.includes(substr));
+  const mlBase = find('Logistic Regression') ?? find('ML (');
+  const human = find('Human Logic');
+  const slim = find('Slim');
+  const mlExt = find('ML Extended');
+  const humanExt = find('Human Extended');
+
+  const pairs: PairwiseTest[] = [];
+  if (mlBase && human) pairs.push({
+    label: 'Exp 1: 权重来源', variable: '自动学习 vs 人工逻辑',
+    baseline: mlBase, challenger: human,
+    baseColor: EXP_COLORS[0], challColor: EXP_COLORS[1],
+  });
+  if (mlBase && slim) pairs.push({
+    label: 'Exp 2: 特征去冗余', variable: '23特征 vs 10特征（去共线性）',
+    baseline: mlBase, challenger: slim,
+    baseColor: EXP_COLORS[0], challColor: EXP_COLORS[2],
+  });
+  if (mlExt && humanExt) pairs.push({
+    label: 'Exp 3: 长期数据', variable: '20年数据: ML vs Human',
+    baseline: mlExt, challenger: humanExt,
+    baseColor: EXP_COLORS[3], challColor: EXP_COLORS[4],
+  });
+  return pairs;
+}
+
+function DeltaCell({ base, value, pct }: { base: number; value: number; pct?: boolean }) {
+  const delta = value - base;
+  const isUp = delta > 0.001;
+  const isDown = delta < -0.001;
+  const color = isUp ? '#16a34a' : isDown ? '#dc2626' : '#8a7882';
+  const arrow = isUp ? '\u2191' : isDown ? '\u2193' : '';
+  const display = pct ? `${(value * 100).toFixed(1)}%` : value.toFixed(3);
+  const deltaStr = pct ? `${delta > 0 ? '+' : ''}${(delta * 100).toFixed(1)}` : `${delta > 0 ? '+' : ''}${delta.toFixed(3)}`;
+  return (
+    <td>
+      <span style={{ fontWeight: 600 }}>{display}</span>
+      {arrow && <span style={{ color, fontSize: 10, marginLeft: 4 }}>{arrow}{deltaStr}</span>}
+    </td>
+  );
+}
+
+function ABComparisonSection({ experiments, sp500Timeline }: { experiments: ExperimentData[]; sp500Timeline: SP500Point[] }) {
+  const pairs = buildPairwiseTests(experiments);
+
+  return (
+    <section className="lab-card ab-section">
+      <div className="ab-header">
+        <h2>模型对比实验</h2>
+        <span className="ab-badge">EXPERIMENT</span>
+        <span className="ab-badge" style={{ background: 'rgba(34, 197, 94, 0.2)', color: '#16a34a' }}>{experiments.length} MODELS</span>
       </div>
 
-      {/* Event backtest comparison */}
-      <div className="ab-chart-section">
-        <h3>历史事件对比</h3>
-        <div className="lab-table-wrap">
-          <table className="lab-table">
-            <thead>
-              <tr>
-                <th>事件</th>
-                <th>跌幅</th>
-                {experiments.map((exp, i) => (
-                  <th key={i} colSpan={2} style={{ color: EXP_COLORS[i] }}>{exp.name}</th>
-                ))}
-              </tr>
-              <tr>
-                <th></th><th></th>
-                {experiments.map((_, i) => (
-                  <><th key={`a${i}`}>提前天数</th><th key={`m${i}`}>最高概率</th></>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {(experiments[0]?.events_backtest ?? []).map(evt => (
-                <tr key={evt.name}>
-                  <td>{evt.name}</td>
-                  <td style={{ color: '#dc2626' }}>{evt.drop_pct}%</td>
-                  {experiments.map((exp, i) => {
-                    const e = exp.events_backtest.find(b => b.name === evt.name);
-                    if (!e) return <><td key={`a${i}`}>-</td><td key={`m${i}`}>-</td></>;
-                    return (<>
-                      <td key={`a${i}`} style={{ color: e.lead_days ? '#16a34a' : '#dc2626' }}>
-                        {e.lead_days ? `${e.lead_days}天` : '未预警'}
-                      </td>
-                      <td key={`m${i}`}>{(e.max_probability * 100).toFixed(0)}%</td>
-                    </>);
-                  })}
+      {/* Overall comparison table */}
+      <div className="ab-overview-table">
+        <table className="lab-table">
+          <thead>
+            <tr>
+              <th>模型</th>
+              <th>AUC</th>
+              <th>P@50%</th>
+              <th>R@50%</th>
+              <th>当前信号</th>
+              <th>数据量</th>
+            </tr>
+          </thead>
+          <tbody>
+            {experiments.map((exp, i) => {
+              const row50 = exp.threshold_analysis.find(r => r.threshold === 0.5);
+              const isBest = exp.auc === Math.max(...experiments.map(e => e.auc));
+              return (
+                <tr key={exp.name} style={{ background: isBest ? 'rgba(34, 197, 94, 0.06)' : undefined }}>
+                  <td style={{ color: EXP_COLORS[i], fontWeight: 600 }}>
+                    {isBest && <span className="ab-best-tag">BEST</span>}
+                    {exp.name}
+                  </td>
+                  <td className="lab-td-mono" style={{ fontWeight: 700 }}>{exp.auc}</td>
+                  <td style={{ color: (row50?.precision ?? 0) > 0.2 ? '#16a34a' : '#b45309' }}>
+                    {row50 ? `${(row50.precision * 100).toFixed(1)}%` : '-'}
+                  </td>
+                  <td style={{ color: (row50?.recall ?? 0) > 0.7 ? '#16a34a' : '#b45309' }}>
+                    {row50 ? `${(row50.recall * 100).toFixed(1)}%` : '-'}
+                  </td>
+                  <td>
+                    <span className="ab-signal-badge" style={{ background: signalColor(exp.current_signal) + '22', color: signalColor(exp.current_signal) }}>
+                      {(exp.current_probability * 100).toFixed(0)}% {exp.current_signal === 'elevated' ? 'HIGH' : exp.current_signal === 'watch' ? 'WATCH' : 'LOW'}
+                    </span>
+                  </td>
+                  <td style={{ fontSize: 11, color: '#8a7882' }}>{exp.probability_timeline.length}天</td>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              );
+            })}
+          </tbody>
+        </table>
       </div>
+
+      {/* Pairwise comparisons */}
+      {pairs.map((pair, pi) => {
+        const b50 = pair.baseline.threshold_analysis.find(r => r.threshold === 0.5);
+        const c50 = pair.challenger.threshold_analysis.find(r => r.threshold === 0.5);
+        const winner = pair.challenger.auc > pair.baseline.auc ? 'challenger' : 'baseline';
+
+        return (
+          <div key={pi} className="ab-pair">
+            <div className="ab-pair-header">
+              <h3>{pair.label}</h3>
+              <span className="ab-pair-variable">测试变量: {pair.variable}</span>
+            </div>
+
+            <div className="ab-pair-cards">
+              <div className={`ab-pair-card ${winner === 'baseline' ? 'winner' : ''}`} style={{ borderTopColor: pair.baseColor }}>
+                <div className="ab-pair-role">BASELINE {winner === 'baseline' && <span className="ab-winner-tag">WIN</span>}</div>
+                <div className="ab-model-name" style={{ color: pair.baseColor }}>{pair.baseline.name}</div>
+                <div className="ab-metric-row"><span className="ab-metric-label">AUC</span><span className="ab-metric-value">{pair.baseline.auc}</span></div>
+                <div className="ab-metric-row"><span className="ab-metric-label">P@50%</span><span className="ab-metric-value">{b50 ? `${(b50.precision*100).toFixed(1)}%` : '-'}</span></div>
+                <div className="ab-metric-row"><span className="ab-metric-label">R@50%</span><span className="ab-metric-value">{b50 ? `${(b50.recall*100).toFixed(1)}%` : '-'}</span></div>
+              </div>
+              <div className="ab-pair-vs">VS</div>
+              <div className={`ab-pair-card ${winner === 'challenger' ? 'winner' : ''}`} style={{ borderTopColor: pair.challColor }}>
+                <div className="ab-pair-role">CHALLENGER {winner === 'challenger' && <span className="ab-winner-tag">WIN</span>}</div>
+                <div className="ab-model-name" style={{ color: pair.challColor }}>{pair.challenger.name}</div>
+                <div className="ab-metric-row"><span className="ab-metric-label">AUC</span>
+                  <DeltaCell base={pair.baseline.auc} value={pair.challenger.auc} />
+                </div>
+                <div className="ab-metric-row"><span className="ab-metric-label">P@50%</span>
+                  {c50 && b50 ? <DeltaCell base={b50.precision} value={c50.precision} pct /> : <td>-</td>}
+                </div>
+                <div className="ab-metric-row"><span className="ab-metric-label">R@50%</span>
+                  {c50 && b50 ? <DeltaCell base={b50.recall} value={c50.recall} pct /> : <td>-</td>}
+                </div>
+              </div>
+            </div>
+
+            <ExperimentGroup
+              title="" desc=""
+              experiments={[pair.baseline, pair.challenger]} sp500Timeline={sp500Timeline}
+              colors={[pair.baseColor, pair.challColor]}
+            />
+          </div>
+        );
+      })}
     </section>
   );
 }
