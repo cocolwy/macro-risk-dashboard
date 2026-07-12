@@ -25,7 +25,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import roc_curve, auc
 
 from predict_model import (
-    build_features, compute_target, HUMAN_WEIGHTS, KEY_EVENTS,
+    build_features, build_features_slim, compute_target, HUMAN_WEIGHTS, KEY_EVENTS,
     build_comparison_metrics,
 )
 
@@ -244,6 +244,35 @@ def main():
     print(f"  ML AUC: {ml_auc:.3f}")
     print(f"  Human AUC: {human_auc:.3f}")
 
+    # D1: Slim features + Embargo on extended data
+    print("\n  Training D1 (Slim+Embargo) on extended data...")
+    features_slim = build_features_slim(df)
+    combined_slim = features_slim.copy()
+    combined_slim['target'] = target
+    core_slim = [c for c in combined_slim.columns if c.startswith(('vix_', 'sp500_'))]
+    core_slim.append('target')
+    combined_slim = combined_slim.dropna(subset=core_slim).fillna(0)
+    X_slim = combined_slim.drop('target', axis=1).clip(-10, 10)
+    y_slim = combined_slim['target']
+
+    EMBARGO = 20
+    split_d1 = int(len(X_slim) * 0.7)
+    test_start_d1 = min(split_d1 + EMBARGO, len(X_slim))
+    X_train_d1, X_test_d1 = X_slim.iloc[:split_d1], X_slim.iloc[test_start_d1:]
+    y_train_d1, y_test_d1 = y_slim.iloc[:split_d1], y_slim.iloc[test_start_d1:]
+
+    scaler_d1 = StandardScaler()
+    X_train_d1s = scaler_d1.fit_transform(X_train_d1)
+    X_test_d1s = scaler_d1.transform(X_test_d1)
+
+    model_d1 = LogisticRegression(C=0.1, max_iter=1000, class_weight='balanced')
+    model_d1.fit(X_train_d1s, y_train_d1)
+    d1_probs_test = model_d1.predict_proba(X_test_d1s)[:, 1]
+    d1_probs_all = model_d1.predict_proba(scaler_d1.transform(X_slim))[:, 1]
+
+    d1_auc = auc(*roc_curve(y_test_d1, d1_probs_test)[:2])
+    print(f"  D1 Extended AUC: {d1_auc:.3f} (train={len(X_train_d1)}, embargo={EMBARGO}, test={len(X_test_d1)})")
+
     print("\n[4/4] Building comparison data...")
     ml_result = build_comparison_metrics(
         y_test, ml_probs_test, ml_probs_all, X, df['sp500'],
@@ -252,6 +281,10 @@ def main():
     human_result = build_comparison_metrics(
         y_test, human_probs_test, human_probs_all, X, df['sp500'],
         "Human Extended (2005+)", EXTENDED_KEY_EVENTS,
+    )
+    d1_result = build_comparison_metrics(
+        y_test_d1, d1_probs_test, d1_probs_all, X_slim, df['sp500'],
+        "D1 Ext Slim+Embargo", EXTENDED_KEY_EVENTS,
     )
 
     experiment_a = {
@@ -274,8 +307,8 @@ def main():
     with open(metrics_path) as f:
         metrics = json.load(f)
 
-    base_experiments = [e for e in metrics.get('experiments', []) if 'Extended' not in e['name']]
-    metrics['experiments'] = base_experiments + [ml_result, human_result]
+    base_experiments = [e for e in metrics.get('experiments', []) if 'Ext' not in e['name']]
+    metrics['experiments'] = base_experiments + [ml_result, human_result, d1_result]
     metrics['experiment_a_info'] = experiment_a['data_info']
 
     with open(metrics_path, 'w') as f:

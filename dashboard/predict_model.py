@@ -146,10 +146,23 @@ HUMAN_WEIGHTS = {
 }
 
 
-def train_and_evaluate(X: pd.DataFrame, y: pd.Series, split_ratio: float = 0.7):
+def train_and_evaluate(X: pd.DataFrame, y: pd.Series, split_ratio: float = 0.7,
+                       embargo: int = 0, subsample_step: int = 1):
     split = int(len(X) * split_ratio)
-    X_train, X_test = X.iloc[:split], X.iloc[split:]
-    y_train, y_test = y.iloc[:split], y.iloc[split:]
+    X_train_raw = X.iloc[:split]
+    y_train_raw = y.iloc[:split]
+
+    test_start = min(split + embargo, len(X))
+    X_test = X.iloc[test_start:]
+    y_test = y.iloc[test_start:]
+
+    if subsample_step > 1:
+        idx = list(range(0, len(X_train_raw), subsample_step))
+        X_train = X_train_raw.iloc[idx]
+        y_train = y_train_raw.iloc[idx]
+    else:
+        X_train = X_train_raw
+        y_train = y_train_raw
 
     scaler = StandardScaler()
     X_train_s = scaler.fit_transform(X_train)
@@ -420,6 +433,19 @@ def main():
     )
     metrics["experiments"].append(slim_comparison)
     print(f"  Slim AUC: {slim_comparison['auc']} ({len(X_slim.columns)} features vs {len(X_clipped.columns)} original)")
+
+    # --- D1: Slim + Embargo (20-day gap between train/test) ---
+    print("Building D1: Slim + Embargo(20d)...")
+    EMBARGO = 20
+    model_d1, scaler_d1, X_train_d1, X_test_d1, y_train_d1, y_test_d1, y_prob_d1 = \
+        train_and_evaluate(X_slim, y_slim, embargo=EMBARGO)
+    d1_probs_all = model_d1.predict_proba(scaler_d1.transform(X_slim))[:, 1]
+    d1_comparison = build_comparison_metrics(
+        y_test_d1, y_prob_d1, d1_probs_all,
+        X_slim, df['sp500'], f"D1 Slim+Embargo({EMBARGO}d)", KEY_EVENTS,
+    )
+    metrics["experiments"].append(d1_comparison)
+    print(f"  D1 AUC: {d1_comparison['auc']} (embargo={EMBARGO}d, train={len(X_train_d1)}, test={len(X_test_d1)})")
 
     # Save outputs
     with open(DATA_DIR / 'model_metrics.json', 'w') as f:
