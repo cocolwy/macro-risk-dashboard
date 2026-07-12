@@ -204,11 +204,8 @@ function ExperimentGroup({ title, desc, experiments, sp500Timeline, colors }: {
           <ComposedChart data={mergedTimeline} margin={{ top: 10, right: 40, left: 10, bottom: 0 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#f1d8e2" />
             <XAxis dataKey="date" tick={{ fill: '#8a7882', fontSize: 10 }}
-              tickFormatter={(d: string) => {
-                if (mergedTimeline.length > 200) return d.slice(0, 7);
-                return d.slice(5);
-              }}
-              interval={Math.max(0, Math.floor(mergedTimeline.length / 8))} />
+              tickFormatter={(d: string) => d.slice(5, 10).replace('-', '/')}
+              minTickGap={50} />
             <YAxis yAxisId="prob" domain={[0, 1]} tick={{ fill: '#8a7882', fontSize: 11 }} tickFormatter={(v: number) => `${(v * 100).toFixed(0)}%`} />
             <YAxis yAxisId="sp" orientation="right" tick={{ fill: '#3a82d6', fontSize: 11 }} />
             <Tooltip contentStyle={{ background: '#fff', border: '1px solid #f1d8e2', borderRadius: 8, boxShadow: '0 4px 12px rgba(255,168,196,0.12)' }}
@@ -602,12 +599,8 @@ export function PredictionLab() {
             <ComposedChart data={filterByRange(probWithSP, mainRange)} margin={{ top: 10, right: 40, left: 10, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#f1d8e2" />
               <XAxis dataKey="date" tick={{ fill: '#8a7882', fontSize: 11 }}
-                tickFormatter={(d: string) => {
-                  const filtered = filterByRange(probWithSP, mainRange);
-                  if (filtered.length > 200) return d.slice(0, 7);
-                  return d.slice(5);
-                }}
-                interval={Math.max(0, Math.floor(filterByRange(probWithSP, mainRange).length / 8))} />
+                tickFormatter={(d: string) => d.slice(5, 10).replace('-', '/')}
+                minTickGap={50} />
               <YAxis yAxisId="prob" domain={[0, 1]} tick={{ fill: '#d6457a', fontSize: 11 }} tickFormatter={(v: number) => `${(v * 100).toFixed(0)}%`} />
               <YAxis yAxisId="sp" orientation="right" tick={{ fill: '#3a82d6', fontSize: 11 }} />
               <Tooltip
