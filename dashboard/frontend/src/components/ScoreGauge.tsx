@@ -17,11 +17,11 @@ const COMPONENT_LABELS: Record<string, string> = {
 };
 
 function getScoreColor(score: number): string {
-  if (score <= 20) return '#34d399';
-  if (score <= 40) return '#86efac';
-  if (score <= 60) return '#fbbf24';
-  if (score <= 80) return '#fb923c';
-  return '#f87171';
+  if (score <= 20) return '#16a34a';
+  if (score <= 40) return '#22c55e';
+  if (score <= 60) return '#f59e0b';
+  if (score <= 80) return '#ea580c';
+  return '#dc2626';
 }
 
 function getMomentumArrow(change: number): string {
@@ -34,13 +34,13 @@ function getMomentumColor(change: number, invertGood: boolean = false): string {
   const isUp = change > 0.5;
   const isDown = change < -0.5;
   if (invertGood) {
-    if (isUp) return '#f87171';
-    if (isDown) return '#34d399';
+    if (isUp) return '#dc2626';
+    if (isDown) return '#16a34a';
   } else {
-    if (isUp) return '#34d399';
-    if (isDown) return '#f87171';
+    if (isUp) return '#16a34a';
+    if (isDown) return '#dc2626';
   }
-  return 'var(--text-secondary)';
+  return 'var(--text-3)';
 }
 
 export function ScoreGauge({ score, label, action, components, momentum }: ScoreGaugeProps) {
@@ -72,7 +72,7 @@ export function ScoreGauge({ score, label, action, components, momentum }: Score
       </div>
       <div style={{
         fontSize: '13px',
-        color: 'var(--text-secondary)',
+        color: 'var(--text-2)',
         marginTop: '6px',
       }}>
         {action}
@@ -83,7 +83,7 @@ export function ScoreGauge({ score, label, action, components, momentum }: Score
         margin: '20px auto',
         maxWidth: '400px',
         height: '8px',
-        background: 'var(--bg-secondary)',
+        background: 'rgba(241, 216, 226, 0.4)',
         borderRadius: '4px',
         position: 'relative',
         overflow: 'hidden',
@@ -91,7 +91,7 @@ export function ScoreGauge({ score, label, action, components, momentum }: Score
         <div style={{
           width: `${score}%`,
           height: '100%',
-          background: `linear-gradient(90deg, #34d399, #fbbf24, #f87171)`,
+          background: `linear-gradient(90deg, #16a34a, #f59e0b, #dc2626)`,
           borderRadius: '4px',
           transition: 'width 0.5s ease',
         }} />
@@ -109,7 +109,7 @@ export function ScoreGauge({ score, label, action, components, momentum }: Score
       </div>
 
       {/* Scale labels */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', maxWidth: '400px', margin: '0 auto 20px', fontSize: '10px', color: 'var(--text-secondary)' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', maxWidth: '400px', margin: '0 auto 20px', fontSize: '10px', color: 'var(--text-3)' }}>
         <span>Low</span>
         <span>Moderate</span>
         <span>Elevated</span>
@@ -132,11 +132,14 @@ export function ScoreGauge({ score, label, action, components, momentum }: Score
           return (
             <div key={key} style={{
               padding: '8px 12px',
-              background: 'var(--bg-secondary)',
+              background: 'var(--bg-2)',
               borderRadius: '6px',
               borderLeft: `3px solid ${compColor}`,
+              border: '1px solid var(--border)',
+              borderLeftWidth: '3px',
+              borderLeftColor: compColor,
             }}>
-              <div style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>
+              <div style={{ fontSize: '11px', color: 'var(--text-2)' }}>
                 {COMPONENT_LABELS[key] || key}
               </div>
               <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px', marginTop: '2px' }}>

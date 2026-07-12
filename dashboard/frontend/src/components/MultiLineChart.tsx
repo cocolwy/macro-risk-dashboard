@@ -30,19 +30,19 @@ export function MultiLineChart({ title, subtitle, data, lines, className = '', e
       {subtitle && <div className="subtitle">{subtitle}</div>}
       <ResponsiveContainer width="100%" height={220}>
         <LineChart data={displayData} margin={{ top: 5, right: 5, bottom: 5, left: 5 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#2a2f45" />
+          <CartesianGrid strokeDasharray="3 3" stroke="#f1d8e2" />
           <XAxis
             dataKey="date"
-            tick={{ fill: '#9aa0b4', fontSize: 11 }}
+            tick={{ fill: '#8a7882', fontSize: 11 }}
             tickFormatter={(d: string) => d.slice(0, 7)}
             minTickGap={60}
           />
-          <YAxis tick={{ fill: '#9aa0b4', fontSize: 11 }} width={50} />
+          <YAxis tick={{ fill: '#8a7882', fontSize: 11 }} width={50} />
           <Tooltip
-            contentStyle={{ background: '#1e2235', border: '1px solid #2a2f45', borderRadius: 8 }}
-            labelStyle={{ color: '#9aa0b4' }}
+            contentStyle={{ background: '#ffffff', border: '1px solid #f1d8e2', borderRadius: 8, boxShadow: '0 4px 12px rgba(255,168,196,0.12)' }}
+            labelStyle={{ color: '#5a4452' }}
           />
-          <Legend wrapperStyle={{ fontSize: 12, color: '#9aa0b4' }} />
+          <Legend wrapperStyle={{ fontSize: 12, color: '#5a4452' }} />
           {lines.map((l) => (
             <Line key={l.key} type="monotone" dataKey={l.key} stroke={l.color} name={l.name} strokeWidth={1.5} dot={false} />
           ))}
@@ -52,12 +52,12 @@ export function MultiLineChart({ title, subtitle, data, lines, className = '', e
         <div style={{
           marginTop: '12px',
           padding: '10px 12px',
-          background: 'rgba(74, 158, 255, 0.04)',
-          border: '1px solid rgba(74, 158, 255, 0.12)',
-          borderRadius: '8px',
+          background: '#f3f8ff',
+          borderLeft: '3px solid #8cc3ff',
+          borderRadius: '0 8px 8px 0',
           fontSize: '12px',
           lineHeight: '1.6',
-          color: 'var(--text-secondary)',
+          color: '#3a82d6',
         }}>
           {explanation}
         </div>

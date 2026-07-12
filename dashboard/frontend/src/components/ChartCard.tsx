@@ -46,9 +46,9 @@ export function ChartCard({
     : data;
 
   const alertStyle = alertLevel === 'danger'
-    ? { borderColor: 'rgba(248, 113, 113, 0.7)', boxShadow: '0 0 15px rgba(248, 113, 113, 0.2)', animation: 'pulse-danger 2s infinite' }
+    ? { borderColor: '#fca5a5', boxShadow: '0 4px 16px rgba(220, 38, 38, 0.12)', animation: 'pulse-danger 2s infinite' }
     : alertLevel === 'warning'
-      ? { borderColor: 'rgba(251, 191, 36, 0.5)', boxShadow: '0 0 10px rgba(251, 191, 36, 0.15)' }
+      ? { borderColor: '#fcd34d', boxShadow: '0 4px 12px rgba(245, 158, 11, 0.1)' }
       : {};
 
   return (
@@ -65,17 +65,17 @@ export function ChartCard({
                 <stop offset="95%" stopColor={color} stopOpacity={0} />
               </linearGradient>
             </defs>
-            <CartesianGrid strokeDasharray="3 3" stroke="#2a2f45" />
+            <CartesianGrid strokeDasharray="3 3" stroke="#f1d8e2" />
             <XAxis
               dataKey="date"
-              tick={{ fill: '#9aa0b4', fontSize: 11 }}
+              tick={{ fill: '#8a7882', fontSize: 11 }}
               tickFormatter={(d: string) => d.slice(0, 7)}
               minTickGap={60}
             />
-            <YAxis tick={{ fill: '#9aa0b4', fontSize: 11 }} width={50} />
+            <YAxis tick={{ fill: '#8a7882', fontSize: 11 }} width={50} />
             <Tooltip
-              contentStyle={{ background: '#1e2235', border: '1px solid #2a2f45', borderRadius: 8 }}
-              labelStyle={{ color: '#9aa0b4' }}
+              contentStyle={{ background: '#ffffff', border: '1px solid #f1d8e2', borderRadius: 8, boxShadow: '0 4px 12px rgba(255,168,196,0.12)' }}
+              labelStyle={{ color: '#5a4452' }}
             />
             {referenceLine && (
               <ReferenceLine y={referenceLine.y} stroke={referenceLine.color} strokeDasharray="5 5" label={{ value: referenceLine.label, fill: referenceLine.color, fontSize: 11 }} />
@@ -84,17 +84,17 @@ export function ChartCard({
           </AreaChart>
         ) : (
           <LineChart data={displayData} margin={{ top: 5, right: 5, bottom: 5, left: 5 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#2a2f45" />
+            <CartesianGrid strokeDasharray="3 3" stroke="#f1d8e2" />
             <XAxis
               dataKey="date"
-              tick={{ fill: '#9aa0b4', fontSize: 11 }}
+              tick={{ fill: '#8a7882', fontSize: 11 }}
               tickFormatter={(d: string) => d.slice(0, 7)}
               minTickGap={60}
             />
-            <YAxis tick={{ fill: '#9aa0b4', fontSize: 11 }} width={50} />
+            <YAxis tick={{ fill: '#8a7882', fontSize: 11 }} width={50} />
             <Tooltip
-              contentStyle={{ background: '#1e2235', border: '1px solid #2a2f45', borderRadius: 8 }}
-              labelStyle={{ color: '#9aa0b4' }}
+              contentStyle={{ background: '#ffffff', border: '1px solid #f1d8e2', borderRadius: 8, boxShadow: '0 4px 12px rgba(255,168,196,0.12)' }}
+              labelStyle={{ color: '#5a4452' }}
             />
             {referenceLine && (
               <ReferenceLine y={referenceLine.y} stroke={referenceLine.color} strokeDasharray="5 5" label={{ value: referenceLine.label, fill: referenceLine.color, fontSize: 11 }} />
@@ -107,12 +107,12 @@ export function ChartCard({
         <div style={{
           marginTop: '12px',
           padding: '10px 12px',
-          background: 'rgba(74, 158, 255, 0.04)',
-          border: '1px solid rgba(74, 158, 255, 0.12)',
-          borderRadius: '8px',
+          background: '#f3f8ff',
+          borderLeft: '3px solid #8cc3ff',
+          borderRadius: '0 8px 8px 0',
           fontSize: '12px',
           lineHeight: '1.6',
-          color: 'var(--text-secondary)',
+          color: '#3a82d6',
         }}>
           {explanation}
         </div>

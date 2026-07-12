@@ -22,18 +22,18 @@ export function SectorTable({ data }: SectorTableProps) {
           const value = latest[sector] as number;
           const isBelow = value < 0;
           const barColor = isBelow
-            ? '#f87171'
+            ? '#dc2626'
             : value < 3
-              ? '#fbbf24'
-              : '#34d399';
+              ? '#f59e0b'
+              : '#16a34a';
           const barWidth = Math.min(Math.abs(value) * 3, 100);
 
           return (
             <div key={sector} style={{ display: 'flex', alignItems: 'center', marginBottom: '8px', gap: '12px' }}>
-              <div style={{ width: '140px', fontSize: '12px', fontWeight: 500, color: 'var(--text-primary)' }}>
+              <div style={{ width: '140px', fontSize: '12px', fontWeight: 500, color: 'var(--text-1)' }}>
                 {SECTOR_LABELS[sector] || sector}
               </div>
-              <div style={{ flex: 1, position: 'relative', height: '20px', background: 'var(--bg-secondary)', borderRadius: '4px', overflow: 'hidden' }}>
+              <div style={{ flex: 1, position: 'relative', height: '20px', background: 'rgba(241, 216, 226, 0.3)', borderRadius: '4px', overflow: 'hidden' }}>
                 {isBelow ? (
                   <div style={{
                     position: 'absolute',
@@ -81,12 +81,12 @@ export function SectorTable({ data }: SectorTableProps) {
       <div style={{
         marginTop: '14px',
         padding: '10px 12px',
-        background: 'rgba(74, 158, 255, 0.04)',
-        border: '1px solid rgba(74, 158, 255, 0.12)',
-        borderRadius: '8px',
+        background: '#f3f8ff',
+        borderLeft: '3px solid #8cc3ff',
+        borderRadius: '0 8px 8px 0',
         fontSize: '12px',
         lineHeight: '1.6',
-        color: 'var(--text-secondary)',
+        color: '#3a82d6',
       }}>
         各行业ETF当前价格偏离200日均线的百分比。红色=跌破200MA（趋势走弱），绿色=在200MA上方（趋势健康）。当多数行业转红时，说明市场内部在恶化，即使指数还在高位也要警惕。
       </div>

@@ -102,10 +102,10 @@ export default function App() {
             subtitle="Composite score over time — higher = more dangerous"
             data={data.compositeScore}
             dataKey="composite_score"
-            color="#fb923c"
+            color="#d6457a"
             type="area"
             gradientId="scoreGrad"
-            referenceLine={{ y: 60, label: 'High Risk', color: '#f87171' }}
+            referenceLine={{ y: 60, label: 'High Risk', color: '#dc2626' }}
             className="full-width"
             explanation={"综合风险评分的历史走势。高于60分=高风险区间（橙红色），需要认真对待。注意观察评分上升的速度——缓慢上升可能只是波动，突然跳升更值得警惕。"}
           />
@@ -120,9 +120,9 @@ export default function App() {
           subtitle="Negative = yield curve inverted, recession warning"
           data={data.termSpread}
           dataKey="term_spread_10y2y"
-          color="#4a9eff"
+          color="#3a82d6"
           currentValue={`${getLatestValue(data.termSpread, 'term_spread_10y2y')}%`}
-          referenceLine={{ y: 0, label: 'Inversion', color: '#f87171' }}
+          referenceLine={{ y: 0, label: 'Inversion', color: '#dc2626' }}
           type="area"
           gradientId="termSpreadGrad"
           alertLevel={summary.alerts.term_spread?.level}
@@ -134,9 +134,9 @@ export default function App() {
           subtitle="CBOE Volatility Index — >20 elevated, >30 extreme"
           data={data.vix}
           dataKey="vix"
-          color="#fbbf24"
+          color="#b45309"
           currentValue={getLatestValue(data.vix, 'vix')}
-          referenceLine={{ y: 20, label: 'Elevated', color: '#fbbf24' }}
+          referenceLine={{ y: 20, label: 'Elevated', color: '#b45309' }}
           type="area"
           gradientId="vixGrad"
           alertLevel={summary.alerts.vix?.level}
@@ -148,8 +148,8 @@ export default function App() {
           subtitle="ICE BofA High Yield & Investment Grade OAS (percentage points)"
           data={data.creditSpread}
           lines={[
-            { key: 'high_yield_spread', color: '#f87171', name: 'High Yield' },
-            { key: 'investment_grade_spread', color: '#4a9eff', name: 'Investment Grade' },
+            { key: 'high_yield_spread', color: '#d6457a', name: 'High Yield' },
+            { key: 'investment_grade_spread', color: '#3a82d6', name: 'Investment Grade' },
           ]}
           explanation={"信用利差 = 企业债收益率 - 同期限国债收益率。它衡量「市场觉得企业多大概率还不起钱」。High Yield（垃圾债）利差超过6% = 极度恐慌，3-4% = 正常。利差急剧走阔说明资金在逃离风险资产，往往比股市下跌更早反应。"}
         />
@@ -159,7 +159,7 @@ export default function App() {
           subtitle="US large cap benchmark"
           data={data.sp500}
           dataKey="sp500"
-          color="#34d399"
+          color="#16a34a"
           currentValue={getLatestValue(data.sp500, 'sp500')}
           type="area"
           gradientId="sp500Grad"
@@ -171,7 +171,7 @@ export default function App() {
           subtitle="Market coupling (PCA on sector ETFs) — high = fragile, systemic risk"
           data={data.absorptionRatio}
           dataKey="absorption_ratio"
-          color="#a78bfa"
+          color="#8b5cf6"
           currentValue={getLatestValue(data.absorptionRatio, 'absorption_ratio')}
           alertLevel={summary.alerts.absorption_ratio?.level}
           explanation={"吸收比率：用PCA分析11个行业ETF，看前几个主成分能解释多少总波动。值越高说明所有行业被同一个力量驱动（高度耦合），分散化失效。类比：多米诺骨牌排得越紧，倒一个全部倒。当AR突然升高1个标准差以上时 = 系统脆弱。"}
@@ -182,7 +182,7 @@ export default function App() {
           subtitle="Mahalanobis distance — spikes = market regime breakdown"
           data={data.turbulence}
           dataKey="turbulence"
-          color="#fb923c"
+          color="#ea580c"
           currentValue={getLatestValue(data.turbulence, 'turbulence')}
           type="area"
           gradientId="turbGrad"
@@ -195,7 +195,7 @@ export default function App() {
           subtitle="% of 11 sector ETFs above their 200-day moving average"
           data={data.breadth}
           dataKey="pct_above_200ma"
-          color="#34d399"
+          color="#16a34a"
           currentValue={`${getLatestValue(data.breadth, 'pct_above_200ma')}%`}
           className="full-width"
           explanation={"市场宽度：11个标普行业ETF中，有多少比例当前价格在各自的200日均线之上。100%=所有行业都在上升趋势中，0%=全部跌破趋势线。关键信号：如果S&P 500还在涨但这个比例在下降 =「顶部背离」，说明上涨只靠少数行业撑着，多数行业已经走弱。"}
@@ -205,8 +205,10 @@ export default function App() {
       </div>
 
       <footer className="footer">
-        Data sources: FRED (US Treasury, Credit Spreads), Yahoo Finance (VIX, S&P 500, Sector ETFs).
-        Updated daily via GitHub Actions.
+        <div>Data sources: FRED (US Treasury, Credit Spreads), Yahoo Finance (VIX, S&P 500, Sector ETFs). Updated daily via GitHub Actions.</div>
+        <div style={{ marginTop: '4px', fontSize: '10px', opacity: 0.6, letterSpacing: '0.3px' }}>
+          Built with <strong>auto-dashboard</strong> · design © Coco
+        </div>
       </footer>
     </div>
   );

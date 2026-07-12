@@ -22,21 +22,21 @@ const NODES: FlowNode[] = [
 ];
 
 const TIER_CONFIG: Record<string, { label: string; color: string }> = {
-  macro: { label: 'Macro Layer (12-18mo lead)', color: '#4a9eff' },
-  credit: { label: 'Credit Layer (3-6mo lead)', color: '#a78bfa' },
-  structure: { label: 'Structure Layer (1-3mo lead)', color: '#fbbf24' },
-  signal: { label: 'Signal Layer (concurrent)', color: '#f87171' },
+  macro: { label: 'Macro Layer (12-18mo lead)', color: '#3a82d6' },
+  credit: { label: 'Credit Layer (3-6mo lead)', color: '#8b5cf6' },
+  structure: { label: 'Structure Layer (1-3mo lead)', color: '#b45309' },
+  signal: { label: 'Signal Layer (concurrent)', color: '#dc2626' },
 };
 
 function getLevelColor(level?: string): string {
-  if (level === 'danger') return '#f87171';
-  if (level === 'warning') return '#fbbf24';
-  return '#34d399';
+  if (level === 'danger') return '#dc2626';
+  if (level === 'warning') return '#f59e0b';
+  return '#16a34a';
 }
 
 function getLevelGlow(level?: string): string {
-  if (level === 'danger') return '0 0 12px rgba(248, 113, 113, 0.6)';
-  if (level === 'warning') return '0 0 8px rgba(251, 191, 36, 0.4)';
+  if (level === 'danger') return '0 4px 16px rgba(220, 38, 38, 0.15)';
+  if (level === 'warning') return '0 4px 12px rgba(245, 158, 11, 0.1)';
   return 'none';
 }
 
@@ -81,10 +81,10 @@ export function CausalFlow({ alerts }: CausalFlowProps) {
                       style={{
                         flex: '1 1 200px',
                         background: level === 'danger'
-                          ? 'rgba(248, 113, 113, 0.08)'
+                          ? '#fef2f2'
                           : level === 'warning'
-                            ? 'rgba(251, 191, 36, 0.05)'
-                            : 'var(--bg-secondary)',
+                            ? '#fffbeb'
+                            : 'var(--bg-1)',
                         border: `1.5px solid ${borderColor}`,
                         borderRadius: '10px',
                         padding: '14px 16px',
@@ -95,8 +95,8 @@ export function CausalFlow({ alerts }: CausalFlowProps) {
                     >
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <div>
-                          <div style={{ fontWeight: 600, fontSize: '14px' }}>{node.label}</div>
-                          <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: '2px' }}>
+                          <div style={{ fontWeight: 600, fontSize: '14px', color: 'var(--text-1)' }}>{node.label}</div>
+                          <div style={{ fontSize: '12px', color: 'var(--text-2)', marginTop: '2px' }}>
                             {node.sublabel}
                           </div>
                         </div>
@@ -126,7 +126,7 @@ export function CausalFlow({ alerts }: CausalFlowProps) {
               {tierIdx < tiers.length - 1 && (
                 <div style={{
                   textAlign: 'center',
-                  color: 'var(--text-secondary)',
+                  color: 'var(--text-3)',
                   fontSize: '18px',
                   marginTop: '12px',
                   opacity: 0.5,
@@ -142,11 +142,11 @@ export function CausalFlow({ alerts }: CausalFlowProps) {
           textAlign: 'center',
           marginTop: '8px',
           padding: '12px',
-          background: 'rgba(248, 113, 113, 0.05)',
-          border: '1px dashed rgba(248, 113, 113, 0.3)',
+          background: '#fef2f2',
+          border: '1px dashed #fca5a5',
           borderRadius: '8px',
           fontSize: '13px',
-          color: 'var(--text-secondary)',
+          color: 'var(--text-2)',
         }}>
           ▼ Market Crash / Major Drawdown
         </div>

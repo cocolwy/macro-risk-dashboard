@@ -113,10 +113,10 @@ const FEATURE_LABELS: Record<string, string> = {
   'vix_10d_chg': 'VIX 10日变化',
 };
 
-const EXP_COLORS = ['#f59e0b', '#8b5cf6', '#22c55e', '#ef4444', '#06b6d4'];
+const EXP_COLORS = ['#d6457a', '#3a82d6', '#16a34a', '#dc2626', '#8b5cf6'];
 
 function signalColor(signal: string) {
-  return signal === 'elevated' ? '#ef4444' : signal === 'watch' ? '#f59e0b' : '#22c55e';
+  return signal === 'elevated' ? '#dc2626' : signal === 'watch' ? '#b45309' : '#16a34a';
 }
 
 function ABComparisonSection({ experiments, sp500Timeline }: { experiments: ExperimentData[]; sp500Timeline: SP500Point[] }) {
@@ -171,22 +171,22 @@ function ABComparisonSection({ experiments, sp500Timeline }: { experiments: Expe
         <h3>概率对比时间线</h3>
         <ResponsiveContainer width="100%" height={300}>
           <ComposedChart data={mergedTimeline} margin={{ top: 10, right: 40, left: 10, bottom: 0 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#333" />
-            <XAxis dataKey="date" tick={{ fill: '#999', fontSize: 10 }} interval={Math.floor(mergedTimeline.length / 8)} />
-            <YAxis yAxisId="prob" domain={[0, 1]} tick={{ fill: '#999', fontSize: 11 }} tickFormatter={(v: number) => `${(v * 100).toFixed(0)}%`} />
-            <YAxis yAxisId="sp" orientation="right" tick={{ fill: '#60a5fa', fontSize: 11 }} />
-            <Tooltip contentStyle={{ background: '#1a1a2e', border: '1px solid #333' }}
+            <CartesianGrid strokeDasharray="3 3" stroke="#f1d8e2" />
+            <XAxis dataKey="date" tick={{ fill: '#8a7882', fontSize: 10 }} interval={Math.floor(mergedTimeline.length / 8)} />
+            <YAxis yAxisId="prob" domain={[0, 1]} tick={{ fill: '#8a7882', fontSize: 11 }} tickFormatter={(v: number) => `${(v * 100).toFixed(0)}%`} />
+            <YAxis yAxisId="sp" orientation="right" tick={{ fill: '#3a82d6', fontSize: 11 }} />
+            <Tooltip contentStyle={{ background: '#ffffff', border: '1px solid #f1d8e2', borderRadius: 8, boxShadow: '0 4px 12px rgba(255,168,196,0.12)' }}
               formatter={(value: number, name: string) => {
                 if (name === 'sp500') return [value?.toFixed(0), 'S&P 500'];
                 const idx = parseInt(name.replace('prob_', ''));
                 return [`${(value * 100).toFixed(1)}%`, experiments[idx]?.name ?? name];
               }} />
-            <ReferenceLine yAxisId="prob" y={0.5} stroke="#ef4444" strokeDasharray="5 5" />
+            <ReferenceLine yAxisId="prob" y={0.5} stroke="#dc2626" strokeDasharray="5 5" />
             {experiments.map((_, i) => (
               <Area key={i} yAxisId="prob" dataKey={`prob_${i}`} fill={EXP_COLORS[i]} fillOpacity={0.15}
                 stroke={EXP_COLORS[i]} strokeWidth={1.5} />
             ))}
-            <Line yAxisId="sp" dataKey="sp500" stroke="#60a5fa" strokeWidth={1.5} dot={false} />
+            <Line yAxisId="sp" dataKey="sp500" stroke="#3a82d6" strokeWidth={1.5} dot={false} />
           </ComposedChart>
         </ResponsiveContainer>
       </div>
@@ -220,10 +220,10 @@ function ABComparisonSection({ experiments, sp500Timeline }: { experiments: Expe
                     const row = exp.threshold_analysis.find(r => r.threshold === thresh);
                     if (!row) return <><td key={`p${i}`}>-</td><td key={`r${i}`}>-</td><td key={`f${i}`}>-</td></>;
                     return (<>
-                      <td key={`p${i}`} style={{ color: row.precision > 0.3 ? '#22c55e' : row.precision > 0.15 ? '#f59e0b' : '#ef4444' }}>
+                      <td key={`p${i}`} style={{ color: row.precision > 0.3 ? '#16a34a' : row.precision > 0.15 ? '#b45309' : '#dc2626' }}>
                         {(row.precision * 100).toFixed(1)}%
                       </td>
-                      <td key={`r${i}`} style={{ color: row.recall > 0.7 ? '#22c55e' : row.recall > 0.4 ? '#f59e0b' : '#ef4444' }}>
+                      <td key={`r${i}`} style={{ color: row.recall > 0.7 ? '#16a34a' : row.recall > 0.4 ? '#b45309' : '#dc2626' }}>
                         {(row.recall * 100).toFixed(1)}%
                       </td>
                       <td key={`f${i}`}>{row.f1.toFixed(3)}</td>
@@ -260,12 +260,12 @@ function ABComparisonSection({ experiments, sp500Timeline }: { experiments: Expe
               {(experiments[0]?.events_backtest ?? []).map(evt => (
                 <tr key={evt.name}>
                   <td>{evt.name}</td>
-                  <td style={{ color: '#ef4444' }}>{evt.drop_pct}%</td>
+                  <td style={{ color: '#dc2626' }}>{evt.drop_pct}%</td>
                   {experiments.map((exp, i) => {
                     const e = exp.events_backtest.find(b => b.name === evt.name);
                     if (!e) return <><td key={`a${i}`}>-</td><td key={`m${i}`}>-</td></>;
                     return (<>
-                      <td key={`a${i}`} style={{ color: e.lead_days ? '#22c55e' : '#ef4444' }}>
+                      <td key={`a${i}`} style={{ color: e.lead_days ? '#16a34a' : '#dc2626' }}>
                         {e.lead_days ? `${e.lead_days}天` : '未预警'}
                       </td>
                       <td key={`m${i}`}>{(e.max_probability * 100).toFixed(0)}%</td>
@@ -295,22 +295,22 @@ function WeightComparisonSection({ data }: { data: WeightComparison[] }) {
             <span className="weight-label">{FEATURE_LABELS[row.feature] || row.feature}</span>
             <div className="weight-bars">
               <div className="weight-bar-pair">
-                <span className="weight-bar-tag" style={{ color: '#f59e0b' }}>ML</span>
+                <span className="weight-bar-tag" style={{ color: '#d6457a' }}>ML</span>
                 <div className="weight-bar-track">
                   <div className="weight-bar-fill" style={{
                     width: `${Math.abs(row.ml_weight) / maxW * 100}%`,
-                    background: row.ml_weight > 0 ? '#ef4444' : '#22c55e',
+                    background: row.ml_weight > 0 ? '#dc2626' : '#16a34a',
                     marginLeft: row.ml_weight < 0 ? 'auto' : undefined,
                   }} />
                 </div>
                 <span className="weight-val">{row.ml_weight > 0 ? '+' : ''}{row.ml_weight.toFixed(3)}</span>
               </div>
               <div className="weight-bar-pair">
-                <span className="weight-bar-tag" style={{ color: '#8b5cf6' }}>HM</span>
+                <span className="weight-bar-tag" style={{ color: '#3a82d6' }}>HM</span>
                 <div className="weight-bar-track">
                   <div className="weight-bar-fill" style={{
                     width: `${Math.abs(row.human_weight) / maxW * 100}%`,
-                    background: row.human_weight > 0 ? '#ef4444' : '#22c55e',
+                    background: row.human_weight > 0 ? '#dc2626' : '#16a34a',
                     marginLeft: row.human_weight < 0 ? 'auto' : undefined,
                   }} />
                 </div>
@@ -319,6 +319,7 @@ function WeightComparisonSection({ data }: { data: WeightComparison[] }) {
             </div>
             <span className={`weight-agree-badge ${row.agree}`}>
               {row.agree === 'same' ? 'AGREE' : row.agree === 'zero' ? 'N/A' : 'DIFF'}
+
             </span>
           </div>
         ))}
@@ -396,20 +397,20 @@ export function PredictionLab() {
         <div className="lab-chart-tall">
           <ResponsiveContainer width="100%" height={320}>
             <ComposedChart data={probWithSP} margin={{ top: 10, right: 40, left: 10, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#333" />
-              <XAxis dataKey="date" tick={{ fill: '#999', fontSize: 11 }} interval={Math.floor(probWithSP.length / 8)} />
-              <YAxis yAxisId="prob" domain={[0, 1]} tick={{ fill: '#f59e0b', fontSize: 11 }} tickFormatter={(v: number) => `${(v * 100).toFixed(0)}%`} />
-              <YAxis yAxisId="sp" orientation="right" tick={{ fill: '#60a5fa', fontSize: 11 }} />
+              <CartesianGrid strokeDasharray="3 3" stroke="#f1d8e2" />
+              <XAxis dataKey="date" tick={{ fill: '#8a7882', fontSize: 11 }} interval={Math.floor(probWithSP.length / 8)} />
+              <YAxis yAxisId="prob" domain={[0, 1]} tick={{ fill: '#d6457a', fontSize: 11 }} tickFormatter={(v: number) => `${(v * 100).toFixed(0)}%`} />
+              <YAxis yAxisId="sp" orientation="right" tick={{ fill: '#3a82d6', fontSize: 11 }} />
               <Tooltip
-                contentStyle={{ background: '#1a1a2e', border: '1px solid #333' }}
+                contentStyle={{ background: '#ffffff', border: '1px solid #f1d8e2', borderRadius: 8, boxShadow: '0 4px 12px rgba(255,168,196,0.12)' }}
                 formatter={(value: number, name: string) => {
                   if (name === 'probability') return [`${(value * 100).toFixed(1)}%`, '崩盘概率'];
                   return [value?.toFixed(0), 'S&P 500'];
                 }}
               />
-              <ReferenceLine yAxisId="prob" y={0.5} stroke="#ef4444" strokeDasharray="5 5" label={{ value: "50% \u9608\u503c", fill: '#ef4444', fontSize: 11 }} />
-              <Area yAxisId="prob" dataKey="probability" fill="#f59e0b" fillOpacity={0.3} stroke="#f59e0b" strokeWidth={1.5} />
-              <Line yAxisId="sp" dataKey="sp500" stroke="#60a5fa" strokeWidth={1.5} dot={false} />
+              <ReferenceLine yAxisId="prob" y={0.5} stroke="#dc2626" strokeDasharray="5 5" label={{ value: "50% \u9608\u503c", fill: '#dc2626', fontSize: 11 }} />
+              <Area yAxisId="prob" dataKey="probability" fill="#ffa6c4" fillOpacity={0.3} stroke="#d6457a" strokeWidth={1.5} />
+              <Line yAxisId="sp" dataKey="sp500" stroke="#3a82d6" strokeWidth={1.5} dot={false} />
             </ComposedChart>
           </ResponsiveContainer>
         </div>
@@ -435,10 +436,10 @@ export function PredictionLab() {
               {threshold_analysis.map(row => (
                 <tr key={row.threshold} className={row.threshold === 0.5 ? 'lab-row-highlight' : ''}>
                   <td className="lab-td-mono">{(row.threshold * 100).toFixed(0)}%</td>
-                  <td style={{ color: row.precision > 0.3 ? '#22c55e' : row.precision > 0.15 ? '#f59e0b' : '#ef4444' }}>
+                  <td style={{ color: row.precision > 0.3 ? '#16a34a' : row.precision > 0.15 ? '#b45309' : '#dc2626' }}>
                     {(row.precision * 100).toFixed(1)}%
                   </td>
-                  <td style={{ color: row.recall > 0.7 ? '#22c55e' : row.recall > 0.4 ? '#f59e0b' : '#ef4444' }}>
+                  <td style={{ color: row.recall > 0.7 ? '#16a34a' : row.recall > 0.4 ? '#b45309' : '#dc2626' }}>
                     {(row.recall * 100).toFixed(1)}%
                   </td>
                   <td>{row.f1.toFixed(3)}</td>
@@ -458,16 +459,16 @@ export function PredictionLab() {
         <div className="lab-chart-tall">
           <ResponsiveContainer width="100%" height={400}>
             <BarChart data={feature_importance.slice(0, 15)} layout="vertical" margin={{ top: 5, right: 30, left: 140, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#333" />
-              <XAxis type="number" tick={{ fill: '#999', fontSize: 11 }} />
-              <YAxis type="category" dataKey="feature" tick={{ fill: '#ccc', fontSize: 11 }}
+              <CartesianGrid strokeDasharray="3 3" stroke="#f1d8e2" />
+              <XAxis type="number" tick={{ fill: '#8a7882', fontSize: 11 }} />
+              <YAxis type="category" dataKey="feature" tick={{ fill: '#5a4452', fontSize: 11 }}
                 tickFormatter={(v: string) => FEATURE_LABELS[v] || v} width={130} />
-              <Tooltip contentStyle={{ background: '#1a1a2e', border: '1px solid #333' }}
+              <Tooltip contentStyle={{ background: '#ffffff', border: '1px solid #f1d8e2', borderRadius: 8, boxShadow: '0 4px 12px rgba(255,168,196,0.12)' }}
                 formatter={(v: number) => [v.toFixed(4), '权重']} />
-              <ReferenceLine x={0} stroke="#666" />
+              <ReferenceLine x={0} stroke="#d6e6f7" />
               <Bar dataKey="weight">
                 {feature_importance.slice(0, 15).map((entry, i) => (
-                  <Cell key={i} fill={entry.weight > 0 ? '#ef4444' : '#22c55e'} />
+                  <Cell key={i} fill={entry.weight > 0 ? '#dc2626' : '#16a34a'} />
                 ))}
               </Bar>
             </BarChart>
@@ -486,7 +487,7 @@ export function PredictionLab() {
             {events_backtest.map(evt => (
               <div key={evt.name} className="lab-event-card">
                 <div className="lab-event-name">{evt.name}</div>
-                <div className="lab-event-drop" style={{ color: '#ef4444' }}>
+                <div className="lab-event-drop" style={{ color: '#dc2626' }}>
                   跌幅 {evt.drop_pct}%
                 </div>
                 <div className="lab-event-detail">
@@ -513,11 +514,11 @@ export function PredictionLab() {
         <div className="lab-chart-square">
           <ResponsiveContainer width="100%" height={280}>
             <AreaChart data={metrics.roc_curve} margin={{ top: 10, right: 20, left: 10, bottom: 20 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#333" />
-              <XAxis dataKey="fpr" label={{ value: 'False Positive Rate', fill: '#999', position: 'bottom', offset: 0 }} tick={{ fill: '#999', fontSize: 11 }} />
-              <YAxis label={{ value: 'True Positive Rate', fill: '#999', angle: -90, position: 'insideLeft' }} tick={{ fill: '#999', fontSize: 11 }} />
-              <Area dataKey="tpr" fill="#8b5cf6" fillOpacity={0.3} stroke="#8b5cf6" strokeWidth={2} />
-              <ReferenceLine segment={[{ x: 0, y: 0 }, { x: 1, y: 1 }]} stroke="#666" strokeDasharray="5 5" />
+              <CartesianGrid strokeDasharray="3 3" stroke="#f1d8e2" />
+              <XAxis dataKey="fpr" label={{ value: 'False Positive Rate', fill: '#8a7882', position: 'bottom', offset: 0 }} tick={{ fill: '#8a7882', fontSize: 11 }} />
+              <YAxis label={{ value: 'True Positive Rate', fill: '#8a7882', angle: -90, position: 'insideLeft' }} tick={{ fill: '#8a7882', fontSize: 11 }} />
+              <Area dataKey="tpr" fill="#8cc3ff" fillOpacity={0.3} stroke="#3a82d6" strokeWidth={2} />
+              <ReferenceLine segment={[{ x: 0, y: 0 }, { x: 1, y: 1 }]} stroke="#d6e6f7" strokeDasharray="5 5" />
             </AreaChart>
           </ResponsiveContainer>
         </div>
@@ -543,7 +544,7 @@ export function PredictionLab() {
       <section className="lab-card augment-section">
         <div className="ab-header">
           <h2>数据增强方案 (Experiment D)</h2>
-          <span className="ab-badge" style={{ background: 'rgba(6, 182, 212, 0.2)', color: '#06b6d4' }}>PROPOSAL</span>
+          <span className="ab-badge" style={{ background: '#dceeff', color: '#3a82d6', border: '1px solid #bcdcff' }}>PROPOSAL</span>
         </div>
         <p className="lab-card-desc">
           当前核心问题：可用训练样本仅 ~740天，正样本（大跌）仅 ~94个。以下是可行的数据增强方案。
@@ -706,7 +707,10 @@ export function PredictionLab() {
       </section>
 
       <footer className="lab-footer">
-        <p>此页面用于模型研发监督，数据每日更新。预测结果不构成投资建议。</p>
+        <div>此页面用于模型研发监督，数据每日更新。预测结果不构成投资建议。</div>
+        <div style={{ marginTop: '4px', fontSize: '10px', opacity: 0.6, letterSpacing: '0.3px' }}>
+          Built with <strong>auto-dashboard</strong> · design © Coco
+        </div>
       </footer>
     </div>
   );
