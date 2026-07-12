@@ -115,7 +115,7 @@ const FEATURE_LABELS: Record<string, string> = {
   'vix_10d_chg': 'VIX 10日变化',
 };
 
-const EXP_COLORS = ['#d6457a', '#3a82d6', '#16a34a', '#dc2626', '#8b5cf6', '#06b6d4'];
+const EXP_COLORS = ['#d6457a', '#3a82d6', '#16a34a', '#dc2626', '#8b5cf6', '#06b6d4', '#ea580c', '#0d9488', '#a855f7'];
 
 function signalColor(signal: string) {
   return signal === 'elevated' ? '#dc2626' : signal === 'watch' ? '#b45309' : '#16a34a';
@@ -310,13 +310,16 @@ interface PairwiseTest {
 
 function buildPairwiseTests(experiments: ExperimentData[]): PairwiseTest[] {
   const find = (substr: string) => experiments.find(e => e.name.includes(substr));
+  const findExact = (substr: string) => experiments.find(e => e.name === substr || e.name.startsWith(substr));
   const mlBase = find('Logistic Regression') ?? find('ML (');
   const human = find('Human Logic');
-  const slim = find('Slim');
+  const slim = findExact('ML Slim');
   const mlExt = find('ML Extended');
   const humanExt = find('Human Extended');
-
-  const d1 = find('D1');
+  const d1Short = experiments.find(e => e.name.includes('D1') && !e.name.includes('Ext'));
+  const andShort = experiments.find(e => e.name.includes('AND') && !e.name.includes('Ext'));
+  const andExt = experiments.find(e => e.name.includes('AND') && e.name.includes('Ext'));
+  const d1Ext = experiments.find(e => e.name.includes('D1') && e.name.includes('Ext'));
 
   const pairs: PairwiseTest[] = [];
   if (mlBase && human) pairs.push({
@@ -329,15 +332,25 @@ function buildPairwiseTests(experiments: ExperimentData[]): PairwiseTest[] {
     baseline: mlBase, challenger: slim,
     baseColor: EXP_COLORS[0], challColor: EXP_COLORS[2],
   });
-  if (slim && d1) pairs.push({
+  if (slim && d1Short) pairs.push({
     label: 'Exp 3: Embargo隔离', variable: '无隔离 vs 20天Embargo（防时序泄露）',
-    baseline: slim, challenger: d1,
+    baseline: slim, challenger: d1Short,
     baseColor: EXP_COLORS[2], challColor: EXP_COLORS[5],
   });
+  if (d1Short && andShort) pairs.push({
+    label: 'Exp 4: AND集成', variable: 'D1单模型 vs D1 AND Human（双模型共识）',
+    baseline: d1Short, challenger: andShort,
+    baseColor: EXP_COLORS[5], challColor: EXP_COLORS[6],
+  });
   if (mlExt && humanExt) pairs.push({
-    label: 'Exp 4: 长期数据', variable: '20年数据: ML vs Human',
+    label: 'Exp 5: 长期数据', variable: '20年数据: ML vs Human',
     baseline: mlExt, challenger: humanExt,
     baseColor: EXP_COLORS[3], challColor: EXP_COLORS[4],
+  });
+  if (d1Ext && andExt) pairs.push({
+    label: 'Exp 6: 长期AND集成', variable: '长期D1 vs 长期AND（双模型共识）',
+    baseline: d1Ext, challenger: andExt,
+    baseColor: EXP_COLORS[7], challColor: EXP_COLORS[8],
   });
   return pairs;
 }
