@@ -102,6 +102,19 @@ def compute_target(sp500: pd.Series, horizon: int = 20, threshold: float = -0.05
     return (future_max_dd < threshold).astype(int)
 
 
+HUMAN_WEIGHTS = {
+    'vix_5d_chg': +0.20, 'vix_10d_chg': +0.15, 'vix_20d_chg': +0.15,
+    'turbulence_5d_chg': +0.25, 'turbulence_10d_chg': +0.15, 'turbulence_20d_chg': +0.10,
+    'absorption_ratio_5d_chg': +0.40, 'absorption_ratio_10d_chg': +0.20, 'absorption_ratio_20d_chg': +0.10,
+    'term_spread_level': -0.50, 'term_spread_5d_chg': -0.15, 'term_spread_20d_chg': -0.10,
+    'credit_spread_level': +0.20, 'credit_spread_5d_chg': +0.30, 'credit_spread_10d_chg': +0.80,
+    'breadth_level': -0.35, 'breadth_10d_chg': -0.40,
+    'vix_level': +0.25, 'vix_vs_20d_avg': +0.20,
+    'sp500_20d_ret': -0.50, 'sp500_50d_ret': -0.40, 'sp500_vs_50ma': -0.70,
+    'vix_volatility': +0.15,
+}
+
+
 def train_and_evaluate(X: pd.DataFrame, y: pd.Series, split_ratio: float = 0.7):
     split = int(len(X) * split_ratio)
     X_train, X_test = X.iloc[:split], X.iloc[split:]
@@ -117,6 +130,13 @@ def train_and_evaluate(X: pd.DataFrame, y: pd.Series, split_ratio: float = 0.7):
     y_prob = model.predict_proba(X_test_s)[:, 1]
 
     return model, scaler, X_train, X_test, y_train, y_test, y_prob
+
+
+def human_model_probs(X: pd.DataFrame, scaler: StandardScaler) -> np.ndarray:
+    """Compute crash probabilities using manually designed weights."""
+    weights = np.array([HUMAN_WEIGHTS.get(col, 0.0) for col in X.columns])
+    scores = scaler.transform(X) @ weights
+    return 1 / (1 + np.exp(-scores))
 
 
 def build_metrics(model, scaler, X, y, X_train, X_test, y_test, y_prob, sp500):
@@ -216,6 +236,60 @@ def build_metrics(model, scaler, X, y, X_train, X_test, y_test, y_prob, sp500):
     }, prob_timeline
 
 
+def build_comparison_metrics(y_test, y_prob, all_probs, X, sp500, model_name, key_events):
+    """Build a lightweight metrics dict for a comparison model (no feature importance / ROC)."""
+    roc_auc = auc(*roc_curve(y_test, y_prob)[:2])
+
+    threshold_analysis = []
+    for thresh in [0.3, 0.4, 0.5, 0.6, 0.7, 0.8]:
+        preds = (y_prob > thresh).astype(int)
+        tp = ((preds == 1) & (y_test.values == 1)).sum()
+        fp = ((preds == 1) & (y_test.values == 0)).sum()
+        fn = ((preds == 0) & (y_test.values == 1)).sum()
+        prec = tp / (tp + fp) if (tp + fp) > 0 else 0
+        rec = tp / (tp + fn) if (tp + fn) > 0 else 0
+        f1 = 2 * prec * rec / (prec + rec) if (prec + rec) > 0 else 0
+        threshold_analysis.append({
+            "threshold": thresh, "precision": round(float(prec), 3),
+            "recall": round(float(rec), 3), "f1": round(float(f1), 3),
+            "alert_days": int(preds.sum()), "total_days": len(preds),
+            "alert_pct": round(int(preds.sum()) / len(preds) * 100, 1),
+        })
+
+    events_backtest = []
+    for evt in key_events:
+        window = [(d, p) for d, p in zip(X.index, all_probs) if evt["start"] <= d <= evt["peak"]]
+        if window:
+            first_alert = next(((d, p) for d, p in window if p > 0.5), None)
+            max_prob_item = max(window, key=lambda x: x[1])
+            events_backtest.append({
+                "name": evt["name"], "event_date": evt["peak"], "drop_pct": evt["drop_pct"],
+                "first_alert_date": first_alert[0] if first_alert else None,
+                "lead_days": (pd.Timestamp(evt["peak"]) - pd.Timestamp(first_alert[0])).days if first_alert else None,
+                "max_probability": round(float(max_prob_item[1]), 3),
+                "max_prob_date": max_prob_item[0],
+            })
+
+    prob_timeline = [{"date": d, "probability": round(float(p), 4)} for d, p in zip(X.index, all_probs)]
+    latest = float(all_probs[-1])
+
+    return {
+        "name": model_name,
+        "auc": round(float(roc_auc), 3),
+        "current_probability": round(latest, 4),
+        "current_signal": "elevated" if latest > 0.5 else ("watch" if latest > 0.3 else "low"),
+        "threshold_analysis": threshold_analysis,
+        "events_backtest": events_backtest,
+        "probability_timeline": prob_timeline,
+    }
+
+
+KEY_EVENTS = [
+    {"name": "2024.8 日元套利平仓", "start": "2024-07-01", "peak": "2024-08-05", "drop_pct": -8.5},
+    {"name": "2025.4 关税冲击", "start": "2025-03-01", "peak": "2025-04-08", "drop_pct": -12.1},
+]
+
+
 def main():
     print("=== Prediction Model: Daily Update ===")
 
@@ -237,12 +311,45 @@ def main():
     y = combined['target']
     print(f"  {len(X)} usable samples, {y.sum()} positive ({y.mean()*100:.1f}%)")
 
-    print("Training model...")
+    print("Training ML model...")
     X_clipped = X.clip(-10, 10)
     model, scaler, X_train, X_test, y_train, y_test, y_prob = train_and_evaluate(X_clipped, y)
 
-    print("Building metrics...")
+    print("Building ML metrics...")
     metrics, prob_timeline = build_metrics(model, scaler, X_clipped, y, X_train, X_test, y_test, y_prob, df['sp500'])
+
+    print("Building Human Logic model...")
+    split = int(len(X_clipped) * 0.7)
+    human_probs_all = human_model_probs(X_clipped, scaler)
+    human_probs_test = human_probs_all[split:]
+    human_comparison = build_comparison_metrics(
+        y_test, human_probs_test, human_probs_all,
+        X_clipped, df['sp500'], "Human Logic v1", KEY_EVENTS,
+    )
+
+    # Attach AB comparison data
+    metrics["experiments"] = [
+        {
+            "name": "ML (Logistic Regression)",
+            "auc": metrics["model_info"]["roc_auc"],
+            "current_probability": metrics["current_prediction"]["probability"],
+            "current_signal": metrics["current_prediction"]["signal"],
+            "threshold_analysis": metrics["threshold_analysis"],
+            "events_backtest": metrics["events_backtest"],
+            "probability_timeline": metrics["probability_timeline"],
+        },
+        human_comparison,
+    ]
+
+    # Weight comparison
+    ml_coefs = pd.Series(model.coef_[0], index=X_clipped.columns)
+    weight_comparison = []
+    for col in X_clipped.columns:
+        mc = float(ml_coefs[col])
+        hc = HUMAN_WEIGHTS.get(col, 0.0)
+        agree = "same" if (mc > 0.01 and hc > 0) or (mc < -0.01 and hc < 0) else ("zero" if abs(mc) < 0.01 else "diff")
+        weight_comparison.append({"feature": col, "ml_weight": round(mc, 4), "human_weight": hc, "agree": agree})
+    metrics["weight_comparison"] = weight_comparison
 
     # Save outputs
     with open(DATA_DIR / 'model_metrics.json', 'w') as f:
@@ -253,8 +360,9 @@ def main():
         json.dump(prob_timeline, f)
     print(f"  Saved crash_prediction.json ({len(prob_timeline)} points)")
 
-    print(f"\n  Current prediction: {metrics['current_prediction']['probability']*100:.1f}% ({metrics['current_prediction']['signal']})")
-    print(f"  Model AUC: {metrics['model_info']['roc_auc']}")
+    print(f"\n  ML prediction:    {metrics['current_prediction']['probability']*100:.1f}% ({metrics['current_prediction']['signal']})")
+    print(f"  Human prediction: {human_comparison['current_probability']*100:.1f}% ({human_comparison['current_signal']})")
+    print(f"  ML AUC: {metrics['model_info']['roc_auc']}  Human AUC: {human_comparison['auc']}")
     print("=== Done ===")
 
 

@@ -19,7 +19,7 @@ import alphalens
 START = "2021-06-01"   # 多拉半年，给动量因子留窗口
 END = "2024-12-31"
 ANALYSIS_START = "2022-01-01"
-OUTPUT_DIR = "/mnt/data/x2robot_v2/coco/code/quan/output"
+OUTPUT_DIR = os.path.join(os.path.dirname(__file__), "output")
 
 # ─── 1. 获取 S&P 500 成分股 ─────────────────────────────
 # 硬编码主要 S&P 500 成分股（约 100 只大盘股代替全量 500，加速下载）

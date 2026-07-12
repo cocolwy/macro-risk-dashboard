@@ -1,0 +1,10 @@
+---
+description: Git workflow conventions for this project
+alwaysApply: true
+---
+
+# Git Workflow
+
+- After completing a task that involves code changes, always run `git add`, `git commit`, and `git push` yourself.
+- Before pushing, show the user a brief overview of the changes (files changed, commit message) and ask for confirmation.
+- Do NOT tell the user to run git commands manually — you do it.

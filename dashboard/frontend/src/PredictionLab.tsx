@@ -53,6 +53,23 @@ interface SP500Point {
   sp500: number;
 }
 
+interface ExperimentData {
+  name: string;
+  auc: number;
+  current_probability: number;
+  current_signal: string;
+  threshold_analysis: ThresholdRow[];
+  events_backtest: EventBacktest[];
+  probability_timeline: ProbPoint[];
+}
+
+interface WeightComparison {
+  feature: string;
+  ml_weight: number;
+  human_weight: number;
+  agree: string;
+}
+
 interface ModelMetrics {
   model_info: ModelInfo;
   current_prediction: { date: string; probability: number; signal: string };
@@ -64,6 +81,8 @@ interface ModelMetrics {
   probability_timeline: ProbPoint[];
   sp500_timeline: SP500Point[];
   actual_drops: { date: string; max_drawdown: number }[];
+  experiments?: ExperimentData[];
+  weight_comparison?: WeightComparison[];
 }
 
 const DATA_BASE_URL = import.meta.env.PROD ? './data' : '/data';
@@ -94,6 +113,220 @@ const FEATURE_LABELS: Record<string, string> = {
   'vix_10d_chg': 'VIX 10日变化',
 };
 
+const EXP_COLORS = ['#f59e0b', '#8b5cf6', '#22c55e', '#ef4444', '#06b6d4'];
+
+function signalColor(signal: string) {
+  return signal === 'elevated' ? '#ef4444' : signal === 'watch' ? '#f59e0b' : '#22c55e';
+}
+
+function ABComparisonSection({ experiments, sp500Timeline }: { experiments: ExperimentData[]; sp500Timeline: SP500Point[] }) {
+  const sp500Map = new Map(sp500Timeline.map(s => [s.date, s.sp500]));
+
+  const mergedTimeline = experiments[0]?.probability_timeline.map(p => {
+    const row: Record<string, unknown> = { date: p.date, sp500: sp500Map.get(p.date) };
+    experiments.forEach((exp, i) => {
+      const match = exp.probability_timeline.find(ep => ep.date === p.date);
+      row[`prob_${i}`] = match?.probability;
+    });
+    return row;
+  }) ?? [];
+
+  return (
+    <section className="lab-card ab-section">
+      <div className="ab-header">
+        <h2>AB Test: 模型对比实验</h2>
+        <span className="ab-badge">EXPERIMENT</span>
+      </div>
+      <p className="lab-card-desc">
+        ML自动学习权重 vs 人工逻辑设定权重，同一数据集、同一目标、同一阈值
+      </p>
+
+      {/* Summary cards */}
+      <div className="ab-summary-row">
+        {experiments.map((exp, i) => (
+          <div key={exp.name} className="ab-summary-card" style={{ borderTopColor: EXP_COLORS[i] }}>
+            <div className="ab-model-name" style={{ color: EXP_COLORS[i] }}>{exp.name}</div>
+            <div className="ab-metric-row">
+              <span className="ab-metric-label">AUC</span>
+              <span className="ab-metric-value">{exp.auc}</span>
+            </div>
+            <div className="ab-metric-row">
+              <span className="ab-metric-label">当前概率</span>
+              <span className="ab-metric-value" style={{ color: signalColor(exp.current_signal) }}>
+                {(exp.current_probability * 100).toFixed(1)}%
+              </span>
+            </div>
+            <div className="ab-metric-row">
+              <span className="ab-metric-label">当前信号</span>
+              <span className="ab-signal-badge" style={{ background: signalColor(exp.current_signal) + '22', color: signalColor(exp.current_signal) }}>
+                {exp.current_signal === 'elevated' ? 'ELEVATED' : exp.current_signal === 'watch' ? 'WATCH' : 'LOW'}
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Overlaid probability chart */}
+      <div className="ab-chart-section">
+        <h3>概率对比时间线</h3>
+        <ResponsiveContainer width="100%" height={300}>
+          <ComposedChart data={mergedTimeline} margin={{ top: 10, right: 40, left: 10, bottom: 0 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#333" />
+            <XAxis dataKey="date" tick={{ fill: '#999', fontSize: 10 }} interval={Math.floor(mergedTimeline.length / 8)} />
+            <YAxis yAxisId="prob" domain={[0, 1]} tick={{ fill: '#999', fontSize: 11 }} tickFormatter={(v: number) => `${(v * 100).toFixed(0)}%`} />
+            <YAxis yAxisId="sp" orientation="right" tick={{ fill: '#60a5fa', fontSize: 11 }} />
+            <Tooltip contentStyle={{ background: '#1a1a2e', border: '1px solid #333' }}
+              formatter={(value: number, name: string) => {
+                if (name === 'sp500') return [value?.toFixed(0), 'S&P 500'];
+                const idx = parseInt(name.replace('prob_', ''));
+                return [`${(value * 100).toFixed(1)}%`, experiments[idx]?.name ?? name];
+              }} />
+            <ReferenceLine yAxisId="prob" y={0.5} stroke="#ef4444" strokeDasharray="5 5" />
+            {experiments.map((_, i) => (
+              <Area key={i} yAxisId="prob" dataKey={`prob_${i}`} fill={EXP_COLORS[i]} fillOpacity={0.15}
+                stroke={EXP_COLORS[i]} strokeWidth={1.5} />
+            ))}
+            <Line yAxisId="sp" dataKey="sp500" stroke="#60a5fa" strokeWidth={1.5} dot={false} />
+          </ComposedChart>
+        </ResponsiveContainer>
+      </div>
+
+      {/* Threshold comparison table */}
+      <div className="ab-chart-section">
+        <h3>阈值对比 (50% threshold)</h3>
+        <div className="lab-table-wrap">
+          <table className="lab-table">
+            <thead>
+              <tr>
+                <th>阈值</th>
+                {experiments.map((exp, i) => (
+                  <th key={i} colSpan={3} style={{ color: EXP_COLORS[i], borderBottom: `2px solid ${EXP_COLORS[i]}` }}>
+                    {exp.name}
+                  </th>
+                ))}
+              </tr>
+              <tr>
+                <th></th>
+                {experiments.map((_, i) => (
+                  <><th key={`p${i}`}>精确率</th><th key={`r${i}`}>召回率</th><th key={`f${i}`}>F1</th></>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {[0.3, 0.4, 0.5, 0.6, 0.7, 0.8].map(thresh => (
+                <tr key={thresh} className={thresh === 0.5 ? 'lab-row-highlight' : ''}>
+                  <td className="lab-td-mono">{(thresh * 100).toFixed(0)}%</td>
+                  {experiments.map((exp, i) => {
+                    const row = exp.threshold_analysis.find(r => r.threshold === thresh);
+                    if (!row) return <><td key={`p${i}`}>-</td><td key={`r${i}`}>-</td><td key={`f${i}`}>-</td></>;
+                    return (<>
+                      <td key={`p${i}`} style={{ color: row.precision > 0.3 ? '#22c55e' : row.precision > 0.15 ? '#f59e0b' : '#ef4444' }}>
+                        {(row.precision * 100).toFixed(1)}%
+                      </td>
+                      <td key={`r${i}`} style={{ color: row.recall > 0.7 ? '#22c55e' : row.recall > 0.4 ? '#f59e0b' : '#ef4444' }}>
+                        {(row.recall * 100).toFixed(1)}%
+                      </td>
+                      <td key={`f${i}`}>{row.f1.toFixed(3)}</td>
+                    </>);
+                  })}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Event backtest comparison */}
+      <div className="ab-chart-section">
+        <h3>历史事件对比</h3>
+        <div className="lab-table-wrap">
+          <table className="lab-table">
+            <thead>
+              <tr>
+                <th>事件</th>
+                <th>跌幅</th>
+                {experiments.map((exp, i) => (
+                  <th key={i} colSpan={2} style={{ color: EXP_COLORS[i] }}>{exp.name}</th>
+                ))}
+              </tr>
+              <tr>
+                <th></th><th></th>
+                {experiments.map((_, i) => (
+                  <><th key={`a${i}`}>提前天数</th><th key={`m${i}`}>最高概率</th></>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {(experiments[0]?.events_backtest ?? []).map(evt => (
+                <tr key={evt.name}>
+                  <td>{evt.name}</td>
+                  <td style={{ color: '#ef4444' }}>{evt.drop_pct}%</td>
+                  {experiments.map((exp, i) => {
+                    const e = exp.events_backtest.find(b => b.name === evt.name);
+                    if (!e) return <><td key={`a${i}`}>-</td><td key={`m${i}`}>-</td></>;
+                    return (<>
+                      <td key={`a${i}`} style={{ color: e.lead_days ? '#22c55e' : '#ef4444' }}>
+                        {e.lead_days ? `${e.lead_days}天` : '未预警'}
+                      </td>
+                      <td key={`m${i}`}>{(e.max_probability * 100).toFixed(0)}%</td>
+                    </>);
+                  })}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function WeightComparisonSection({ data }: { data: WeightComparison[] }) {
+  const sorted = [...data].sort((a, b) => Math.abs(b.ml_weight) - Math.abs(a.ml_weight));
+  const maxW = Math.max(...sorted.map(d => Math.max(Math.abs(d.ml_weight), Math.abs(d.human_weight))));
+
+  return (
+    <section className="lab-card">
+      <h2>权重对比: ML学习 vs 人工逻辑</h2>
+      <p className="lab-card-desc">对比ML自动学到的权重与人工基于经济学逻辑设定的权重，方向一致=绿色</p>
+      <div className="weight-grid">
+        {sorted.slice(0, 18).map(row => (
+          <div key={row.feature} className={`weight-row ${row.agree}`}>
+            <span className="weight-label">{FEATURE_LABELS[row.feature] || row.feature}</span>
+            <div className="weight-bars">
+              <div className="weight-bar-pair">
+                <span className="weight-bar-tag" style={{ color: '#f59e0b' }}>ML</span>
+                <div className="weight-bar-track">
+                  <div className="weight-bar-fill" style={{
+                    width: `${Math.abs(row.ml_weight) / maxW * 100}%`,
+                    background: row.ml_weight > 0 ? '#ef4444' : '#22c55e',
+                    marginLeft: row.ml_weight < 0 ? 'auto' : undefined,
+                  }} />
+                </div>
+                <span className="weight-val">{row.ml_weight > 0 ? '+' : ''}{row.ml_weight.toFixed(3)}</span>
+              </div>
+              <div className="weight-bar-pair">
+                <span className="weight-bar-tag" style={{ color: '#8b5cf6' }}>HM</span>
+                <div className="weight-bar-track">
+                  <div className="weight-bar-fill" style={{
+                    width: `${Math.abs(row.human_weight) / maxW * 100}%`,
+                    background: row.human_weight > 0 ? '#ef4444' : '#22c55e',
+                    marginLeft: row.human_weight < 0 ? 'auto' : undefined,
+                  }} />
+                </div>
+                <span className="weight-val">{row.human_weight > 0 ? '+' : ''}{row.human_weight.toFixed(2)}</span>
+              </div>
+            </div>
+            <span className={`weight-agree-badge ${row.agree}`}>
+              {row.agree === 'same' ? 'AGREE' : row.agree === 'zero' ? 'N/A' : 'DIFF'}
+            </span>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 export function PredictionLab() {
   const [metrics, setMetrics] = useState<ModelMetrics | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -115,8 +348,7 @@ export function PredictionLab() {
     return { ...p, sp500: sp?.sp500 };
   });
 
-  const signalColor = current_prediction.signal === 'elevated' ? '#ef4444'
-    : current_prediction.signal === 'watch' ? '#f59e0b' : '#22c55e';
+  const sigColor = signalColor(current_prediction.signal);
 
   return (
     <div className="lab-container">
@@ -131,10 +363,18 @@ export function PredictionLab() {
         </div>
       </header>
 
+      {/* ===== AB TEST COMPARISON ===== */}
+      {metrics.experiments && metrics.experiments.length > 1 && (
+        <ABComparisonSection experiments={metrics.experiments} sp500Timeline={metrics.sp500_timeline} />
+      )}
+      {metrics.weight_comparison && (
+        <WeightComparisonSection data={metrics.weight_comparison} />
+      )}
+
       {/* Current Signal */}
-      <section className="lab-signal-card" style={{ borderColor: signalColor }}>
+      <section className="lab-signal-card" style={{ borderColor: sigColor }}>
         <div className="lab-signal-main">
-          <div className="lab-signal-prob" style={{ color: signalColor }}>
+          <div className="lab-signal-prob" style={{ color: sigColor }}>
             {(current_prediction.probability * 100).toFixed(1)}%
           </div>
           <div className="lab-signal-meta">
@@ -158,7 +398,7 @@ export function PredictionLab() {
             <ComposedChart data={probWithSP} margin={{ top: 10, right: 40, left: 10, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#333" />
               <XAxis dataKey="date" tick={{ fill: '#999', fontSize: 11 }} interval={Math.floor(probWithSP.length / 8)} />
-              <YAxis yAxisId="prob" domain={[0, 1]} tick={{ fill: '#f59e0b', fontSize: 11 }} tickFormatter={v => `${(v * 100).toFixed(0)}%`} />
+              <YAxis yAxisId="prob" domain={[0, 1]} tick={{ fill: '#f59e0b', fontSize: 11 }} tickFormatter={(v: number) => `${(v * 100).toFixed(0)}%`} />
               <YAxis yAxisId="sp" orientation="right" tick={{ fill: '#60a5fa', fontSize: 11 }} />
               <Tooltip
                 contentStyle={{ background: '#1a1a2e', border: '1px solid #333' }}
@@ -167,7 +407,7 @@ export function PredictionLab() {
                   return [value?.toFixed(0), 'S&P 500'];
                 }}
               />
-              <ReferenceLine yAxisId="prob" y={0.5} stroke="#ef4444" strokeDasharray="5 5" label={{ value: "50% 阈值", fill: '#ef4444', fontSize: 11 }} />
+              <ReferenceLine yAxisId="prob" y={0.5} stroke="#ef4444" strokeDasharray="5 5" label={{ value: "50% \u9608\u503c", fill: '#ef4444', fontSize: 11 }} />
               <Area yAxisId="prob" dataKey="probability" fill="#f59e0b" fillOpacity={0.3} stroke="#f59e0b" strokeWidth={1.5} />
               <Line yAxisId="sp" dataKey="sp500" stroke="#60a5fa" strokeWidth={1.5} dot={false} />
             </ComposedChart>
@@ -213,7 +453,7 @@ export function PredictionLab() {
 
       {/* Feature Importance */}
       <section className="lab-card">
-        <h2>特征重要性</h2>
+        <h2>特征重要性 (ML model)</h2>
         <p className="lab-card-desc">正值=预示下跌，负值=预示安全。变化速度类特征（momentum）普遍比绝对水平更重要</p>
         <div className="lab-chart-tall">
           <ResponsiveContainer width="100%" height={400}>
@@ -296,6 +536,172 @@ export function PredictionLab() {
           <div><span className="lab-info-key">训练期</span><span>{model_info.train_period}</span></div>
           <div><span className="lab-info-key">测试期</span><span>{model_info.test_period}</span></div>
           <div><span className="lab-info-key">数据更新</span><span>{model_info.last_updated}</span></div>
+        </div>
+      </section>
+
+      {/* === DATA AUGMENTATION PROPOSALS === */}
+      <section className="lab-card augment-section">
+        <div className="ab-header">
+          <h2>数据增强方案 (Experiment D)</h2>
+          <span className="ab-badge" style={{ background: 'rgba(6, 182, 212, 0.2)', color: '#06b6d4' }}>PROPOSAL</span>
+        </div>
+        <p className="lab-card-desc">
+          当前核心问题：可用训练样本仅 ~740天，正样本（大跌）仅 ~94个。以下是可行的数据增强方案。
+        </p>
+
+        <div className="augment-grid">
+          <div className="augment-card">
+            <div className="augment-card-header">
+              <span className="augment-id">D1</span>
+              <h3>滑动窗口重采样</h3>
+              <span className="augment-difficulty easy">易实现</span>
+            </div>
+            <p className="augment-desc">
+              将当前固定的 20日前瞻窗口改为滑动步长=1天，每天都产生一条样本。
+              理论上可将正样本数量增加 3-5x。
+            </p>
+            <div className="augment-pros-cons">
+              <div className="augment-pro">
+                <span className="augment-tag pro">优势</span>
+                不引入合成数据，样本是真实市场状态
+              </div>
+              <div className="augment-con">
+                <span className="augment-tag con">风险</span>
+                相邻天高度相关（自相关），模型可能过拟合于时间连续性
+              </div>
+              <div className="augment-mitigation">
+                <span className="augment-tag mit">缓解</span>
+                使用 Embargo（隔离期）+ 时间序列交叉验证
+              </div>
+            </div>
+          </div>
+
+          <div className="augment-card">
+            <div className="augment-card-header">
+              <span className="augment-id">D2</span>
+              <h3>SMOTE 过采样</h3>
+              <span className="augment-difficulty medium">中等</span>
+            </div>
+            <p className="augment-desc">
+              对正样本（大跌前特征向量）做插值合成，在特征空间中生成与真实正样本相近的虚拟样本，
+              平衡正负比例至约 1:3。
+            </p>
+            <div className="augment-pros-cons">
+              <div className="augment-pro">
+                <span className="augment-tag pro">优势</span>
+                经典方法，scikit-learn 直接支持。解决类别不平衡
+              </div>
+              <div className="augment-con">
+                <span className="augment-tag con">风险</span>
+                金融时序中特征空间的线性插值不一定反映真实市场状态
+              </div>
+              <div className="augment-mitigation">
+                <span className="augment-tag mit">缓解</span>
+                用 Borderline-SMOTE（只在决策边界附近合成）减少噪声
+              </div>
+            </div>
+          </div>
+
+          <div className="augment-card">
+            <div className="augment-card-header">
+              <span className="augment-id">D3</span>
+              <h3>特征噪声注入</h3>
+              <span className="augment-difficulty medium">中等</span>
+            </div>
+            <p className="augment-desc">
+              对正样本添加高斯噪声（比如 +/- 5% 扰动），生成变体。模拟市场微观结构的随机性。
+            </p>
+            <div className="augment-pros-cons">
+              <div className="augment-pro">
+                <span className="augment-tag pro">优势</span>
+                简单直接，可控噪声幅度
+              </div>
+              <div className="augment-con">
+                <span className="augment-tag con">风险</span>
+                可能产生不符合物理约束的特征组合（如VIX负值）
+              </div>
+              <div className="augment-mitigation">
+                <span className="augment-tag mit">缓解</span>
+                对合成样本做范围裁剪 + 物理约束检查
+              </div>
+            </div>
+          </div>
+
+          <div className="augment-card">
+            <div className="augment-card-header">
+              <span className="augment-id">D4</span>
+              <h3>多阈值目标融合</h3>
+              <span className="augment-difficulty easy">易实现</span>
+            </div>
+            <p className="augment-desc">
+              保持主目标（大于5%跌幅），但用3%和8%阈值的标签做辅助任务。模型先学习「任何显著下跌」的模式，
+              再 fine-tune 到 5% 目标。
+            </p>
+            <div className="augment-pros-cons">
+              <div className="augment-pro">
+                <span className="augment-tag pro">优势</span>
+                不产生合成数据，利用不同严格度的真实标签
+              </div>
+              <div className="augment-con">
+                <span className="augment-tag con">风险</span>
+                3% 跌幅的模式可能与 5% 跌幅不同
+              </div>
+              <div className="augment-mitigation">
+                <span className="augment-tag mit">缓解</span>
+                两阶段训练：先预训练后微调
+              </div>
+            </div>
+          </div>
+
+          <div className="augment-card">
+            <div className="augment-card-header">
+              <span className="augment-id">D5</span>
+              <h3>Bootstrap 集成</h3>
+              <span className="augment-difficulty medium">中等</span>
+            </div>
+            <p className="augment-desc">
+              对训练集做有放回重采样，训练多个模型（类似 Bagging），最终概率取平均。
+              等效于增加数据多样性。
+            </p>
+            <div className="augment-pros-cons">
+              <div className="augment-pro">
+                <span className="augment-tag pro">优势</span>
+                减少单模型方差，概率估计更稳定
+              </div>
+              <div className="augment-con">
+                <span className="augment-tag con">风险</span>
+                不增加信息量，计算成本高
+              </div>
+              <div className="augment-mitigation">
+                <span className="augment-tag mit">缓解</span>
+                配合其他增强方法一起使用效果更好
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="augment-recommendation">
+          <h3>推荐实验顺序</h3>
+          <div className="augment-rec-list">
+            <div className="augment-rec-item">
+              <span className="augment-rec-num">1</span>
+              <div>
+                <strong>D1 滑动窗口</strong> — 最低风险，不引入合成数据，预计正样本 x3-5
+              </div>
+            </div>
+            <div className="augment-rec-item">
+              <span className="augment-rec-num">2</span>
+              <div>
+                <strong>D4 多阈值融合</strong> — 利用3%/8%的辅助标签做迁移学习
+              </div>
+            </div>
+            <div className="augment-rec-item">
+              <span className="augment-rec-num">3</span>
+              <div>
+                <strong>D2 SMOTE</strong> — 如果前两步效果有限，再尝试合成过采样
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 

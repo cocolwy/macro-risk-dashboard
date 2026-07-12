@@ -1,0 +1,11 @@
+---
+description: Prediction Lab experiment conventions
+globs: dashboard/predict_model.py,dashboard/frontend/src/PredictionLab.tsx
+alwaysApply: false
+---
+
+# Prediction Lab Rules
+
+- Every AB test / model experiment MUST be displayed on the Prediction Lab dashboard page, not just printed in terminal.
+- Each experiment card should show: model name, key metrics (AUC, Precision, Recall, F1), event backtest results, and current prediction.
+- When adding a new experiment, keep previous experiments visible for side-by-side comparison.

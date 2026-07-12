@@ -22,5 +22,8 @@ workspace/
 # Legacy output
 output/
 
+# Chat logs
+conversations.json
+
 # Claude settings
 .claude/
