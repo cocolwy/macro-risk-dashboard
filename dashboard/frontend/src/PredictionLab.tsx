@@ -159,6 +159,15 @@ function ExperimentGroup({ title, desc, experiments, sp500Timeline, colors }: {
     return events;
   }, [experiments]);
 
+  const dropMarkers = useMemo(() =>
+    [...allEvents.values()].map(e => ({
+      date: e.event_date,
+      label: e.name,
+      dropPct: e.drop_pct,
+    })),
+    [allEvents],
+  );
+
   return (
     <div className="ab-group">
       <h3 className="ab-group-title">{title}</h3>
@@ -205,9 +214,10 @@ function ExperimentGroup({ title, desc, experiments, sp500Timeline, colors }: {
             name: exp.name,
             color: colors[i],
           }))}
+          dropEvents={dropMarkers}
           showLegend
-          probHeight={240}
-          spHeight={110}
+          probHeight={260}
+          spHeight={130}
         />
       </div>
 
@@ -524,6 +534,15 @@ export function PredictionLab() {
     [probWithSP, mainRange],
   );
 
+  const mainDropMarkers = useMemo(() =>
+    (metrics?.events_backtest ?? []).map(e => ({
+      date: e.event_date,
+      label: e.name,
+      dropPct: e.drop_pct,
+    })),
+    [metrics],
+  );
+
   if (error) return <div className="lab-error">Failed to load model data: {error}</div>;
   if (!metrics) return <div className="lab-loading">Loading Prediction Lab...</div>;
 
@@ -587,8 +606,9 @@ export function PredictionLab() {
           <StackedProbSPChart
             data={mainChartData}
             series={[{ dataKey: 'probability', name: '崩盘概率', color: '#d6457a', type: 'area' }]}
-            probHeight={260}
-            spHeight={110}
+            dropEvents={mainDropMarkers}
+            probHeight={270}
+            spHeight={130}
           />
         </div>
       </section>

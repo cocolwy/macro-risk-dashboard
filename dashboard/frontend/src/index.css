@@ -669,16 +669,82 @@ body {
   display: flex;
   flex-direction: column;
   gap: 0;
+  background: linear-gradient(180deg, var(--bg-1) 0%, var(--bg-3) 100%);
+  border: 1px solid var(--border-blue);
+  border-radius: 12px;
+  padding: 16px 12px 14px;
+  box-shadow: 0 2px 12px rgba(90, 166, 255, 0.06);
 }
-.stacked-charts .recharts-responsive-container:first-child {
-  margin-bottom: -4px;
+
+.stacked-charts-prob {
+  padding-bottom: 4px;
 }
+
+.stacked-charts-divider {
+  height: 1px;
+  margin: 12px 8px 10px 48px;
+  background: linear-gradient(90deg, transparent, var(--border-blue) 15%, var(--pink-200) 50%, var(--border-blue) 85%, transparent);
+}
+
+.stacked-charts-sp {
+  padding-top: 2px;
+}
+
+.stacked-sp-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 8px 10px 48px;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
 .stacked-sp-label {
-  font-size: 11px;
-  font-weight: 600;
+  font-size: 12px;
+  font-weight: 700;
   color: #3a82d6;
-  padding: 4px 0 2px 58px;
   letter-spacing: 0.3px;
+}
+
+.stacked-sp-hint {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  color: var(--text-3);
+}
+
+.drop-marker-swatch {
+  display: inline-block;
+  width: 14px;
+  height: 0;
+  border-top: 2px dashed #dc2626;
+}
+
+.stacked-drop-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 10px 8px 0 48px;
+}
+
+.stacked-drop-tag {
+  font-size: 10px;
+  color: var(--text-2);
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 12px;
+  padding: 3px 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+
+.stacked-drop-tag strong {
+  color: #dc2626;
+  font-weight: 700;
+  margin-left: 2px;
 }
 
 .ab-chart-section {
