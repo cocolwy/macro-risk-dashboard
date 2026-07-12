@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import {
-  LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer,
+  XAxis, YAxis, Tooltip, ResponsiveContainer,
   BarChart, Bar, Cell, ReferenceLine, Area, AreaChart,
-  ComposedChart, CartesianGrid, Legend
+  ComposedChart, CartesianGrid, Line
 } from 'recharts';
 
 interface ModelInfo {
