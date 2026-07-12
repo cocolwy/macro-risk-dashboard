@@ -33,5 +33,20 @@
     "turbulence",
     "composite_score",
     "momentum"
-  ]
+  ],
+  "composite_score": {
+    "score": 15.6,
+    "label": "Low Risk",
+    "level": "low",
+    "color": "#34d399",
+    "action": "\u6b63\u5e38\u6301\u4ed3",
+    "components": {
+      "term_spread": 38.9,
+      "vix": 14.9,
+      "absorption_ratio": 7.5,
+      "turbulence": 12.9,
+      "breadth": 3.7
+    },
+    "date": "2026-07-10"
+  }
 }

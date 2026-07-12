@@ -396,6 +396,7 @@ def main():
 
     # Compute composite score
     print("[*] Computing composite risk score...")
+    composite_summary = None
     try:
         from composite_score import compute_composite_score, get_score_label
         scores = compute_composite_score(all_data)
@@ -403,6 +404,15 @@ def main():
         if scores:
             latest_score = scores[-1]
             label = get_score_label(latest_score["composite_score"])
+            composite_summary = {
+                "score": latest_score["composite_score"],
+                "label": label["label"],
+                "level": label["level"],
+                "color": label["color"],
+                "action": label["action"],
+                "components": latest_score["components"],
+                "date": latest_score["date"],
+            }
             print(f"  ✓ Score: {latest_score['composite_score']:.0f}/100 [{label['label']}]")
     except Exception as e:
         print(f"  ✗ Failed: {e}")
@@ -426,6 +436,8 @@ def main():
         "last_updated": all_data["last_updated"],
         "indicators_available": [k for k in all_data if k not in ("alerts", "last_updated") and all_data[k]],
     }
+    if composite_summary:
+        summary["composite_score"] = composite_summary
     with open(DATA_DIR / "summary.json", "w") as f:
         json.dump(summary, f, indent=2)
     print(f"  Saved summary.json")
