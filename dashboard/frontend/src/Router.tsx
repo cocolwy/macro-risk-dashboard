@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
-import App from './App';
-import { PredictionLab } from './PredictionLab';
+import { useState, useEffect, lazy, Suspense } from 'react';
+
+const App = lazy(() => import('./App'));
+const PredictionLab = lazy(() => import('./PredictionLab').then(m => ({ default: m.PredictionLab })));
 
 type Page = 'dashboard' | 'lab';
 
@@ -40,7 +41,9 @@ export function Router() {
           <span className="nav-badge-dev">DEV</span>
         </button>
       </nav>
-      {page === 'dashboard' ? <App /> : <PredictionLab />}
+      <Suspense fallback={<div className="loading">Loading...</div>}>
+        {page === 'dashboard' ? <App /> : <PredictionLab />}
+      </Suspense>
     </>
   );
 }

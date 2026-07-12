@@ -63,7 +63,8 @@ export function resolveCompositeScore(
 }
 
 async function fetchJson<T>(filename: string): Promise<T> {
-  const resp = await fetch(`${DATA_BASE_URL}/${filename}?_=${Date.now()}`);
+  const cacheBust = import.meta.env.DEV ? `?_=${Date.now()}` : '';
+  const resp = await fetch(`${DATA_BASE_URL}/${filename}${cacheBust}`);
   if (!resp.ok) throw new Error(`Failed to fetch ${filename}: ${resp.status}`);
   return resp.json();
 }

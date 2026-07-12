@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import {
   XAxis, YAxis, Tooltip, ResponsiveContainer,
   BarChart, Bar, Cell, ReferenceLine, Area, AreaChart,
   ComposedChart, CartesianGrid, Line, Legend
 } from 'recharts';
+import { downsample, mergeExperimentTimeline, CHART_TOOLTIP_STYLE } from './utils/chart';
 
 interface ModelInfo {
   name: string;
@@ -143,23 +144,19 @@ function ExperimentGroup({ title, desc, experiments, sp500Timeline, colors }: {
 }) {
   const [range, setRange] = useState<DateRange>('1y');
 
-  const sp500Map = new Map(sp500Timeline.map(s => [s.date, s.sp500]));
-  const baseTimeline = experiments.reduce((longest, e) =>
-    e.probability_timeline.length > longest.length ? e.probability_timeline : longest, [] as ProbPoint[]);
+  const chartData = useMemo(() => {
+    const full = mergeExperimentTimeline(experiments, sp500Timeline);
+    const filtered = filterByRange(full, range);
+    return downsample(filtered);
+  }, [experiments, sp500Timeline, range]);
 
-  const fullTimeline = baseTimeline.map(p => {
-    const row: Record<string, unknown> = { date: p.date, sp500: sp500Map.get(p.date) };
-    experiments.forEach((exp, i) => {
-      const match = exp.probability_timeline.find(ep => ep.date === p.date);
-      row[`prob_${i}`] = match?.probability;
-    });
-    return row;
-  });
-
-  const mergedTimeline = filterByRange(fullTimeline as (Record<string, unknown> & { date: string })[], range);
-
-  const allEvents = new Map<string, EventBacktest>();
-  experiments.forEach(exp => exp.events_backtest.forEach(e => { if (!allEvents.has(e.name)) allEvents.set(e.name, e); }));
+  const allEvents = useMemo(() => {
+    const events = new Map<string, EventBacktest>();
+    experiments.forEach(exp => exp.events_backtest.forEach(e => {
+      if (!events.has(e.name)) events.set(e.name, e);
+    }));
+    return events;
+  }, [experiments]);
 
   return (
     <div className="ab-group">
@@ -201,14 +198,14 @@ function ExperimentGroup({ title, desc, experiments, sp500Timeline, colors }: {
           ))}
         </div>
         <ResponsiveContainer width="100%" height={280}>
-          <ComposedChart data={mergedTimeline} margin={{ top: 10, right: 40, left: 10, bottom: 0 }}>
+          <ComposedChart data={chartData} margin={{ top: 10, right: 40, left: 10, bottom: 0 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#f1d8e2" />
             <XAxis dataKey="date" tick={{ fill: '#8a7882', fontSize: 10 }}
               tickFormatter={(d: string) => d.slice(5, 10).replace('-', '/')}
               minTickGap={50} />
             <YAxis yAxisId="prob" domain={[0, 1]} tick={{ fill: '#8a7882', fontSize: 11 }} tickFormatter={(v: number) => `${(v * 100).toFixed(0)}%`} />
             <YAxis yAxisId="sp" orientation="right" tick={{ fill: '#3a82d6', fontSize: 11 }} />
-            <Tooltip contentStyle={{ background: '#fff', border: '1px solid #f1d8e2', borderRadius: 8, boxShadow: '0 4px 12px rgba(255,168,196,0.12)' }}
+            <Tooltip contentStyle={CHART_TOOLTIP_STYLE}
               formatter={(value: number, name: string) => {
                 if (name === 'sp500') return [value?.toFixed(0), 'S&P 500'];
                 const idx = parseInt(name.replace('prob_', ''));
@@ -224,9 +221,9 @@ function ExperimentGroup({ title, desc, experiments, sp500Timeline, colors }: {
               label={{ value: "50%", fill: '#dc2626', fontSize: 10, position: 'right' }} />
             {experiments.map((_, i) => (
               <Line key={i} yAxisId="prob" dataKey={`prob_${i}`}
-                stroke={colors[i]} strokeWidth={1.5} dot={false} />
+                stroke={colors[i]} strokeWidth={1.5} dot={false} isAnimationActive={false} />
             ))}
-            <Line yAxisId="sp" dataKey="sp500" stroke="#3a82d6" strokeWidth={1.5} dot={false} strokeDasharray="4 2" />
+            <Line yAxisId="sp" dataKey="sp500" stroke="#3a82d6" strokeWidth={1.5} dot={false} strokeDasharray="4 2" isAnimationActive={false} />
           </ComposedChart>
         </ResponsiveContainer>
       </div>
@@ -530,15 +527,24 @@ export function PredictionLab() {
       .catch(e => setError(e.message));
   }, []);
 
+  const probWithSP = useMemo(() => {
+    if (!metrics) return [];
+    const spMap = new Map(metrics.sp500_timeline.map(s => [s.date, s.sp500]));
+    return metrics.probability_timeline.map(p => ({
+      ...p,
+      sp500: spMap.get(p.date),
+    }));
+  }, [metrics]);
+
+  const mainChartData = useMemo(
+    () => downsample(filterByRange(probWithSP, mainRange)),
+    [probWithSP, mainRange],
+  );
+
   if (error) return <div className="lab-error">Failed to load model data: {error}</div>;
   if (!metrics) return <div className="lab-loading">Loading Prediction Lab...</div>;
 
   const { model_info, current_prediction, feature_importance, threshold_analysis, events_backtest } = metrics;
-
-  const probWithSP = metrics.probability_timeline.map(p => {
-    const sp = metrics.sp500_timeline.find(s => s.date === p.date);
-    return { ...p, sp500: sp?.sp500 };
-  });
 
   const sigColor = signalColor(current_prediction.signal);
 
@@ -596,7 +602,7 @@ export function PredictionLab() {
         </div>
         <div className="lab-chart-tall">
           <ResponsiveContainer width="100%" height={320}>
-            <ComposedChart data={filterByRange(probWithSP, mainRange)} margin={{ top: 10, right: 40, left: 10, bottom: 0 }}>
+            <ComposedChart data={mainChartData} margin={{ top: 10, right: 40, left: 10, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#f1d8e2" />
               <XAxis dataKey="date" tick={{ fill: '#8a7882', fontSize: 11 }}
                 tickFormatter={(d: string) => d.slice(5, 10).replace('-', '/')}
@@ -604,15 +610,15 @@ export function PredictionLab() {
               <YAxis yAxisId="prob" domain={[0, 1]} tick={{ fill: '#d6457a', fontSize: 11 }} tickFormatter={(v: number) => `${(v * 100).toFixed(0)}%`} />
               <YAxis yAxisId="sp" orientation="right" tick={{ fill: '#3a82d6', fontSize: 11 }} />
               <Tooltip
-                contentStyle={{ background: '#ffffff', border: '1px solid #f1d8e2', borderRadius: 8, boxShadow: '0 4px 12px rgba(255,168,196,0.12)' }}
+                contentStyle={CHART_TOOLTIP_STYLE}
                 formatter={(value: number, name: string) => {
                   if (name === 'probability') return [`${(value * 100).toFixed(1)}%`, '崩盘概率'];
                   return [value?.toFixed(0), 'S&P 500'];
                 }}
               />
               <ReferenceLine yAxisId="prob" y={0.5} stroke="#dc2626" strokeDasharray="5 5" label={{ value: "50% \u9608\u503c", fill: '#dc2626', fontSize: 11 }} />
-              <Area yAxisId="prob" dataKey="probability" fill="#ffa6c4" fillOpacity={0.3} stroke="#d6457a" strokeWidth={1.5} />
-              <Line yAxisId="sp" dataKey="sp500" stroke="#3a82d6" strokeWidth={1.5} dot={false} />
+              <Area yAxisId="prob" dataKey="probability" fill="#ffa6c4" fillOpacity={0.3} stroke="#d6457a" strokeWidth={1.5} isAnimationActive={false} />
+              <Line yAxisId="sp" dataKey="sp500" stroke="#3a82d6" strokeWidth={1.5} dot={false} isAnimationActive={false} />
             </ComposedChart>
           </ResponsiveContainer>
         </div>
@@ -665,10 +671,10 @@ export function PredictionLab() {
               <XAxis type="number" tick={{ fill: '#8a7882', fontSize: 11 }} />
               <YAxis type="category" dataKey="feature" tick={{ fill: '#5a4452', fontSize: 11 }}
                 tickFormatter={(v: string) => FEATURE_LABELS[v] || v} width={130} />
-              <Tooltip contentStyle={{ background: '#ffffff', border: '1px solid #f1d8e2', borderRadius: 8, boxShadow: '0 4px 12px rgba(255,168,196,0.12)' }}
+              <Tooltip contentStyle={CHART_TOOLTIP_STYLE}
                 formatter={(v: number) => [v.toFixed(4), '权重']} />
               <ReferenceLine x={0} stroke="#d6e6f7" />
-              <Bar dataKey="weight">
+              <Bar dataKey="weight" isAnimationActive={false}>
                 {feature_importance.slice(0, 15).map((entry, i) => (
                   <Cell key={i} fill={entry.weight > 0 ? '#dc2626' : '#16a34a'} />
                 ))}
@@ -719,7 +725,7 @@ export function PredictionLab() {
               <CartesianGrid strokeDasharray="3 3" stroke="#f1d8e2" />
               <XAxis dataKey="fpr" label={{ value: 'False Positive Rate', fill: '#8a7882', position: 'bottom', offset: 0 }} tick={{ fill: '#8a7882', fontSize: 11 }} />
               <YAxis label={{ value: 'True Positive Rate', fill: '#8a7882', angle: -90, position: 'insideLeft' }} tick={{ fill: '#8a7882', fontSize: 11 }} />
-              <Area dataKey="tpr" fill="#8cc3ff" fillOpacity={0.3} stroke="#3a82d6" strokeWidth={2} />
+              <Area dataKey="tpr" fill="#8cc3ff" fillOpacity={0.3} stroke="#3a82d6" strokeWidth={2} isAnimationActive={false} />
               <ReferenceLine segment={[{ x: 0, y: 0 }, { x: 1, y: 1 }]} stroke="#d6e6f7" strokeDasharray="5 5" />
             </AreaChart>
           </ResponsiveContainer>

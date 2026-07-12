@@ -447,6 +447,30 @@ def main():
     metrics["experiments"].append(d1_comparison)
     print(f"  D1 AUC: {d1_comparison['auc']} (embargo={EMBARGO}d, train={len(X_train_d1)}, test={len(X_test_d1)})")
 
+    # --- AND Ensemble: D1 Slim+Embargo AND Human Logic ---
+    print("Building AND Ensemble (D1 x Human)...")
+    d1_series = pd.Series(d1_probs_all, index=X_slim.index)
+    human_series = pd.Series(human_probs_all, index=X_clipped.index)
+
+    common_dates = d1_series.index.intersection(human_series.index)
+    and_probs_all = np.minimum(d1_series[common_dates].values, human_series[common_dates].values)
+
+    d1_test_start = min(int(len(X_slim) * 0.7) + EMBARGO, len(X_slim))
+    d1_test_dates = X_slim.index[d1_test_start:]
+    test_mask = common_dates.isin(d1_test_dates)
+    and_probs_test = and_probs_all[test_mask]
+
+    y_common = y_slim.reindex(common_dates)
+    y_and_test = y_common[test_mask].values
+
+    and_ref_X = pd.DataFrame(index=common_dates)
+    and_comparison = build_comparison_metrics(
+        pd.Series(y_and_test), and_probs_test, and_probs_all,
+        and_ref_X, df['sp500'], "AND (D1 x Human)", KEY_EVENTS,
+    )
+    metrics["experiments"].append(and_comparison)
+    print(f"  AND AUC: {and_comparison['auc']} (test={len(y_and_test)})")
+
     # Save outputs
     with open(DATA_DIR / 'model_metrics.json', 'w') as f:
         json.dump(metrics, f)

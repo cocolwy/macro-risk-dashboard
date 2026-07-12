@@ -9,6 +9,7 @@ import {
   Legend,
 } from 'recharts';
 import { DataPoint } from '../api';
+import { downsample, CHART_TOOLTIP_STYLE } from '../utils/chart';
 
 interface MultiLineChartProps {
   title: string;
@@ -20,9 +21,7 @@ interface MultiLineChartProps {
 }
 
 export function MultiLineChart({ title, subtitle, data, lines, className = '', explanation }: MultiLineChartProps) {
-  const displayData = data.length > 500
-    ? data.filter((_, i) => i % Math.ceil(data.length / 500) === 0 || i === data.length - 1)
-    : data;
+  const displayData = downsample(data);
 
   return (
     <div className={`chart-card ${className}`}>
@@ -38,13 +37,10 @@ export function MultiLineChart({ title, subtitle, data, lines, className = '', e
             minTickGap={60}
           />
           <YAxis tick={{ fill: '#8a7882', fontSize: 11 }} width={50} />
-          <Tooltip
-            contentStyle={{ background: '#ffffff', border: '1px solid #f1d8e2', borderRadius: 8, boxShadow: '0 4px 12px rgba(255,168,196,0.12)' }}
-            labelStyle={{ color: '#5a4452' }}
-          />
+          <Tooltip contentStyle={CHART_TOOLTIP_STYLE} labelStyle={{ color: '#5a4452' }} />
           <Legend wrapperStyle={{ fontSize: 12, color: '#5a4452' }} />
           {lines.map((l) => (
-            <Line key={l.key} type="monotone" dataKey={l.key} stroke={l.color} name={l.name} strokeWidth={1.5} dot={false} />
+            <Line key={l.key} type="monotone" dataKey={l.key} stroke={l.color} name={l.name} strokeWidth={1.5} dot={false} isAnimationActive={false} />
           ))}
         </LineChart>
       </ResponsiveContainer>

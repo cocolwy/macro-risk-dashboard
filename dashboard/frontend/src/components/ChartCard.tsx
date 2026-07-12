@@ -11,6 +11,7 @@ import {
   AreaChart,
 } from 'recharts';
 import { DataPoint } from '../api';
+import { downsample, CHART_TOOLTIP_STYLE } from '../utils/chart';
 
 interface ChartCardProps {
   title: string;
@@ -41,9 +42,7 @@ export function ChartCard({
   alertLevel,
   explanation,
 }: ChartCardProps) {
-  const displayData = data.length > 500
-    ? data.filter((_, i) => i % Math.ceil(data.length / 500) === 0 || i === data.length - 1)
-    : data;
+  const displayData = downsample(data);
 
   const alertStyle = alertLevel === 'danger'
     ? { borderColor: '#fca5a5', boxShadow: '0 4px 16px rgba(220, 38, 38, 0.12)', animation: 'pulse-danger 2s infinite' }
@@ -73,14 +72,11 @@ export function ChartCard({
               minTickGap={60}
             />
             <YAxis tick={{ fill: '#8a7882', fontSize: 11 }} width={50} />
-            <Tooltip
-              contentStyle={{ background: '#ffffff', border: '1px solid #f1d8e2', borderRadius: 8, boxShadow: '0 4px 12px rgba(255,168,196,0.12)' }}
-              labelStyle={{ color: '#5a4452' }}
-            />
+            <Tooltip contentStyle={CHART_TOOLTIP_STYLE} labelStyle={{ color: '#5a4452' }} />
             {referenceLine && (
               <ReferenceLine y={referenceLine.y} stroke={referenceLine.color} strokeDasharray="5 5" label={{ value: referenceLine.label, fill: referenceLine.color, fontSize: 11 }} />
             )}
-            <Area type="monotone" dataKey={dataKey} stroke={color} fill={`url(#${gradientId || 'gradient'})`} strokeWidth={1.5} dot={false} />
+            <Area type="monotone" dataKey={dataKey} stroke={color} fill={`url(#${gradientId || 'gradient'})`} strokeWidth={1.5} dot={false} isAnimationActive={false} />
           </AreaChart>
         ) : (
           <LineChart data={displayData} margin={{ top: 5, right: 5, bottom: 5, left: 5 }}>
@@ -92,14 +88,11 @@ export function ChartCard({
               minTickGap={60}
             />
             <YAxis tick={{ fill: '#8a7882', fontSize: 11 }} width={50} />
-            <Tooltip
-              contentStyle={{ background: '#ffffff', border: '1px solid #f1d8e2', borderRadius: 8, boxShadow: '0 4px 12px rgba(255,168,196,0.12)' }}
-              labelStyle={{ color: '#5a4452' }}
-            />
+            <Tooltip contentStyle={CHART_TOOLTIP_STYLE} labelStyle={{ color: '#5a4452' }} />
             {referenceLine && (
               <ReferenceLine y={referenceLine.y} stroke={referenceLine.color} strokeDasharray="5 5" label={{ value: referenceLine.label, fill: referenceLine.color, fontSize: 11 }} />
             )}
-            <Line type="monotone" dataKey={dataKey} stroke={color} strokeWidth={1.5} dot={false} />
+            <Line type="monotone" dataKey={dataKey} stroke={color} strokeWidth={1.5} dot={false} isAnimationActive={false} />
           </LineChart>
         )}
       </ResponsiveContainer>
