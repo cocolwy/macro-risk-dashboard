@@ -634,6 +634,7 @@ body {
   letter-spacing: 0.5px;
 }
 /* === Date Range Picker === */
+.range-picker {
   display: flex;
   gap: 4px;
   margin-bottom: 12px;
@@ -661,6 +662,23 @@ body {
   border-color: var(--pink-300);
   color: var(--pink-500);
   box-shadow: 0 2px 8px rgba(255, 168, 196, 0.15);
+}
+
+/* === Stacked Prob + SP500 Charts === */
+.stacked-charts {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.stacked-charts .recharts-responsive-container:first-child {
+  margin-bottom: -4px;
+}
+.stacked-sp-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #3a82d6;
+  padding: 4px 0 2px 58px;
+  letter-spacing: 0.3px;
 }
 
 .ab-chart-section {

@@ -60,16 +60,12 @@ export function StackedProbSPChart({
             <Tooltip
               contentStyle={CHART_TOOLTIP_STYLE}
               formatter={(value: number, name: string) => {
-                const s = series.find(x => x.dataKey === name);
+                const s = series.find(x => x.name === name || x.dataKey === name);
                 return [`${(value * 100).toFixed(1)}%`, s?.name ?? name];
               }}
               labelFormatter={(label) => String(label)}
             />
-            {showLegend && (
-              <Legend verticalAlign="top" height={28}
-                formatter={(value: string) => series.find(s => s.dataKey === value)?.name ?? value}
-              />
-            )}
+            {showLegend && <Legend verticalAlign="top" height={28} />}
             {showThreshold && (
               <ReferenceLine y={0.5} stroke="#dc2626" strokeDasharray="5 5"
                 label={{ value: '50%', fill: '#dc2626', fontSize: 10, position: 'right' }} />
@@ -79,13 +75,13 @@ export function StackedProbSPChart({
                 key={s.dataKey}
                 type="monotone"
                 dataKey={s.dataKey}
+                name={s.name}
                 stroke={s.color}
                 fill={s.color}
                 fillOpacity={0.25}
                 strokeWidth={1.5}
                 dot={false}
                 isAnimationActive={false}
-                name={s.dataKey}
               />
             ))}
           </AreaChart>
@@ -102,16 +98,12 @@ export function StackedProbSPChart({
             <Tooltip
               contentStyle={CHART_TOOLTIP_STYLE}
               formatter={(value: number, name: string) => {
-                const s = series.find(x => x.dataKey === name);
+                const s = series.find(x => x.name === name || x.dataKey === name);
                 return [`${(value * 100).toFixed(1)}%`, s?.name ?? name];
               }}
               labelFormatter={(label) => String(label)}
             />
-            {showLegend && (
-              <Legend verticalAlign="top" height={28}
-                formatter={(value: string) => series.find(s => s.dataKey === value)?.name ?? value}
-              />
-            )}
+            {showLegend && <Legend verticalAlign="top" height={28} />}
             {showThreshold && (
               <ReferenceLine y={0.5} stroke="#dc2626" strokeDasharray="5 5"
                 label={{ value: '50%', fill: '#dc2626', fontSize: 10, position: 'right' }} />
@@ -121,12 +113,12 @@ export function StackedProbSPChart({
                 key={s.dataKey}
                 type="monotone"
                 dataKey={s.dataKey}
+                name={s.name}
                 stroke={s.color}
                 strokeWidth={1.5}
                 strokeDasharray={s.strokeDasharray}
                 dot={false}
                 isAnimationActive={false}
-                name={s.dataKey}
               />
             ))}
           </LineChart>
