@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { fetchAllData, DataPoint, Summary, MomentumData } from './api';
+import { fetchAllData, resolveCompositeScore, DataPoint, Summary, MomentumData } from './api';
 import { ChartCard } from './components/ChartCard';
 import { MultiLineChart } from './components/MultiLineChart';
 import { AlertsPanel } from './components/AlertsPanel';
@@ -57,6 +57,7 @@ export default function App() {
   }
 
   const { summary } = data;
+  const compositeScoreInfo = resolveCompositeScore(summary, data.compositeScore);
 
   const hasDanger = Object.values(summary.alerts).some((a) => a.level === 'danger');
   const hasWarning = Object.values(summary.alerts).some((a) => a.level === 'warning');
@@ -83,13 +84,13 @@ export default function App() {
 
       <AlertsPanel alerts={summary.alerts} />
 
-      {summary.composite_score && (
+      {compositeScoreInfo && (
         <ScoreGauge
-          score={summary.composite_score.score}
-          label={summary.composite_score.label}
-          level={summary.composite_score.level}
-          action={summary.composite_score.action}
-          components={summary.composite_score.components}
+          score={compositeScoreInfo.score}
+          label={compositeScoreInfo.label}
+          level={compositeScoreInfo.level}
+          action={compositeScoreInfo.action}
+          components={compositeScoreInfo.components}
           momentum={data.momentum}
         />
       )}

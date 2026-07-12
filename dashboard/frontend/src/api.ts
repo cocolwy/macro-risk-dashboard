@@ -31,8 +31,39 @@ const DATA_BASE_URL = import.meta.env.PROD
   ? './data'
   : '/data';
 
+function getScoreLabel(score: number) {
+  if (score <= 20) return { level: 'low', label: 'Low Risk', color: '#34d399', action: '正常持仓' };
+  if (score <= 40) return { level: 'moderate', label: 'Moderate', color: '#86efac', action: '保持关注' };
+  if (score <= 60) return { level: 'elevated', label: 'Elevated', color: '#fbbf24', action: '审视仓位，准备防御' };
+  if (score <= 80) return { level: 'high', label: 'High Risk', color: '#fb923c', action: '减仓/增加对冲' };
+  return { level: 'extreme', label: 'Extreme', color: '#f87171', action: '大幅减仓/现金为王' };
+}
+
+export function resolveCompositeScore(
+  summary: Summary,
+  series: DataPoint[],
+): NonNullable<Summary['composite_score']> | undefined {
+  if (summary.composite_score) return summary.composite_score;
+  if (series.length === 0) return undefined;
+
+  const latest = series[series.length - 1];
+  const score = Number(latest.composite_score);
+  if (!Number.isFinite(score)) return undefined;
+
+  const label = getScoreLabel(score);
+  return {
+    score,
+    label: label.label,
+    level: label.level,
+    color: label.color,
+    action: label.action,
+    components: (latest.components as unknown as Record<string, number> | undefined) ?? {},
+    date: String(latest.date),
+  };
+}
+
 async function fetchJson<T>(filename: string): Promise<T> {
-  const resp = await fetch(`${DATA_BASE_URL}/${filename}`);
+  const resp = await fetch(`${DATA_BASE_URL}/${filename}?_=${Date.now()}`);
   if (!resp.ok) throw new Error(`Failed to fetch ${filename}: ${resp.status}`);
   return resp.json();
 }
