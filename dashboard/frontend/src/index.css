@@ -633,6 +633,37 @@ body {
   font-weight: 700;
   letter-spacing: 0.5px;
 }
+/* === Date Range Picker === */
+.range-picker {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 12px;
+  justify-content: flex-end;
+}
+.range-btn {
+  padding: 4px 14px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--bg-1);
+  color: var(--text-2);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  letter-spacing: 0.3px;
+}
+.range-btn:hover {
+  border-color: var(--pink-300);
+  color: var(--text-1);
+  background: var(--bg-2);
+}
+.range-btn.active {
+  background: linear-gradient(135deg, var(--pink-100), var(--blue-100));
+  border-color: var(--pink-300);
+  color: var(--pink-500);
+  box-shadow: 0 2px 8px rgba(255, 168, 196, 0.15);
+}
+
 .ab-chart-section {
   margin-top: 20px;
 }

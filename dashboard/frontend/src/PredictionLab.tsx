@@ -113,20 +113,41 @@ const FEATURE_LABELS: Record<string, string> = {
   'vix_10d_chg': 'VIX 10日变化',
 };
 
-const EXP_COLORS = ['#d6457a', '#3a82d6', '#16a34a', '#dc2626', '#8b5cf6'];
+const EXP_COLORS = ['#d6457a', '#3a82d6', '#16a34a', '#dc2626', '#8b5cf6', '#06b6d4'];
 
 function signalColor(signal: string) {
   return signal === 'elevated' ? '#dc2626' : signal === 'watch' ? '#b45309' : '#16a34a';
 }
 
+type DateRange = '3m' | '6m' | '1y' | '2y' | 'all';
+const RANGE_OPTIONS: { key: DateRange; label: string }[] = [
+  { key: '3m', label: '3M' },
+  { key: '6m', label: '6M' },
+  { key: '1y', label: '1Y' },
+  { key: '2y', label: '2Y' },
+  { key: 'all', label: 'ALL' },
+];
+
+function filterByRange<T extends { date: string }>(data: T[], range: DateRange): T[] {
+  if (range === 'all' || data.length === 0) return data;
+  const lastDate = new Date(data[data.length - 1].date);
+  const months = range === '3m' ? 3 : range === '6m' ? 6 : range === '1y' ? 12 : 24;
+  const cutoff = new Date(lastDate);
+  cutoff.setMonth(cutoff.getMonth() - months);
+  const cutoffStr = cutoff.toISOString().slice(0, 10);
+  return data.filter(d => d.date >= cutoffStr);
+}
+
 function ExperimentGroup({ title, desc, experiments, sp500Timeline, colors }: {
   title: string; desc: string; experiments: ExperimentData[]; sp500Timeline: SP500Point[]; colors: string[];
 }) {
+  const [range, setRange] = useState<DateRange>('1y');
+
   const sp500Map = new Map(sp500Timeline.map(s => [s.date, s.sp500]));
   const baseTimeline = experiments.reduce((longest, e) =>
     e.probability_timeline.length > longest.length ? e.probability_timeline : longest, [] as ProbPoint[]);
 
-  const mergedTimeline = baseTimeline.map(p => {
+  const fullTimeline = baseTimeline.map(p => {
     const row: Record<string, unknown> = { date: p.date, sp500: sp500Map.get(p.date) };
     experiments.forEach((exp, i) => {
       const match = exp.probability_timeline.find(ep => ep.date === p.date);
@@ -134,6 +155,8 @@ function ExperimentGroup({ title, desc, experiments, sp500Timeline, colors }: {
     });
     return row;
   });
+
+  const mergedTimeline = filterByRange(fullTimeline as (Record<string, unknown> & { date: string })[], range);
 
   const allEvents = new Map<string, EventBacktest>();
   experiments.forEach(exp => exp.events_backtest.forEach(e => { if (!allEvents.has(e.name)) allEvents.set(e.name, e); }));
@@ -168,13 +191,27 @@ function ExperimentGroup({ title, desc, experiments, sp500Timeline, colors }: {
       </div>
 
       <div className="ab-chart-section">
+        <div className="range-picker">
+          {RANGE_OPTIONS.map(opt => (
+            <button key={opt.key}
+              className={`range-btn ${range === opt.key ? 'active' : ''}`}
+              onClick={() => setRange(opt.key)}>
+              {opt.label}
+            </button>
+          ))}
+        </div>
         <ResponsiveContainer width="100%" height={280}>
           <ComposedChart data={mergedTimeline} margin={{ top: 10, right: 40, left: 10, bottom: 0 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#f1d8e2" />
-            <XAxis dataKey="date" tick={{ fill: '#8a7882', fontSize: 10 }} interval={Math.floor(mergedTimeline.length / 6)} />
+            <XAxis dataKey="date" tick={{ fill: '#8a7882', fontSize: 10 }}
+              tickFormatter={(d: string) => {
+                if (mergedTimeline.length > 200) return d.slice(0, 7);
+                return d.slice(5);
+              }}
+              interval={Math.max(0, Math.floor(mergedTimeline.length / 8))} />
             <YAxis yAxisId="prob" domain={[0, 1]} tick={{ fill: '#8a7882', fontSize: 11 }} tickFormatter={(v: number) => `${(v * 100).toFixed(0)}%`} />
             <YAxis yAxisId="sp" orientation="right" tick={{ fill: '#3a82d6', fontSize: 11 }} />
-            <Tooltip contentStyle={{ background: '#fff', border: '1px solid #f1d8e2', borderRadius: 8 }}
+            <Tooltip contentStyle={{ background: '#fff', border: '1px solid #f1d8e2', borderRadius: 8, boxShadow: '0 4px 12px rgba(255,168,196,0.12)' }}
               formatter={(value: number, name: string) => {
                 if (name === 'sp500') return [value?.toFixed(0), 'S&P 500'];
                 const idx = parseInt(name.replace('prob_', ''));
@@ -292,6 +329,8 @@ function buildPairwiseTests(experiments: ExperimentData[]): PairwiseTest[] {
   const mlExt = find('ML Extended');
   const humanExt = find('Human Extended');
 
+  const d1 = find('D1');
+
   const pairs: PairwiseTest[] = [];
   if (mlBase && human) pairs.push({
     label: 'Exp 1: 权重来源', variable: '自动学习 vs 人工逻辑',
@@ -303,8 +342,13 @@ function buildPairwiseTests(experiments: ExperimentData[]): PairwiseTest[] {
     baseline: mlBase, challenger: slim,
     baseColor: EXP_COLORS[0], challColor: EXP_COLORS[2],
   });
+  if (slim && d1) pairs.push({
+    label: 'Exp 3: Embargo隔离', variable: '无隔离 vs 20天Embargo（防时序泄露）',
+    baseline: slim, challenger: d1,
+    baseColor: EXP_COLORS[2], challColor: EXP_COLORS[5],
+  });
   if (mlExt && humanExt) pairs.push({
-    label: 'Exp 3: 长期数据', variable: '20年数据: ML vs Human',
+    label: 'Exp 4: 长期数据', variable: '20年数据: ML vs Human',
     baseline: mlExt, challenger: humanExt,
     baseColor: EXP_COLORS[3], challColor: EXP_COLORS[4],
   });
@@ -480,6 +524,7 @@ function WeightComparisonSection({ data }: { data: WeightComparison[] }) {
 export function PredictionLab() {
   const [metrics, setMetrics] = useState<ModelMetrics | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [mainRange, setMainRange] = useState<DateRange>('1y');
 
   useEffect(() => {
     fetch(`${DATA_BASE_URL}/model_metrics.json`)
@@ -542,12 +587,27 @@ export function PredictionLab() {
       {/* Probability Timeline + S&P500 overlay */}
       <section className="lab-card">
         <h2>预测概率 vs 实际走势</h2>
-        <p className="lab-card-desc">橙色区域为模型输出的崩盘概率，蓝线为S&P 500走势。概率超过50%虚线即为预警</p>
+        <p className="lab-card-desc">粉色区域为模型输出的崩盘概率，蓝线为S&P 500走势。概率超过50%虚线即为预警</p>
+        <div className="range-picker">
+          {RANGE_OPTIONS.map(opt => (
+            <button key={opt.key}
+              className={`range-btn ${mainRange === opt.key ? 'active' : ''}`}
+              onClick={() => setMainRange(opt.key)}>
+              {opt.label}
+            </button>
+          ))}
+        </div>
         <div className="lab-chart-tall">
           <ResponsiveContainer width="100%" height={320}>
-            <ComposedChart data={probWithSP} margin={{ top: 10, right: 40, left: 10, bottom: 0 }}>
+            <ComposedChart data={filterByRange(probWithSP, mainRange)} margin={{ top: 10, right: 40, left: 10, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#f1d8e2" />
-              <XAxis dataKey="date" tick={{ fill: '#8a7882', fontSize: 11 }} interval={Math.floor(probWithSP.length / 8)} />
+              <XAxis dataKey="date" tick={{ fill: '#8a7882', fontSize: 11 }}
+                tickFormatter={(d: string) => {
+                  const filtered = filterByRange(probWithSP, mainRange);
+                  if (filtered.length > 200) return d.slice(0, 7);
+                  return d.slice(5);
+                }}
+                interval={Math.max(0, Math.floor(filterByRange(probWithSP, mainRange).length / 8))} />
               <YAxis yAxisId="prob" domain={[0, 1]} tick={{ fill: '#d6457a', fontSize: 11 }} tickFormatter={(v: number) => `${(v * 100).toFixed(0)}%`} />
               <YAxis yAxisId="sp" orientation="right" tick={{ fill: '#3a82d6', fontSize: 11 }} />
               <Tooltip
