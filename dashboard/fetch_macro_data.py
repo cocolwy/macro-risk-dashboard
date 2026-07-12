@@ -271,11 +271,11 @@ def compute_alert_status(data: dict) -> dict:
         ar_std = np.std(ar_values)
         z_score = (latest_ar - ar_mean) / ar_std if ar_std > 0 else 0
         if z_score > 1.5:
-            alerts["absorption_ratio"] = {"level": "danger", "message": f"Market highly coupled (z={z_score:.1f})"}
+            alerts["absorption_ratio"] = {"level": "danger", "message": f"AR={latest_ar:.3f}，偏离均值 {z_score:.1f} 个标准差，市场高度耦合"}
         elif z_score > 1.0:
-            alerts["absorption_ratio"] = {"level": "warning", "message": f"Coupling rising (z={z_score:.1f})"}
+            alerts["absorption_ratio"] = {"level": "warning", "message": f"AR={latest_ar:.3f}，偏离均值 {z_score:.1f} 个标准差，耦合度上升"}
         else:
-            alerts["absorption_ratio"] = {"level": "ok", "message": f"Normal (z={z_score:.1f})"}
+            alerts["absorption_ratio"] = {"level": "ok", "message": f"AR={latest_ar:.3f}，正常范围（偏离 {z_score:.1f} 个标准差）"}
 
     if "turbulence" in data and data["turbulence"]:
         latest_turb = data["turbulence"][-1]["turbulence"]
