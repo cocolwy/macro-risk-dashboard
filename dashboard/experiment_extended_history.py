@@ -26,7 +26,7 @@ from sklearn.metrics import roc_curve, auc
 
 from predict_model import (
     build_features, build_features_slim, compute_target, HUMAN_WEIGHTS, KEY_EVENTS,
-    build_comparison_metrics,
+    build_comparison_metrics, human_model_probs,
 )
 
 DATA_DIR = Path(__file__).parent / 'data'
@@ -161,22 +161,6 @@ def load_extended_data() -> pd.DataFrame:
     df = df.apply(pd.to_numeric, errors='coerce')
     df = df.ffill().dropna(subset=['sp500', 'vix'])
     return df
-
-
-def human_model_probs(X: pd.DataFrame, scaler: StandardScaler, ml_model=None, y_train=None) -> np.ndarray:
-    weights = np.array([HUMAN_WEIGHTS.get(col, 0.0) for col in X.columns])
-    raw_scores = scaler.transform(X) @ weights
-    if y_train is not None and len(y_train) > 0:
-        base_rate = float(y_train.mean())
-        target_logit = np.log(base_rate / (1 - base_rate))
-        median_score = np.median(raw_scores)
-        std_score = np.std(raw_scores)
-        if std_score > 0:
-            scale = 1.5 / std_score
-            bias = target_logit - median_score * scale
-            return 1 / (1 + np.exp(-(raw_scores * scale + bias)))
-    scores = raw_scores
-    return 1 / (1 + np.exp(-scores))
 
 
 EXTENDED_KEY_EVENTS = [

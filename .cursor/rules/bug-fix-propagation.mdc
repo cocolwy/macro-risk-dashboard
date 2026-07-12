@@ -1,0 +1,18 @@
+---
+description: Bug fix propagation — when fixing a bug, propagate the fix to ALL related code
+alwaysApply: true
+---
+
+# Bug Fix Propagation
+
+When fixing a bug or correcting logic in any function/module:
+
+1. **Search for ALL copies and callers.** Before considering the fix done, grep the entire codebase for:
+   - Duplicate implementations of the same function (copy-pasted code)
+   - Other files that import or call the fixed function
+   - Similar logic patterns that may have the same bug
+2. **Fix every instance.** Apply the same fix to every copy/variant found. If there are duplicate implementations, consolidate them into a single source and import from there.
+3. **Verify downstream effects.** If the fix changes output format, value ranges, or behavior, check all consumers (frontend components, data pipelines, tests) that depend on that output.
+4. **Log what was propagated.** In the commit message, list all files that were updated as part of the propagation.
+
+This rule exists because we've had bugs where a fix was applied in one file but a duplicate implementation in another file was left broken (e.g., human_model_probs calibration fixed in predict_model.py but not in experiment_extended_history.py).

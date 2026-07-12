@@ -634,7 +634,6 @@ body {
   letter-spacing: 0.5px;
 }
 /* === Date Range Picker === */
-.range-picker {
   display: flex;
   gap: 4px;
   margin-bottom: 12px;

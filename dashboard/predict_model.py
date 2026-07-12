@@ -178,9 +178,17 @@ def train_and_evaluate(X: pd.DataFrame, y: pd.Series, split_ratio: float = 0.7,
 
 def human_model_probs(X: pd.DataFrame, scaler: StandardScaler, ml_model=None, y_train=None) -> np.ndarray:
     """Compute crash probabilities using manually designed weights.
-    Auto-calibrates scale + bias so mean probability matches base rate."""
+    Auto-calibrates scale + bias so mean probability matches base rate.
+    Zeros out weights for features that are >50% zeros (unreliable data)."""
     weights = np.array([HUMAN_WEIGHTS.get(col, 0.0) for col in X.columns])
+
+    zero_rates = (X == 0).mean()
+    for i, col in enumerate(X.columns):
+        if zero_rates[col] > 0.5:
+            weights[i] = 0.0
+
     raw_scores = scaler.transform(X) @ weights
+
     if y_train is not None and len(y_train) > 0:
         base_rate = float(y_train.mean())
         target_logit = np.log(base_rate / (1 - base_rate))
@@ -189,7 +197,11 @@ def human_model_probs(X: pd.DataFrame, scaler: StandardScaler, ml_model=None, y_
         if std_score > 0:
             scale = 1.5 / std_score
             bias = target_logit - median_score * scale
-            return 1 / (1 + np.exp(-(raw_scores * scale + bias)))
+            calibrated = raw_scores * scale + bias
+            calibrated = np.clip(calibrated, -6, 6)
+            return 1 / (1 + np.exp(-calibrated))
+
+    raw_scores = np.clip(raw_scores, -6, 6)
     return 1 / (1 + np.exp(-raw_scores))
 
 

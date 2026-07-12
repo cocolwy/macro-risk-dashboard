@@ -2,9 +2,10 @@ import { useState, useEffect, useMemo } from 'react';
 import {
   XAxis, YAxis, Tooltip, ResponsiveContainer,
   BarChart, Bar, Cell, ReferenceLine, Area, AreaChart,
-  ComposedChart, CartesianGrid, Line, Legend
+  CartesianGrid,
 } from 'recharts';
 import { downsample, mergeExperimentTimeline, CHART_TOOLTIP_STYLE } from './utils/chart';
+import { StackedProbSPChart } from './components/StackedProbSPChart';
 
 interface ModelInfo {
   name: string;
@@ -197,35 +198,17 @@ function ExperimentGroup({ title, desc, experiments, sp500Timeline, colors }: {
             </button>
           ))}
         </div>
-        <ResponsiveContainer width="100%" height={280}>
-          <ComposedChart data={chartData} margin={{ top: 10, right: 40, left: 10, bottom: 0 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#f1d8e2" />
-            <XAxis dataKey="date" tick={{ fill: '#8a7882', fontSize: 10 }}
-              tickFormatter={(d: string) => d.slice(5, 10).replace('-', '/')}
-              minTickGap={50} />
-            <YAxis yAxisId="prob" domain={[0, 1]} tick={{ fill: '#8a7882', fontSize: 11 }} tickFormatter={(v: number) => `${(v * 100).toFixed(0)}%`} />
-            <YAxis yAxisId="sp" orientation="right" tick={{ fill: '#3a82d6', fontSize: 11 }} />
-            <Tooltip contentStyle={CHART_TOOLTIP_STYLE}
-              formatter={(value: number, name: string) => {
-                if (name === 'sp500') return [value?.toFixed(0), 'S&P 500'];
-                const idx = parseInt(name.replace('prob_', ''));
-                return [`${(value * 100).toFixed(1)}%`, experiments[idx]?.name ?? name];
-              }} />
-            <Legend verticalAlign="top" height={32}
-              formatter={(value: string) => {
-                if (value === 'sp500') return 'S&P 500';
-                const idx = parseInt(value.replace('prob_', ''));
-                return experiments[idx]?.name ?? value;
-              }} />
-            <ReferenceLine yAxisId="prob" y={0.5} stroke="#dc2626" strokeDasharray="5 5"
-              label={{ value: "50%", fill: '#dc2626', fontSize: 10, position: 'right' }} />
-            {experiments.map((_, i) => (
-              <Line key={i} yAxisId="prob" dataKey={`prob_${i}`}
-                stroke={colors[i]} strokeWidth={1.5} dot={false} isAnimationActive={false} />
-            ))}
-            <Line yAxisId="sp" dataKey="sp500" stroke="#3a82d6" strokeWidth={1.5} dot={false} strokeDasharray="4 2" isAnimationActive={false} />
-          </ComposedChart>
-        </ResponsiveContainer>
+        <StackedProbSPChart
+          data={chartData}
+          series={experiments.map((exp, i) => ({
+            dataKey: `prob_${i}`,
+            name: exp.name,
+            color: colors[i],
+          }))}
+          showLegend
+          probHeight={240}
+          spHeight={110}
+        />
       </div>
 
       <div className="ab-tables-row">
@@ -590,7 +573,7 @@ export function PredictionLab() {
       {/* Probability Timeline + S&P500 overlay */}
       <section className="lab-card">
         <h2>预测概率 vs 实际走势</h2>
-        <p className="lab-card-desc">粉色区域为模型输出的崩盘概率，蓝线为S&P 500走势。概率超过50%虚线即为预警</p>
+        <p className="lab-card-desc">上图：模型崩盘概率（0–100%）；下图：S&P 500 独立纵轴，横轴对齐。概率超过 50% 虚线即为预警</p>
         <div className="range-picker">
           {RANGE_OPTIONS.map(opt => (
             <button key={opt.key}
@@ -601,26 +584,12 @@ export function PredictionLab() {
           ))}
         </div>
         <div className="lab-chart-tall">
-          <ResponsiveContainer width="100%" height={320}>
-            <ComposedChart data={mainChartData} margin={{ top: 10, right: 40, left: 10, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f1d8e2" />
-              <XAxis dataKey="date" tick={{ fill: '#8a7882', fontSize: 11 }}
-                tickFormatter={(d: string) => d.slice(5, 10).replace('-', '/')}
-                minTickGap={50} />
-              <YAxis yAxisId="prob" domain={[0, 1]} tick={{ fill: '#d6457a', fontSize: 11 }} tickFormatter={(v: number) => `${(v * 100).toFixed(0)}%`} />
-              <YAxis yAxisId="sp" orientation="right" tick={{ fill: '#3a82d6', fontSize: 11 }} />
-              <Tooltip
-                contentStyle={CHART_TOOLTIP_STYLE}
-                formatter={(value: number, name: string) => {
-                  if (name === 'probability') return [`${(value * 100).toFixed(1)}%`, '崩盘概率'];
-                  return [value?.toFixed(0), 'S&P 500'];
-                }}
-              />
-              <ReferenceLine yAxisId="prob" y={0.5} stroke="#dc2626" strokeDasharray="5 5" label={{ value: "50% \u9608\u503c", fill: '#dc2626', fontSize: 11 }} />
-              <Area yAxisId="prob" dataKey="probability" fill="#ffa6c4" fillOpacity={0.3} stroke="#d6457a" strokeWidth={1.5} isAnimationActive={false} />
-              <Line yAxisId="sp" dataKey="sp500" stroke="#3a82d6" strokeWidth={1.5} dot={false} isAnimationActive={false} />
-            </ComposedChart>
-          </ResponsiveContainer>
+          <StackedProbSPChart
+            data={mainChartData}
+            series={[{ dataKey: 'probability', name: '崩盘概率', color: '#d6457a', type: 'area' }]}
+            probHeight={260}
+            spHeight={110}
+          />
         </div>
       </section>
 
