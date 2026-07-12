@@ -483,8 +483,23 @@ def main():
     metrics["experiments"].append(and_comparison)
     print(f"  AND AUC: {and_comparison['auc']} (test={len(y_and_test)})")
 
+    # Preserve extended experiments from previous runs
+    metrics_path = DATA_DIR / 'model_metrics.json'
+    if metrics_path.exists():
+        try:
+            with open(metrics_path) as f:
+                old_metrics = json.load(f)
+            ext_experiments = [e for e in old_metrics.get('experiments', []) if 'Ext' in e.get('name', '')]
+            if ext_experiments:
+                metrics['experiments'].extend(ext_experiments)
+                print(f"  Preserved {len(ext_experiments)} extended experiments from previous run")
+            if 'experiment_a_info' in old_metrics:
+                metrics['experiment_a_info'] = old_metrics['experiment_a_info']
+        except (json.JSONDecodeError, KeyError):
+            pass
+
     # Save outputs
-    with open(DATA_DIR / 'model_metrics.json', 'w') as f:
+    with open(metrics_path, 'w') as f:
         json.dump(metrics, f)
     print(f"  Saved model_metrics.json")
 
