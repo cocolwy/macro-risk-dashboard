@@ -6,7 +6,12 @@ on:
     paths:
       - 'dashboard/frontend/**'
       - 'dashboard/data/**'
+      - '.github/workflows/deploy-dashboard.yml'
   workflow_dispatch:
+  workflow_run:
+    workflows: ["Update Macro Risk Data"]
+    types: [completed]
+    branches: [main, master]
 
 permissions:
   contents: read
@@ -19,6 +24,7 @@ concurrency:
 
 jobs:
   build:
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -54,6 +60,7 @@ jobs:
           path: dashboard/frontend/dist
 
   deploy:
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
