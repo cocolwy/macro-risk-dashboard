@@ -195,10 +195,20 @@ def main():
     target = compute_target(df['sp500'])
     combined = features.copy()
     combined['target'] = target
-    combined = combined.dropna()
+
+    core_cols = [c for c in combined.columns if c.startswith(('vix_', 'sp500_'))]
+    core_cols.append('target')
+    combined = combined.dropna(subset=core_cols)
+    combined = combined.fillna(0)
+
     X = combined.drop('target', axis=1).clip(-10, 10)
     y = combined['target']
     print(f"  {len(X)} usable samples, {int(y.sum())} positive ({y.mean()*100:.1f}%)")
+
+    non_zero_counts = (X != 0).sum()
+    for col in X.columns:
+        if non_zero_counts[col] < len(X) * 0.5:
+            print(f"    Warning: {col} has {non_zero_counts[col]}/{len(X)} non-zero values")
 
     print("\n[3/4] Training models (70/30 split)...")
     split = int(len(X) * 0.7)
@@ -254,13 +264,13 @@ def main():
     with open(metrics_path) as f:
         metrics = json.load(f)
 
-    metrics['experiments'].append(ml_result)
-    metrics['experiments'].append(human_result)
+    base_experiments = [e for e in metrics.get('experiments', []) if 'Extended' not in e['name']]
+    metrics['experiments'] = base_experiments + [ml_result, human_result]
     metrics['experiment_a_info'] = experiment_a['data_info']
 
     with open(metrics_path, 'w') as f:
         json.dump(metrics, f)
-    print(f"\n  Updated model_metrics.json with 4 experiments total")
+    print(f"\n  Updated model_metrics.json with {len(metrics['experiments'])} experiments")
 
     print("\n=== Results Summary ===")
     print(f"  {'Model':<28} {'AUC':>6}  {'P@50%':>6}  {'R@50%':>6}")
