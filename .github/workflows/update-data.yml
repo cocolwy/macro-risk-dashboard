@@ -83,7 +83,7 @@ jobs:
 
             ${{ steps.check_alerts.outputs.danger_msg }}
 
-            View dashboard: https://${{ github.repository_owner }}.github.io/quant/
+            View dashboard: https://${{ github.repository_owner }}.github.io/macro-risk-dashboard/
           to: ${{ secrets.ALERT_EMAIL_TO }}
           from: Macro Risk Bot <${{ secrets.ALERT_EMAIL_USER }}>
 
@@ -102,6 +102,6 @@ jobs:
 
             ${{ steps.check_alerts.outputs.warning_msg }}
 
-            View dashboard: https://${{ github.repository_owner }}.github.io/quant/
+            View dashboard: https://${{ github.repository_owner }}.github.io/macro-risk-dashboard/
           to: ${{ secrets.ALERT_EMAIL_TO }}
           from: Macro Risk Bot <${{ secrets.ALERT_EMAIL_USER }}>
