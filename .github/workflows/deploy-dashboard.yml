@@ -35,14 +35,18 @@ jobs:
         run: npm ci || npm install
 
       - name: Copy data to public folder
-        run: cp -r dashboard/data dashboard/frontend/public/data
+        run: |
+          rm -rf dashboard/frontend/public/data
+          cp -r dashboard/data dashboard/frontend/public/data
 
       - name: Build
         working-directory: dashboard/frontend
         run: npm run build
 
       - name: Copy data to dist
-        run: cp -r dashboard/data dashboard/frontend/dist/data
+        run: |
+          rm -rf dashboard/frontend/dist/data
+          cp -r dashboard/data dashboard/frontend/dist/data
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

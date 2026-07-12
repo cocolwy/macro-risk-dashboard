@@ -1,1 +1,32 @@
-{"term_spread": {"current": 0.35, "week_change": 0.0, "month_change": -0.05}, "credit_spread": {"current": 2.7, "week_change": -0.04, "month_change": -0.1}}
+{
+  "term_spread": {
+    "current": 0.35,
+    "week_change": 0.04,
+    "month_change": -0.03
+  },
+  "credit_spread": {
+    "current": 2.67,
+    "week_change": -0.07,
+    "month_change": -0.08
+  },
+  "vix": {
+    "current": 16.89,
+    "week_change": 0.74,
+    "month_change": -2.03
+  },
+  "absorption_ratio": {
+    "current": 0.88,
+    "week_change": -0.0,
+    "month_change": 0.01
+  },
+  "turbulence": {
+    "current": 16.74,
+    "week_change": -13.3,
+    "month_change": -26.93
+  },
+  "breadth": {
+    "current": 81.82,
+    "week_change": -9.09,
+    "month_change": 18.18
+  }
+}

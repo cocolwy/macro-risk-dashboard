@@ -7,12 +7,43 @@
     "credit_spread": {
       "level": "ok",
       "message": "Normal: 3bps"
+    },
+    "vix": {
+      "level": "ok",
+      "message": "Normal: 16.9"
+    },
+    "absorption_ratio": {
+      "level": "ok",
+      "message": "Normal (z=0.9)"
+    },
+    "turbulence": {
+      "level": "ok",
+      "message": "Normal: 16.7"
     }
   },
-  "last_updated": "2026-07-12T16:11:19.258184",
+  "last_updated": "2026-07-09T20:14:25.906956",
   "indicators_available": [
     "term_spread",
     "credit_spread",
-    "momentum"
-  ]
+    "vix",
+    "sp500",
+    "breadth",
+    "absorption_ratio",
+    "turbulence"
+  ],
+  "composite_score": {
+    "score": 21.5,
+    "label": "Moderate",
+    "level": "moderate",
+    "color": "#86efac",
+    "action": "\u4fdd\u6301\u5173\u6ce8",
+    "components": {
+      "term_spread": 38.9,
+      "vix": 21.8,
+      "absorption_ratio": 6.3,
+      "turbulence": 33.4,
+      "breadth": 7.3
+    },
+    "date": "2026-07-08"
+  }
 }

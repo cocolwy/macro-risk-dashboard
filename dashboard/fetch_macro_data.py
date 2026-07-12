@@ -12,15 +12,25 @@ Designed to run via GitHub Actions on a daily schedule.
 import json
 import datetime
 import os
+import shutil
 from pathlib import Path
 
 import pandas as pd
 import numpy as np
 
 DATA_DIR = Path(__file__).parent / "data"
+PUBLIC_DATA_DIR = Path(__file__).parent / "frontend" / "public" / "data"
 DATA_DIR.mkdir(exist_ok=True)
 
 LOOKBACK_YEARS = 5
+
+
+def sync_public_data():
+    """Mirror dashboard/data into frontend/public/data for Vite dev/build."""
+    if PUBLIC_DATA_DIR.exists():
+        shutil.rmtree(PUBLIC_DATA_DIR)
+    shutil.copytree(DATA_DIR, PUBLIC_DATA_DIR)
+    print("  Synced data to frontend/public/data")
 
 
 def fetch_fred_series(series_id: str, start: str = None) -> pd.Series:
@@ -419,6 +429,8 @@ def main():
     with open(DATA_DIR / "summary.json", "w") as f:
         json.dump(summary, f, indent=2)
     print(f"  Saved summary.json")
+
+    sync_public_data()
 
     print("\n" + "=" * 60)
     print("Done! Alert Summary:")
