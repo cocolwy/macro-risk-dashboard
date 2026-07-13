@@ -306,6 +306,7 @@ interface PairwiseTest {
   challenger: ExperimentData;
   baseColor: string;
   challColor: string;
+  methodNote?: string;
 }
 
 function buildPairwiseTests(experiments: ExperimentData[]): PairwiseTest[] {
@@ -336,11 +337,13 @@ function buildPairwiseTests(experiments: ExperimentData[]): PairwiseTest[] {
     label: 'Exp 3: Embargo隔离', variable: '无隔离 vs 20天Embargo（防时序泄露）',
     baseline: slim, challenger: d1Short,
     baseColor: EXP_COLORS[2], challColor: EXP_COLORS[5],
+    methodNote: '从本实验起引入 Embargo：训练集和测试集之间设置 20 天隔离带，防止因 20 日前瞻目标导致的数据泄露。后续实验（Exp 4+）均沿用此方法。',
   });
   if (d1Short && andShort) pairs.push({
     label: 'Exp 4: AND集成', variable: 'D1单模型 vs D1 AND Human（双模型共识）',
     baseline: d1Short, challenger: andShort,
     baseColor: EXP_COLORS[5], challColor: EXP_COLORS[6],
+    methodNote: '基于 Embargo 纠偏后的 D1 模型。Human Logic 为固定权重，无训练泄露风险。评估窗口与 D1 一致。',
   });
   if (mlExt && humanExt) pairs.push({
     label: 'Exp 5: 长期数据', variable: '20年数据: ML vs Human',
@@ -351,6 +354,7 @@ function buildPairwiseTests(experiments: ExperimentData[]): PairwiseTest[] {
     label: 'Exp 6: 长期AND集成', variable: '长期D1 vs 长期AND（双模型共识）',
     baseline: d1Ext, challenger: andExt,
     baseColor: EXP_COLORS[7], challColor: EXP_COLORS[8],
+    methodNote: '长期数据版本，同样使用 Embargo 纠偏。',
   });
   return pairs;
 }
@@ -436,6 +440,12 @@ function ABComparisonSection({ experiments, sp500Timeline }: { experiments: Expe
             <div className="ab-pair-header">
               <h3>{pair.label}</h3>
               <span className="ab-pair-variable">测试变量: {pair.variable}</span>
+              {pair.methodNote && (
+                <div className="ab-method-note">
+                  <span className="ab-method-note-icon">&#9432;</span>
+                  {pair.methodNote}
+                </div>
+              )}
             </div>
 
             <div className="ab-pair-cards">
