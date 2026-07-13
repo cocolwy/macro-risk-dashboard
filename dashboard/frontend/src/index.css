@@ -1453,6 +1453,146 @@ body {
   box-shadow: 0 3px 10px rgba(255, 168, 196, 0.12);
 }
 
+/* Pipeline Flow Diagram */
+.pipeline-section {
+  margin-bottom: 20px;
+}
+
+.pipeline-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-1);
+  margin-bottom: 4px;
+}
+
+.pipeline-flow {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  margin: 16px 0;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.pipeline-step {
+  flex: 1;
+  min-width: 140px;
+  padding: 12px;
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg-2);
+  text-align: center;
+  transition: all 0.15s;
+}
+
+.pipeline-step.highlight-ml {
+  border-color: #d6457a;
+  background: rgba(214, 69, 122, 0.05);
+}
+
+.pipeline-step.highlight-human {
+  border-color: #3a82d6;
+  background: rgba(58, 130, 214, 0.05);
+}
+
+.pipeline-step-num {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--text-2);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 6px;
+}
+
+.highlight-ml .pipeline-step-num {
+  background: #d6457a;
+}
+
+.highlight-human .pipeline-step-num {
+  background: #3a82d6;
+}
+
+.pipeline-step-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-1);
+  margin-bottom: 6px;
+}
+
+.pipeline-step-detail {
+  font-size: 11px;
+  color: var(--text-2);
+  line-height: 1.5;
+}
+
+.pipeline-arrow {
+  display: flex;
+  align-items: center;
+  padding: 0 6px;
+  font-size: 20px;
+  color: var(--text-3);
+  font-weight: 300;
+  flex-shrink: 0;
+}
+
+.pipeline-label-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 12px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: var(--bg-2);
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--text-2);
+}
+
+.pipeline-label-tag {
+  flex-shrink: 0;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  color: #fff;
+  margin-top: 1px;
+}
+
+.pipeline-label-tag.train {
+  background: #d6457a;
+}
+
+.pipeline-label-tag.data-dep {
+  background: #f59e0b;
+}
+
+.pipeline-label-text {
+  flex: 1;
+}
+
+.pipeline-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 24px 0;
+}
+
+@media (max-width: 768px) {
+  .pipeline-flow {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .pipeline-arrow {
+    justify-content: center;
+    transform: rotate(90deg);
+    padding: 4px 0;
+  }
+}
+
 /* Insight Card */
 .insight-card {
   border-left: 4px solid #f59e0b;

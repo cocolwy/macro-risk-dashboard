@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import {
   XAxis, YAxis, Tooltip, ResponsiveContainer,
-  BarChart, Bar, Cell, ReferenceLine, Area, AreaChart,
+  BarChart, Bar, Cell, ReferenceLine,
   CartesianGrid,
 } from 'recharts';
 import { downsample, mergeExperimentTimeline, CHART_TOOLTIP_STYLE } from './utils/chart';
@@ -578,7 +578,7 @@ export function PredictionLab() {
   if (error) return <div className="lab-error">Failed to load model data: {error}</div>;
   if (!metrics) return <div className="lab-loading">Loading Prediction Lab...</div>;
 
-  const { model_info, current_prediction, feature_importance, threshold_analysis, events_backtest } = metrics;
+  const { model_info, current_prediction, feature_importance, events_backtest } = metrics;
 
   const sigColor = signalColor(current_prediction.signal);
 
@@ -608,7 +608,7 @@ export function PredictionLab() {
             <span className="ab-badge" style={{ background: '#fef3c7', color: '#92400e', border: '1px solid #fcd34d' }}>INSIGHT</span>
           </div>
           <p className="lab-card-desc" style={{ marginBottom: 16 }}>
-            D1 Slim+Embargo 在短期数据（~4年）上 AUC=0.836，但在长期数据（2005+，20年）上仅 0.590。核心原因是金融时序的<strong>非平稳性</strong>。
+            D1 Slim+Embargo 在短期数据上 AUC=0.86，但在长期数据（2005+，20年）上仅 0.60。核心原因是金融时序的<strong>非平稳性</strong>。
           </p>
           <div className="insight-reasons">
             <div className="insight-reason">
@@ -652,6 +652,100 @@ export function PredictionLab() {
         <WeightComparisonSection data={metrics.weight_comparison} />
       )}
 
+      {/* ===== MODEL ARCHITECTURE EXPLAINER ===== */}
+      <section className="lab-card">
+        <div className="ab-header">
+          <h2>模型原理</h2>
+          <span className="ab-badge" style={{ background: '#f0fdf4', color: '#166534', border: '1px solid #bbf7d0' }}>EXPLAINER</span>
+        </div>
+
+        <div className="pipeline-section">
+          <h3 className="pipeline-title">ML 模型 (Logistic Regression)</h3>
+          <p className="lab-card-desc">自动从数据中学习每个特征的权重</p>
+          <div className="pipeline-flow">
+            <div className="pipeline-step">
+              <div className="pipeline-step-num">1</div>
+              <div className="pipeline-step-label">原始指标</div>
+              <div className="pipeline-step-detail">VIX, 利差, 宽度 等 10-23 个指标的当日数值</div>
+            </div>
+            <div className="pipeline-arrow">→</div>
+            <div className="pipeline-step">
+              <div className="pipeline-step-num">2</div>
+              <div className="pipeline-step-label">StandardScaler</div>
+              <div className="pipeline-step-detail">z = (x − μ) / σ<br/>将每个指标标准化为"偏离训练期均值几个标准差"</div>
+            </div>
+            <div className="pipeline-arrow">→</div>
+            <div className="pipeline-step highlight-ml">
+              <div className="pipeline-step-num">3</div>
+              <div className="pipeline-step-label">自动学习权重</div>
+              <div className="pipeline-step-detail">LR 从训练数据自动学出每个特征的系数 → 加权求和</div>
+            </div>
+            <div className="pipeline-arrow">→</div>
+            <div className="pipeline-step">
+              <div className="pipeline-step-num">4</div>
+              <div className="pipeline-step-label">Sigmoid</div>
+              <div className="pipeline-step-detail">P = 1/(1+e⁻ˢ)<br/>得分转为 0~100% 概率</div>
+            </div>
+          </div>
+
+          <div className="pipeline-label-row">
+            <span className="pipeline-label-tag train">监督信号</span>
+            <span className="pipeline-label-text">
+              每一天的标签 = "未来 20 个交易日内 S&P 500 是否跌超 5%"。用历史已知价格回头标注，模型对比预测与标签来调整权重。
+            </span>
+          </div>
+        </div>
+
+        <div className="pipeline-divider" />
+
+        <div className="pipeline-section">
+          <h3 className="pipeline-title">Human Logic 模型</h3>
+          <p className="lab-card-desc">权重固定（人工基于经济学直觉设定），但标准化和校准依赖训练数据</p>
+          <div className="pipeline-flow">
+            <div className="pipeline-step">
+              <div className="pipeline-step-num">1</div>
+              <div className="pipeline-step-label">原始指标</div>
+              <div className="pipeline-step-detail">与 ML 模型完全相同的 23 个特征</div>
+            </div>
+            <div className="pipeline-arrow">→</div>
+            <div className="pipeline-step" style={{ borderColor: '#f59e0b' }}>
+              <div className="pipeline-step-num" style={{ background: '#f59e0b' }}>2</div>
+              <div className="pipeline-step-label">StandardScaler</div>
+              <div className="pipeline-step-detail">
+                <strong>借用 ML 的 scaler</strong><br/>
+                均值和标准差取决于训练集 → 不同训练期产生不同的 z-score
+              </div>
+            </div>
+            <div className="pipeline-arrow">→</div>
+            <div className="pipeline-step highlight-human">
+              <div className="pipeline-step-num">3</div>
+              <div className="pipeline-step-label">固定权重</div>
+              <div className="pipeline-step-detail">
+                人工设定：VIX↑=危险(+), 均线下方=危险(-×-=+), 利差走扩=危险(+)
+              </div>
+            </div>
+            <div className="pipeline-arrow">→</div>
+            <div className="pipeline-step" style={{ borderColor: '#f59e0b' }}>
+              <div className="pipeline-step-num" style={{ background: '#f59e0b' }}>4</div>
+              <div className="pipeline-step-label">校准 Sigmoid</div>
+              <div className="pipeline-step-detail">
+                调整 scale 和 bias 使平均输出 ≈ 训练集的大跌频率（base rate）
+              </div>
+            </div>
+          </div>
+
+          <div className="pipeline-label-row">
+            <span className="pipeline-label-tag data-dep">数据依赖</span>
+            <span className="pipeline-label-text">
+              <strong>橙框 = 受训练数据影响。</strong>
+              Step 2: Scaler 的均值/标准差来自训练集（短期 vs 长期算出不同 z-score）。
+              Step 4: 校准基于训练集的大跌频率（短期 12% vs 长期 16.5%）。
+              此外，零值率{'>'}50% 的特征会被自动关闭（长期数据中 turbulence 等 6 个特征被关闭）。
+            </span>
+          </div>
+        </div>
+      </section>
+
       {/* Current Signal */}
       <section className="lab-signal-card" style={{ borderColor: sigColor }}>
         <div className="lab-signal-main">
@@ -691,42 +785,6 @@ export function PredictionLab() {
             probHeight={270}
             spHeight={130}
           />
-        </div>
-      </section>
-
-      {/* Threshold Analysis */}
-      <section className="lab-card">
-        <h2>阈值选择分析</h2>
-        <p className="lab-card-desc">不同概率阈值下的精确率、召回率和报警频率。阈值越高误报越少但可能漏报</p>
-        <div className="lab-table-wrap">
-          <table className="lab-table">
-            <thead>
-              <tr>
-                <th>阈值</th>
-                <th>精确率</th>
-                <th>召回率</th>
-                <th>F1</th>
-                <th>报警天数</th>
-                <th>报警比例</th>
-              </tr>
-            </thead>
-            <tbody>
-              {threshold_analysis.map(row => (
-                <tr key={row.threshold} className={row.threshold === 0.5 ? 'lab-row-highlight' : ''}>
-                  <td className="lab-td-mono">{(row.threshold * 100).toFixed(0)}%</td>
-                  <td style={{ color: row.precision > 0.3 ? '#16a34a' : row.precision > 0.15 ? '#b45309' : '#dc2626' }}>
-                    {(row.precision * 100).toFixed(1)}%
-                  </td>
-                  <td style={{ color: row.recall > 0.7 ? '#16a34a' : row.recall > 0.4 ? '#b45309' : '#dc2626' }}>
-                    {(row.recall * 100).toFixed(1)}%
-                  </td>
-                  <td>{row.f1.toFixed(3)}</td>
-                  <td>{row.alert_days} / {row.total_days}</td>
-                  <td>{row.alert_pct}%</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
         </div>
       </section>
 
@@ -785,23 +843,6 @@ export function PredictionLab() {
         )}
       </section>
 
-      {/* ROC Curve */}
-      <section className="lab-card">
-        <h2>ROC 曲线 (AUC = {model_info.roc_auc})</h2>
-        <p className="lab-card-desc">越靠左上角越好。0.5为随机猜测基线</p>
-        <div className="lab-chart-square">
-          <ResponsiveContainer width="100%" height={280}>
-            <AreaChart data={metrics.roc_curve} margin={{ top: 10, right: 20, left: 10, bottom: 20 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f1d8e2" />
-              <XAxis dataKey="fpr" label={{ value: 'False Positive Rate', fill: '#8a7882', position: 'bottom', offset: 0 }} tick={{ fill: '#8a7882', fontSize: 11 }} />
-              <YAxis label={{ value: 'True Positive Rate', fill: '#8a7882', angle: -90, position: 'insideLeft' }} tick={{ fill: '#8a7882', fontSize: 11 }} />
-              <Area dataKey="tpr" fill="#8cc3ff" fillOpacity={0.3} stroke="#3a82d6" strokeWidth={2} isAnimationActive={false} />
-              <ReferenceLine segment={[{ x: 0, y: 0 }, { x: 1, y: 1 }]} stroke="#d6e6f7" strokeDasharray="5 5" />
-            </AreaChart>
-          </ResponsiveContainer>
-        </div>
-      </section>
-
       {/* Model Info */}
       <section className="lab-card lab-info-card">
         <h2>模型配置</h2>
@@ -825,34 +866,22 @@ export function PredictionLab() {
           <span className="ab-badge" style={{ background: '#dceeff', color: '#3a82d6', border: '1px solid #bcdcff' }}>PROPOSAL</span>
         </div>
         <p className="lab-card-desc">
-          当前核心问题：可用训练样本仅 ~740天，正样本（大跌）仅 ~94个。以下是可行的数据增强方案。
+          当前核心问题：可用训练样本约 {metrics.model_info.training_samples + metrics.model_info.test_samples} 天，
+          正样本（大跌）约 {Math.round((metrics.model_info.training_samples + metrics.model_info.test_samples) * metrics.model_info.positive_rate)} 个。
+          D1（滑动窗口 + Embargo）已实施，以下为备选方案。
         </p>
 
         <div className="augment-grid">
-          <div className="augment-card">
+          <div className="augment-card" style={{ opacity: 0.5, position: 'relative' }}>
+            <div style={{ position: 'absolute', top: 8, right: 8, background: '#16a34a', color: '#fff', padding: '2px 8px', borderRadius: 4, fontSize: 10, fontWeight: 700 }}>已实施</div>
             <div className="augment-card-header">
               <span className="augment-id">D1</span>
               <h3>滑动窗口重采样</h3>
-              <span className="augment-difficulty easy">易实现</span>
+              <span className="augment-difficulty easy">已完成</span>
             </div>
             <p className="augment-desc">
-              将当前固定的 20日前瞻窗口改为滑动步长=1天，每天都产生一条样本。
-              理论上可将正样本数量增加 3-5x。
+              每天产生一条样本 + 20天 Embargo 隔离。已集成到 D1 Slim+Embargo 实验中，AUC 从 0.83 提升至 0.86。
             </p>
-            <div className="augment-pros-cons">
-              <div className="augment-pro">
-                <span className="augment-tag pro">优势</span>
-                不引入合成数据，样本是真实市场状态
-              </div>
-              <div className="augment-con">
-                <span className="augment-tag con">风险</span>
-                相邻天高度相关（自相关），模型可能过拟合于时间连续性
-              </div>
-              <div className="augment-mitigation">
-                <span className="augment-tag mit">缓解</span>
-                使用 Embargo（隔离期）+ 时间序列交叉验证
-              </div>
-            </div>
           </div>
 
           <div className="augment-card">
