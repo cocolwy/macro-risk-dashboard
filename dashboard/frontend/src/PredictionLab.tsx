@@ -345,17 +345,23 @@ function buildPairwiseTests(experiments: ExperimentData[]): PairwiseTest[] {
     baseColor: EXP_COLORS[5], challColor: EXP_COLORS[6],
     methodNote: '基于 Embargo 纠偏后的 D1 模型。AND = logical AND：两个模型概率都超过 50% 才发出信号（二元输出 0/1）。',
   });
-  if (mlExt && humanExt) pairs.push({
-    label: 'Exp 5: 长期数据', variable: '20年数据: ML vs Human',
-    baseline: mlExt, challenger: humanExt,
-    baseColor: EXP_COLORS[3], challColor: EXP_COLORS[4],
-    methodNote: '使用 Embargo 纠偏评估。AND 为 logical AND：两个模型都超过 50% 才发出预警信号。',
+  if (mlBase && mlExt) pairs.push({
+    label: 'Exp 5a: ML 长期 vs 短期', variable: '短期 (~4年) vs 长期 (2005+, 20年) — ML模型',
+    baseline: mlBase, challenger: mlExt,
+    baseColor: EXP_COLORS[0], challColor: EXP_COLORS[3],
+    methodNote: '测试更多历史数据是否提升 ML 模型效果。长期版使用 Embargo 纠偏。',
+  });
+  if (human && humanExt) pairs.push({
+    label: 'Exp 5b: Human 长期 vs 短期', variable: '短期 (~4年) vs 长期 (2005+, 20年) — Human模型',
+    baseline: human, challenger: humanExt,
+    baseColor: EXP_COLORS[1], challColor: EXP_COLORS[4],
+    methodNote: '测试更多历史数据是否提升 Human Logic 模型效果。长期版使用 Embargo 纠偏。',
   });
   if (d1Ext && andExt) pairs.push({
     label: 'Exp 6: 长期AND集成', variable: '长期D1 vs 长期AND（双模型共识）',
     baseline: d1Ext, challenger: andExt,
     baseColor: EXP_COLORS[7], challColor: EXP_COLORS[8],
-    methodNote: '长期数据版本，同样使用 Embargo 纠偏。',
+    methodNote: '长期数据版本，同样使用 Embargo 纠偏。AND = logical AND。',
   });
   return pairs;
 }
