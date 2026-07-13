@@ -69,12 +69,12 @@ def fetch_yf_series(ticker: str) -> pd.Series:
     return close
 
 
-def compute_absorption_ratio(sector_returns: pd.DataFrame, window: int = 60, n_components: int = 3) -> pd.Series:
+def compute_absorption_ratio(sector_returns: pd.DataFrame, window: int = 60, n_components: int = 3, min_sectors: int = 5) -> pd.Series:
     from sklearn.decomposition import PCA
     result = pd.Series(index=sector_returns.index, dtype=float)
     for i in range(window, len(sector_returns)):
         chunk = sector_returns.iloc[i - window:i].dropna(axis=1, how='any')
-        if chunk.shape[1] < n_components:
+        if chunk.shape[1] < max(n_components, min_sectors):
             continue
         pca = PCA(n_components=n_components)
         pca.fit(chunk)
@@ -82,17 +82,22 @@ def compute_absorption_ratio(sector_returns: pd.DataFrame, window: int = 60, n_c
     return result.dropna()
 
 
-def compute_turbulence(sector_returns: pd.DataFrame, window: int = 60) -> pd.Series:
+def compute_turbulence(sector_returns: pd.DataFrame, window: int = 60, min_sectors: int = 5) -> pd.Series:
     result = pd.Series(index=sector_returns.index, dtype=float)
     for i in range(window, len(sector_returns)):
-        chunk = sector_returns.iloc[i - window:i]
+        chunk = sector_returns.iloc[i - window:i].dropna(axis=1, how='any')
+        if chunk.shape[1] < min_sectors:
+            continue
+        today = sector_returns.iloc[i][chunk.columns]
+        if today.isna().any():
+            continue
         mu = chunk.mean().values
         cov = chunk.cov().values
         try:
             inv_cov = np.linalg.inv(cov)
         except np.linalg.LinAlgError:
             continue
-        delta = sector_returns.iloc[i].values - mu
+        delta = today.values - mu
         turb = float(delta @ inv_cov @ delta)
         if np.isfinite(turb):
             result.iloc[i] = turb
@@ -134,15 +139,18 @@ def load_extended_data() -> pd.DataFrame:
     print(f"    Got {len(sector_closes)} sectors")
 
     sector_df = pd.DataFrame(sector_closes)
-    sector_returns = sector_df.pct_change().dropna()
+    sector_returns = sector_df.pct_change().iloc[1:]  # drop first NaN row only
 
-    print("  Computing Absorption Ratio...")
+    avail_per_date = sector_returns.notna().sum(axis=1)
+    print(f"    Sector coverage: {int(avail_per_date.min())}~{int(avail_per_date.max())} ETFs across {len(sector_returns)} days")
+
+    print("  Computing Absorption Ratio (dynamic ETF subset)...")
     abs_ratio = compute_absorption_ratio(sector_returns)
-    print(f"    {len(abs_ratio)} points")
+    print(f"    {len(abs_ratio)} points ({abs_ratio.index[0]} ~ {abs_ratio.index[-1]})")
 
-    print("  Computing Turbulence Index...")
+    print("  Computing Turbulence Index (dynamic ETF subset)...")
     turbulence = compute_turbulence(sector_returns)
-    print(f"    {len(turbulence)} points")
+    print(f"    {len(turbulence)} points ({turbulence.index[0]} ~ {turbulence.index[-1]})")
 
     print("  Computing Market Breadth...")
     breadth = compute_breadth(sector_closes)
