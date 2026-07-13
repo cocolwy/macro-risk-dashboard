@@ -580,6 +580,55 @@ export function PredictionLab() {
       {metrics.experiments && metrics.experiments.length > 1 && (
         <ABComparisonSection experiments={metrics.experiments} sp500Timeline={metrics.sp500_timeline} />
       )}
+
+      {/* ===== INSIGHT: WHY LONG-TERM DATA PERFORMS WORSE ===== */}
+      {metrics.experiments && metrics.experiments.some(e => e.name.includes('Ext')) && (
+        <section className="lab-card insight-card">
+          <div className="ab-header">
+            <h2>为什么更多数据反而更差？</h2>
+            <span className="ab-badge" style={{ background: '#fef3c7', color: '#92400e', border: '1px solid #fcd34d' }}>INSIGHT</span>
+          </div>
+          <p className="lab-card-desc" style={{ marginBottom: 16 }}>
+            D1 Slim+Embargo 在短期数据（~4年）上 AUC=0.836，但在长期数据（2005+，20年）上仅 0.590。核心原因是金融时序的<strong>非平稳性</strong>。
+          </p>
+          <div className="insight-reasons">
+            <div className="insight-reason">
+              <div className="insight-reason-num">1</div>
+              <div className="insight-reason-body">
+                <h4>特征质量断层</h4>
+                <p>
+                  <code>turbulence</code> 和 <code>absorption_ratio</code> 依赖 sector ETF（XLC 2018年才上市），训练集中 <strong>91% 为零值</strong>，
+                  模型无法学习这两个关键特征，但测试时它们全部活跃。
+                </p>
+              </div>
+            </div>
+            <div className="insight-reason">
+              <div className="insight-reason-num">2</div>
+              <div className="insight-reason-body">
+                <h4>特征分布漂移</h4>
+                <p>
+                  <code>term_spread</code> 训练期均值偏移 <strong>1.14 个标准差</strong>（2005-2020 正常利差 vs 2020-2026 倒挂），
+                  <code>turbulence</code> 偏移 <strong>0.96 个标准差</strong>。模型在训练中没见过的分布上做预测。
+                </p>
+              </div>
+            </div>
+            <div className="insight-reason">
+              <div className="insight-reason-num">3</div>
+              <div className="insight-reason-body">
+                <h4>跨体制噪声</h4>
+                <p>
+                  训练集跨 4 个市场体制（信贷泡沫、金融危机、零利率QE、加息周期），指标与崩盘的关系在不同体制下截然不同。
+                  模型学到的是"平均"规律，不适用于任何特定体制。短期模型仅学近 2 年的当前体制，模式更一致。
+                </p>
+              </div>
+            </div>
+          </div>
+          <div className="insight-conclusion">
+            <strong>结论：</strong>数据越多≠越好。金融时序的最佳策略是<strong>滑动训练窗口</strong>（用最近 5-7 年），而非堆砌全部历史。
+          </div>
+        </section>
+      )}
+
       {metrics.weight_comparison && (
         <WeightComparisonSection data={metrics.weight_comparison} />
       )}
