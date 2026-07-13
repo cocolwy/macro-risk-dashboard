@@ -1,8 +1,22 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Component, type ReactNode } from 'react';
 import {
   LineChart, Line, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer,
   BarChart, Bar, Cell,
 } from 'recharts';
+
+class ErrorBoundary extends Component<{ children: ReactNode }, { error: string | null }> {
+  state = { error: null as string | null };
+  static getDerivedStateFromError(e: Error) { return { error: e.message }; }
+  render() {
+    if (this.state.error) return (
+      <div className="lab-container"><div className="lab-card">
+        <h2 style={{ color: '#dc2626' }}>Render Error</h2>
+        <pre style={{ whiteSpace: 'pre-wrap', fontSize: 12 }}>{this.state.error}</pre>
+      </div></div>
+    );
+    return this.props.children;
+  }
+}
 
 interface ThresholdRow { threshold: number; precision: number; recall: number; f1: number; alert_days: number; total_days: number; alert_pct: number; }
 interface EventBacktest { name: string; event_date: string; max_probability: number; lead_days: number | null; first_alert_date: string | null; }
@@ -119,16 +133,16 @@ function FeatureImportanceChart({ data, modelName }: { data: FeatureImp[]; model
   );
 }
 
-export function Phase3Lab() {
+function Phase3LabInner() {
   const [data, setData] = useState<Phase3Data | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const base = import.meta.env.BASE_URL || '/';
     fetch(`${base}data/phase3_metrics.json?t=${Date.now()}`)
-      .then(r => { if (!r.ok) throw new Error(`${r.status}`); return r.json(); })
-      .then(setData)
-      .catch(e => setError(e.message));
+      .then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); })
+      .then(d => { console.log('Phase3 data loaded:', d.experiments?.length, 'experiments'); setData(d); })
+      .catch(e => { console.error('Phase3 fetch error:', e); setError(e.message); });
   }, []);
 
   if (error) return <div className="lab-container"><div className="lab-card"><p>Phase 3 data not available yet: {error}</p></div></div>;
@@ -310,4 +324,8 @@ export function Phase3Lab() {
       </footer>
     </div>
   );
+}
+
+export function Phase3Lab() {
+  return <ErrorBoundary><Phase3LabInner /></ErrorBoundary>;
 }
