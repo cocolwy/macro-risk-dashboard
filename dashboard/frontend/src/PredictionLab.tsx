@@ -320,6 +320,7 @@ function buildPairwiseTests(experiments: ExperimentData[]): PairwiseTest[] {
   const d1Short = experiments.find(e => e.name.includes('D1') && !e.name.includes('Ext'));
   const minShort = experiments.find(e => e.name.includes('MIN') && !e.name.includes('Ext'));
   const andShort = experiments.find(e => e.name.includes('AND') && !e.name.includes('Ext'));
+  const slimExt = experiments.find(e => e.name.includes('ML Ext Slim'));
   const d1Ext = experiments.find(e => e.name.includes('D1') && e.name.includes('Ext'));
   const minExt = experiments.find(e => e.name.includes('MIN') && e.name.includes('Ext'));
   const andExt = experiments.find(e => e.name.includes('AND') && e.name.includes('Ext'));
@@ -334,6 +335,12 @@ function buildPairwiseTests(experiments: ExperimentData[]): PairwiseTest[] {
     label: 'Exp 2: 特征去冗余', variable: '23特征 vs 10特征（去共线性）',
     baseline: mlBase, challenger: slim,
     baseColor: EXP_COLORS[0], challColor: EXP_COLORS[2],
+  });
+  if (mlExt && slimExt) pairs.push({
+    label: 'Exp 2b: 特征去冗余（长期）', variable: '23特征 vs 10特征 — 长期数据 (2005+)',
+    baseline: mlExt, challenger: slimExt,
+    baseColor: EXP_COLORS[3], challColor: EXP_COLORS[10],
+    methodNote: '在长期数据上验证特征去冗余的效果。短期 Exp 2 中 AUC 提升显著，长期是否同样有效？两组均使用 Embargo 纠偏。',
   });
   if (slim && d1Short) pairs.push({
     label: 'Exp 3: Embargo隔离', variable: '无隔离 vs 20天Embargo（防时序泄露）',

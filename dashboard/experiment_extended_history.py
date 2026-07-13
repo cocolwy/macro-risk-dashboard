@@ -233,8 +233,8 @@ def main():
     print(f"  ML AUC: {ml_auc:.3f}")
     print(f"  Human AUC: {human_auc:.3f}")
 
-    # D1: Slim features + Embargo on extended data
-    print("\n  Training D1 (Slim+Embargo) on extended data...")
+    # ML Ext Slim: same embargo as ML Extended, but slim features (clean feature-only comparison)
+    print("\n  Training ML Ext Slim (10 features, same split)...")
     features_slim = build_features_slim(df)
     combined_slim = features_slim.copy()
     combined_slim['target'] = target
@@ -244,23 +244,37 @@ def main():
     X_slim = combined_slim.drop('target', axis=1).clip(-10, 10)
     y_slim = combined_slim['target']
 
-    split_d1 = int(len(X_slim) * 0.7)
-    train_end_d1 = max(split_d1 - EMBARGO, 1)
-    test_start_d1 = min(split_d1 + EMBARGO, len(X_slim))
-    X_train_d1, X_test_d1 = X_slim.iloc[:train_end_d1], X_slim.iloc[test_start_d1:]
-    y_train_d1, y_test_d1 = y_slim.iloc[:train_end_d1], y_slim.iloc[test_start_d1:]
+    split_slim = int(len(X_slim) * 0.7)
+    train_end_slim = max(split_slim - EMBARGO, 1)
+    test_start_slim = min(split_slim + EMBARGO, len(X_slim))
+    X_train_slim, X_test_slim = X_slim.iloc[:train_end_slim], X_slim.iloc[test_start_slim:]
+    y_train_slim, y_test_slim = y_slim.iloc[:train_end_slim], y_slim.iloc[test_start_slim:]
 
-    scaler_d1 = StandardScaler()
-    X_train_d1s = scaler_d1.fit_transform(X_train_d1)
-    X_test_d1s = scaler_d1.transform(X_test_d1)
+    scaler_slim = StandardScaler()
+    X_train_slim_s = scaler_slim.fit_transform(X_train_slim)
+    X_test_slim_s = scaler_slim.transform(X_test_slim)
 
-    model_d1 = LogisticRegression(C=0.1, max_iter=1000, class_weight='balanced')
-    model_d1.fit(X_train_d1s, y_train_d1)
-    d1_probs_test = model_d1.predict_proba(X_test_d1s)[:, 1]
-    d1_probs_all = model_d1.predict_proba(scaler_d1.transform(X_slim))[:, 1]
+    model_slim = LogisticRegression(C=0.1, max_iter=1000, class_weight='balanced')
+    model_slim.fit(X_train_slim_s, y_train_slim)
+    slim_probs_test = model_slim.predict_proba(X_test_slim_s)[:, 1]
+    slim_probs_all = model_slim.predict_proba(scaler_slim.transform(X_slim))[:, 1]
 
-    d1_auc = auc(*roc_curve(y_test_d1, d1_probs_test)[:2])
-    print(f"  D1 Extended AUC: {d1_auc:.3f} (train={len(X_train_d1)}, embargo={EMBARGO}, test={len(X_test_d1)})")
+    slim_auc = auc(*roc_curve(y_test_slim, slim_probs_test)[:2])
+    print(f"  ML Ext Slim AUC: {slim_auc:.3f} ({len(X_slim.columns)} features, train={len(X_train_slim)}, test={len(X_test_slim)})")
+
+    # D1: reuses slim features data but with its own split (same result as above since embargo is identical)
+    print("\n  Training D1 (Slim+Embargo) on extended data...")
+    X_train_d1, X_test_d1 = X_train_slim, X_test_slim
+    y_train_d1, y_test_d1 = y_train_slim, y_test_slim
+    test_start_d1 = test_start_slim
+
+    scaler_d1 = scaler_slim
+    model_d1 = model_slim
+    d1_probs_test = slim_probs_test
+    d1_probs_all = slim_probs_all
+
+    d1_auc = slim_auc
+    print(f"  D1 Extended AUC: {d1_auc:.3f} (same as ML Ext Slim — identical config)")
 
     print("\n[4/4] Building comparison data (all with embargo)...")
     ml_result = build_comparison_metrics(
@@ -270,6 +284,10 @@ def main():
     human_result = build_comparison_metrics(
         y_test, human_probs_test, human_probs_all, X, df['sp500'],
         "Human Extended (2005+)", EXTENDED_KEY_EVENTS,
+    )
+    slim_result = build_comparison_metrics(
+        y_test_slim, slim_probs_test, slim_probs_all, X_slim, df['sp500'],
+        f"ML Ext Slim ({len(X_slim.columns)}feat)", EXTENDED_KEY_EVENTS,
     )
     d1_result = build_comparison_metrics(
         y_test_d1, d1_probs_test, d1_probs_all, X_slim, df['sp500'],
@@ -324,7 +342,7 @@ def main():
         metrics = json.load(f)
 
     base_experiments = [e for e in metrics.get('experiments', []) if 'Ext' not in e['name']]
-    metrics['experiments'] = base_experiments + [ml_result, human_result, d1_result, min_ext_result, and_ext_result]
+    metrics['experiments'] = base_experiments + [ml_result, human_result, slim_result, d1_result, min_ext_result, and_ext_result]
     metrics['experiment_a_info'] = experiment_a['data_info']
 
     with open(metrics_path, 'w') as f:
