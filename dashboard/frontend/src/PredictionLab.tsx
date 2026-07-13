@@ -615,42 +615,37 @@ export function PredictionLab() {
             <span className="ab-badge" style={{ background: '#fef3c7', color: '#92400e', border: '1px solid #fcd34d' }}>INSIGHT</span>
           </div>
           <p className="lab-card-desc" style={{ marginBottom: 16 }}>
-            D1 Slim+Embargo 在短期数据上 AUC=0.86，但在长期数据（2005+，20年）上仅 0.60。核心原因是金融时序的<strong>非平稳性</strong>。
+            D1 Slim+Embargo 在短期数据上 AUC=0.86，但在长期数据（2005+，20年）上仅 0.60。
+            根因是<strong>经济周期驱动的 regime 切换</strong>，叠加当前<strong>线性模型无法处理多 regime 数据</strong>。
           </p>
           <div className="insight-reasons">
             <div className="insight-reason">
               <div className="insight-reason-num">1</div>
               <div className="insight-reason-body">
-                <h4>特征质量断层</h4>
+                <h4>特征质量断层 <span style={{color:'#16a34a',fontSize:12,fontWeight:600}}>✓ 已修复</span></h4>
                 <p>
-                  <code>turbulence</code> 和 <code>absorption_ratio</code> 依赖 sector ETF（XLC 2018年才上市），训练集中 <strong>91% 为零值</strong>，
-                  模型无法学习这两个关键特征，但测试时它们全部活跃。
+                  <code>turbulence</code> / <code>absorption_ratio</code> 曾因 ETF 上市晚导致 91% 零值。
+                  已通过动态 ETF 子集修复（覆盖 1,964→5,352 天），但 <strong>AUC 未改善</strong>，证明这不是核心问题。
                 </p>
               </div>
             </div>
             <div className="insight-reason">
               <div className="insight-reason-num">2</div>
               <div className="insight-reason-body">
-                <h4>特征分布漂移</h4>
+                <h4>经济周期驱动的 Regime 切换（根因）</h4>
                 <p>
-                  <code>term_spread</code> 训练期均值偏移 <strong>1.14 个标准差</strong>（2005-2020 正常利差 vs 2020-2026 倒挂），
-                  <code>turbulence</code> 偏移 <strong>0.96 个标准差</strong>。模型在训练中没见过的分布上做预测。
-                </p>
-              </div>
-            </div>
-            <div className="insight-reason">
-              <div className="insight-reason-num">3</div>
-              <div className="insight-reason-body">
-                <h4>跨体制噪声</h4>
-                <p>
-                  训练集跨 4 个市场体制（信贷泡沫、金融危机、零利率QE、加息周期），指标与崩盘的关系在不同体制下截然不同。
-                  模型学到的是"平均"规律，不适用于任何特定体制。短期模型仅学近 2 年的当前体制，模式更一致。
+                  <strong>分布漂移 + 因果关系变化本质上是同一件事。</strong>每次经济周期转换（信贷扩张→危机→QE→加息→通胀），
+                  指标水平会漂移（<code>term_spread</code> 均值从 1.36 变为 0.24），指标与崩盘的关系也会翻转
+                  （<code>credit_spread</code> 与崩盘的相关性从 +0.31 变为 +0.04）。
+                  20年数据仅覆盖 3-4 个不完整周期，每种危机类型只有 1 个样本，线性模型学到的是跨 regime 的"平均"规律，在任何单一 regime 下都不准。
                 </p>
               </div>
             </div>
           </div>
           <div className="insight-conclusion">
-            <strong>结论：</strong>数据越多≠越好。金融时序的最佳策略是<strong>滑动训练窗口</strong>（用最近 5-7 年），而非堆砌全部历史。
+            <strong>关键认知修正：</strong>不是"长期数据无用"，而是<strong>线性模型 + 不够多的周期样本</strong>导致长期数据失效。
+            突破方向：① 非线性模型（XGBoost）可隐式学到 regime 条件规律；② 显式 regime 识别作为新特征；③ 数据追溯到 1986+（覆盖更多完整周期）。
+            滑动窗口仅作为 fallback 方案（假设只有当前 regime 有用，天花板低）。
           </div>
         </section>
       )}
@@ -899,21 +894,21 @@ export function PredictionLab() {
             <div className="roadmap-item done"><span className="roadmap-check">✓</span>Exp 2b 去冗余(长期): 23feat(0.572) vs 10feat(0.586) → <strong style={{color:'#16a34a'}}>✅ 仍有效 +2.4%，但瓶颈非特征冗余</strong></div>
             <div className="roadmap-item done"><span className="roadmap-check">✓</span>Exp 3 Embargo隔离: Slim(0.890) vs D1+Embargo(0.861) → <strong style={{color:'#16a34a'}}>✅ 评估更诚实，原AUC含泄露虚高</strong></div>
             <div className="roadmap-item done"><span className="roadmap-check">✓</span>Exp 4 双模型集成: MIN(0.801)/AND(0.507) vs 单D1(0.861) → <strong style={{color:'#dc2626'}}>❌ 集成不如单模型，Human拖后腿</strong></div>
-            <div className="roadmap-item done"><span className="roadmap-check">✓</span>Exp 5a ML长期: 短期(0.846) vs 长期(0.572) → <strong style={{color:'#dc2626'}}>❌ 长期劣化 -32%（数据修复后仍差，确认瓶颈为非平稳性）</strong></div>
-            <div className="roadmap-item done"><span className="roadmap-check">✓</span>Exp 5b Human长期: 短期(0.811) vs 长期(0.614) → <strong style={{color:'#dc2626'}}>❌ 同上 -24%（Human更稳定，但仍不及短期）</strong></div>
+            <div className="roadmap-item done"><span className="roadmap-check">✓</span>Exp 5a ML长期: 短期(0.846) vs 长期(0.572) → <strong style={{color:'#b45309'}}>⚠ 线性模型+3个周期不足 — 需非线性模型+更多周期数据重测</strong></div>
+            <div className="roadmap-item done"><span className="roadmap-check">✓</span>Exp 5b Human长期: 短期(0.811) vs 长期(0.614) → <strong style={{color:'#b45309'}}>⚠ 同上（Human更稳定因权重固定，不受 regime 平均化影响）</strong></div>
             <div className="roadmap-item done"><span className="roadmap-check">✓</span>Exp 6 长期集成: MIN Ext(0.620)/AND Ext(0.546) → <strong style={{color:'#dc2626'}}>❌ 与Exp 4一致</strong></div>
             <div className="roadmap-item done"><span className="roadmap-check">✓</span>模型原理文档 + 方法论标注</div>
           </div>
           <div className="best-config-card">
             <div className="best-config-header">
-              <span className="best-config-badge">RECOMMENDED</span>
+              <span className="best-config-badge">CURRENT BEST</span>
               <div className="best-config-title">
                 <span className="best-config-name">D1 Slim+Embargo</span>
-                <span className="best-config-auc">AUC 0.861</span>
+                <span className="best-config-auc">AUC 0.861（线性模型天花板）</span>
               </div>
             </div>
             <p className="best-config-desc">
-              综合 Phase 2 全部有益发现，此配置已上线运行。
+              综合 Phase 2 已确认的有益发现，此配置已上线运行。0.861 是 Logistic Regression 的天花板，突破需要 Phase 3。
             </p>
             <div className="best-config-group">
               <span className="best-config-label">包含</span>
@@ -921,7 +916,6 @@ export function PredictionLab() {
                 <span className="best-chip include">ML 学习权重 <em>Exp 1</em></span>
                 <span className="best-chip include">Slim 10 特征 <em>Exp 2</em></span>
                 <span className="best-chip include">Embargo 20d <em>Exp 3</em></span>
-                <span className="best-chip include">短期数据 <em>Exp 5</em></span>
               </div>
             </div>
             <div className="best-config-group">
@@ -930,11 +924,17 @@ export function PredictionLab() {
                 <span className="best-chip exclude">Human 权重 <em>Exp 1</em></span>
                 <span className="best-chip exclude">全量 23 特征 <em>Exp 2</em></span>
                 <span className="best-chip exclude">双模型集成 <em>Exp 4</em></span>
-                <span className="best-chip exclude">长期 20 年数据 <em>Exp 5</em></span>
+              </div>
+            </div>
+            <div className="best-config-group">
+              <span className="best-config-label" style={{color:'#b45309'}}>待重测 (Phase 3)</span>
+              <div className="best-config-chips">
+                <span className="best-chip" style={{background:'#fef3c7',color:'#92400e',border:'1px solid #fcd34d'}}>长期数据 <em>Exp 5</em></span>
               </div>
             </div>
             <p className="best-config-note">
-              长期数据在质量修复后仍劣于短期，瓶颈为非平稳性而非数据缺失。
+              长期数据在<strong>线性模型</strong>下失效，但根因是模型无法处理 regime 切换 + 20年仅3个周期样本不足，非数据本身问题。
+              Phase 3 用非线性模型 + regime 特征 + 追溯到1986（更多周期）后需重新评估。
             </p>
           </div>
         </div>
@@ -955,14 +955,15 @@ export function PredictionLab() {
         <div className="roadmap-phase">
           <div className="roadmap-phase-header next">
             <span className="roadmap-phase-tag">Phase 3</span>
-            <h3>模型进化</h3>
+            <h3>模型进化 — 突破 Regime 瓶颈</h3>
             <span className="roadmap-status next">NEXT</span>
           </div>
           <div className="roadmap-items">
-            <div className="roadmap-item pending"><span className="roadmap-dot" />滑动训练窗口: 用最近 5-7 年训练而非全量，应对非平稳性</div>
-            <div className="roadmap-item pending"><span className="roadmap-dot" />非线性模型: XGBoost / Random Forest 对比 Logistic Regression</div>
-            <div className="roadmap-item pending"><span className="roadmap-dot" />D2-D5 数据增强备选（SMOTE / 噪声注入 / 多阈值 / Bootstrap）</div>
-            <div className="roadmap-item pending"><span className="roadmap-dot" />Human 模型去数据依赖: 使 Scaler/校准不依赖训练集</div>
+            <div className="roadmap-item pending"><span className="roadmap-dot" /><strong>P0 非线性模型:</strong> XGBoost / Random Forest — 可隐式学到 regime 条件规律（如"危机 regime 下 credit_spread 重要，牛市 regime 下忽略"），直接解决线性模型的根本限制</div>
+            <div className="roadmap-item pending"><span className="roadmap-dot" /><strong>P0 Regime 识别特征:</strong> 用 HMM 或宏观指标（利率方向、信用条件、美林时钟象限）标注当前经济 regime，作为新特征输入模型</div>
+            <div className="roadmap-item pending"><span className="roadmap-dot" /><strong>P1 数据追溯到 1986+:</strong> VXO(1986) + BAA10Y(1986) + T10Y2Y(1976) + S&amp;P500(1928) — 覆盖更多完整经济周期，每种危机类型有 3-4 个样本而非仅 1 个</div>
+            <div className="roadmap-item pending"><span className="roadmap-dot" /><strong>P2 滑动训练窗口 (fallback):</strong> 用最近 5-7 年训练 — 简单但天花板低（假设只有当前 regime 有用，放弃跨周期学习）</div>
+            <div className="roadmap-item pending"><span className="roadmap-dot" />P2 D2-D5 数据增强备选（SMOTE / 噪声注入 / 多阈值 / Bootstrap）</div>
           </div>
         </div>
 
