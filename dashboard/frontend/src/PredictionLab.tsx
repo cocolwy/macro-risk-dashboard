@@ -115,7 +115,7 @@ const FEATURE_LABELS: Record<string, string> = {
   'vix_10d_chg': 'VIX 10日变化',
 };
 
-const EXP_COLORS = ['#d6457a', '#3a82d6', '#16a34a', '#dc2626', '#8b5cf6', '#06b6d4', '#ea580c', '#0d9488', '#a855f7'];
+const EXP_COLORS = ['#d6457a', '#3a82d6', '#16a34a', '#dc2626', '#8b5cf6', '#06b6d4', '#ea580c', '#0d9488', '#a855f7', '#f97316', '#64748b'];
 
 function signalColor(signal: string) {
   return signal === 'elevated' ? '#dc2626' : signal === 'watch' ? '#b45309' : '#16a34a';
@@ -318,9 +318,11 @@ function buildPairwiseTests(experiments: ExperimentData[]): PairwiseTest[] {
   const mlExt = find('ML Extended');
   const humanExt = find('Human Extended');
   const d1Short = experiments.find(e => e.name.includes('D1') && !e.name.includes('Ext'));
+  const minShort = experiments.find(e => e.name.includes('MIN') && !e.name.includes('Ext'));
   const andShort = experiments.find(e => e.name.includes('AND') && !e.name.includes('Ext'));
-  const andExt = experiments.find(e => e.name.includes('AND') && e.name.includes('Ext'));
   const d1Ext = experiments.find(e => e.name.includes('D1') && e.name.includes('Ext'));
+  const minExt = experiments.find(e => e.name.includes('MIN') && e.name.includes('Ext'));
+  const andExt = experiments.find(e => e.name.includes('AND') && e.name.includes('Ext'));
 
   const pairs: PairwiseTest[] = [];
   if (mlBase && human) pairs.push({
@@ -339,11 +341,11 @@ function buildPairwiseTests(experiments: ExperimentData[]): PairwiseTest[] {
     baseColor: EXP_COLORS[2], challColor: EXP_COLORS[5],
     methodNote: '从本实验起引入 Embargo：训练集和测试集之间设置 20 天隔离带，防止因 20 日前瞻目标导致的数据泄露。后续实验（Exp 4+）均沿用此方法。',
   });
-  if (d1Short && andShort) pairs.push({
-    label: 'Exp 4: AND集成', variable: 'D1单模型 vs D1 AND Human（双模型共识）',
-    baseline: d1Short, challenger: andShort,
-    baseColor: EXP_COLORS[5], challColor: EXP_COLORS[6],
-    methodNote: '基于 Embargo 纠偏后的 D1 模型。AND = logical AND：两个模型概率都超过 50% 才发出信号（二元输出 0/1）。',
+  if (d1Short && minShort && andShort) pairs.push({
+    label: 'Exp 4: 双模型集成', variable: 'MIN(连续概率取较小值) vs AND(logical AND，二元0/1)',
+    baseline: minShort, challenger: andShort,
+    baseColor: EXP_COLORS[6], challColor: EXP_COLORS[9],
+    methodNote: 'MIN = min(D1概率, Human概率)，保留连续概率可做阈值分析。AND = 两边都超过 50% 才输出 1，否则 0（二元信号，无灰度区间）。两者都基于 Embargo 纠偏后的 D1 + Human Logic。',
   });
   if (mlBase && mlExt) pairs.push({
     label: 'Exp 5a: ML 长期 vs 短期', variable: '短期 (~4年) vs 长期 (2005+, 20年) — ML模型',
@@ -357,11 +359,11 @@ function buildPairwiseTests(experiments: ExperimentData[]): PairwiseTest[] {
     baseColor: EXP_COLORS[1], challColor: EXP_COLORS[4],
     methodNote: '测试更多历史数据是否提升 Human Logic 模型效果。长期版使用 Embargo 纠偏。',
   });
-  if (d1Ext && andExt) pairs.push({
-    label: 'Exp 6: 长期AND集成', variable: '长期D1 vs 长期AND（双模型共识）',
-    baseline: d1Ext, challenger: andExt,
+  if (d1Ext && minExt && andExt) pairs.push({
+    label: 'Exp 6: 长期双模型集成', variable: '长期 MIN vs 长期 AND',
+    baseline: minExt, challenger: andExt,
     baseColor: EXP_COLORS[7], challColor: EXP_COLORS[8],
-    methodNote: '长期数据版本，同样使用 Embargo 纠偏。AND = logical AND。',
+    methodNote: '长期数据版本，同样使用 Embargo 纠偏。对比 MIN（连续）与 AND（二元）两种集成方式。',
   });
   return pairs;
 }

@@ -276,24 +276,31 @@ def main():
         "D1 Ext Slim+Embargo", EXTENDED_KEY_EVENTS,
     )
 
-    # AND Ensemble: D1 Extended x Human Extended (logical AND at 50%)
-    print("  Building AND Ensemble (D1 Ext x Human Ext)...")
+    # AND Ensembles: both MIN and logical AND on extended data
+    print("  Building AND Ensembles (D1 Ext x Human Ext)...")
     d1_ext_series = pd.Series(d1_probs_all, index=X_slim.index)
     human_ext_series = pd.Series(human_probs_all, index=X.index)
     common_ext = d1_ext_series.index.intersection(human_ext_series.index)
-    d1_ext_binary = (d1_ext_series[common_ext].values > 0.5).astype(float)
-    human_ext_binary = (human_ext_series[common_ext].values > 0.5).astype(float)
-    and_ext_all = d1_ext_binary * human_ext_binary
 
     d1_ext_test_dates = X_slim.index[test_start_d1:]
     test_ext_mask = common_ext.isin(d1_ext_test_dates)
-    and_ext_test = and_ext_all[test_ext_mask]
     y_and_ext_test = y_slim.reindex(common_ext)[test_ext_mask].values
-
     and_ext_ref = pd.DataFrame(index=common_ext)
+
+    # MIN version
+    min_ext_all = np.minimum(d1_ext_series[common_ext].values, human_ext_series[common_ext].values)
+    min_ext_result = build_comparison_metrics(
+        pd.Series(y_and_ext_test), min_ext_all[test_ext_mask], min_ext_all,
+        and_ext_ref, df['sp500'], "MIN Ext (D1,Human)", EXTENDED_KEY_EVENTS,
+    )
+
+    # Logical AND version
+    d1_ext_binary = (d1_ext_series[common_ext].values > 0.5).astype(float)
+    human_ext_binary = (human_ext_series[common_ext].values > 0.5).astype(float)
+    and_ext_all = d1_ext_binary * human_ext_binary
     and_ext_result = build_comparison_metrics(
-        pd.Series(y_and_ext_test), and_ext_test, and_ext_all,
-        and_ext_ref, df['sp500'], "AND Ext (D1xHuman)", EXTENDED_KEY_EVENTS,
+        pd.Series(y_and_ext_test), and_ext_all[test_ext_mask], and_ext_all,
+        and_ext_ref, df['sp500'], "AND Ext (D1&Human)", EXTENDED_KEY_EVENTS,
     )
 
     experiment_a = {
@@ -317,7 +324,7 @@ def main():
         metrics = json.load(f)
 
     base_experiments = [e for e in metrics.get('experiments', []) if 'Ext' not in e['name']]
-    metrics['experiments'] = base_experiments + [ml_result, human_result, d1_result, and_ext_result]
+    metrics['experiments'] = base_experiments + [ml_result, human_result, d1_result, min_ext_result, and_ext_result]
     metrics['experiment_a_info'] = experiment_a['data_info']
 
     with open(metrics_path, 'w') as f:

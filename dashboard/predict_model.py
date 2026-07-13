@@ -461,31 +461,38 @@ def main():
     metrics["experiments"].append(d1_comparison)
     print(f"  D1 AUC: {d1_comparison['auc']} (embargo={EMBARGO}d, train={len(X_train_d1)}, test={len(X_test_d1)})")
 
-    # --- AND Ensemble: D1 Slim+Embargo AND Human Logic (logical AND at 50%) ---
-    print("Building AND Ensemble (D1 x Human)...")
+    # --- AND Ensembles: both MIN and logical AND ---
+    print("Building AND Ensembles (D1 x Human)...")
     d1_series = pd.Series(d1_probs_all, index=X_slim.index)
     human_series = pd.Series(human_probs_all, index=X_clipped.index)
-
     common_dates = d1_series.index.intersection(human_series.index)
-    d1_binary = (d1_series[common_dates].values > 0.5).astype(float)
-    human_binary = (human_series[common_dates].values > 0.5).astype(float)
-    and_probs_all = d1_binary * human_binary
 
     d1_test_start = min(int(len(X_slim) * 0.7) + EMBARGO, len(X_slim))
     d1_test_dates = X_slim.index[d1_test_start:]
     test_mask = common_dates.isin(d1_test_dates)
-    and_probs_test = and_probs_all[test_mask]
-
     y_common = y_slim.reindex(common_dates)
     y_and_test = y_common[test_mask].values
-
     and_ref_X = pd.DataFrame(index=common_dates)
+
+    # MIN version: continuous probability = min(D1, Human)
+    min_probs_all = np.minimum(d1_series[common_dates].values, human_series[common_dates].values)
+    min_comparison = build_comparison_metrics(
+        pd.Series(y_and_test), min_probs_all[test_mask], min_probs_all,
+        and_ref_X, df['sp500'], "MIN (D1, Human)", KEY_EVENTS,
+    )
+    metrics["experiments"].append(min_comparison)
+    print(f"  MIN: continuous prob, AUC={min_comparison['auc']}")
+
+    # Logical AND version: binary 0/1, both > 50% = 1
+    d1_binary = (d1_series[common_dates].values > 0.5).astype(float)
+    human_binary = (human_series[common_dates].values > 0.5).astype(float)
+    and_probs_all = d1_binary * human_binary
     and_comparison = build_comparison_metrics(
-        pd.Series(y_and_test), and_probs_test, and_probs_all,
-        and_ref_X, df['sp500'], "AND (D1 x Human)", KEY_EVENTS,
+        pd.Series(y_and_test), and_probs_all[test_mask], and_probs_all,
+        and_ref_X, df['sp500'], "AND (D1 & Human)", KEY_EVENTS,
     )
     metrics["experiments"].append(and_comparison)
-    print(f"  AND alerts: {int(and_probs_all.sum())} days out of {len(and_probs_all)} (test={len(y_and_test)})")
+    print(f"  AND: {int(and_probs_all.sum())} alert days out of {len(and_probs_all)}")
 
     # Preserve extended experiments from previous runs
     metrics_path = DATA_DIR / 'model_metrics.json'
