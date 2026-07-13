@@ -271,27 +271,51 @@ function MetricLabInner() {
         })}
       </section>
 
-      {/* Conclusion */}
+      {/* Conclusion: metric decision */}
       <section className="lab-card">
         <div className="best-config-card" style={{ borderLeftColor: '#16a34a' }}>
           <div className="best-config-header">
-            <span className="best-config-badge" style={{ background: '#f0fdf4', color: '#166534' }}>CONCLUSION</span>
-            <div className="best-config-title"><span className="best-config-name">实验结论</span></div>
+            <span className="best-config-badge" style={{ background: '#f0fdf4', color: '#166534' }}>DECISION</span>
+            <div className="best-config-title"><span className="best-config-name">后续统一评估标准</span></div>
           </div>
           <div style={{ fontSize: 13, lineHeight: 1.8 }}>
-            <p><strong>1. 去掉 balanced 是最大的单次改进</strong> — 训练端修正比后处理校准更有效。</p>
-            <p><strong>2. Unbalanced 模型的概率更诚实</strong> — 不确定时不虚报高概率，50% 阈值就能直接用。</p>
-            <p><strong>3. Best F1 冠军：{practical_summary.best_f1_model}</strong>（F1={practical_summary.best_f1.toFixed(3)}）。</p>
-            <p><strong>4. 最佳校准：{practical_summary.best_brier_model}</strong>（Brier={practical_summary.best_brier.toFixed(4)}）。</p>
-            <p style={{ marginTop: 8, color: '#6b5f63' }}>
-              后续 Ch.2 非线性模型实验全部采用 Unbalanced 训练，确保概率可直接用于决策。
+            <table style={{ width: '100%', borderCollapse: 'collapse', margin: '8px 0 12px' }}>
+              <tbody>
+                <tr style={{ borderBottom: '1px solid #f1d8e2' }}>
+                  <td style={{ padding: '10px 8px', fontWeight: 700, color: '#16a34a', fontSize: 15, width: 100 }}>主指标</td>
+                  <td style={{ padding: '10px 8px' }}>
+                    <strong style={{ fontSize: 15 }}>Best F1</strong>
+                    <span style={{ marginLeft: 8, fontSize: 12, color: '#6b5f63' }}>精确率 × 召回率的最优平衡 — 直接衡量「能不能拿来做交易决策」</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td style={{ padding: '10px 8px', fontWeight: 700, color: '#3a82d6', fontSize: 15 }}>辅指标</td>
+                  <td style={{ padding: '10px 8px' }}>
+                    <strong style={{ fontSize: 15 }}>Brier Score</strong>
+                    <span style={{ marginLeft: 8, fontSize: 12, color: '#6b5f63' }}>概率校准度 — 确保 F1 不是来自虚高概率的巧合</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <p style={{ fontSize: 12, color: '#6b5f63', marginTop: 4 }}>
+              <strong>AUC</strong> 降级为参考项（排序能力 ≠ 实战决策能力）。其余指标（Lift、P@80%、Mean P）仅用于诊断分析。
             </p>
+
+            <div style={{ marginTop: 12, padding: '10px 12px', background: '#f8fafc', borderRadius: 6, border: '1px solid #e2e8f0' }}>
+              <p style={{ margin: 0, fontSize: 12, fontWeight: 600, color: '#475569' }}>实验结论摘要</p>
+              <ul style={{ margin: '6px 0 0', paddingLeft: 18, fontSize: 12, color: '#475569', lineHeight: 1.7 }}>
+                <li>去掉 <code>class_weight=balanced</code> 是最大单次改进（F1: 0.467 → 0.588）</li>
+                <li>训练端修正（去 balanced）比后处理校准（isotonic）更有效</li>
+                <li>后续所有实验统一使用 Unbalanced 训练</li>
+              </ul>
+            </div>
           </div>
         </div>
       </section>
 
       <footer className="footer">
-        <div>Ch.2.1 Metric Exploration · 评估指标 → F1 / Brier / Lift</div>
+        <div>Ch.2.1 Metric Exploration · 主指标 F1 · 辅指标 Brier</div>
       </footer>
     </div>
   );

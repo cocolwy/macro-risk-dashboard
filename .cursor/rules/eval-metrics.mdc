@@ -1,0 +1,26 @@
+---
+description: 模型评估指标标准（Ch.2.1 结论）
+globs:
+  - dashboard/experiment_*.py
+  - dashboard/predict_model.py
+  - dashboard/frontend/src/Phase3Lab.tsx
+  - dashboard/frontend/src/MetricLab.tsx
+---
+
+# 评估指标标准
+
+所有模型实验统一使用以下指标体系：
+
+- **主指标**: Best F1（精确率×召回率最优平衡点）
+- **辅指标**: Brier Score（概率校准度，越低越好）
+- **参考项**: AUC（仅作排序能力参考，不作为优化目标）
+
+## 训练约束
+
+- 所有模型使用 **Unbalanced** 训练（不使用 `class_weight='balanced'` 或等价的 `sample_weight`）
+- 原因：balanced 导致输出概率严重偏高，F1 从 0.467 跳到 0.588
+
+## 看板展示
+
+- 表格列顺序：模型名 → Best F1 → Brier → AUC（灰色）
+- AUC 列使用灰色字体表示「仅供参考」

@@ -55,7 +55,6 @@ function OverviewTable({ experiments }: { experiments: ExperimentData[] }) {
   const withPM = experiments.filter(e => e.practical_metrics);
   if (withPM.length === 0) return null;
 
-  const bestAuc = Math.max(...withPM.map(e => e.auc));
   const bestF1 = Math.max(...withPM.map(e => e.practical_metrics!.best_f1));
   const bestBrier = Math.min(...withPM.map(e => e.practical_metrics!.brier_score));
 
@@ -64,12 +63,11 @@ function OverviewTable({ experiments }: { experiments: ExperimentData[] }) {
       <div className="lab-table-wrap">
         <table className="lab-table">
           <thead>
-            <tr><th>模型</th><th>AUC</th><th>Best F1</th><th>Brier ↓</th></tr>
+            <tr><th>模型</th><th>Best F1</th><th>Brier ↓</th><th style={{ color: '#8a7882' }}>AUC</th></tr>
           </thead>
           <tbody>
             {withPM.map((exp, i) => {
               const pm = exp.practical_metrics!;
-              const isBestAuc = Math.abs(exp.auc - bestAuc) < 0.001;
               const isBestF1 = Math.abs(pm.best_f1 - bestF1) < 0.001;
               const isBestBrier = Math.abs(pm.brier_score - bestBrier) < 0.001;
               return (
@@ -78,12 +76,12 @@ function OverviewTable({ experiments }: { experiments: ExperimentData[] }) {
                     {isBestF1 && <span className="ab-best-tag">BEST</span>}
                     {exp.name}
                   </td>
-                  <td className="lab-td-mono" style={isBestAuc ? { fontWeight: 700, color: '#16a34a' } : undefined}>{exp.auc.toFixed(3)}</td>
                   <td className="lab-td-mono" style={isBestF1 ? { fontWeight: 700, color: '#16a34a' } : undefined}>
                     {pm.best_f1.toFixed(3)}
                     <span style={{ fontSize: 10, opacity: 0.5, marginLeft: 3 }}>@{(pm.best_f1_threshold * 100).toFixed(0)}%</span>
                   </td>
                   <td className="lab-td-mono" style={isBestBrier ? { fontWeight: 700, color: '#16a34a' } : undefined}>{pm.brier_score.toFixed(3)}</td>
+                  <td className="lab-td-mono" style={{ color: '#8a7882' }}>{exp.auc.toFixed(3)}</td>
                 </tr>
               );
             })}
