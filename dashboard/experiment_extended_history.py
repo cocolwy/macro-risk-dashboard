@@ -204,11 +204,16 @@ def main():
         if non_zero_counts[col] < len(X) * 0.5:
             print(f"    Warning: {col} has {non_zero_counts[col]}/{len(X)} non-zero values")
 
-    print("\n[3/4] Training models (70/30 split)...")
+    EMBARGO = 20
+
+    print(f"\n[3/4] Training models (70/30 split, embargo={EMBARGO}d)...")
     split = int(len(X) * 0.7)
-    X_train, X_test = X.iloc[:split], X.iloc[split:]
-    y_train, y_test = y.iloc[:split], y.iloc[split:]
+    train_end = max(split - EMBARGO, 1)
+    test_start = min(split + EMBARGO, len(X))
+    X_train, X_test = X.iloc[:train_end], X.iloc[test_start:]
+    y_train, y_test = y.iloc[:train_end], y.iloc[test_start:]
     print(f"  Train: {len(X_train)} days ({X_train.index[0]} ~ {X_train.index[-1]})")
+    print(f"  Embargo gap: {EMBARGO*2} days ({X.index[train_end]} ~ {X.index[test_start-1]})")
     print(f"  Test:  {len(X_test)} days ({X_test.index[0]} ~ {X_test.index[-1]})")
 
     scaler = StandardScaler()
@@ -221,7 +226,7 @@ def main():
     ml_probs_all = ml_model.predict_proba(scaler.transform(X))[:, 1]
 
     human_probs_all = human_model_probs(X, scaler, ml_model, y_train)
-    human_probs_test = human_probs_all[split:]
+    human_probs_test = human_probs_all[len(X) - len(X_test):]
 
     ml_auc = auc(*roc_curve(y_test, ml_probs_test)[:2])
     human_auc = auc(*roc_curve(y_test, human_probs_test)[:2])
@@ -239,7 +244,6 @@ def main():
     X_slim = combined_slim.drop('target', axis=1).clip(-10, 10)
     y_slim = combined_slim['target']
 
-    EMBARGO = 20
     split_d1 = int(len(X_slim) * 0.7)
     train_end_d1 = max(split_d1 - EMBARGO, 1)
     test_start_d1 = min(split_d1 + EMBARGO, len(X_slim))
@@ -258,7 +262,7 @@ def main():
     d1_auc = auc(*roc_curve(y_test_d1, d1_probs_test)[:2])
     print(f"  D1 Extended AUC: {d1_auc:.3f} (train={len(X_train_d1)}, embargo={EMBARGO}, test={len(X_test_d1)})")
 
-    print("\n[4/4] Building comparison data...")
+    print("\n[4/4] Building comparison data (all with embargo)...")
     ml_result = build_comparison_metrics(
         y_test, ml_probs_test, ml_probs_all, X, df['sp500'],
         "ML Extended (2005+)", EXTENDED_KEY_EVENTS,
@@ -272,12 +276,14 @@ def main():
         "D1 Ext Slim+Embargo", EXTENDED_KEY_EVENTS,
     )
 
-    # AND Ensemble: D1 Extended x Human Extended
+    # AND Ensemble: D1 Extended x Human Extended (logical AND at 50%)
     print("  Building AND Ensemble (D1 Ext x Human Ext)...")
     d1_ext_series = pd.Series(d1_probs_all, index=X_slim.index)
     human_ext_series = pd.Series(human_probs_all, index=X.index)
     common_ext = d1_ext_series.index.intersection(human_ext_series.index)
-    and_ext_all = np.minimum(d1_ext_series[common_ext].values, human_ext_series[common_ext].values)
+    d1_ext_binary = (d1_ext_series[common_ext].values > 0.5).astype(float)
+    human_ext_binary = (human_ext_series[common_ext].values > 0.5).astype(float)
+    and_ext_all = d1_ext_binary * human_ext_binary
 
     d1_ext_test_dates = X_slim.index[test_start_d1:]
     test_ext_mask = common_ext.isin(d1_ext_test_dates)

@@ -461,13 +461,15 @@ def main():
     metrics["experiments"].append(d1_comparison)
     print(f"  D1 AUC: {d1_comparison['auc']} (embargo={EMBARGO}d, train={len(X_train_d1)}, test={len(X_test_d1)})")
 
-    # --- AND Ensemble: D1 Slim+Embargo AND Human Logic ---
+    # --- AND Ensemble: D1 Slim+Embargo AND Human Logic (logical AND at 50%) ---
     print("Building AND Ensemble (D1 x Human)...")
     d1_series = pd.Series(d1_probs_all, index=X_slim.index)
     human_series = pd.Series(human_probs_all, index=X_clipped.index)
 
     common_dates = d1_series.index.intersection(human_series.index)
-    and_probs_all = np.minimum(d1_series[common_dates].values, human_series[common_dates].values)
+    d1_binary = (d1_series[common_dates].values > 0.5).astype(float)
+    human_binary = (human_series[common_dates].values > 0.5).astype(float)
+    and_probs_all = d1_binary * human_binary
 
     d1_test_start = min(int(len(X_slim) * 0.7) + EMBARGO, len(X_slim))
     d1_test_dates = X_slim.index[d1_test_start:]
@@ -483,7 +485,7 @@ def main():
         and_ref_X, df['sp500'], "AND (D1 x Human)", KEY_EVENTS,
     )
     metrics["experiments"].append(and_comparison)
-    print(f"  AND AUC: {and_comparison['auc']} (test={len(y_and_test)})")
+    print(f"  AND alerts: {int(and_probs_all.sum())} days out of {len(and_probs_all)} (test={len(y_and_test)})")
 
     # Preserve extended experiments from previous runs
     metrics_path = DATA_DIR / 'model_metrics.json'

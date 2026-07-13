@@ -343,12 +343,13 @@ function buildPairwiseTests(experiments: ExperimentData[]): PairwiseTest[] {
     label: 'Exp 4: AND集成', variable: 'D1单模型 vs D1 AND Human（双模型共识）',
     baseline: d1Short, challenger: andShort,
     baseColor: EXP_COLORS[5], challColor: EXP_COLORS[6],
-    methodNote: '基于 Embargo 纠偏后的 D1 模型。Human Logic 为固定权重，无训练泄露风险。评估窗口与 D1 一致。',
+    methodNote: '基于 Embargo 纠偏后的 D1 模型。AND = logical AND：两个模型概率都超过 50% 才发出信号（二元输出 0/1）。',
   });
   if (mlExt && humanExt) pairs.push({
     label: 'Exp 5: 长期数据', variable: '20年数据: ML vs Human',
     baseline: mlExt, challenger: humanExt,
     baseColor: EXP_COLORS[3], challColor: EXP_COLORS[4],
+    methodNote: '使用 Embargo 纠偏评估。AND 为 logical AND：两个模型都超过 50% 才发出预警信号。',
   });
   if (d1Ext && andExt) pairs.push({
     label: 'Exp 6: 长期AND集成', variable: '长期D1 vs 长期AND（双模型共识）',
