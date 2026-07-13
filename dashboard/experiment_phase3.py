@@ -19,8 +19,9 @@ warnings.filterwarnings('ignore')
 
 from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import StandardScaler
-from sklearn.metrics import roc_curve, auc
+from sklearn.metrics import roc_curve, auc, brier_score_loss
 from sklearn.ensemble import HistGradientBoostingClassifier, RandomForestClassifier
+from sklearn.calibration import CalibratedClassifierCV
 
 from predict_model import (
     load_indicators, build_features, build_features_slim,
@@ -73,6 +74,32 @@ def train_rf(X_train, y_train, X_test):
     return model, None, probs
 
 
+def train_gbdt_calibrated(X_train, y_train, X_test):
+    """GBDT with isotonic probability calibration via 3-fold CV."""
+    pos = (y_train == 1).sum()
+    neg = (y_train == 0).sum()
+    sample_weight = np.where(y_train == 1, neg / pos, 1.0)
+
+    base = HistGradientBoostingClassifier(
+        max_iter=200, max_depth=4, learning_rate=0.05,
+        min_samples_leaf=20, l2_regularization=1.0, random_state=42,
+    )
+    model = CalibratedClassifierCV(base, cv=3, method='isotonic')
+    model.fit(X_train, y_train, sample_weight=sample_weight)
+    probs = model.predict_proba(X_test)[:, 1]
+    return model, None, probs
+
+
+def train_lr_no_balance(X_train, y_train, X_test):
+    """LR without class_weight='balanced' — outputs calibrated probabilities."""
+    scaler = StandardScaler()
+    X_train_s = scaler.fit_transform(X_train)
+    X_test_s = scaler.transform(X_test)
+    model = LogisticRegression(C=0.1, max_iter=1000)
+    model.fit(X_train_s, y_train)
+    return model, scaler, model.predict_proba(X_test_s)[:, 1]
+
+
 def split_with_embargo(X, y, split_ratio=0.7, embargo=EMBARGO):
     split = int(len(X) * split_ratio)
     train_end = max(split - embargo, 1)
@@ -88,6 +115,45 @@ def full_probs(model, scaler, X):
     return model.predict_proba(X)[:, 1]
 
 
+def compute_practical_metrics(y_test, probs_test):
+    """Compute metrics that matter for real use: calibration, best F1, P@high thresholds."""
+    brier = brier_score_loss(y_test, probs_test)
+    base_rate = float(y_test.mean())
+
+    best_f1, best_f1_thresh = 0, 0.5
+    practical = {}
+    for thresh_pct in range(10, 95, 5):
+        thresh = thresh_pct / 100
+        preds = (probs_test > thresh).astype(int)
+        tp = ((preds == 1) & (y_test.values == 1)).sum()
+        fp = ((preds == 1) & (y_test.values == 0)).sum()
+        fn = ((preds == 0) & (y_test.values == 1)).sum()
+        prec = tp / (tp + fp) if (tp + fp) > 0 else 0
+        rec = tp / (tp + fn) if (tp + fn) > 0 else 0
+        f1 = 2 * prec * rec / (prec + rec) if (prec + rec) > 0 else 0
+        alert_rate = preds.sum() / len(preds)
+        practical[thresh_pct] = {"p": prec, "r": rec, "f1": f1, "alert_rate": alert_rate}
+        if f1 > best_f1:
+            best_f1, best_f1_thresh = f1, thresh
+
+    p80 = practical.get(80, {}).get('p', 0)
+    r80 = practical.get(80, {}).get('r', 0)
+    lift_at_80 = p80 / base_rate if base_rate > 0 else 0
+
+    return {
+        "brier_score": round(brier, 4),
+        "base_rate": round(base_rate, 4),
+        "best_f1": round(best_f1, 3),
+        "best_f1_threshold": best_f1_thresh,
+        "p_at_80": round(p80, 3),
+        "r_at_80": round(r80, 3),
+        "lift_at_80": round(lift_at_80, 1),
+        "mean_prob": round(float(probs_test.mean()), 4),
+        "median_prob": round(float(np.median(probs_test)), 4),
+        "prob_gt50_pct": round(float((probs_test > 0.5).mean() * 100), 1),
+    }
+
+
 def run_experiment(name, X, y, sp500, train_fn, events=KEY_EVENTS):
     X_train, X_test, y_train, y_test, _, test_start = split_with_embargo(X, y)
     model, scaler, probs_test = train_fn(X_train, y_train, X_test)
@@ -95,6 +161,9 @@ def run_experiment(name, X, y, sp500, train_fn, events=KEY_EVENTS):
     test_auc = auc(*roc_curve(y_test, probs_test)[:2])
 
     result = build_comparison_metrics(y_test, probs_test, probs_all, X, sp500, name, events)
+
+    practical = compute_practical_metrics(y_test, probs_test)
+    result['practical_metrics'] = practical
 
     feature_imp = None
     if hasattr(model, 'feature_importances_'):
@@ -104,7 +173,7 @@ def run_experiment(name, X, y, sp500, train_fn, events=KEY_EVENTS):
         coefs = pd.Series(model.coef_[0], index=X.columns).sort_values(ascending=False)
         feature_imp = [{"feature": k, "importance": round(float(abs(v)), 4)} for k, v in coefs.items()]
 
-    return result, test_auc, feature_imp, model
+    return result, test_auc, feature_imp, model, practical
 
 
 def main():
@@ -135,104 +204,88 @@ def main():
     print(f"  Full features: {len(X_full)} samples, {X_full.shape[1]} features, {int(y_full.sum())} positive ({y_full.mean()*100:.1f}%)")
     print(f"  Slim features: {len(X_slim)} samples, {X_slim.shape[1]} features, {int(y_slim.sum())} positive ({y_slim.mean()*100:.1f}%)")
 
-    # --- Step 1: XGBoost vs LR ---
-    print("\n[2/3] Step 1 experiments: XGBoost vs LR...")
+    # --- Step 1: Model comparison with practical metrics ---
+    print("\n[2/3] Step 1 experiments...")
     experiments = []
     feature_importances = {}
+    all_practical = {}
 
-    # 1a: LR baseline (slim, embargo) — same as D1 from Phase 2
-    print("  Training LR Slim (baseline)...")
-    lr_result, lr_auc, lr_imp, _ = run_experiment(
-        "LR Slim (baseline)", X_slim, y_slim, sp500, train_lr)
-    experiments.append(lr_result)
-    if lr_imp:
-        feature_importances["LR Slim"] = lr_imp
-    print(f"    AUC: {lr_auc:.3f}")
+    def run_and_log(name, X, y, train_fn):
+        print(f"  Training {name}...")
+        result, test_auc, imp, _, practical = run_experiment(name, X, y, sp500, train_fn)
+        experiments.append(result)
+        all_practical[name] = practical
+        if imp:
+            feature_importances[name] = imp
+        pm = practical
+        print(f"    AUC={test_auc:.3f}  P@80%={pm['p_at_80']:.1%}  Lift={pm['lift_at_80']}x  BestF1={pm['best_f1']:.3f}@{pm['best_f1_threshold']:.0%}  Brier={pm['brier_score']:.4f}  Mean_prob={pm['mean_prob']:.3f}")
+        return test_auc
 
-    # 1b: GBDT slim — same features, non-linear model
-    print("  Training GBDT Slim...")
-    gbdt_slim_result, gbdt_slim_auc, gbdt_slim_imp, _ = run_experiment(
-        "GBDT Slim", X_slim, y_slim, sp500, train_gbdt)
-    experiments.append(gbdt_slim_result)
-    if gbdt_slim_imp:
-        feature_importances["GBDT Slim"] = gbdt_slim_imp
-    print(f"    AUC: {gbdt_slim_auc:.3f}")
-
-    # 1c: GBDT full features — can tree models handle 23 features better than LR?
-    print("  Training GBDT Full (23 features)...")
-    gbdt_full_result, gbdt_full_auc, gbdt_full_imp, _ = run_experiment(
-        "GBDT Full (23feat)", X_full, y_full, sp500, train_gbdt)
-    experiments.append(gbdt_full_result)
-    if gbdt_full_imp:
-        feature_importances["GBDT Full"] = gbdt_full_imp
-    print(f"    AUC: {gbdt_full_auc:.3f}")
-
-    # 1d2: Random Forest slim — another non-linear baseline
-    print("  Training RF Slim...")
-    rf_slim_result, rf_slim_auc, rf_slim_imp, _ = run_experiment(
-        "RF Slim", X_slim, y_slim, sp500, train_rf)
-    experiments.append(rf_slim_result)
-    if rf_slim_imp:
-        feature_importances["RF Slim"] = rf_slim_imp
-    print(f"    AUC: {rf_slim_auc:.3f}")
-
-    # 1d: LR full for comparison
-    print("  Training LR Full (23 features)...")
-    lr_full_result, lr_full_auc, lr_full_imp, _ = run_experiment(
-        "LR Full (23feat)", X_full, y_full, sp500, train_lr)
-    experiments.append(lr_full_result)
-    if lr_full_imp:
-        feature_importances["LR Full"] = lr_full_imp
-    print(f"    AUC: {lr_full_auc:.3f}")
+    lr_auc = run_and_log("LR Balanced", X_slim, y_slim, train_lr)
+    run_and_log("LR Unbalanced", X_slim, y_slim, train_lr_no_balance)
+    gbdt_slim_auc = run_and_log("GBDT Slim", X_slim, y_slim, train_gbdt)
+    gbdt_full_auc = run_and_log("GBDT Full (23feat)", X_full, y_full, train_gbdt)
+    run_and_log("GBDT Calibrated", X_full, y_full, train_gbdt_calibrated)
+    rf_slim_auc = run_and_log("RF Slim", X_slim, y_slim, train_rf)
+    lr_full_auc = run_and_log("LR Full (23feat)", X_full, y_full, train_lr)
+    run_and_log("LR Full Unbalanced", X_full, y_full, train_lr_no_balance)
 
     # --- Build pairwise comparisons metadata ---
     pairwise = [
         {
             "id": "step1a",
-            "label": "Step 1a: 模型类型 (Slim特征)",
-            "variable": "Logistic Regression vs GBDT — 10个特征",
-            "baseline": "LR Slim (baseline)",
-            "challenger": "GBDT Slim",
-            "method_note": "相同的 Slim 10特征 + Embargo 20d，仅改变模型类型。GBDT（梯度提升树）可隐式学到 regime 条件规律（如「VIX高 且 利差走阔→危机」），LR 只能学线性组合。",
+            "label": "Step 1a: class_weight 的影响",
+            "variable": "Balanced vs Unbalanced — LR Slim",
+            "baseline": "LR Balanced",
+            "challenger": "LR Unbalanced",
+            "method_note": "class_weight=balanced 会上调正样本权重，导致模型输出概率偏高（mean_prob 远超 base_rate）。不平衡训练产生更接近真实概率的输出。",
         },
         {
             "id": "step1b",
-            "label": "Step 1b: 特征数量 (GBDT)",
-            "variable": "10特征 vs 23特征 — GBDT 模型",
-            "baseline": "GBDT Slim",
-            "challenger": "GBDT Full (23feat)",
-            "method_note": "LR 中冗余特征有害（共线性），但树模型天然抗共线性。测试非线性模型是否能利用更多特征。",
+            "label": "Step 1b: GBDT 概率校准",
+            "variable": "GBDT Raw vs GBDT Calibrated（isotonic）",
+            "baseline": "GBDT Full (23feat)",
+            "challenger": "GBDT Calibrated",
+            "method_note": "Isotonic calibration 通过 3-fold CV 将 GBDT 的原始概率映射到真实频率。Brier score 越低 = 概率越准。关注 P@80% 和 mean_prob 的变化。",
         },
         {
             "id": "step1c",
-            "label": "Step 1c: 非线性模型对比",
-            "variable": "GBDT vs Random Forest — Slim特征",
-            "baseline": "GBDT Slim",
-            "challenger": "RF Slim",
-            "method_note": "两种主流树模型对比。GBDT 逐步纠错（boosting），RF 并行投票（bagging），各有擅长的场景。",
+            "label": "Step 1c: 线性 vs 非线性 (Full特征)",
+            "variable": "LR Full Unbalanced vs GBDT Calibrated",
+            "baseline": "LR Full Unbalanced",
+            "challenger": "GBDT Calibrated",
+            "method_note": "两者都使用校准/不平衡策略输出合理概率。纯粹比较模型能力：线性 vs 非线性。",
         },
     ]
 
     # --- Save results ---
     print("\n[3/3] Saving results...")
+
+    best_by_f1 = max(all_practical.items(), key=lambda x: x[1]['best_f1'])
+    best_by_brier = min(all_practical.items(), key=lambda x: x[1]['brier_score'])
+    best_by_lift = max(all_practical.items(), key=lambda x: x[1]['lift_at_80'])
+
     phase3_data = {
         "phase": 3,
-        "title": "Model Evolution — Breaking the Regime Barrier",
+        "title": "Model Evolution — 优化目标重定义",
         "experiments": experiments,
         "pairwise": pairwise,
         "feature_importances": feature_importances,
+        "practical_summary": {
+            "best_f1_model": best_by_f1[0],
+            "best_f1": best_by_f1[1]['best_f1'],
+            "best_brier_model": best_by_brier[0],
+            "best_brier": best_by_brier[1]['brier_score'],
+            "best_lift_model": best_by_lift[0],
+            "best_lift": best_by_lift[1]['lift_at_80'],
+        },
         "summary": {
             "lr_slim_auc": round(lr_auc, 3),
             "gbdt_slim_auc": round(gbdt_slim_auc, 3),
             "gbdt_full_auc": round(gbdt_full_auc, 3),
             "rf_slim_auc": round(rf_slim_auc, 3),
             "lr_full_auc": round(lr_full_auc, 3),
-            "best_model": max(
-                [("LR Slim", lr_auc), ("GBDT Slim", gbdt_slim_auc),
-                 ("GBDT Full", gbdt_full_auc), ("RF Slim", rf_slim_auc),
-                 ("LR Full", lr_full_auc)],
-                key=lambda x: x[1]
-            )[0],
+            "best_model": best_by_f1[0],
             "data_range": f"{df.index[0]} ~ {df.index[-1]}",
             "total_samples": len(X_slim),
         },
@@ -244,28 +297,17 @@ def main():
     print(f"  Saved {out_path}")
 
     # --- Print summary ---
-    all_aucs = [lr_auc, gbdt_slim_auc, gbdt_full_auc, rf_slim_auc, lr_full_auc]
-    best_auc = max(all_aucs)
-
     print("\n" + "=" * 60)
-    print("STEP 1 RESULTS: Non-linear vs Linear")
+    print("PRACTICAL METRICS SUMMARY")
     print("=" * 60)
-    print(f"  {'Model':<25} {'AUC':>6}  {'Features':>8}")
-    print(f"  {'-'*45}")
-    for name, a, nf in [
-        ("LR Slim", lr_auc, X_slim.shape[1]),
-        ("GBDT Slim", gbdt_slim_auc, X_slim.shape[1]),
-        ("RF Slim", rf_slim_auc, X_slim.shape[1]),
-        ("LR Full", lr_full_auc, X_full.shape[1]),
-        ("GBDT Full", gbdt_full_auc, X_full.shape[1]),
-    ]:
-        marker = " ★" if a == best_auc else ""
-        print(f"  {name:<25} {a:>6.3f}  {nf:>8}{marker}")
+    print(f"  {'Model':<25} {'BestF1':>7} {'P@80%':>6} {'Lift':>5} {'Brier':>7} {'Mean_p':>7}")
+    print(f"  {'-'*65}")
+    for name, pm in all_practical.items():
+        print(f"  {name:<25} {pm['best_f1']:>6.3f} {pm['p_at_80']:>5.1%} {pm['lift_at_80']:>5.1f}x {pm['brier_score']:>7.4f} {pm['mean_prob']:>7.3f}")
 
-    print("\n  Feature importance (GBDT Slim, top 5):")
-    if gbdt_slim_imp:
-        for item in gbdt_slim_imp[:5]:
-            print(f"    {item['feature']:<30} {item['importance']:.4f}")
+    print(f"\n  Best F1: {best_by_f1[0]} ({best_by_f1[1]['best_f1']:.3f} @ {best_by_f1[1]['best_f1_threshold']:.0%})")
+    print(f"  Best Calibration: {best_by_brier[0]} (Brier={best_by_brier[1]['brier_score']:.4f})")
+    print(f"  Best Lift@80%: {best_by_lift[0]} ({best_by_lift[1]['lift_at_80']:.1f}x)")
 
     print("\n=== Done ===")
 
