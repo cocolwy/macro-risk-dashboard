@@ -1,22 +1,21 @@
 import { useState, useEffect, lazy, Suspense } from 'react';
+import { Home } from './Home';
+import { Breadcrumb } from './components/Breadcrumb';
+import { pageFromHash, hashForPage, SITE_NAV, PageId } from './siteNav';
 
 const App = lazy(() => import('./App'));
 const PredictionLab = lazy(() => import('./PredictionLab').then(m => ({ default: m.PredictionLab })));
 const Phase3Lab = lazy(() => import('./Phase3Lab').then(m => ({ default: m.Phase3Lab })));
 const ProjectBoard = lazy(() => import('./ProjectBoard').then(m => ({ default: m.ProjectBoard })));
 
-type Page = 'dashboard' | 'lab' | 'phase3' | 'board';
+const RISK_CHILDREN: PageId[] = ['ch1', 'ch2'];
 
-function getInitialPage(): Page {
-  const hash = window.location.hash.replace('#', '');
-  if (hash === 'lab') return 'lab';
-  if (hash === 'phase3') return 'phase3';
-  if (hash === 'board') return 'board';
-  return 'dashboard';
+function getInitialPage(): PageId {
+  return pageFromHash(window.location.hash);
 }
 
 export function Router() {
-  const [page, setPage] = useState<Page>(getInitialPage);
+  const [page, setPage] = useState<PageId>(getInitialPage);
 
   useEffect(() => {
     const onHashChange = () => setPage(getInitialPage());
@@ -24,42 +23,72 @@ export function Router() {
     return () => window.removeEventListener('hashchange', onHashChange);
   }, []);
 
-  const navigate = (p: Page) => {
-    window.location.hash = p === 'dashboard' ? '' : p;
+  const navigate = (p: PageId) => {
+    window.location.hash = hashForPage(p);
     setPage(p);
   };
+
+  const isRiskChild = RISK_CHILDREN.includes(page);
 
   return (
     <>
       <nav className="top-nav">
         <button
-          className={`nav-btn ${page === 'dashboard' ? 'nav-active' : ''}`}
-          onClick={() => navigate('dashboard')}
+          className={`nav-btn ${page === 'home' ? 'nav-active' : ''}`}
+          onClick={() => navigate('home')}
         >
-          Macro Risk Monitor
+          Home
         </button>
+
         <button
-          className={`nav-btn ${page === 'lab' ? 'nav-active' : ''}`}
-          onClick={() => navigate('lab')}
+          className={`nav-btn ${page === 'pipeline' ? 'nav-active' : ''}`}
+          onClick={() => navigate('pipeline')}
         >
-          Ch.1 Linear Models
+          <span className="nav-level">L1</span>
+          Pipeline
         </button>
-        <button
-          className={`nav-btn ${page === 'phase3' ? 'nav-active' : ''}`}
-          onClick={() => navigate('phase3')}
-        >
-          Ch.2 Model Evolution
-          <span className="nav-badge-dev">NEW</span>
-        </button>
-        <button
-          className={`nav-btn ${page === 'board' ? 'nav-active' : ''}`}
-          onClick={() => navigate('board')}
-        >
-          Quant Project Board
-        </button>
+
+        <div className="nav-group">
+          <button
+            className={`nav-btn ${page === 'risk' ? 'nav-active' : ''}`}
+            onClick={() => navigate('risk')}
+          >
+            <span className="nav-level">L2</span>
+            Risk Dashboard
+          </button>
+          <div className="nav-sub">
+            {RISK_CHILDREN.map(id => (
+              <button
+                key={id}
+                className={`nav-btn nav-btn-sub ${page === id ? 'nav-active' : ''}`}
+                onClick={() => navigate(id)}
+              >
+                <span className="nav-level">L3</span>
+                {SITE_NAV[id].title.replace('Ch.', 'Ch')}
+                {SITE_NAV[id].badge && <span className="nav-badge-dev">{SITE_NAV[id].badge}</span>}
+              </button>
+            ))}
+          </div>
+        </div>
       </nav>
+
+      {page !== 'home' && (
+        <div className="page-context">
+          <Breadcrumb page={page} onNavigate={navigate} />
+          {isRiskChild && (
+            <div className="page-context-meta">
+              {SITE_NAV[page].subtitle}
+            </div>
+          )}
+        </div>
+      )}
+
       <Suspense fallback={<div className="loading">Loading...</div>}>
-        {page === 'dashboard' ? <App /> : page === 'lab' ? <PredictionLab /> : page === 'phase3' ? <Phase3Lab /> : <ProjectBoard />}
+        {page === 'home' && <Home onNavigate={navigate} />}
+        {page === 'pipeline' && <ProjectBoard />}
+        {page === 'risk' && <App />}
+        {page === 'ch1' && <PredictionLab />}
+        {page === 'ch2' && <Phase3Lab />}
       </Suspense>
     </>
   );

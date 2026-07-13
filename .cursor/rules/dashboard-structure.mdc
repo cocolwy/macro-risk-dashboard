@@ -1,0 +1,53 @@
+---
+description: Dashboard site hierarchy, routes, and conventions for adding new chapters
+alwaysApply: true
+---
+
+# Dashboard Site Structure
+
+量化看板的页面层级与路由约定。修改导航或新增章节时，同步更新 `dashboard/frontend/src/siteNav.ts` 与本规则。
+
+## 层级定义
+
+```
+L0  Home                    Quant Research Hub（索引页）
+L1  Multi-Agent Pipeline    量化整体架构（6-Agent 因子研究平台）
+L2  Macro Risk Dashboard    风控项目（宏观指标监控）
+L3  Ch.1 / Ch.2 / …          风控下的因子探索章节（线性 → 非线性 → 后续）
+```
+
+- **L1** 描述整个量化系统的多 Agent 架构，对应 `ProjectBoard.tsx`
+- **L2** 是独立项目「宏观风控看板」，对应 `App.tsx`
+- **L3** 是 L2 下的实验章节，从线性模型逐步演进到非线性；未来可追加 Ch.3、Ch.4 等
+
+## Hash 路由
+
+| PageId   | Hash       | 组件            | 旧 hash 别名（兼容） |
+|----------|------------|-----------------|----------------------|
+| `home`   | `#`        | `Home.tsx`      | `#home`              |
+| `pipeline` | `#pipeline` | `ProjectBoard.tsx` | `#board`          |
+| `risk`   | `#risk`    | `App.tsx`       | `#dashboard`         |
+| `ch1`    | `#ch1`     | `PredictionLab.tsx` | `#lab`           |
+| `ch2`    | `#ch2`     | `Phase3Lab.tsx` | `#phase3`            |
+
+默认入口为 Home（`#`）。路由逻辑在 `Router.tsx`，结构定义在 `siteNav.ts`。
+
+## 新增 L3 章节 checklist
+
+1. 在 `siteNav.ts` 的 `SITE_NAV` 添加条目（`parent: 'risk'`, `level: 3`）
+2. 在 `HASH_ALIASES` 添加旧 hash（如有）
+3. 在 `HOME_SECTIONS` 三级区块的 `items` 数组追加 PageId
+4. 在 `Router.tsx` 懒加载组件并注册路由
+5. 在 `RISK_CHILDREN` 数组追加 PageId（顶栏 L3 子导航）
+6. 实验结果须同步到看板 JSON，不可仅留在终端（见 `prediction-lab.mdc`）
+
+## 关键文件
+
+- `dashboard/frontend/src/siteNav.ts` — 单一数据源（标题、层级、hash、面包屑）
+- `dashboard/frontend/src/Home.tsx` — 索引首页
+- `dashboard/frontend/src/Router.tsx` — 顶栏 + 面包屑 + 路由
+- `dashboard/frontend/src/components/Breadcrumb.tsx` — 路径导航
+
+## 部署
+
+GitHub Pages: `https://cocolwy.github.io/macro-risk-dashboard/`
