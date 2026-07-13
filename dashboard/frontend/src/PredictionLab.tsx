@@ -904,14 +904,38 @@ export function PredictionLab() {
             <div className="roadmap-item done"><span className="roadmap-check">✓</span>Exp 6 长期集成: MIN Ext(0.620)/AND Ext(0.546) → <strong style={{color:'#dc2626'}}>❌ 与Exp 4一致</strong></div>
             <div className="roadmap-item done"><span className="roadmap-check">✓</span>模型原理文档 + 方法论标注</div>
           </div>
-          <div className="insight-card" style={{marginTop:'12px'}}>
-            <div className="insight-title">🏆 最优组合 = D1 Slim+Embargo (AUC 0.861)</div>
-            <div className="insight-body">
-              综合所有有益发现：<strong>ML学习权重</strong>（Exp 1）+ <strong>Slim 10特征</strong>（Exp 2）+ <strong>Embargo 20d</strong>（Exp 3）+ <strong>短期数据</strong>（Exp 5）。
-              此配置已存在为 D1 Slim+Embargo。
-              <br/><br/>
-              <span style={{color:'#dc2626'}}>已排除：</span>Human权重（Exp 1）、全量23特征（Exp 2）、双模型集成（Exp 4）、长期20年数据（Exp 5 — 数据质量修复后仍劣于短期，确认瓶颈为非平稳性而非数据缺失）。
+          <div className="best-config-card">
+            <div className="best-config-header">
+              <span className="best-config-badge">RECOMMENDED</span>
+              <div className="best-config-title">
+                <span className="best-config-name">D1 Slim+Embargo</span>
+                <span className="best-config-auc">AUC 0.861</span>
+              </div>
             </div>
+            <p className="best-config-desc">
+              综合 Phase 2 全部有益发现，此配置已上线运行。
+            </p>
+            <div className="best-config-group">
+              <span className="best-config-label">包含</span>
+              <div className="best-config-chips">
+                <span className="best-chip include">ML 学习权重 <em>Exp 1</em></span>
+                <span className="best-chip include">Slim 10 特征 <em>Exp 2</em></span>
+                <span className="best-chip include">Embargo 20d <em>Exp 3</em></span>
+                <span className="best-chip include">短期数据 <em>Exp 5</em></span>
+              </div>
+            </div>
+            <div className="best-config-group">
+              <span className="best-config-label exclude">已排除</span>
+              <div className="best-config-chips">
+                <span className="best-chip exclude">Human 权重 <em>Exp 1</em></span>
+                <span className="best-chip exclude">全量 23 特征 <em>Exp 2</em></span>
+                <span className="best-chip exclude">双模型集成 <em>Exp 4</em></span>
+                <span className="best-chip exclude">长期 20 年数据 <em>Exp 5</em></span>
+              </div>
+            </div>
+            <p className="best-config-note">
+              长期数据在质量修复后仍劣于短期，瓶颈为非平稳性而非数据缺失。
+            </p>
           </div>
         </div>
 
