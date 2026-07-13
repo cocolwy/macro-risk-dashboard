@@ -61,30 +61,29 @@ function OverviewTable({ experiments }: { experiments: ExperimentData[] }) {
 
   return (
     <div className="ab-overview-table">
-      <div className="lab-table-wrap" style={{ overflowX: 'auto' }}>
+      <div className="lab-table-wrap">
         <table className="lab-table">
           <thead>
-            <tr><th>模型</th><th>特征</th><th>AUC</th><th>Best F1</th><th>@阈值</th><th>Brier</th><th>Mean P</th><th>事件命中</th></tr>
+            <tr><th>模型</th><th>AUC</th><th>Best F1</th><th>Brier ↓</th></tr>
           </thead>
           <tbody>
             {withPM.map((exp, i) => {
               const pm = exp.practical_metrics!;
-              const detected = exp.events_backtest.filter(e => e.lead_days != null).length;
-              const isSlim = exp.name.includes('Slim');
               const isBestAuc = Math.abs(exp.auc - bestAuc) < 0.001;
               const isBestF1 = Math.abs(pm.best_f1 - bestF1) < 0.001;
+              const isBestBrier = Math.abs(pm.brier_score - bestBrier) < 0.001;
               return (
                 <tr key={i}>
                   <td style={{ color: COLORS[i % COLORS.length], fontWeight: 600 }}>
+                    {isBestF1 && <span className="ab-best-tag">BEST</span>}
                     {exp.name}
                   </td>
-                  <td className="lab-td-mono" style={{ fontSize: 11 }}>{isSlim ? '10' : '23'}</td>
                   <td className="lab-td-mono" style={isBestAuc ? { fontWeight: 700, color: '#16a34a' } : undefined}>{exp.auc.toFixed(3)}</td>
-                  <td className="lab-td-mono" style={isBestF1 ? { fontWeight: 700, color: '#16a34a' } : undefined}>{pm.best_f1.toFixed(3)}</td>
-                  <td className="lab-td-mono" style={{ fontSize: 11 }}>{(pm.best_f1_threshold * 100).toFixed(0)}%</td>
-                  <td className="lab-td-mono" style={Math.abs(pm.brier_score - bestBrier) < 0.001 ? { fontWeight: 700, color: '#16a34a' } : undefined}>{pm.brier_score.toFixed(4)}</td>
-                  <td className="lab-td-mono">{(pm.mean_prob * 100).toFixed(1)}%</td>
-                  <td>{detected}/{exp.events_backtest.length}</td>
+                  <td className="lab-td-mono" style={isBestF1 ? { fontWeight: 700, color: '#16a34a' } : undefined}>
+                    {pm.best_f1.toFixed(3)}
+                    <span style={{ fontSize: 10, opacity: 0.5, marginLeft: 3 }}>@{(pm.best_f1_threshold * 100).toFixed(0)}%</span>
+                  </td>
+                  <td className="lab-td-mono" style={isBestBrier ? { fontWeight: 700, color: '#16a34a' } : undefined}>{pm.brier_score.toFixed(3)}</td>
                 </tr>
               );
             })}
@@ -92,7 +91,7 @@ function OverviewTable({ experiments }: { experiments: ExperimentData[] }) {
         </table>
       </div>
       <p style={{ fontSize: 11, color: '#8a7882', marginTop: 8 }}>
-        所有模型均使用 Unbalanced 训练（概率校准后）· 绿色 = 该列最佳
+        Unbalanced 训练 · Embargo 20d · 绿色 = 最佳 · 详细指标见 Ch.2.1
       </p>
     </div>
   );
