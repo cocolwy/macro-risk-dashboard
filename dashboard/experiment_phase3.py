@@ -25,8 +25,11 @@ from sklearn.calibration import CalibratedClassifierCV
 
 from predict_model import (
     load_indicators, build_features, build_features_slim,
+    build_features_regime, build_features_regime_minimal, fetch_regime_data,
+    build_features_with_events, build_features_kitchen_sink,
     compute_target, KEY_EVENTS, build_comparison_metrics,
 )
+from experiment_extended_history import load_extended_data, EXTENDED_KEY_EVENTS
 
 DATA_DIR = Path(__file__).parent / 'data'
 EMBARGO = 20
@@ -204,7 +207,7 @@ def main():
     print("=" * 60)
 
     # --- Load data ---
-    print("\n[1/3] Loading data...")
+    print("\n[1/5] Loading data...")
     df = load_indicators()
     sp500 = df['sp500']
     print(f"  {len(df)} trading days ({df.index[0]} ~ {df.index[-1]})")
@@ -226,11 +229,32 @@ def main():
     print(f"  Full features: {len(X_full)} samples, {X_full.shape[1]} features, {int(y_full.sum())} positive ({y_full.mean()*100:.1f}%)")
     print(f"  Slim features: {len(X_slim)} samples, {X_slim.shape[1]} features, {int(y_slim.sum())} positive ({y_slim.mean()*100:.1f}%)")
 
+    # Regime features
+    print("  Fetching regime data (Fed Funds + CPI)...")
+    regime_df = fetch_regime_data()
+    features_regime = build_features_regime(df, regime_df)
+    X_regime, y_regime = prep(features_regime)
+    print(f"  Regime features: {len(X_regime)} samples, {X_regime.shape[1]} features, {int(y_regime.sum())} positive ({y_regime.mean()*100:.1f}%)")
+    print(f"    New regime cols: {[c for c in X_regime.columns if c not in X_slim.columns]}")
+
+    features_regime_min = build_features_regime_minimal(df, regime_df)
+    X_regime_min, y_regime_min = prep(features_regime_min)
+    print(f"  Regime-minimal: {len(X_regime_min)} samples, {X_regime_min.shape[1]} features")
+
+    features_events = build_features_with_events(df)
+    X_events, y_events = prep(features_events)
+    print(f"  Event features: {len(X_events)} samples, {X_events.shape[1]} features")
+    print(f"    New event cols: {[c for c in X_events.columns if c not in X_slim.columns]}")
+
+    features_ks = build_features_kitchen_sink(df, regime_df)
+    X_ks, y_ks = prep(features_ks)
+    print(f"  Kitchen sink: {len(X_ks)} samples, {X_ks.shape[1]} features")
+
     # =========================================================
     # Board A: 非线性模型探索 (Ch.2)
     #   All models use unbalanced/no-sample-weight for fair comparison
     # =========================================================
-    print("\n[2/4] Ch.2 Non-linear model experiments...")
+    print("\n[2/5] Ch.2 Non-linear model experiments...")
     model_experiments = []
     model_fi = {}
     model_practical = {}
@@ -289,10 +313,163 @@ def main():
     ]
 
     # =========================================================
+    # Step 2: Regime features experiments (added to Ch.2)
+    # =========================================================
+    print("\n[3/5] Step 2: Regime feature experiments...")
+    regime_experiments = []
+    regime_fi = {}
+    regime_practical = {}
+
+    run_and_log("LR Slim+Regime9", X_regime, y_regime, train_lr_no_balance, regime_experiments, regime_fi, regime_practical)
+    run_and_log("LR Slim+Regime2", X_regime_min, y_regime_min, train_lr_no_balance, regime_experiments, regime_fi, regime_practical)
+    run_and_log("GBDT Slim+Regime9", X_regime, y_regime, train_gbdt_no_balance, regime_experiments, regime_fi, regime_practical)
+    run_and_log("GBDT Slim+Regime2", X_regime_min, y_regime_min, train_gbdt_no_balance, regime_experiments, regime_fi, regime_practical)
+
+    regime_pairwise = [
+        {
+            "id": "regime_lr_full",
+            "label": "Step 2a: Regime 全量 9特征（LR）",
+            "variable": "Slim 10特征 vs Slim+Regime 19特征",
+            "baseline": "LR Slim",
+            "challenger": "LR Slim+Regime9",
+            "method_note": "加入 9 个 regime 特征（利率水平/方向、CPI、曲线状态）。如果 F1 下降 = regime 信息对当前短期数据是噪声。",
+        },
+        {
+            "id": "regime_lr_min",
+            "label": "Step 2b: Regime 精简 2特征（LR）",
+            "variable": "Slim 10特征 vs Slim+2 (curve_inverted + fed_hiking)",
+            "baseline": "LR Slim",
+            "challenger": "LR Slim+Regime2",
+            "method_note": "只加 curve_inverted 和 fed_hiking 两个二值特征。测试精简 regime 信号是否比全量更有效。",
+        },
+        {
+            "id": "regime_gbdt",
+            "label": "Step 2c: Regime 精简 2特征（GBDT）",
+            "variable": "GBDT Slim vs GBDT Slim+Regime2",
+            "baseline": "GBDT Slim",
+            "challenger": "GBDT Slim+Regime2",
+            "method_note": "树模型可以学到「加息中 + VIX 上涨 → 高危」类交互。测试 GBDT 能否更好利用 regime 信息。",
+        },
+    ]
+
+    # =========================================================
+    # Step 3: Event calendar features
+    # =========================================================
+    print("\n  Step 3: Event calendar experiments...")
+    step3_exps = []
+    step3_fi = {}
+    step3_prac = {}
+
+    run_and_log("LR Slim+Events", X_events, y_events, train_lr_no_balance, step3_exps, step3_fi, step3_prac)
+    run_and_log("GBDT Slim+Events", X_events, y_events, train_gbdt_no_balance, step3_exps, step3_fi, step3_prac)
+    run_and_log("LR KitchenSink", X_ks, y_ks, train_lr_no_balance, step3_exps, step3_fi, step3_prac)
+    run_and_log("GBDT KitchenSink", X_ks, y_ks, train_gbdt_no_balance, step3_exps, step3_fi, step3_prac)
+
+    step3_pairwise = [
+        {
+            "id": "events_lr",
+            "label": "Step 3a: 事件日历增益（LR）",
+            "variable": "Slim vs Slim+Events — LR",
+            "baseline": "LR Slim",
+            "challenger": "LR Slim+Events",
+            "method_note": "加入 FOMC/CPI/NFP 前后天数和窗口标记。测试事件邻近性是否有预测价值。",
+        },
+        {
+            "id": "events_gbdt",
+            "label": "Step 3b: 事件日历增益（GBDT）",
+            "variable": "GBDT Slim vs GBDT Slim+Events",
+            "baseline": "GBDT Slim",
+            "challenger": "GBDT Slim+Events",
+            "method_note": "树模型可学到「FOMC 前 3 天 + VIX 高 → 特别危险」类组合。",
+        },
+        {
+            "id": "kitchen_sink",
+            "label": "Step 3c: Kitchen Sink（全特征）",
+            "variable": "LR Slim vs LR KitchenSink",
+            "baseline": "LR Slim",
+            "challenger": "LR KitchenSink",
+            "method_note": "Slim + Regime2 + Events 全部组合，测试特征叠加的综合效果。",
+        },
+    ]
+
+    # Merge all step 2+3 experiments into Ch.2
+    model_experiments.extend(regime_experiments)
+    model_experiments.extend(step3_exps)
+    model_fi.update(regime_fi)
+    model_fi.update(step3_fi)
+    model_practical.update(regime_practical)
+    model_practical.update(step3_prac)
+    model_pairwise.extend(regime_pairwise)
+    model_pairwise.extend(step3_pairwise)
+
+    # =========================================================
+    # Step 4: Long-term retest (2005+)
+    # =========================================================
+    print("\n[4/6] Step 4: Long-term retest (2005+)...")
+    try:
+        df_ext = load_extended_data()
+        sp500_ext = df_ext['sp500']
+        print(f"  Extended data: {len(df_ext)} days ({df_ext.index[0]} ~ {df_ext.index[-1]})")
+
+        features_slim_ext = build_features_slim(df_ext)
+        target_ext = compute_target(sp500_ext)
+        combined_ext = features_slim_ext.copy()
+        combined_ext['target'] = target_ext
+        combined_ext = combined_ext.dropna().clip(-10, 10)
+        X_ext = combined_ext.drop('target', axis=1)
+        y_ext = combined_ext['target']
+        print(f"  Extended Slim: {len(X_ext)} samples, {X_ext.shape[1]} features, {int(y_ext.sum())} positive ({y_ext.mean()*100:.1f}%)")
+
+        step4_exps = []
+        step4_fi = {}
+        step4_prac = {}
+
+        run_and_log("LR Ext", X_ext, y_ext, train_lr_no_balance, step4_exps, step4_fi, step4_prac)
+        run_and_log("GBDT Ext", X_ext, y_ext, train_gbdt_no_balance, step4_exps, step4_fi, step4_prac)
+        run_and_log("RF Ext", X_ext, y_ext, train_rf_no_balance, step4_exps, step4_fi, step4_prac)
+
+        step4_pairwise = [
+            {
+                "id": "longterm_lr",
+                "label": "Step 4a: LR 短期 vs 长期",
+                "variable": "953 样本 vs {0} 样本 — LR Slim".format(len(X_ext)),
+                "baseline": "LR Slim",
+                "challenger": "LR Ext",
+                "method_note": "相同模型和特征，仅扩展数据量。长期数据覆盖 2005+ 多个经济周期（次贷、欧债、COVID）。",
+            },
+            {
+                "id": "longterm_gbdt",
+                "label": "Step 4b: GBDT 短期 vs 长期",
+                "variable": "953 样本 vs {0} 样本 — GBDT Slim".format(len(X_ext)),
+                "baseline": "GBDT Slim",
+                "challenger": "GBDT Ext",
+                "method_note": "GBDT 在更多数据上是否能学到跨周期的 regime 切换规律？",
+            },
+            {
+                "id": "longterm_model_compare",
+                "label": "Step 4c: 长期数据上 LR vs GBDT",
+                "variable": "LR vs GBDT — 长期 {0} 样本".format(len(X_ext)),
+                "baseline": "LR Ext",
+                "challenger": "GBDT Ext",
+                "method_note": "在跨越多个经济周期的长期数据上，非线性模型是否终于超过线性模型？",
+            },
+        ]
+
+        model_experiments.extend(step4_exps)
+        model_fi.update(step4_fi)
+        model_practical.update(step4_prac)
+        model_pairwise.extend(step4_pairwise)
+        print("  Step 4 complete.")
+    except Exception as e:
+        print(f"  Step 4 FAILED: {e}")
+        import traceback
+        traceback.print_exc()
+
+    # =========================================================
     # Board B: 指标探索 (Ch.2.1)
     #   Balanced vs Unbalanced, Calibration experiments
     # =========================================================
-    print("\n[3/4] Ch.2.1 Metric exploration experiments...")
+    print("\n[5/6] Ch.2.1 Metric exploration experiments...")
     metric_experiments = []
     metric_fi = {}
     metric_practical = {}
@@ -343,7 +520,7 @@ def main():
     # =========================================================
     # Save both JSONs
     # =========================================================
-    print("\n[4/4] Saving results...")
+    print("\n[6/6] Saving results...")
 
     def build_summary(prac_dict):
         best_f1 = max(prac_dict.items(), key=lambda x: x[1]['best_f1'])

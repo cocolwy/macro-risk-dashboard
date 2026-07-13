@@ -122,6 +122,191 @@ def build_features_slim(df: pd.DataFrame) -> pd.DataFrame:
     return features
 
 
+def fetch_regime_data() -> pd.DataFrame:
+    """Fetch Fed Funds Rate and CPI from FRED for regime features."""
+    start = '2016-01-01'
+    regime = pd.DataFrame()
+
+    try:
+        url_dff = f"https://fred.stlouisfed.org/graph/fredgraph.csv?id=DFF&cosd={start}&fq=Daily"
+        dff = pd.read_csv(url_dff)
+        date_col = [c for c in dff.columns if 'date' in c.lower()][0]
+        dff[date_col] = pd.to_datetime(dff[date_col])
+        dff = dff.set_index(date_col)
+        col = [c for c in dff.columns if c != date_col][0]
+        regime['fed_funds'] = pd.to_numeric(dff[col], errors='coerce')
+        print(f"  Fed Funds Rate: {len(regime['fed_funds'].dropna())} points")
+    except Exception as e:
+        print(f"  Warning: Failed to fetch DFF: {e}")
+
+    try:
+        url_cpi = f"https://fred.stlouisfed.org/graph/fredgraph.csv?id=CPIAUCSL&cosd={start}&fq=Monthly"
+        cpi = pd.read_csv(url_cpi)
+        date_col = [c for c in cpi.columns if 'date' in c.lower()][0]
+        cpi[date_col] = pd.to_datetime(cpi[date_col])
+        cpi = cpi.set_index(date_col)
+        col = [c for c in cpi.columns if c != date_col][0]
+        cpi_s = pd.to_numeric(cpi[col], errors='coerce').dropna()
+        cpi_yoy = cpi_s.pct_change(12) * 100
+        regime['cpi_yoy'] = cpi_yoy
+        print(f"  CPI YoY: {len(regime['cpi_yoy'].dropna())} points")
+    except Exception as e:
+        print(f"  Warning: Failed to fetch CPI: {e}")
+
+    return regime
+
+
+def build_features_regime(df: pd.DataFrame, regime_df: pd.DataFrame = None) -> pd.DataFrame:
+    """Slim features + regime features (fed funds direction, CPI trend, curve state).
+
+    Regime features use fillna(0) for binary flags and ffill+fillna for levels,
+    so they never introduce NaN rows that would be dropped by prep().
+    """
+    features = build_features_slim(df)
+
+    if 'term_spread' in df.columns:
+        ts = df['term_spread']
+        features['curve_inverted'] = (ts < 0).astype(float)
+        features['curve_flat'] = ((ts >= 0) & (ts < 0.5)).astype(float)
+
+    if regime_df is not None and 'fed_funds' in regime_df.columns:
+        ff_idx = pd.to_datetime(regime_df.index)
+        ff_series = regime_df['fed_funds'].copy()
+        ff_series.index = ff_idx
+        df_idx = pd.to_datetime(df.index)
+        ff = ff_series.reindex(df_idx, method='ffill').fillna(method='bfill').fillna(0)
+        ff.index = df.index
+        features['fed_rate_level'] = ff
+        chg63 = ff.diff(63).fillna(0)
+        features['fed_rate_chg_63d'] = chg63
+        features['fed_hiking'] = (chg63 > 0.25).astype(float)
+        features['fed_cutting'] = (chg63 < -0.25).astype(float)
+
+    if regime_df is not None and 'cpi_yoy' in regime_df.columns:
+        cpi_idx = pd.to_datetime(regime_df.index)
+        cpi_series = regime_df['cpi_yoy'].copy()
+        cpi_series.index = cpi_idx
+        df_idx = pd.to_datetime(df.index)
+        cpi = cpi_series.reindex(df_idx, method='ffill').fillna(method='bfill').fillna(0)
+        cpi.index = df.index
+        features['cpi_yoy'] = cpi
+        features['cpi_accelerating'] = (cpi.diff(1).fillna(0) > 0).astype(float)
+        features['cpi_above_3'] = (cpi > 3.0).astype(float)
+
+    return features
+
+
+def get_event_dates():
+    """Known FOMC meeting dates, CPI release dates (2022-2026). NFP = 1st Friday of month."""
+    fomc = [
+        '2022-01-26', '2022-03-16', '2022-05-04', '2022-06-15', '2022-07-27',
+        '2022-09-21', '2022-11-02', '2022-12-14',
+        '2023-02-01', '2023-03-22', '2023-05-03', '2023-06-14', '2023-07-26',
+        '2023-09-20', '2023-11-01', '2023-12-13',
+        '2024-01-31', '2024-03-20', '2024-05-01', '2024-06-12', '2024-07-31',
+        '2024-09-18', '2024-11-07', '2024-12-18',
+        '2025-01-29', '2025-03-19', '2025-05-07', '2025-06-18', '2025-07-30',
+        '2025-09-17', '2025-10-29', '2025-12-17',
+        '2026-01-28', '2026-03-18', '2026-05-06', '2026-06-17', '2026-07-29',
+    ]
+    cpi_releases = [
+        '2022-01-12', '2022-02-10', '2022-03-10', '2022-04-12', '2022-05-11',
+        '2022-06-10', '2022-07-13', '2022-08-10', '2022-09-13', '2022-10-13',
+        '2022-11-10', '2022-12-13',
+        '2023-01-12', '2023-02-14', '2023-03-14', '2023-04-12', '2023-05-10',
+        '2023-06-13', '2023-07-12', '2023-08-10', '2023-09-13', '2023-10-12',
+        '2023-11-14', '2023-12-12',
+        '2024-01-11', '2024-02-13', '2024-03-12', '2024-04-10', '2024-05-15',
+        '2024-06-12', '2024-07-11', '2024-08-14', '2024-09-11', '2024-10-10',
+        '2024-11-13', '2024-12-11',
+        '2025-01-15', '2025-02-12', '2025-03-12', '2025-04-10', '2025-05-13',
+        '2025-06-11', '2025-07-10', '2025-08-12', '2025-09-10', '2025-10-14',
+        '2025-11-12', '2025-12-10',
+        '2026-01-13', '2026-02-11', '2026-03-11', '2026-04-14', '2026-05-12',
+        '2026-06-10', '2026-07-14',
+    ]
+    return {
+        'fomc': [pd.Timestamp(d) for d in fomc],
+        'cpi': [pd.Timestamp(d) for d in cpi_releases],
+    }
+
+
+def build_event_features(df: pd.DataFrame) -> pd.DataFrame:
+    """Days to/from next FOMC and CPI release. NFP = 1st Friday of each month."""
+    events = get_event_dates()
+    dates = pd.to_datetime(df.index)
+    features = pd.DataFrame(index=df.index)
+
+    for event_name, event_dates in events.items():
+        event_set = set(event_dates)
+        days_to = []
+        days_since = []
+        for d in dates:
+            future = [e for e in event_dates if e >= d]
+            past = [e for e in event_dates if e <= d]
+            days_to.append((future[0] - d).days if future else 30)
+            days_since.append((d - past[-1]).days if past else 30)
+
+        features[f'{event_name}_days_to'] = days_to
+        features[f'{event_name}_days_since'] = days_since
+        features[f'{event_name}_within_3d'] = (pd.Series(days_to, index=df.index) <= 3).astype(float)
+        features[f'{event_name}_within_7d'] = (pd.Series(days_to, index=df.index) <= 7).astype(float)
+
+    nfp_dates = set()
+    for year in range(2022, 2027):
+        for month in range(1, 13):
+            first = pd.Timestamp(year, month, 1)
+            offset = (4 - first.weekday()) % 7
+            nfp_dates.add(first + pd.Timedelta(days=offset))
+
+    nfp_list = sorted(nfp_dates)
+    nfp_days_to = []
+    for d in dates:
+        future = [e for e in nfp_list if e >= d]
+        nfp_days_to.append((future[0] - d).days if future else 30)
+    features['nfp_within_3d'] = (pd.Series(nfp_days_to, index=df.index) <= 3).astype(float)
+
+    return features
+
+
+def build_features_with_events(df: pd.DataFrame) -> pd.DataFrame:
+    """Slim features + event calendar features."""
+    features = build_features_slim(df)
+    event_feats = build_event_features(df)
+    for col in event_feats.columns:
+        features[col] = event_feats[col]
+    return features
+
+
+def build_features_kitchen_sink(df: pd.DataFrame, regime_df: pd.DataFrame = None) -> pd.DataFrame:
+    """Slim + minimal regime + event features — the full combined feature set."""
+    features = build_features_regime_minimal(df, regime_df)
+    event_feats = build_event_features(df)
+    for col in event_feats.columns:
+        features[col] = event_feats[col]
+    return features
+
+
+def build_features_regime_minimal(df: pd.DataFrame, regime_df: pd.DataFrame = None) -> pd.DataFrame:
+    """Slim + only 2 key regime features: curve_inverted + fed_rate_direction."""
+    features = build_features_slim(df)
+
+    if 'term_spread' in df.columns:
+        features['curve_inverted'] = (df['term_spread'] < 0).astype(float)
+
+    if regime_df is not None and 'fed_funds' in regime_df.columns:
+        ff_idx = pd.to_datetime(regime_df.index)
+        ff_series = regime_df['fed_funds'].copy()
+        ff_series.index = ff_idx
+        df_idx = pd.to_datetime(df.index)
+        ff = ff_series.reindex(df_idx, method='ffill').fillna(method='bfill').fillna(0)
+        ff.index = df.index
+        chg63 = ff.diff(63).fillna(0)
+        features['fed_hiking'] = (chg63 > 0.25).astype(float)
+
+    return features
+
+
 def compute_target(sp500: pd.Series, horizon: int = 20, threshold: float = -0.05) -> pd.Series:
     """Binary target: 1 if max drawdown in next `horizon` days exceeds `threshold`."""
     future_max_dd = pd.Series(index=sp500.index, dtype=float)

@@ -275,12 +275,12 @@ function Phase3LabInner() {
       {/* Overview table */}
       <section className="lab-card ab-section">
         <div className="ab-header">
-          <h2>Step 1: 非线性 vs 线性</h2>
-          <span className="ab-badge" style={{ background: '#f0fdf4', color: '#166534', border: '1px solid #bbf7d0' }}>A/B TEST</span>
+          <h2>全量模型对比</h2>
+          <span className="ab-badge" style={{ background: '#f0fdf4', color: '#166534', border: '1px solid #bbf7d0' }}>STEP 1-3</span>
           <span className="ab-badge">{experiments.length} MODELS</span>
         </div>
         <p className="lab-card-desc">
-          树模型可隐式学到 regime 条件规律（如「VIX 高 且 利差走阔 → 危机」），不受共线性影响。
+          Step 1 非线性模型 · Step 2 Regime 特征 · Step 3 事件日历 · Step 4 长期重测
         </p>
         <OverviewTable experiments={experiments} />
       </section>
@@ -316,31 +316,28 @@ function Phase3LabInner() {
             <span className="roadmap-check">&#10003;</span>
             <div className="roadmap-step-body">
               <div className="roadmap-step-title">Step 1 · 非线性模型 Baseline</div>
-              <div className="roadmap-step-detail">
-                <span className="roadmap-metric-chip">GBDT / RF / LR</span>
-                <span className="roadmap-metric-chip">Slim 10feat / Full 23feat</span>
-              </div>
+              <div className="roadmap-step-desc">LR Slim F1=0.588 仍为最佳 · GBDT/RF 在小样本下不如 LR</div>
             </div>
           </div>
-          <div className="roadmap-item pending">
-            <span className="roadmap-dot" />
+          <div className="roadmap-item done">
+            <span className="roadmap-check">&#10003;</span>
             <div className="roadmap-step-body">
               <div className="roadmap-step-title">Step 2 · Regime 特征</div>
-              <div className="roadmap-step-desc">FOMC 利率方向 · CPI YoY 趋势 · 收益率曲线状态</div>
+              <div className="roadmap-step-desc">9 特征全量反而有害 · 2 特征精简版 F1=0.529 · 结论：当前数据周期单一，regime 信号是噪声</div>
             </div>
           </div>
-          <div className="roadmap-item pending">
-            <span className="roadmap-dot" />
+          <div className="roadmap-item done">
+            <span className="roadmap-check">&#10003;</span>
             <div className="roadmap-step-body">
               <div className="roadmap-step-title">Step 3 · 事件日历</div>
-              <div className="roadmap-step-desc">FOMC / CPI / 非农前后 N 天标记</div>
+              <div className="roadmap-step-desc">FOMC/CPI/NFP 窗口特征 · LR+Events F1=0.516 · KitchenSink F1=0.541 · 均不如 Slim baseline</div>
             </div>
           </div>
-          <div className="roadmap-item pending">
-            <span className="roadmap-dot" />
+          <div className="roadmap-item done">
+            <span className="roadmap-check">&#10003;</span>
             <div className="roadmap-step-body">
-              <div className="roadmap-step-title">Step 4 · 长期重测</div>
-              <div className="roadmap-step-desc">1986+ 数据 + 非线性模型</div>
+              <div className="roadmap-step-title">Step 4 · 长期重测 (2005+)</div>
+              <div className="roadmap-step-desc">5333 样本 · LR/GBDT/RF 均 F1≈0.31 · 长期数据 AUC 显著退化（0.57~0.60）· 与 Ch.1 结论一致：线性模型 + 跨周期非平稳性</div>
             </div>
           </div>
         </div>
