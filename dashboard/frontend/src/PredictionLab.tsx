@@ -859,155 +859,100 @@ export function PredictionLab() {
         </div>
       </section>
 
-      {/* === DATA AUGMENTATION PROPOSALS === */}
-      <section className="lab-card augment-section">
+      {/* === PROJECT ROADMAP === */}
+      <section className="lab-card roadmap-section">
         <div className="ab-header">
-          <h2>数据增强方案 (Experiment D)</h2>
-          <span className="ab-badge" style={{ background: '#dceeff', color: '#3a82d6', border: '1px solid #bcdcff' }}>PROPOSAL</span>
+          <h2>项目进度与路线图</h2>
+          <span className="ab-badge" style={{ background: '#f0fdf4', color: '#166534', border: '1px solid #bbf7d0' }}>ROADMAP</span>
         </div>
-        <p className="lab-card-desc">
-          当前核心问题：可用训练样本约 {metrics.model_info.training_samples + metrics.model_info.test_samples} 天，
-          正样本（大跌）约 {Math.round((metrics.model_info.training_samples + metrics.model_info.test_samples) * metrics.model_info.positive_rate)} 个。
-          D1（滑动窗口 + Embargo）已实施，以下为备选方案。
-        </p>
 
-        <div className="augment-grid">
-          <div className="augment-card" style={{ opacity: 0.5, position: 'relative' }}>
-            <div style={{ position: 'absolute', top: 8, right: 8, background: '#16a34a', color: '#fff', padding: '2px 8px', borderRadius: 4, fontSize: 10, fontWeight: 700 }}>已实施</div>
-            <div className="augment-card-header">
-              <span className="augment-id">D1</span>
-              <h3>滑动窗口重采样</h3>
-              <span className="augment-difficulty easy">已完成</span>
-            </div>
-            <p className="augment-desc">
-              每天产生一条样本 + 20天 Embargo 隔离。已集成到 D1 Slim+Embargo 实验中，AUC 从 0.83 提升至 0.86。
-            </p>
+        <div className="roadmap-phase">
+          <div className="roadmap-phase-header done">
+            <span className="roadmap-phase-tag">Phase 1</span>
+            <h3>基线建立</h3>
+            <span className="roadmap-status done">DONE</span>
           </div>
-
-          <div className="augment-card">
-            <div className="augment-card-header">
-              <span className="augment-id">D2</span>
-              <h3>SMOTE 过采样</h3>
-              <span className="augment-difficulty medium">中等</span>
-            </div>
-            <p className="augment-desc">
-              对正样本（大跌前特征向量）做插值合成，在特征空间中生成与真实正样本相近的虚拟样本，
-              平衡正负比例至约 1:3。
-            </p>
-            <div className="augment-pros-cons">
-              <div className="augment-pro">
-                <span className="augment-tag pro">优势</span>
-                经典方法，scikit-learn 直接支持。解决类别不平衡
-              </div>
-              <div className="augment-con">
-                <span className="augment-tag con">风险</span>
-                金融时序中特征空间的线性插值不一定反映真实市场状态
-              </div>
-              <div className="augment-mitigation">
-                <span className="augment-tag mit">缓解</span>
-                用 Borderline-SMOTE（只在决策边界附近合成）减少噪声
-              </div>
-            </div>
-          </div>
-
-          <div className="augment-card">
-            <div className="augment-card-header">
-              <span className="augment-id">D3</span>
-              <h3>特征噪声注入</h3>
-              <span className="augment-difficulty medium">中等</span>
-            </div>
-            <p className="augment-desc">
-              对正样本添加高斯噪声（比如 +/- 5% 扰动），生成变体。模拟市场微观结构的随机性。
-            </p>
-            <div className="augment-pros-cons">
-              <div className="augment-pro">
-                <span className="augment-tag pro">优势</span>
-                简单直接，可控噪声幅度
-              </div>
-              <div className="augment-con">
-                <span className="augment-tag con">风险</span>
-                可能产生不符合物理约束的特征组合（如VIX负值）
-              </div>
-              <div className="augment-mitigation">
-                <span className="augment-tag mit">缓解</span>
-                对合成样本做范围裁剪 + 物理约束检查
-              </div>
-            </div>
-          </div>
-
-          <div className="augment-card">
-            <div className="augment-card-header">
-              <span className="augment-id">D4</span>
-              <h3>多阈值目标融合</h3>
-              <span className="augment-difficulty easy">易实现</span>
-            </div>
-            <p className="augment-desc">
-              保持主目标（大于5%跌幅），但用3%和8%阈值的标签做辅助任务。模型先学习「任何显著下跌」的模式，
-              再 fine-tune 到 5% 目标。
-            </p>
-            <div className="augment-pros-cons">
-              <div className="augment-pro">
-                <span className="augment-tag pro">优势</span>
-                不产生合成数据，利用不同严格度的真实标签
-              </div>
-              <div className="augment-con">
-                <span className="augment-tag con">风险</span>
-                3% 跌幅的模式可能与 5% 跌幅不同
-              </div>
-              <div className="augment-mitigation">
-                <span className="augment-tag mit">缓解</span>
-                两阶段训练：先预训练后微调
-              </div>
-            </div>
-          </div>
-
-          <div className="augment-card">
-            <div className="augment-card-header">
-              <span className="augment-id">D5</span>
-              <h3>Bootstrap 集成</h3>
-              <span className="augment-difficulty medium">中等</span>
-            </div>
-            <p className="augment-desc">
-              对训练集做有放回重采样，训练多个模型（类似 Bagging），最终概率取平均。
-              等效于增加数据多样性。
-            </p>
-            <div className="augment-pros-cons">
-              <div className="augment-pro">
-                <span className="augment-tag pro">优势</span>
-                减少单模型方差，概率估计更稳定
-              </div>
-              <div className="augment-con">
-                <span className="augment-tag con">风险</span>
-                不增加信息量，计算成本高
-              </div>
-              <div className="augment-mitigation">
-                <span className="augment-tag mit">缓解</span>
-                配合其他增强方法一起使用效果更好
-              </div>
-            </div>
+          <div className="roadmap-items">
+            <div className="roadmap-item done"><span className="roadmap-check">✓</span>风控指标看板（VIX / 利差 / 宽度 / 耦合度 / 湍流度 / 综合评分）</div>
+            <div className="roadmap-item done"><span className="roadmap-check">✓</span>ML 基线模型（Logistic Regression, 23 特征, AUC 0.85）</div>
+            <div className="roadmap-item done"><span className="roadmap-check">✓</span>Human Logic 基线（人工权重, AUC 0.81）</div>
+            <div className="roadmap-item done"><span className="roadmap-check">✓</span>Prediction Lab 看板 + GitHub Actions 每日更新</div>
           </div>
         </div>
 
-        <div className="augment-recommendation">
-          <h3>推荐实验顺序</h3>
-          <div className="augment-rec-list">
-            <div className="augment-rec-item">
-              <span className="augment-rec-num">1</span>
-              <div>
-                <strong>D1 滑动窗口</strong> — 最低风险，不引入合成数据，预计正样本 x3-5
-              </div>
+        <div className="roadmap-phase">
+          <div className="roadmap-phase-header done">
+            <span className="roadmap-phase-tag">Phase 2</span>
+            <h3>实验框架与优化</h3>
+            <span className="roadmap-status done">DONE</span>
+          </div>
+          <div className="roadmap-items">
+            <div className="roadmap-item done"><span className="roadmap-check">✓</span>Exp 1: ML vs Human 权重对比 → ML 胜出</div>
+            <div className="roadmap-item done"><span className="roadmap-check">✓</span>Exp 2: 特征去冗余（23→10 特征）→ AUC 0.85→0.89</div>
+            <div className="roadmap-item done"><span className="roadmap-check">✓</span>Exp 3: Embargo 隔离（防数据泄露）→ 评估更准确</div>
+            <div className="roadmap-item done"><span className="roadmap-check">✓</span>Exp 4: MIN/AND 双模型集成 → MIN AUC 0.80</div>
+            <div className="roadmap-item done"><span className="roadmap-check">✓</span>Exp 5: 长期数据实验 → 结论: 更多数据≠更好（非平稳性）</div>
+            <div className="roadmap-item done"><span className="roadmap-check">✓</span>模型原理文档 + 方法论标注</div>
+          </div>
+        </div>
+
+        <div className="roadmap-phase">
+          <div className="roadmap-phase-header done">
+            <span className="roadmap-phase-tag">Phase 2.5</span>
+            <h3>数据增强 (D1)</h3>
+            <span className="roadmap-status done">DONE</span>
+          </div>
+          <div className="roadmap-items">
+            <div className="roadmap-item done"><span className="roadmap-check">✓</span>D1 滑动窗口重采样 + Embargo 隔离</div>
+            <div className="roadmap-item done"><span className="roadmap-check">✓</span>数据来源审计 + 覆盖分析</div>
+          </div>
+        </div>
+
+        <div className="roadmap-phase">
+          <div className="roadmap-phase-header next">
+            <span className="roadmap-phase-tag">Phase 3</span>
+            <h3>模型进化</h3>
+            <span className="roadmap-status next">NEXT</span>
+          </div>
+          <div className="roadmap-items">
+            <div className="roadmap-item pending"><span className="roadmap-dot" />滑动训练窗口: 用最近 5-7 年训练而非全量，应对非平稳性</div>
+            <div className="roadmap-item pending"><span className="roadmap-dot" />非线性模型: XGBoost / Random Forest 对比 Logistic Regression</div>
+            <div className="roadmap-item pending"><span className="roadmap-dot" />D2-D5 数据增强备选（SMOTE / 噪声注入 / 多阈值 / Bootstrap）</div>
+            <div className="roadmap-item pending"><span className="roadmap-dot" />Human 模型去数据依赖: 使 Scaler/校准不依赖训练集</div>
+          </div>
+        </div>
+
+        <div className="roadmap-phase">
+          <div className="roadmap-phase-header future">
+            <span className="roadmap-phase-tag">Phase 4</span>
+            <h3>特征扩展</h3>
+            <span className="roadmap-status future">FUTURE</span>
+          </div>
+          <div className="roadmap-items">
+            <div className="roadmap-item pending"><span className="roadmap-dot" />新数据源: 期权隐含波动率曲面、资金流向、情绪指标</div>
+            <div className="roadmap-item pending"><span className="roadmap-dot" />跨市场信号: 非美市场（A股 / 欧洲 / 日本）的联动预警</div>
+            <div className="roadmap-item pending"><span className="roadmap-dot" />宏观日历事件: FOMC / CPI / 非农等事件前后的模式识别</div>
+          </div>
+        </div>
+
+        <div className="roadmap-current-status">
+          <h3>当前状态</h3>
+          <div className="roadmap-status-grid">
+            <div className="roadmap-stat">
+              <span className="roadmap-stat-value">{metrics.experiments?.length ?? 0}</span>
+              <span className="roadmap-stat-label">实验总数</span>
             </div>
-            <div className="augment-rec-item">
-              <span className="augment-rec-num">2</span>
-              <div>
-                <strong>D4 多阈值融合</strong> — 利用3%/8%的辅助标签做迁移学习
-              </div>
+            <div className="roadmap-stat">
+              <span className="roadmap-stat-value">{Math.max(...(metrics.experiments ?? []).filter(e => !e.name.includes('Ext')).map(e => e.auc)).toFixed(2)}</span>
+              <span className="roadmap-stat-label">最佳 AUC（短期）</span>
             </div>
-            <div className="augment-rec-item">
-              <span className="augment-rec-num">3</span>
-              <div>
-                <strong>D2 SMOTE</strong> — 如果前两步效果有限，再尝试合成过采样
-              </div>
+            <div className="roadmap-stat">
+              <span className="roadmap-stat-value">{metrics.model_info.training_samples + metrics.model_info.test_samples}</span>
+              <span className="roadmap-stat-label">短期样本量</span>
+            </div>
+            <div className="roadmap-stat">
+              <span className="roadmap-stat-value">{Math.round((metrics.model_info.training_samples + metrics.model_info.test_samples) * metrics.model_info.positive_rate)}</span>
+              <span className="roadmap-stat-label">正样本数</span>
             </div>
           </div>
         </div>
