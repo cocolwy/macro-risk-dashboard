@@ -898,6 +898,7 @@ export function PredictionLab() {
             <div className="roadmap-item done"><span className="roadmap-check">✓</span>Exp 2: 特征去冗余（23→10 特征）→ AUC 0.85→0.89</div>
             <div className="roadmap-item done"><span className="roadmap-check">✓</span>Exp 3: Embargo 隔离（防数据泄露）→ 评估更准确</div>
             <div className="roadmap-item done"><span className="roadmap-check">✓</span>Exp 4: MIN/AND 双模型集成 → MIN AUC 0.80</div>
+            <div className="roadmap-item done"><span className="roadmap-check">✓</span>Exp 2b: 特征去冗余（长期验证）→ AUC +1.3%，瓶颈在数据质量非特征冗余</div>
             <div className="roadmap-item done"><span className="roadmap-check">✓</span>Exp 5: 长期数据实验 → 结论: 更多数据≠更好（非平稳性）</div>
             <div className="roadmap-item done"><span className="roadmap-check">✓</span>模型原理文档 + 方法论标注</div>
           </div>
@@ -936,6 +937,7 @@ export function PredictionLab() {
             <span className="roadmap-status future">FUTURE</span>
           </div>
           <div className="roadmap-items">
+            <div className="roadmap-item pending"><span className="roadmap-dot" />国债收益率水平: DGS2（2年）+ DGS10（10年）绝对水平及变化率，捕捉利率环境对股市的压制（FRED 直接获取）</div>
             <div className="roadmap-item pending"><span className="roadmap-dot" />新数据源: 期权隐含波动率曲面、资金流向、情绪指标</div>
             <div className="roadmap-item pending"><span className="roadmap-dot" />跨市场信号: 非美市场（A股 / 欧洲 / 日本）的联动预警</div>
             <div className="roadmap-item pending"><span className="roadmap-dot" />宏观日历事件: FOMC / CPI / 非农等事件前后的模式识别</div>
