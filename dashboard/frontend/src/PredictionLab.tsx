@@ -899,18 +899,20 @@ export function PredictionLab() {
             <div className="roadmap-item done"><span className="roadmap-check">✓</span>Exp 2b 去冗余(长期): 23feat(0.594) vs 10feat(0.602) → <strong style={{color:'#16a34a'}}>✅ 仍有效但微弱 +1.3%，瓶颈在数据质量</strong></div>
             <div className="roadmap-item done"><span className="roadmap-check">✓</span>Exp 3 Embargo隔离: Slim(0.890) vs D1+Embargo(0.861) → <strong style={{color:'#16a34a'}}>✅ 评估更诚实，原AUC含泄露虚高</strong></div>
             <div className="roadmap-item done"><span className="roadmap-check">✓</span>Exp 4 双模型集成: MIN(0.801)/AND(0.507) vs 单D1(0.861) → <strong style={{color:'#dc2626'}}>❌ 集成不如单模型，Human拖后腿</strong></div>
-            <div className="roadmap-item done"><span className="roadmap-check">✓</span>Exp 5a ML长期: 短期(0.846) vs 长期(0.594) → <strong style={{color:'#dc2626'}}>❌ 长期反而劣化 -29.8%（非平稳性+数据缺失）</strong></div>
-            <div className="roadmap-item done"><span className="roadmap-check">✓</span>Exp 5b Human长期: 短期(0.811) vs 长期(0.613) → <strong style={{color:'#dc2626'}}>❌ 同上 -24.4%</strong></div>
-            <div className="roadmap-item done"><span className="roadmap-check">✓</span>Exp 6 长期集成: MIN Ext(0.619)/AND Ext(0.552) → <strong style={{color:'#dc2626'}}>❌ 与Exp 4一致，集成无益</strong></div>
+            <div className="roadmap-item done"><span className="roadmap-check">✓</span>Exp 5a ML长期: 短期(0.846) vs 长期(0.594) → <strong style={{color:'#b45309'}}>⏳ 待定 — 长期数据质量未优化（63%零值），修复后需重测</strong></div>
+            <div className="roadmap-item done"><span className="roadmap-check">✓</span>Exp 5b Human长期: 短期(0.811) vs 长期(0.613) → <strong style={{color:'#b45309'}}>⏳ 待定 — 同上</strong></div>
+            <div className="roadmap-item done"><span className="roadmap-check">✓</span>Exp 6 长期集成: MIN Ext(0.619)/AND Ext(0.552) → <strong style={{color:'#b45309'}}>⏳ 待定 — 依赖长期数据质量修复</strong></div>
             <div className="roadmap-item done"><span className="roadmap-check">✓</span>模型原理文档 + 方法论标注</div>
           </div>
           <div className="insight-card" style={{marginTop:'12px'}}>
-            <div className="insight-title">🏆 最优组合 = D1 Slim+Embargo (AUC 0.861)</div>
+            <div className="insight-title">🏆 当前最优组合 = D1 Slim+Embargo (AUC 0.861)</div>
             <div className="insight-body">
-              综合所有有益发现：<strong>ML学习权重</strong>（Exp 1）+ <strong>Slim 10特征</strong>（Exp 2）+ <strong>Embargo 20d</strong>（Exp 3）+ <strong>短期数据</strong>（Exp 5）。
+              综合已确认的有益发现：<strong>ML学习权重</strong>（Exp 1）+ <strong>Slim 10特征</strong>（Exp 2）+ <strong>Embargo 20d</strong>（Exp 3）。
               此配置已存在为 D1 Slim+Embargo，无需补充新实验。
               <br/><br/>
-              <span style={{color:'#dc2626'}}>被排除的配置：</span>Human权重（Exp 1）、全量23特征（Exp 2）、双模型集成（Exp 4）、长期数据（Exp 5）。
+              <span style={{color:'#dc2626'}}>已排除：</span>Human权重（Exp 1）、全量23特征（Exp 2）、双模型集成（Exp 4）。
+              <br/>
+              <span style={{color:'#b45309'}}>待验证：</span>长期数据（Exp 5/6）— 当前因数据质量问题（63%零值、分布漂移）表现差，修复后需重新评估。
             </div>
           </div>
         </div>
