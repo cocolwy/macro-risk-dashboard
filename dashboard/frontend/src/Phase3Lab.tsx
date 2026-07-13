@@ -19,16 +19,9 @@ class ErrorBoundary extends Component<{ children: ReactNode }, { error: string |
 }
 
 interface PracticalMetrics {
-  brier_score: number;
-  base_rate: number;
-  best_f1: number;
-  best_f1_threshold: number;
-  p_at_80: number;
-  r_at_80: number;
-  lift_at_80: number;
-  mean_prob: number;
-  median_prob: number;
-  prob_gt50_pct: number;
+  brier_score: number; base_rate: number; best_f1: number; best_f1_threshold: number;
+  p_at_80: number; r_at_80: number; lift_at_80: number;
+  mean_prob: number; median_prob: number; prob_gt50_pct: number;
 }
 interface ThresholdRow { threshold: number; precision: number; recall: number; f1: number; alert_days: number; total_days: number; alert_pct: number; }
 interface EventBacktest { name: string; event_date: string; max_probability: number; lead_days: number | null; first_alert_date: string | null; }
@@ -41,11 +34,7 @@ interface ExperimentData {
 }
 interface PairwiseConfig { id: string; label: string; variable: string; baseline: string; challenger: string; method_note: string; }
 interface FeatureImp { feature: string; importance: number; }
-interface PracticalSummary {
-  best_f1_model: string; best_f1: number;
-  best_brier_model: string; best_brier: number;
-  best_lift_model: string; best_lift: number;
-}
+interface PracticalSummary { best_f1_model: string; best_f1: number; best_brier_model: string; best_brier: number; best_lift_model: string; best_lift: number; }
 interface Phase3Data {
   phase: number; title: string;
   experiments: ExperimentData[];
@@ -53,25 +42,14 @@ interface Phase3Data {
   feature_importances: Record<string, FeatureImp[]>;
   practical_summary?: PracticalSummary;
   summary: {
-    lr_slim_auc: number; gbdt_slim_auc: number; gbdt_full_auc: number;
-    rf_slim_auc: number; lr_full_auc: number;
+    lr_slim_auc: number; lr_full_auc: number;
+    gbdt_slim_auc: number; gbdt_full_auc: number;
+    rf_slim_auc: number; rf_full_auc?: number;
     best_model: string; data_range: string; total_samples: number;
   };
 }
 
-const COLORS = ['#d6457a', '#3a82d6', '#16a34a', '#ea580c', '#8b5cf6', '#0d9488', '#b45309', '#6366f1'];
-
-function MetricCell({ value, best, fmt = 'pct', higher = true }: { value: number; best: number; fmt?: 'pct' | 'num' | 'x'; higher?: boolean }) {
-  const isBest = higher ? value >= best - 0.001 : value <= best + 0.001;
-  const display = fmt === 'pct' ? `${(value * 100).toFixed(1)}%`
-    : fmt === 'x' ? `${value.toFixed(1)}x`
-    : value.toFixed(4);
-  return (
-    <td className="lab-td-mono" style={isBest ? { fontWeight: 700, color: '#16a34a' } : undefined}>
-      {display}
-    </td>
-  );
-}
+const COLORS = ['#d6457a', '#3a82d6', '#16a34a', '#ea580c', '#8b5cf6', '#0d9488'];
 
 function OverviewTable({ experiments }: { experiments: ExperimentData[] }) {
   const withPM = experiments.filter(e => e.practical_metrics);
@@ -80,52 +58,33 @@ function OverviewTable({ experiments }: { experiments: ExperimentData[] }) {
   const bestAuc = Math.max(...withPM.map(e => e.auc));
   const bestF1 = Math.max(...withPM.map(e => e.practical_metrics!.best_f1));
   const bestBrier = Math.min(...withPM.map(e => e.practical_metrics!.brier_score));
-  const bestLift = Math.max(...withPM.map(e => e.practical_metrics!.lift_at_80));
-  const baseRate = withPM[0]?.practical_metrics?.base_rate ?? 0;
 
   return (
     <div className="ab-overview-table">
       <div className="lab-table-wrap" style={{ overflowX: 'auto' }}>
         <table className="lab-table">
           <thead>
-            <tr>
-              <th>模型</th>
-              <th title="排序能力">AUC</th>
-              <th title="校准准确度（越低越好）">Brier</th>
-              <th title="输出均值 vs base rate 差距">Mean P</th>
-              <th title="80%阈值精确率">P@80%</th>
-              <th title="相对 base rate 提升">Lift@80%</th>
-              <th title="最优 F1 及对应阈值">Best F1</th>
-              <th title="超过 50% 的预测占比">P{'>'}50%</th>
-            </tr>
+            <tr><th>模型</th><th>特征</th><th>AUC</th><th>Best F1</th><th>@阈值</th><th>Brier</th><th>Mean P</th><th>事件命中</th></tr>
           </thead>
           <tbody>
             {withPM.map((exp, i) => {
               const pm = exp.practical_metrics!;
+              const detected = exp.events_backtest.filter(e => e.lead_days != null).length;
+              const isSlim = exp.name.includes('Slim');
+              const isBestAuc = Math.abs(exp.auc - bestAuc) < 0.001;
+              const isBestF1 = Math.abs(pm.best_f1 - bestF1) < 0.001;
               return (
                 <tr key={i}>
-                  <td style={{ color: COLORS[i % COLORS.length], fontWeight: 600, whiteSpace: 'nowrap' }}>
+                  <td style={{ color: COLORS[i % COLORS.length], fontWeight: 600 }}>
                     {exp.name}
                   </td>
-                  <MetricCell value={exp.auc} best={bestAuc} fmt="num" />
-                  <MetricCell value={pm.brier_score} best={bestBrier} fmt="num" higher={false} />
-                  <td className="lab-td-mono" style={{
-                    color: Math.abs(pm.mean_prob - baseRate) < 0.03 ? '#16a34a' : '#dc2626',
-                  }}>
-                    {(pm.mean_prob * 100).toFixed(1)}%
-                    <span style={{ fontSize: 10, opacity: 0.6, marginLeft: 4 }}>
-                      (base: {(baseRate * 100).toFixed(1)}%)
-                    </span>
-                  </td>
-                  <MetricCell value={pm.p_at_80} best={Math.max(...withPM.map(e => e.practical_metrics!.p_at_80))} fmt="pct" />
-                  <MetricCell value={pm.lift_at_80} best={bestLift} fmt="x" />
-                  <td className="lab-td-mono" style={pm.best_f1 >= bestF1 - 0.001 ? { fontWeight: 700, color: '#16a34a' } : undefined}>
-                    {pm.best_f1.toFixed(3)}
-                    <span style={{ fontSize: 10, opacity: 0.6, marginLeft: 2 }}>
-                      @{(pm.best_f1_threshold * 100).toFixed(0)}%
-                    </span>
-                  </td>
-                  <td className="lab-td-mono">{pm.prob_gt50_pct.toFixed(1)}%</td>
+                  <td className="lab-td-mono" style={{ fontSize: 11 }}>{isSlim ? '10' : '23'}</td>
+                  <td className="lab-td-mono" style={isBestAuc ? { fontWeight: 700, color: '#16a34a' } : undefined}>{exp.auc.toFixed(3)}</td>
+                  <td className="lab-td-mono" style={isBestF1 ? { fontWeight: 700, color: '#16a34a' } : undefined}>{pm.best_f1.toFixed(3)}</td>
+                  <td className="lab-td-mono" style={{ fontSize: 11 }}>{(pm.best_f1_threshold * 100).toFixed(0)}%</td>
+                  <td className="lab-td-mono" style={Math.abs(pm.brier_score - bestBrier) < 0.001 ? { fontWeight: 700, color: '#16a34a' } : undefined}>{pm.brier_score.toFixed(4)}</td>
+                  <td className="lab-td-mono">{(pm.mean_prob * 100).toFixed(1)}%</td>
+                  <td>{detected}/{exp.events_backtest.length}</td>
                 </tr>
               );
             })}
@@ -133,42 +92,8 @@ function OverviewTable({ experiments }: { experiments: ExperimentData[] }) {
         </table>
       </div>
       <p style={{ fontSize: 11, color: '#8a7882', marginTop: 8 }}>
-        Base Rate = {(baseRate * 100).toFixed(1)}% · Mean P 接近 Base Rate = 概率校准良好 · Brier 越低 = 概率越准 · Lift@80% = P@80% / Base Rate
+        所有模型均使用 Unbalanced 训练（概率校准后）· 绿色 = 该列最佳
       </p>
-    </div>
-  );
-}
-
-function CalibrationInsight({ experiments }: { experiments: ExperimentData[] }) {
-  const withPM = experiments.filter(e => e.practical_metrics);
-  if (withPM.length === 0) return null;
-  const baseRate = withPM[0]?.practical_metrics?.base_rate ?? 0;
-
-  const calibrated = withPM.filter(e => Math.abs(e.practical_metrics!.mean_prob - baseRate) < 0.05);
-  const overconfident = withPM.filter(e => e.practical_metrics!.mean_prob > baseRate + 0.05);
-
-  return (
-    <div className="best-config-card" style={{ borderLeftColor: '#3a82d6' }}>
-      <div className="best-config-header">
-        <span className="best-config-badge" style={{ background: '#eff6ff', color: '#1e40af' }}>CALIBRATION ANALYSIS</span>
-      </div>
-      <div style={{ fontSize: 13, lineHeight: 1.8 }}>
-        <p><strong>核心发现：</strong>AUC 高不等于模型可用。关键在于概率是否校准。</p>
-        <ul style={{ margin: '8px 0', paddingLeft: 20 }}>
-          <li>
-            <span style={{ color: '#16a34a', fontWeight: 600 }}>校准良好</span>（Mean P ≈ Base Rate {(baseRate * 100).toFixed(1)}%）：
-            {calibrated.length > 0 ? calibrated.map(e => e.name).join(', ') : '无'}
-          </li>
-          <li>
-            <span style={{ color: '#dc2626', fontWeight: 600 }}>过度自信</span>（Mean P 远超 Base Rate）：
-            {overconfident.length > 0 ? overconfident.map(e => `${e.name} (${(e.practical_metrics!.mean_prob * 100).toFixed(1)}%)`).join(', ') : '无'}
-          </li>
-        </ul>
-        <p style={{ fontSize: 12, color: '#6b5f63' }}>
-          class_weight=balanced 上调正样本权重 → 模型倾向输出高概率 → 50% 阈值下大量误报。
-          移除 balanced / 加 isotonic calibration → 概率回归真实频率 → 相同阈值下精确率更高。
-        </p>
-      </div>
     </div>
   );
 }
@@ -180,19 +105,15 @@ function ProbTimeline({ baseline, challenger, baseColor, challColor }: {
     const challMap = new Map(challenger.probability_timeline.map(d => [d.date, d.probability]));
     return baseline.probability_timeline
       .filter((_, i) => i % 3 === 0)
-      .map(d => ({
-        date: d.date,
-        [baseline.name]: d.probability,
-        [challenger.name]: challMap.get(d.date),
-      }));
+      .map(d => ({ date: d.date, [baseline.name]: d.probability, [challenger.name]: challMap.get(d.date) }));
   }, [baseline, challenger]);
 
   const baseRate = baseline.practical_metrics?.base_rate ?? 0.12;
 
   return (
-    <ResponsiveContainer width="100%" height={280}>
+    <ResponsiveContainer width="100%" height={260}>
       <LineChart data={data}>
-        <CartesianGrid strokeDasharray="3 3" stroke="rgba(241, 216, 226, 0.6)" />
+        <CartesianGrid strokeDasharray="3 3" stroke="rgba(241,216,226,0.6)" />
         <XAxis dataKey="date" tick={{ fontSize: 10, fill: '#8a7882' }} tickFormatter={d => d?.slice(5, 10)} interval={Math.floor(data.length / 8)} minTickGap={50} />
         <YAxis domain={[0, 1]} tick={{ fontSize: 10, fill: '#8a7882' }} tickFormatter={v => `${(v * 100).toFixed(0)}%`} />
         <Tooltip formatter={(v: number) => `${(v * 100).toFixed(1)}%`} />
@@ -213,7 +134,7 @@ function FeatureImportanceChart({ data, modelName }: { data: FeatureImp[]; model
       <h4 className="phase3-fi-title">{modelName}</h4>
       <ResponsiveContainer width="100%" height={Math.max(220, top10.length * 30)}>
         <BarChart data={top10} layout="vertical" margin={{ left: 8, right: 16 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="rgba(241, 216, 226, 0.6)" horizontal={false} />
+          <CartesianGrid strokeDasharray="3 3" stroke="rgba(241,216,226,0.6)" horizontal={false} />
           <XAxis type="number" tick={{ fontSize: 10, fill: '#8a7882' }} />
           <YAxis type="category" dataKey="feature" tick={{ fontSize: 10, fill: '#5c4f56' }} width={130} />
           <Tooltip />
@@ -236,10 +157,10 @@ function PairwiseSection({ pairwise, experiments }: { pairwise: PairwiseConfig[]
         <span className="ab-badge">{pairwise.length} PAIRS</span>
       </div>
       <p className="lab-card-desc">
-        逐一对比 baseline 与 challenger，核心关注概率校准（Brier）和实战指标（F1, Lift）。
+        所有模型均使用 Unbalanced 训练，控制变量仅为模型类型或特征数量。
       </p>
 
-      {pairwise.map((pair) => {
+      {pairwise.map(pair => {
         const base = find(pair.baseline);
         const chall = find(pair.challenger);
         if (!base || !chall) return null;
@@ -247,7 +168,7 @@ function PairwiseSection({ pairwise, experiments }: { pairwise: PairwiseConfig[]
         const challIdx = experiments.indexOf(chall);
         const basePM = base.practical_metrics;
         const challPM = chall.practical_metrics;
-        const winnerMetric = (challPM?.best_f1 ?? 0) > (basePM?.best_f1 ?? 0) ? 'challenger' : 'baseline';
+        const winner = (challPM?.best_f1 ?? 0) > (basePM?.best_f1 ?? 0) ? 'challenger' : 'baseline';
 
         return (
           <div key={pair.id} className="ab-pair">
@@ -255,44 +176,30 @@ function PairwiseSection({ pairwise, experiments }: { pairwise: PairwiseConfig[]
               <h3>{pair.label}</h3>
               <span className="ab-pair-variable">测试变量: {pair.variable}</span>
             </div>
-
             {pair.method_note && (
-              <div className="ab-method-note">
-                <span className="ab-method-note-icon">&#9432;</span>
-                {pair.method_note}
-              </div>
+              <div className="ab-method-note"><span className="ab-method-note-icon">&#9432;</span>{pair.method_note}</div>
             )}
-
             <div className="ab-pair-cards">
-              <div className={`ab-pair-card ${winnerMetric === 'baseline' ? 'winner' : ''}`} style={{ borderTopColor: COLORS[baseIdx % COLORS.length] }}>
-                <div className="ab-pair-role">
-                  BASELINE {winnerMetric === 'baseline' && <span className="ab-winner-tag">WIN</span>}
-                </div>
+              <div className={`ab-pair-card ${winner === 'baseline' ? 'winner' : ''}`} style={{ borderTopColor: COLORS[baseIdx % COLORS.length] }}>
+                <div className="ab-pair-role">BASELINE {winner === 'baseline' && <span className="ab-winner-tag">WIN</span>}</div>
                 <div className="ab-model-name" style={{ color: COLORS[baseIdx % COLORS.length] }}>{base.name}</div>
                 <div className="ab-metric-row"><span className="ab-metric-label">AUC</span><span className="ab-metric-value">{base.auc.toFixed(3)}</span></div>
                 {basePM && <>
                   <div className="ab-metric-row"><span className="ab-metric-label">Best F1</span><span className="ab-metric-value">{basePM.best_f1.toFixed(3)} @{(basePM.best_f1_threshold * 100).toFixed(0)}%</span></div>
                   <div className="ab-metric-row"><span className="ab-metric-label">Brier</span><span className="ab-metric-value">{basePM.brier_score.toFixed(4)}</span></div>
-                  <div className="ab-metric-row"><span className="ab-metric-label">Mean P</span><span className="ab-metric-value">{(basePM.mean_prob * 100).toFixed(1)}%</span></div>
-                  <div className="ab-metric-row"><span className="ab-metric-label">Lift@80%</span><span className="ab-metric-value">{basePM.lift_at_80.toFixed(1)}x</span></div>
                 </>}
               </div>
               <div className="ab-pair-vs">VS</div>
-              <div className={`ab-pair-card ${winnerMetric === 'challenger' ? 'winner' : ''}`} style={{ borderTopColor: COLORS[challIdx % COLORS.length] }}>
-                <div className="ab-pair-role">
-                  CHALLENGER {winnerMetric === 'challenger' && <span className="ab-winner-tag">WIN</span>}
-                </div>
+              <div className={`ab-pair-card ${winner === 'challenger' ? 'winner' : ''}`} style={{ borderTopColor: COLORS[challIdx % COLORS.length] }}>
+                <div className="ab-pair-role">CHALLENGER {winner === 'challenger' && <span className="ab-winner-tag">WIN</span>}</div>
                 <div className="ab-model-name" style={{ color: COLORS[challIdx % COLORS.length] }}>{chall.name}</div>
                 <div className="ab-metric-row"><span className="ab-metric-label">AUC</span><span className="ab-metric-value">{chall.auc.toFixed(3)}</span></div>
                 {challPM && <>
                   <div className="ab-metric-row"><span className="ab-metric-label">Best F1</span><span className="ab-metric-value">{challPM.best_f1.toFixed(3)} @{(challPM.best_f1_threshold * 100).toFixed(0)}%</span></div>
                   <div className="ab-metric-row"><span className="ab-metric-label">Brier</span><span className="ab-metric-value">{challPM.brier_score.toFixed(4)}</span></div>
-                  <div className="ab-metric-row"><span className="ab-metric-label">Mean P</span><span className="ab-metric-value">{(challPM.mean_prob * 100).toFixed(1)}%</span></div>
-                  <div className="ab-metric-row"><span className="ab-metric-label">Lift@80%</span><span className="ab-metric-value">{challPM.lift_at_80.toFixed(1)}x</span></div>
                 </>}
               </div>
             </div>
-
             <h4 className="lab-subsection-title">概率时间线</h4>
             <ProbTimeline baseline={base} challenger={chall} baseColor={COLORS[baseIdx % COLORS.length]} challColor={COLORS[challIdx % COLORS.length]} />
           </div>
@@ -314,7 +221,7 @@ function Phase3LabInner() {
       .catch(e => setError(e.message));
   }, []);
 
-  if (error) return <div className="lab-container"><div className="lab-card"><p>Phase 3 data not available yet: {error}</p></div></div>;
+  if (error) return <div className="lab-container"><div className="lab-card"><p>Phase 3 data not available: {error}</p></div></div>;
   if (!data) return <div className="loading">Loading Phase 3 data...</div>;
 
   const { experiments, pairwise, feature_importances, summary, practical_summary } = data;
@@ -323,8 +230,8 @@ function Phase3LabInner() {
     <div className="lab-container">
       <header className="lab-header">
         <div>
-          <h1>Ch.2 Model Evolution</h1>
-          <p className="lab-subtitle">Phase 3 · 优化目标重定义 — 从 AUC 到 F1 / 校准 / Lift</p>
+          <h1>Ch.2 Non-linear Models</h1>
+          <p className="lab-subtitle">Phase 3 · GBDT / RandomForest vs Logistic Regression</p>
         </div>
         <div className="lab-model-badge">
           <span className="lab-badge-version">Phase {data.phase}</span>
@@ -332,72 +239,53 @@ function Phase3LabInner() {
         </div>
       </header>
 
-      {/* Key insight */}
+      {/* Summary card */}
       <section className="lab-card">
-        <div className="best-config-card" style={{ marginTop: 0, borderLeftColor: '#dc2626' }}>
+        <div className="best-config-card" style={{ marginTop: 0 }}>
           <div className="best-config-header">
-            <span className="best-config-badge" style={{ background: '#fef2f2', color: '#991b1b' }}>PROBLEM</span>
+            <span className="best-config-badge">CURRENT STATUS</span>
             <div className="best-config-title">
-              <span className="best-config-name">AUC 高 ≠ 模型可用</span>
+              <span className="best-config-name">{summary.best_model}</span>
+              {practical_summary && <span className="best-config-auc">F1 {practical_summary.best_f1.toFixed(3)}</span>}
             </div>
           </div>
-          <div style={{ fontSize: 13, lineHeight: 1.8 }}>
-            <p>上一轮 GBDT Full AUC=0.897，但 P@50%=10%，相当于每 10 次预警有 9 次误报。</p>
-            <p>根因：<code>class_weight=balanced</code> 让模型输出概率严重偏高（mean_prob 远超 base rate）。</p>
-            <p style={{ fontWeight: 600, marginTop: 8 }}>新评估体系：</p>
-            <ul style={{ margin: '4px 0', paddingLeft: 20 }}>
-              <li><strong>Brier Score</strong> — 概率校准度（越低越好，衡量「说 80% 时是否真有 80% 概率」）</li>
-              <li><strong>Best F1 @ 最优阈值</strong> — 精确率/召回率平衡点（实战决策指标）</li>
-              <li><strong>Lift@80%</strong> — 80% 阈值下精确率 / Base Rate（{'>'} 1 才有预测价值）</li>
-              <li><strong>Mean Prob vs Base Rate</strong> — 差距越小 = 校准越好</li>
-            </ul>
-          </div>
-        </div>
-      </section>
-
-      {/* Practical summary */}
-      {practical_summary && (
-        <section className="lab-card">
-          <div className="roadmap-status-grid" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}>
+          <p className="best-config-desc">
+            所有模型均采用 Unbalanced 训练（见 Ch.2.1 指标探索），确保概率输出可直接用于决策。
+          </p>
+          <div className="roadmap-status-grid">
             <div className="roadmap-stat">
-              <span className="roadmap-stat-value" style={{ color: '#16a34a', fontSize: 18 }}>{practical_summary.best_f1.toFixed(3)}</span>
-              <span className="roadmap-stat-label">Best F1</span>
-              <span style={{ fontSize: 10, color: '#8a7882' }}>{practical_summary.best_f1_model}</span>
-            </div>
-            <div className="roadmap-stat">
-              <span className="roadmap-stat-value" style={{ color: '#3a82d6', fontSize: 18 }}>{practical_summary.best_brier.toFixed(4)}</span>
-              <span className="roadmap-stat-label">Best Brier</span>
-              <span style={{ fontSize: 10, color: '#8a7882' }}>{practical_summary.best_brier_model}</span>
-            </div>
-            <div className="roadmap-stat">
-              <span className="roadmap-stat-value" style={{ color: '#ea580c', fontSize: 18 }}>{practical_summary.best_lift.toFixed(1)}x</span>
-              <span className="roadmap-stat-label">Best Lift@80%</span>
-              <span style={{ fontSize: 10, color: '#8a7882' }}>{practical_summary.best_lift_model}</span>
+              <span className="roadmap-stat-value">{summary.total_samples.toLocaleString()}</span>
+              <span className="roadmap-stat-label">样本量</span>
             </div>
             <div className="roadmap-stat">
               <span className="roadmap-stat-value text-sm">{summary.data_range}</span>
-              <span className="roadmap-stat-label">{summary.total_samples.toLocaleString()} 样本</span>
+              <span className="roadmap-stat-label">数据范围</span>
             </div>
+            <div className="roadmap-stat">
+              <span className="roadmap-stat-value">{experiments.length}</span>
+              <span className="roadmap-stat-label">模型数</span>
+            </div>
+            {practical_summary && (
+              <div className="roadmap-stat">
+                <span className="roadmap-stat-value" style={{ color: '#3a82d6' }}>{practical_summary.best_brier.toFixed(4)}</span>
+                <span className="roadmap-stat-label">Best Brier</span>
+              </div>
+            )}
           </div>
-        </section>
-      )}
+        </div>
+      </section>
 
-      {/* Full comparison table */}
+      {/* Overview table */}
       <section className="lab-card ab-section">
         <div className="ab-header">
-          <h2>全量模型对比</h2>
-          <span className="ab-badge" style={{ background: '#f0fdf4', color: '#166534', border: '1px solid #bbf7d0' }}>PRACTICAL METRICS</span>
+          <h2>Step 1: 非线性 vs 线性</h2>
+          <span className="ab-badge" style={{ background: '#f0fdf4', color: '#166534', border: '1px solid #bbf7d0' }}>A/B TEST</span>
           <span className="ab-badge">{experiments.length} MODELS</span>
         </div>
         <p className="lab-card-desc">
-          核心指标变更：AUC 仅作参考，以 F1 / Brier / Lift 作为优化目标。绿色 = 该列最佳。
+          树模型可隐式学到 regime 条件规律（如「VIX 高 且 利差走阔 → 危机」），不受共线性影响。
         </p>
         <OverviewTable experiments={experiments} />
-      </section>
-
-      {/* Calibration insight */}
-      <section className="lab-card">
-        <CalibrationInsight experiments={experiments} />
       </section>
 
       <PairwiseSection pairwise={pairwise} experiments={experiments} />
@@ -409,6 +297,9 @@ function Phase3LabInner() {
             <h2>特征重要性对比</h2>
             <span className="ab-badge">FEATURE IMP</span>
           </div>
+          <p className="lab-card-desc">
+            LR 用系数绝对值，树模型用信息增益。排序差异揭示非线性交互效应。
+          </p>
           <div className="phase3-fi-grid">
             {Object.entries(feature_importances).map(([modelName, imps]) => (
               <FeatureImportanceChart key={modelName} data={imps} modelName={modelName} />
@@ -427,11 +318,10 @@ function Phase3LabInner() {
           <div className="roadmap-item done">
             <span className="roadmap-check">&#10003;</span>
             <div className="roadmap-step-body">
-              <div className="roadmap-step-title">Step 1 · 非线性模型 + 优化目标重定义</div>
+              <div className="roadmap-step-title">Step 1 · 非线性模型 Baseline</div>
               <div className="roadmap-step-detail">
                 <span className="roadmap-metric-chip">GBDT / RF / LR</span>
-                <span className="roadmap-metric-chip">Balanced vs Unbalanced</span>
-                <span className="roadmap-metric-chip">Isotonic Calibration</span>
+                <span className="roadmap-metric-chip">Slim 10feat / Full 23feat</span>
               </div>
             </div>
           </div>
@@ -446,21 +336,21 @@ function Phase3LabInner() {
             <span className="roadmap-dot" />
             <div className="roadmap-step-body">
               <div className="roadmap-step-title">Step 3 · 事件日历</div>
-              <div className="roadmap-step-desc">FOMC / CPI / 非农前后 N 天标记，捕捉事件窗口模式</div>
+              <div className="roadmap-step-desc">FOMC / CPI / 非农前后 N 天标记</div>
             </div>
           </div>
           <div className="roadmap-item pending">
             <span className="roadmap-dot" />
             <div className="roadmap-step-body">
               <div className="roadmap-step-title">Step 4 · 长期重测</div>
-              <div className="roadmap-step-desc">1986+ 数据 + 非线性模型，验证 regime 瓶颈是否突破</div>
+              <div className="roadmap-step-desc">1986+ 数据 + 非线性模型</div>
             </div>
           </div>
         </div>
       </section>
 
       <footer className="footer">
-        <div>Ch.2 Model Evolution · 优化目标: F1 / Brier / Lift (非 AUC)</div>
+        <div>Ch.2 Non-linear Models · Unbalanced training · F1/Brier evaluation</div>
       </footer>
     </div>
   );

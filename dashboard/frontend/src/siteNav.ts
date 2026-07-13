@@ -1,4 +1,4 @@
-export type PageId = 'home' | 'pipeline' | 'risk' | 'ch1' | 'ch2';
+export type PageId = 'home' | 'pipeline' | 'risk' | 'ch1' | 'ch2' | 'ch2_1';
 
 export interface NavItem {
   id: PageId;
@@ -48,12 +48,21 @@ export const SITE_NAV: Record<PageId, NavItem> = {
   ch2: {
     id: 'ch2',
     hash: 'ch2',
-    title: 'Ch.2 Model Evolution',
-    subtitle: 'GBDT / RandomForest 非线性模型 · Phase 3 实验',
+    title: 'Ch.2 Non-linear Models',
+    subtitle: 'GBDT / RandomForest vs LR · Unbalanced 训练 · Phase 3',
+    level: 3,
+    parent: 'risk',
+    metrics: 'GBDT vs LR walk-forward',
+  },
+  ch2_1: {
+    id: 'ch2_1',
+    hash: 'ch2-1',
+    title: 'Ch.2.1 Metric Exploration',
+    subtitle: '评估指标优化 · Balanced vs Unbalanced · 概率校准实验',
     level: 3,
     parent: 'risk',
     badge: 'NEW',
-    metrics: 'GBDT vs LR walk-forward',
+    metrics: 'F1 / Brier / Lift analysis',
   },
 };
 
@@ -68,6 +77,8 @@ const HASH_ALIASES: Record<string, PageId> = {
   lab: 'ch1',
   ch2: 'ch2',
   phase3: 'ch2',
+  'ch2-1': 'ch2_1',
+  metrics: 'ch2_1',
 };
 
 export function pageFromHash(hash: string): PageId {
@@ -104,6 +115,6 @@ export const HOME_SECTIONS = [
     level: 3,
     label: '三级 · 风控因子探索',
     parent: 'risk' as PageId,
-    items: ['ch1', 'ch2'] as PageId[],
+    items: ['ch1', 'ch2', 'ch2_1'] as PageId[],
   },
 ];

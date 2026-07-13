@@ -100,6 +100,28 @@ def train_lr_no_balance(X_train, y_train, X_test):
     return model, scaler, model.predict_proba(X_test_s)[:, 1]
 
 
+def train_gbdt_no_balance(X_train, y_train, X_test):
+    """GBDT without sample_weight — natural probability output."""
+    model = HistGradientBoostingClassifier(
+        max_iter=200, max_depth=4, learning_rate=0.05,
+        min_samples_leaf=20, l2_regularization=1.0, random_state=42,
+    )
+    model.fit(X_train, y_train)
+    probs = model.predict_proba(X_test)[:, 1]
+    return model, None, probs
+
+
+def train_rf_no_balance(X_train, y_train, X_test):
+    """Random Forest without class_weight='balanced'."""
+    model = RandomForestClassifier(
+        n_estimators=200, max_depth=6, min_samples_leaf=20,
+        random_state=42,
+    )
+    model.fit(X_train, y_train)
+    probs = model.predict_proba(X_test)[:, 1]
+    return model, None, probs
+
+
 def split_with_embargo(X, y, split_ratio=0.7, embargo=EMBARGO):
     split = int(len(X) * split_ratio)
     train_end = max(split - embargo, 1)
@@ -204,110 +226,186 @@ def main():
     print(f"  Full features: {len(X_full)} samples, {X_full.shape[1]} features, {int(y_full.sum())} positive ({y_full.mean()*100:.1f}%)")
     print(f"  Slim features: {len(X_slim)} samples, {X_slim.shape[1]} features, {int(y_slim.sum())} positive ({y_slim.mean()*100:.1f}%)")
 
-    # --- Step 1: Model comparison with practical metrics ---
-    print("\n[2/3] Step 1 experiments...")
-    experiments = []
-    feature_importances = {}
-    all_practical = {}
+    # =========================================================
+    # Board A: 非线性模型探索 (Ch.2)
+    #   All models use unbalanced/no-sample-weight for fair comparison
+    # =========================================================
+    print("\n[2/4] Ch.2 Non-linear model experiments...")
+    model_experiments = []
+    model_fi = {}
+    model_practical = {}
 
-    def run_and_log(name, X, y, train_fn):
+    def run_and_log(name, X, y, train_fn, exps, fi, prac):
         print(f"  Training {name}...")
         result, test_auc, imp, _, practical = run_experiment(name, X, y, sp500, train_fn)
-        experiments.append(result)
-        all_practical[name] = practical
+        exps.append(result)
+        prac[name] = practical
         if imp:
-            feature_importances[name] = imp
+            fi[name] = imp
         pm = practical
-        print(f"    AUC={test_auc:.3f}  P@80%={pm['p_at_80']:.1%}  Lift={pm['lift_at_80']}x  BestF1={pm['best_f1']:.3f}@{pm['best_f1_threshold']:.0%}  Brier={pm['brier_score']:.4f}  Mean_prob={pm['mean_prob']:.3f}")
+        print(f"    AUC={test_auc:.3f}  F1={pm['best_f1']:.3f}@{pm['best_f1_threshold']:.0%}  Brier={pm['brier_score']:.4f}  Mean_p={pm['mean_prob']:.3f}")
         return test_auc
 
-    lr_auc = run_and_log("LR Balanced", X_slim, y_slim, train_lr)
-    run_and_log("LR Unbalanced", X_slim, y_slim, train_lr_no_balance)
-    gbdt_slim_auc = run_and_log("GBDT Slim", X_slim, y_slim, train_gbdt)
-    gbdt_full_auc = run_and_log("GBDT Full (23feat)", X_full, y_full, train_gbdt)
-    run_and_log("GBDT Calibrated", X_full, y_full, train_gbdt_calibrated)
-    rf_slim_auc = run_and_log("RF Slim", X_slim, y_slim, train_rf)
-    lr_full_auc = run_and_log("LR Full (23feat)", X_full, y_full, train_lr)
-    run_and_log("LR Full Unbalanced", X_full, y_full, train_lr_no_balance)
+    lr_slim_auc = run_and_log("LR Slim", X_slim, y_slim, train_lr_no_balance, model_experiments, model_fi, model_practical)
+    lr_full_auc = run_and_log("LR Full", X_full, y_full, train_lr_no_balance, model_experiments, model_fi, model_practical)
+    gbdt_slim_auc = run_and_log("GBDT Slim", X_slim, y_slim, train_gbdt_no_balance, model_experiments, model_fi, model_practical)
+    gbdt_full_auc = run_and_log("GBDT Full", X_full, y_full, train_gbdt_no_balance, model_experiments, model_fi, model_practical)
+    rf_slim_auc = run_and_log("RF Slim", X_slim, y_slim, train_rf_no_balance, model_experiments, model_fi, model_practical)
+    rf_full_auc = run_and_log("RF Full", X_full, y_full, train_rf_no_balance, model_experiments, model_fi, model_practical)
 
-    # --- Build pairwise comparisons metadata ---
-    pairwise = [
+    model_pairwise = [
         {
-            "id": "step1a",
-            "label": "Step 1a: class_weight 的影响",
-            "variable": "Balanced vs Unbalanced — LR Slim",
-            "baseline": "LR Balanced",
-            "challenger": "LR Unbalanced",
-            "method_note": "class_weight=balanced 会上调正样本权重，导致模型输出概率偏高（mean_prob 远超 base_rate）。不平衡训练产生更接近真实概率的输出。",
+            "id": "linear_vs_gbdt_slim",
+            "label": "线性 vs 非线性（Slim 10特征）",
+            "variable": "LR vs GBDT — 相同 Slim 特征",
+            "baseline": "LR Slim",
+            "challenger": "GBDT Slim",
+            "method_note": "控制变量：相同的 10 个特征 + Embargo 20d，仅改变模型类型。GBDT 可学到非线性交互（如「VIX 高 且 利差走阔 → 危机」）。",
         },
         {
-            "id": "step1b",
-            "label": "Step 1b: GBDT 概率校准",
-            "variable": "GBDT Raw vs GBDT Calibrated（isotonic）",
-            "baseline": "GBDT Full (23feat)",
-            "challenger": "GBDT Calibrated",
-            "method_note": "Isotonic calibration 通过 3-fold CV 将 GBDT 的原始概率映射到真实频率。Brier score 越低 = 概率越准。关注 P@80% 和 mean_prob 的变化。",
+            "id": "linear_vs_gbdt_full",
+            "label": "线性 vs 非线性（Full 23特征）",
+            "variable": "LR vs GBDT — 相同 Full 特征",
+            "baseline": "LR Full",
+            "challenger": "GBDT Full",
+            "method_note": "LR 受共线性影响，23 个特征中冗余特征反而有害。树模型天然抗共线性，可能从更多特征中受益。",
         },
         {
-            "id": "step1c",
-            "label": "Step 1c: 线性 vs 非线性 (Full特征)",
-            "variable": "LR Full Unbalanced vs GBDT Calibrated",
-            "baseline": "LR Full Unbalanced",
-            "challenger": "GBDT Calibrated",
-            "method_note": "两者都使用校准/不平衡策略输出合理概率。纯粹比较模型能力：线性 vs 非线性。",
+            "id": "gbdt_vs_rf",
+            "label": "GBDT vs Random Forest（Slim）",
+            "variable": "Boosting vs Bagging — 相同 Slim 特征",
+            "baseline": "GBDT Slim",
+            "challenger": "RF Slim",
+            "method_note": "GBDT 逐步纠错（boosting），RF 并行投票（bagging）。GBDT 通常在结构化数据上更强。",
+        },
+        {
+            "id": "slim_vs_full_gbdt",
+            "label": "特征数量（GBDT）",
+            "variable": "10 特征 vs 23 特征 — GBDT",
+            "baseline": "GBDT Slim",
+            "challenger": "GBDT Full",
+            "method_note": "LR 中去冗余有用（Ch.1），但树模型天然处理冗余。测试 GBDT 是否能利用更多特征。",
         },
     ]
 
-    # --- Save results ---
-    print("\n[3/3] Saving results...")
+    # =========================================================
+    # Board B: 指标探索 (Ch.2.1)
+    #   Balanced vs Unbalanced, Calibration experiments
+    # =========================================================
+    print("\n[3/4] Ch.2.1 Metric exploration experiments...")
+    metric_experiments = []
+    metric_fi = {}
+    metric_practical = {}
 
-    best_by_f1 = max(all_practical.items(), key=lambda x: x[1]['best_f1'])
-    best_by_brier = min(all_practical.items(), key=lambda x: x[1]['brier_score'])
-    best_by_lift = max(all_practical.items(), key=lambda x: x[1]['lift_at_80'])
+    run_and_log("LR Balanced", X_slim, y_slim, train_lr, metric_experiments, metric_fi, metric_practical)
+    run_and_log("LR Unbalanced", X_slim, y_slim, train_lr_no_balance, metric_experiments, metric_fi, metric_practical)
+    run_and_log("GBDT Balanced", X_full, y_full, train_gbdt, metric_experiments, metric_fi, metric_practical)
+    run_and_log("GBDT Unbalanced", X_full, y_full, train_gbdt_no_balance, metric_experiments, metric_fi, metric_practical)
+    run_and_log("GBDT Calibrated", X_full, y_full, train_gbdt_calibrated, metric_experiments, metric_fi, metric_practical)
+    run_and_log("LR Full Balanced", X_full, y_full, train_lr, metric_experiments, metric_fi, metric_practical)
+    run_and_log("LR Full Unbalanced", X_full, y_full, train_lr_no_balance, metric_experiments, metric_fi, metric_practical)
 
-    phase3_data = {
-        "phase": 3,
-        "title": "Model Evolution — 优化目标重定义",
-        "experiments": experiments,
-        "pairwise": pairwise,
-        "feature_importances": feature_importances,
-        "practical_summary": {
-            "best_f1_model": best_by_f1[0],
-            "best_f1": best_by_f1[1]['best_f1'],
-            "best_brier_model": best_by_brier[0],
-            "best_brier": best_by_brier[1]['brier_score'],
-            "best_lift_model": best_by_lift[0],
-            "best_lift": best_by_lift[1]['lift_at_80'],
+    metric_pairwise = [
+        {
+            "id": "lr_balanced",
+            "label": "Exp A: class_weight 的影响（LR Slim）",
+            "variable": "Balanced vs Unbalanced — LR",
+            "baseline": "LR Balanced",
+            "challenger": "LR Unbalanced",
+            "method_note": "class_weight=balanced 上调正样本权重 → 模型认为大跌很常见 → 输出概率整体偏高 → 50% 阈值下大量误报。",
         },
+        {
+            "id": "gbdt_balanced",
+            "label": "Exp B: sample_weight 的影响（GBDT Full）",
+            "variable": "Balanced vs Unbalanced — GBDT",
+            "baseline": "GBDT Balanced",
+            "challenger": "GBDT Unbalanced",
+            "method_note": "GBDT 使用 sample_weight 上调正样本（等价于 balanced）。去掉后观察概率校准和 F1 变化。",
+        },
+        {
+            "id": "gbdt_calibration",
+            "label": "Exp C: Isotonic 概率校准",
+            "variable": "GBDT Balanced vs GBDT Calibrated",
+            "baseline": "GBDT Balanced",
+            "challenger": "GBDT Calibrated",
+            "method_note": "Isotonic calibration 通过 3-fold CV 将 GBDT 的原始概率映射到真实频率。Brier 越低 = 概率越准。",
+        },
+        {
+            "id": "calibration_vs_unbalance",
+            "label": "Exp D: 校准 vs 去 balanced",
+            "variable": "GBDT Calibrated vs GBDT Unbalanced",
+            "baseline": "GBDT Calibrated",
+            "challenger": "GBDT Unbalanced",
+            "method_note": "后处理校准（isotonic）vs 训练端修正（去掉 sample_weight），哪种更有效？",
+        },
+    ]
+
+    # =========================================================
+    # Save both JSONs
+    # =========================================================
+    print("\n[4/4] Saving results...")
+
+    def build_summary(prac_dict):
+        best_f1 = max(prac_dict.items(), key=lambda x: x[1]['best_f1'])
+        best_brier = min(prac_dict.items(), key=lambda x: x[1]['brier_score'])
+        best_lift = max(prac_dict.items(), key=lambda x: x[1]['lift_at_80'])
+        return {
+            "best_f1_model": best_f1[0], "best_f1": best_f1[1]['best_f1'],
+            "best_brier_model": best_brier[0], "best_brier": best_brier[1]['brier_score'],
+            "best_lift_model": best_lift[0], "best_lift": best_lift[1]['lift_at_80'],
+        }
+
+    # Ch.2 Non-linear models
+    phase3_models = {
+        "phase": 3,
+        "title": "Non-linear Model Exploration",
+        "experiments": model_experiments,
+        "pairwise": model_pairwise,
+        "feature_importances": model_fi,
+        "practical_summary": build_summary(model_practical),
         "summary": {
-            "lr_slim_auc": round(lr_auc, 3),
+            "lr_slim_auc": round(lr_slim_auc, 3),
+            "lr_full_auc": round(lr_full_auc, 3),
             "gbdt_slim_auc": round(gbdt_slim_auc, 3),
             "gbdt_full_auc": round(gbdt_full_auc, 3),
             "rf_slim_auc": round(rf_slim_auc, 3),
-            "lr_full_auc": round(lr_full_auc, 3),
-            "best_model": best_by_f1[0],
+            "rf_full_auc": round(rf_full_auc, 3),
+            "best_model": max(model_practical.items(), key=lambda x: x[1]['best_f1'])[0],
             "data_range": f"{df.index[0]} ~ {df.index[-1]}",
             "total_samples": len(X_slim),
         },
     }
+    p1 = DATA_DIR / 'phase3_metrics.json'
+    with open(p1, 'w') as f:
+        json.dump(phase3_models, f)
+    print(f"  Saved {p1}")
 
-    out_path = DATA_DIR / 'phase3_metrics.json'
-    with open(out_path, 'w') as f:
-        json.dump(phase3_data, f)
-    print(f"  Saved {out_path}")
+    # Ch.2.1 Metric exploration
+    metric_data = {
+        "title": "Metric Exploration — 评估指标优化",
+        "experiments": metric_experiments,
+        "pairwise": metric_pairwise,
+        "practical_summary": build_summary(metric_practical),
+        "summary": {
+            "data_range": f"{df.index[0]} ~ {df.index[-1]}",
+            "total_samples": len(X_slim),
+            "base_rate": round(float(y_slim.mean()), 4),
+        },
+    }
+    p2 = DATA_DIR / 'metric_exploration.json'
+    with open(p2, 'w') as f:
+        json.dump(metric_data, f)
+    print(f"  Saved {p2}")
 
-    # --- Print summary ---
+    # --- Print combined summary ---
+    all_practical = {**model_practical, **metric_practical}
     print("\n" + "=" * 60)
-    print("PRACTICAL METRICS SUMMARY")
+    print("COMBINED SUMMARY")
     print("=" * 60)
-    print(f"  {'Model':<25} {'BestF1':>7} {'P@80%':>6} {'Lift':>5} {'Brier':>7} {'Mean_p':>7}")
-    print(f"  {'-'*65}")
+    print(f"  {'Model':<25} {'BestF1':>7} {'Brier':>7} {'Mean_p':>7}")
+    print(f"  {'-'*50}")
     for name, pm in all_practical.items():
-        print(f"  {name:<25} {pm['best_f1']:>6.3f} {pm['p_at_80']:>5.1%} {pm['lift_at_80']:>5.1f}x {pm['brier_score']:>7.4f} {pm['mean_prob']:>7.3f}")
-
-    print(f"\n  Best F1: {best_by_f1[0]} ({best_by_f1[1]['best_f1']:.3f} @ {best_by_f1[1]['best_f1_threshold']:.0%})")
-    print(f"  Best Calibration: {best_by_brier[0]} (Brier={best_by_brier[1]['brier_score']:.4f})")
-    print(f"  Best Lift@80%: {best_by_lift[0]} ({best_by_lift[1]['lift_at_80']:.1f}x)")
+        print(f"  {name:<25} {pm['best_f1']:>6.3f} {pm['brier_score']:>7.4f} {pm['mean_prob']:>7.3f}")
 
     print("\n=== Done ===")
 
