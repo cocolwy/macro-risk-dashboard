@@ -241,9 +241,10 @@ def main():
 
     EMBARGO = 20
     split_d1 = int(len(X_slim) * 0.7)
+    train_end_d1 = max(split_d1 - EMBARGO, 1)
     test_start_d1 = min(split_d1 + EMBARGO, len(X_slim))
-    X_train_d1, X_test_d1 = X_slim.iloc[:split_d1], X_slim.iloc[test_start_d1:]
-    y_train_d1, y_test_d1 = y_slim.iloc[:split_d1], y_slim.iloc[test_start_d1:]
+    X_train_d1, X_test_d1 = X_slim.iloc[:train_end_d1], X_slim.iloc[test_start_d1:]
+    y_train_d1, y_test_d1 = y_slim.iloc[:train_end_d1], y_slim.iloc[test_start_d1:]
 
     scaler_d1 = StandardScaler()
     X_train_d1s = scaler_d1.fit_transform(X_train_d1)

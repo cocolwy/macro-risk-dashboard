@@ -149,8 +149,10 @@ HUMAN_WEIGHTS = {
 def train_and_evaluate(X: pd.DataFrame, y: pd.Series, split_ratio: float = 0.7,
                        embargo: int = 0, subsample_step: int = 1):
     split = int(len(X) * split_ratio)
-    X_train_raw = X.iloc[:split]
-    y_train_raw = y.iloc[:split]
+
+    train_end = max(split - embargo, 1)
+    X_train_raw = X.iloc[:train_end]
+    y_train_raw = y.iloc[:train_end]
 
     test_start = min(split + embargo, len(X))
     X_test = X.iloc[test_start:]
