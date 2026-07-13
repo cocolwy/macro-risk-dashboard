@@ -5,13 +5,12 @@ import {
 } from 'recharts';
 
 interface ThresholdRow { threshold: number; precision: number; recall: number; f1: number; alert_days: number; total_days: number; alert_pct: number; }
-interface EventBacktest { name: string; event_date: string; max_prob: number; lead_days: number | null; detected: boolean; }
+interface EventBacktest { name: string; event_date: string; max_probability: number; lead_days: number | null; first_alert_date: string | null; }
 interface ExperimentData {
   name: string; auc: number;
   threshold_analysis: ThresholdRow[];
   events_backtest: EventBacktest[];
-  prob_timeline: { date: string; probability: number }[];
-  sp500_timeline: { date: string; sp500: number }[];
+  probability_timeline: { date: string; probability: number }[];
 }
 interface PairwiseConfig { id: string; label: string; variable: string; baseline: string; challenger: string; method_note: string; }
 interface FeatureImp { feature: string; importance: number; }
@@ -51,7 +50,7 @@ function OverviewTable({ experiments }: { experiments: ExperimentData[] }) {
         <tbody>
           {experiments.map((exp, i) => {
             const t50 = exp.threshold_analysis.find(t => t.threshold === 0.5);
-            const detected = exp.events_backtest.filter(e => e.detected).length;
+            const detected = exp.events_backtest.filter(e => e.lead_days != null).length;
             const isBest = Math.abs(exp.auc - bestAuc) < 0.001;
             return (
               <tr key={i} style={isBest ? { background: '#f0fdf4' } : undefined}>
@@ -76,33 +75,25 @@ function OverviewTable({ experiments }: { experiments: ExperimentData[] }) {
 function ProbTimeline({ baseline, challenger, baseColor, challColor }: {
   baseline: ExperimentData; challenger: ExperimentData; baseColor: string; challColor: string;
 }) {
-  const sp500Map = new Map(baseline.sp500_timeline.map(d => [d.date, d.sp500]));
-  const challMap = new Map(challenger.prob_timeline.map(d => [d.date, d.probability]));
+  const challMap = new Map(challenger.probability_timeline.map(d => [d.date, d.probability]));
 
-  const data = baseline.prob_timeline
+  const data = baseline.probability_timeline
     .filter((_, i) => i % 3 === 0)
     .map(d => ({
       date: d.date,
       [baseline.name]: d.probability,
       [challenger.name]: challMap.get(d.date),
-      sp500: sp500Map.get(d.date),
     }));
-
-  const sp500Values = data.map(d => d.sp500).filter(Boolean) as number[];
-  const sp500Min = Math.min(...sp500Values) * 0.95;
-  const sp500Max = Math.max(...sp500Values) * 1.05;
 
   return (
     <ResponsiveContainer width="100%" height={280}>
       <LineChart data={data}>
         <XAxis dataKey="date" tick={{ fontSize: 10 }} tickFormatter={d => d?.slice(5, 10)} interval={Math.floor(data.length / 8)} />
-        <YAxis yAxisId="prob" domain={[0, 1]} tick={{ fontSize: 10 }} tickFormatter={v => `${(v * 100).toFixed(0)}%`} />
-        <YAxis yAxisId="price" orientation="right" domain={[sp500Min, sp500Max]} tick={{ fontSize: 10 }} />
-        <Tooltip formatter={(v: number, name: string) => name === 'sp500' ? v.toFixed(0) : (v * 100).toFixed(1) + '%'} />
+        <YAxis domain={[0, 1]} tick={{ fontSize: 10 }} tickFormatter={v => `${(v * 100).toFixed(0)}%`} />
+        <Tooltip formatter={(v: number) => (v * 100).toFixed(1) + '%'} />
         <Legend />
-        <Line yAxisId="prob" type="monotone" dataKey={baseline.name} stroke={baseColor} dot={false} strokeWidth={1.5} />
-        <Line yAxisId="prob" type="monotone" dataKey={challenger.name} stroke={challColor} dot={false} strokeWidth={1.5} />
-        <Line yAxisId="price" type="monotone" dataKey="sp500" stroke="#94a3b8" dot={false} strokeWidth={1} strokeDasharray="4 2" />
+        <Line type="monotone" dataKey={baseline.name} stroke={baseColor} dot={false} strokeWidth={1.5} />
+        <Line type="monotone" dataKey={challenger.name} stroke={challColor} dot={false} strokeWidth={1.5} />
       </LineChart>
     </ResponsiveContainer>
   );
