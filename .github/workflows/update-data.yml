@@ -44,7 +44,13 @@ jobs:
           # If OPENAI_API_KEY secret exists → ChatGPT; otherwise local rules
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           OPENAI_MODEL: gpt-4o-mini
-        run: python dashboard/agent_pipeline.py
+        run: |
+          if [ -n "$OPENAI_API_KEY" ]; then
+            echo "OPENAI_API_KEY is set — agent will use OpenAI"
+          else
+            echo "OPENAI_API_KEY is empty — agent will use local synthesizer"
+          fi
+          python dashboard/agent_pipeline.py
 
       - name: Sync frontend public data
         run: |
@@ -62,25 +68,34 @@ jobs:
       - name: Check for alerts and notify
         id: check_alerts
         run: |
-          python -c "
+          python - <<'PY'
           import json
-          with open('dashboard/data/summary.json') as f:
-              summary = json.load(f)
-          alerts = summary.get('alerts', {})
-          danger = [k for k, v in alerts.items() if v['level'] == 'danger']
-          warning = [k for k, v in alerts.items() if v['level'] == 'warning']
-          if danger:
-              msgs = [f\"🔴 {k}: {alerts[k]['message']}\" for k in danger]
-              print(f\"::set-output name=has_danger::true\")
-              print(f\"::set-output name=danger_msg::{'  |  '.join(msgs)}\")
-          if warning:
-              msgs = [f\"🟡 {k}: {alerts[k]['message']}\" for k in warning]
-              print(f\"::set-output name=has_warning::true\")
-              print(f\"::set-output name=warning_msg::{'  |  '.join(msgs)}\")
-          "
+          import os
 
+          with open("dashboard/data/summary.json") as f:
+              summary = json.load(f)
+          alerts = summary.get("alerts", {})
+          danger = [k for k, v in alerts.items() if v["level"] == "danger"]
+          warning = [k for k, v in alerts.items() if v["level"] == "warning"]
+
+          out = os.environ["GITHUB_OUTPUT"]
+          with open(out, "a", encoding="utf-8") as fh:
+              if danger:
+                  msgs = "  |  ".join(f"🔴 {k}: {alerts[k]['message']}" for k in danger)
+                  fh.write("has_danger=true\n")
+                  fh.write(f"danger_msg={msgs}\n")
+              if warning:
+                  msgs = "  |  ".join(f"🟡 {k}: {alerts[k]['message']}" for k in warning)
+                  fh.write("has_warning=true\n")
+                  fh.write(f"warning_msg={msgs}\n")
+          PY
+
+      # Skip mail entirely when ALERT_EMAIL_TO is not configured (avoids "to must be specified")
       - name: Send email notification (danger)
-        if: steps.check_alerts.outputs.has_danger == 'true'
+        if: >-
+          steps.check_alerts.outputs.has_danger == 'true'
+          && secrets.ALERT_EMAIL_TO != ''
+          && secrets.ALERT_EMAIL_USER != ''
         continue-on-error: true
         uses: dawidd6/action-send-mail@v3
         with:
@@ -99,7 +114,11 @@ jobs:
           from: Macro Risk Bot <${{ secrets.ALERT_EMAIL_USER }}>
 
       - name: Send email notification (warning)
-        if: steps.check_alerts.outputs.has_warning == 'true' && steps.check_alerts.outputs.has_danger != 'true'
+        if: >-
+          steps.check_alerts.outputs.has_warning == 'true'
+          && steps.check_alerts.outputs.has_danger != 'true'
+          && secrets.ALERT_EMAIL_TO != ''
+          && secrets.ALERT_EMAIL_USER != ''
         continue-on-error: true
         uses: dawidd6/action-send-mail@v3
         with:
