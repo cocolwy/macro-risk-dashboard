@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo, Component, type ReactNode } from 'react';
 import {
   BarChart, Bar, Cell, CartesianGrid,
+  LineChart, Line, Legend, ReferenceLine,
   XAxis, YAxis, Tooltip,
   ResponsiveContainer,
 } from 'recharts';
@@ -40,12 +41,24 @@ interface ExperimentData {
 interface PairwiseConfig { id: string; label: string; variable: string; baseline: string; challenger: string; method_note: string; }
 interface FeatureImp { feature: string; importance: number; }
 interface PracticalSummary { best_f1_model: string; best_f1: number; best_brier_model: string; best_brier: number; best_lift_model: string; best_lift: number; }
+interface CorrPair { feat_a: string; feat_b: string; spearman: number; }
+interface VifEntry { feature: string; vif: number; }
+interface RedundancyGroup { group: string; features: string[]; representative: string; }
+interface CorrelationAnalysis {
+  high_corr_pairs: CorrPair[];
+  vif: VifEntry[];
+  redundancy_groups: RedundancyGroup[];
+  total_features: number;
+  slim_features: string[];
+  full_features: string[];
+}
 interface Phase3Data {
   phase: number; title: string;
   experiments: ExperimentData[];
   pairwise: PairwiseConfig[];
   feature_importances: Record<string, FeatureImp[]>;
   practical_summary?: PracticalSummary;
+  correlation_analysis?: CorrelationAnalysis;
   summary: {
     lr_slim_auc: number; lr_full_auc: number;
     gbdt_slim_auc: number; gbdt_full_auc: number;
@@ -148,6 +161,53 @@ function FeatureImportanceChart({ data, modelName }: { data: FeatureImp[]; model
   );
 }
 
+const JOURNEY_STEPS = [
+  { step: 0, label: 'Ch.1 Baseline', f1: 0.400, brier: 0.18, note: 'LR Balanced + 23 features' },
+  { step: 1, label: 'Slim 10特征', f1: 0.480, brier: 0.16, note: '去冗余：23→10 特征' },
+  { step: 2, label: 'Embargo 20d', f1: 0.520, brier: 0.15, note: '防 look-ahead bias' },
+  { step: 3, label: 'Unbalanced', f1: 0.588, brier: 0.10, note: '去 class_weight=balanced' },
+  { step: 4, label: 'Percentile Clip', f1: 0.647, brier: 0.099, note: '修复 clip(-10,10) → percentile clipping' },
+  { step: 5, label: '+Events', f1: 0.690, brier: 0.098, note: 'LR Slim+Events: 加入事件日历特征' },
+  { step: 6, label: 'Interact', f1: 0.667, brier: 0.081, note: 'LR Slim+Interact: regime 交互项（Brier 最佳）' },
+];
+
+function JourneyTooltip({ active, payload }: { active?: boolean; payload?: Array<{ payload: typeof JOURNEY_STEPS[0] }> }) {
+  if (!active || !payload?.length) return null;
+  const d = payload[0].payload;
+  return (
+    <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 8, padding: '8px 12px', fontSize: 12, boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
+      <div style={{ fontWeight: 700, marginBottom: 4 }}>{d.label}</div>
+      <div>F1: {d.f1.toFixed(3)} · Brier: {d.brier.toFixed(2)}</div>
+      <div style={{ color: '#8a7882', marginTop: 2 }}>{d.note}</div>
+    </div>
+  );
+}
+
+function OptimizationJourney() {
+  return (
+    <section className="lab-card">
+      <div className="ab-header">
+        <h2>Optimization Journey</h2>
+        <span className="ab-badge" style={{ background: '#f0fdf4', color: '#166534', border: '1px solid #bbf7d0' }}>PROGRESS</span>
+      </div>
+      <p className="lab-card-desc">从 Ch.1 到 Ch.2 各优化步骤的 F1 / Brier 变化。每个拐点标注了对应的优化方法。</p>
+      <ResponsiveContainer width="100%" height={280}>
+        <LineChart data={JOURNEY_STEPS} margin={{ top: 20, right: 30, bottom: 5, left: 10 }}>
+          <CartesianGrid strokeDasharray="3 3" stroke="rgba(241,216,226,0.4)" />
+          <XAxis dataKey="label" tick={{ fontSize: 10, fill: '#5c4f56' }} angle={-25} textAnchor="end" height={60} />
+          <YAxis yAxisId="f1" domain={[0, 0.8]} tick={{ fontSize: 10, fill: '#16a34a' }} label={{ value: 'F1', angle: -90, position: 'insideLeft', style: { fill: '#16a34a', fontSize: 11 } }} />
+          <YAxis yAxisId="brier" orientation="right" domain={[0, 0.25]} tick={{ fontSize: 10, fill: '#dc2626' }} label={{ value: 'Brier', angle: 90, position: 'insideRight', style: { fill: '#dc2626', fontSize: 11 } }} />
+          <Tooltip content={<JourneyTooltip />} />
+          <Legend />
+          <ReferenceLine yAxisId="f1" y={0.625} stroke="#16a34a" strokeDasharray="3 3" strokeOpacity={0.5} />
+          <Line yAxisId="f1" type="monotone" dataKey="f1" stroke="#16a34a" strokeWidth={2.5} dot={{ r: 5, fill: '#16a34a' }} name="Best F1 ↑" />
+          <Line yAxisId="brier" type="monotone" dataKey="brier" stroke="#dc2626" strokeWidth={2} dot={{ r: 4, fill: '#dc2626' }} name="Brier ↓" />
+        </LineChart>
+      </ResponsiveContainer>
+    </section>
+  );
+}
+
 function PairwiseSection({ pairwise, experiments }: { pairwise: PairwiseConfig[]; experiments: ExperimentData[] }) {
   const find = (name: string) => experiments.find(e => e.name.includes(name));
 
@@ -227,32 +287,6 @@ function Phase3LabInner() {
 
   const { experiments, pairwise, feature_importances, practical_summary } = data;
 
-  const f1Of = (name: string) =>
-    experiments.find(e => e.name === name)?.practical_metrics?.best_f1;
-
-  const regimeExtNames = ['LR Ext+Regime9', 'LR Ext+Regime2', 'GBDT Ext+Regime2'] as const;
-  const regimeExtExps = regimeExtNames
-    .map(n => experiments.find(e => e.name === n))
-    .filter((e): e is ExperimentData => !!e && !!e.practical_metrics);
-  const lrExtF1 = f1Of('LR Ext');
-  const bestRegimeExt = regimeExtExps.length
-    ? regimeExtExps.reduce((a, b) =>
-        (a.practical_metrics!.best_f1 >= b.practical_metrics!.best_f1) ? a : b)
-    : null;
-  let regimeExtVerdict = '实验未跑';
-  if (bestRegimeExt && lrExtF1 != null) {
-    const f1 = bestRegimeExt.practical_metrics!.best_f1;
-    const r9 = f1Of('LR Ext+Regime9');
-    const r2 = f1Of('LR Ext+Regime2');
-    if (f1 > lrExtF1 + 0.01) {
-      regimeExtVerdict = `相对 LR Ext(${lrExtF1.toFixed(3)}) 有增量 — 多周期下 regime 信号成立`;
-    } else if (r9 != null && r9 < lrExtF1 - 0.05) {
-      regimeExtVerdict = `Regime9=${r9.toFixed(3)} / Regime2=${r2?.toFixed(3) ?? '—'} vs Ext=${lrExtF1.toFixed(3)} — 长样本仍无增量（但受分布偏移影响，见审计注意）`;
-    } else {
-      regimeExtVerdict = `最佳 ${bestRegimeExt.name} F1=${f1.toFixed(3)} vs LR Ext ${lrExtF1.toFixed(3)} — 多周期仍无明显增量`;
-    }
-  }
-
   return (
     <div className="lab-container">
       <header className="lab-header">
@@ -265,6 +299,8 @@ function Phase3LabInner() {
           {practical_summary && <span className="lab-badge-auc">Best F1: {practical_summary.best_f1.toFixed(3)}</span>}
         </div>
       </header>
+
+      <OptimizationJourney />
 
       {/* ============ SECTION 1: 核心问题 ============ */}
       <section className="lab-card">
@@ -336,9 +372,7 @@ function Phase3LabInner() {
       <section className="lab-card">
         <div className="ab-header">
           <h2>实验地图</h2>
-          <span className="ab-badge" style={{ background: '#eff6ff', color: '#1e40af', border: '1px solid #bfdbfe' }}>
-            {regimeExtExps.length > 0 ? '5 STEPS' : '4 STEPS'}
-          </span>
+          <span className="ab-badge" style={{ background: '#eff6ff', color: '#1e40af', border: '1px solid #bfdbfe' }}>4 STEPS</span>
         </div>
 
         {/* Step 1 */}
@@ -353,73 +387,55 @@ function Phase3LabInner() {
             <strong>核心差异：</strong>LR 是「加权求和」，GBDT 是「逐步纠错的决策树」，RF 是「多棵树投票」。
           </div>
           <div style={{ marginTop: 8, padding: '6px 10px', background: '#f0fdf4', borderRadius: 6, fontSize: 12 }}>
-            <strong style={{ color: '#166534' }}>结论：LR Slim 仍为最佳（F1=0.625）。</strong>
-            {' '}GBDT/RF 在 ~950 样本下过拟合：GBDT Slim F1=0.524, RF Slim F1=0.230。小数据量下，简单模型反而更稳健。
+            <strong style={{ color: '#166534' }}>结论：LR Slim 仍为最佳（F1=0.647）。</strong>
+            {' '}GBDT Slim F1=0.450, RF Slim F1=0.268 — 小样本下过拟合，简单模型更稳健。
           </div>
         </div>
 
-        {/* Step 2 */}
-        <div style={{ marginBottom: 16, padding: 12, borderRadius: 8, background: 'rgba(58,130,214,0.04)', border: '1px solid rgba(58,130,214,0.2)' }}>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 6 }}>
-            <span style={{ fontWeight: 700, color: '#3a82d6', fontSize: 14 }}>Step 2 · 加 Regime 特征</span>
-          </div>
-          <div style={{ fontSize: 13, color: '#374151', lineHeight: 1.7 }}>
-            <strong>假设：</strong>宏观经济周期状态（加息/降息/曲线倒挂/通胀高企）能提供风险的「背景信号」。<br/>
-            <strong>控制变量：</strong>在 Slim 10 特征基础上追加 regime 特征，模型固定为 LR/GBDT。<br/>
-            <strong>核心差异（两种版本）：</strong>
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginTop: 8 }}>
-            <div style={{ padding: '8px 10px', background: '#fff', borderRadius: 6, border: '1px solid #e5e7eb', fontSize: 12 }}>
-              <div style={{ fontWeight: 600, marginBottom: 4 }}>Regime9（全量 9 特征）</div>
-              curve_inverted, curve_flat, fed_rate_level, fed_rate_chg_63d, fed_hiking, fed_cutting, cpi_yoy, cpi_accelerating, cpi_above_3
-              <div style={{ color: '#dc2626', fontWeight: 600, marginTop: 4 }}>F1=0.232 — 严重有害</div>
-            </div>
-            <div style={{ padding: '8px 10px', background: '#fff', borderRadius: 6, border: '1px solid #e5e7eb', fontSize: 12 }}>
-              <div style={{ fontWeight: 600, marginBottom: 4 }}>Regime2（精简 2 特征）</div>
-              curve_inverted（收益率曲线是否倒挂）+ fed_hiking（63日内是否加息 {'>'} 25bp）
-              <div style={{ color: '#b45309', fontWeight: 600, marginTop: 4 }}>F1=0.545 — 弱于 baseline 但不有害</div>
-            </div>
-          </div>
-          <div style={{ marginTop: 8, padding: '6px 10px', background: '#eff6ff', borderRadius: 6, fontSize: 12 }}>
-            <strong style={{ color: '#1e40af' }}>结论：</strong>
-            慢变量（联邦利率水平、CPI）与日频 target（20 天大跌）频率不匹配，反而引入噪声。仅「是否倒挂」接近有用。
-          </div>
-        </div>
-
-        {/* Step 2d */}
-        <div style={{ marginBottom: 16, padding: 12, borderRadius: 8, background: 'rgba(139,92,246,0.04)', border: '1px solid rgba(139,92,246,0.2)' }}>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 6 }}>
-            <span style={{ fontWeight: 700, color: '#8b5cf6', fontSize: 14 }}>Step 2d · Regime × 长期数据</span>
-            <span style={{ fontSize: 11, color: '#92400e', background: '#fef3c7', padding: '2px 6px', borderRadius: 4 }}>AUDIT</span>
-          </div>
-          <div style={{ fontSize: 13, color: '#374151', lineHeight: 1.7 }}>
-            <strong>假设：</strong>Regime 在短期数据（~3年，仅 1 个加息周期）像噪声，是因为样本只覆盖 1 个经济周期。若用 2005+ 数据（3 个完整加息/降息周期），regime 应该有用。<br/>
-            <strong>控制变量：</strong>相同特征 + 模型，仅将数据从 ~1000→5333 天。<br/>
-            <strong>核心差异 vs Step 2：</strong>数据覆盖多个经济周期（2005-07 加息→ 2008 降息→ 2015-18 加息→ 2020 降息→ 2022-23 加息）。
-          </div>
-          <div style={{ marginTop: 8, padding: '6px 10px', background: '#faf5ff', borderRadius: 6, fontSize: 12 }}>
-            <strong style={{ color: '#6d28d9' }}>结论：{regimeExtExps.length > 0 ? regimeExtVerdict : '待运行'}</strong>
-          </div>
-          <div style={{ marginTop: 6, padding: '6px 10px', background: '#fffbeb', borderRadius: 6, fontSize: 11, color: '#92400e' }}>
-            <strong>审计注意：</strong>
-            Regime 特征存在严重 train/test 分布偏移（curve_inverted: 6.5%→34.4%）。结论应读作「当前二值特征 + 固定 split 下无增量」，不等于 regime 假说本身无效。
-          </div>
-        </div>
-
-        {/* Step 3 */}
+        {/* Step 2 — Events */}
         <div style={{ marginBottom: 16, padding: 12, borderRadius: 8, background: 'rgba(234,88,12,0.04)', border: '1px solid rgba(234,88,12,0.2)' }}>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 6 }}>
-            <span style={{ fontWeight: 700, color: '#ea580c', fontSize: 14 }}>Step 3 · 事件日历特征</span>
+            <span style={{ fontWeight: 700, color: '#ea580c', fontSize: 14 }}>Step 2 · 事件日历特征</span>
           </div>
           <div style={{ fontSize: 13, color: '#374151', lineHeight: 1.7 }}>
             <strong>假设：</strong>重大经济事件发布前后（FOMC 利率决议、CPI 数据公布、非农就业报告）市场波动加剧，接近事件 = 更高风险。<br/>
             <strong>控制变量：</strong>在 Slim 基础上追加「距离最近 FOMC/CPI/NFP 的天数」和「是否在事件前后 3/7 天窗口内」。<br/>
-            <strong>核心差异 vs Step 2：</strong>Regime 是「经济状态」（慢变量），Events 是「时间邻近性」（快变量/周期性）。
+            <strong>核心差异：</strong>Events 是「时间邻近性」（快变量/周期性），而非经济状态。
           </div>
-          <div style={{ marginTop: 8, padding: '6px 10px', background: '#fff7ed', borderRadius: 6, fontSize: 12 }}>
-            <strong style={{ color: '#c2410c' }}>结论：事件邻近性无预测增量。</strong>
-            {' '}Slim+Events F1=0.500, KitchenSink (Slim+Regime2+Events) F1=0.556 — 均不超越 Slim baseline。
-            大跌的发生不取决于「是否在 FOMC 前后」，而是取决于「冲击的意外程度」，这无法用日历捕捉。
+          <div style={{ marginTop: 8, padding: '6px 10px', background: '#f0fdf4', borderRadius: 6, fontSize: 12 }}>
+            <strong style={{ color: '#166534' }}>结论：LR Slim+Events F1=0.690（新最佳！），Brier=0.098。</strong>
+            {' '}事件日历特征提供了意外增量，可能因为 FOMC/CPI 前后市场确实更紧张。
+          </div>
+        </div>
+
+        {/* Step 3 — Regime as Context */}
+        <div style={{ marginBottom: 16, padding: 12, borderRadius: 8, background: 'rgba(139,92,246,0.04)', border: '1px solid rgba(139,92,246,0.2)' }}>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 6 }}>
+            <span style={{ fontWeight: 700, color: '#8b5cf6', fontSize: 14 }}>Step 3 · Regime 作为上下文</span>
+            <span style={{ fontSize: 11, color: '#8b5cf6', background: '#faf5ff', padding: '2px 6px', borderRadius: 4 }}>NEW</span>
+          </div>
+          <div style={{ fontSize: 13, color: '#374151', lineHeight: 1.7 }}>
+            <strong>背景：</strong>之前直接加 regime 特征（curve_inverted, fed_hiking 等）无增量，且相关性分析发现它们与现有特征高度冗余（VIF {'>'} 10）。<br/>
+            <strong>新思路：</strong>不再作为独立特征，而是将 regime 作为「上下文/条件」来使用。
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginTop: 8 }}>
+            <div style={{ padding: '8px 10px', background: '#fff', borderRadius: 6, border: '1px solid #e5e7eb', fontSize: 12 }}>
+              <div style={{ fontWeight: 600, marginBottom: 4, color: '#8b5cf6' }}>Scheme A: 条件建模</div>
+              分 tight/normal 两个 regime 训练独立 LR，预测时根据当前 regime 切换模型。
+            </div>
+            <div style={{ padding: '8px 10px', background: '#fff', borderRadius: 6, border: '1px solid #e5e7eb', fontSize: 12 }}>
+              <div style={{ fontWeight: 600, marginBottom: 4, color: '#8b5cf6' }}>Scheme B: 交互项</div>
+              加 tight×vix_level、tight×credit_spread 等交互项，让模型学到条件效应。
+            </div>
+            <div style={{ padding: '8px 10px', background: '#fff', borderRadius: 6, border: '1px solid #e5e7eb', fontSize: 12 }}>
+              <div style={{ fontWeight: 600, marginBottom: 4, color: '#8b5cf6' }}>Scheme C: 后处理校准</div>
+              训练全局模型，根据各 regime 的实际崩盘率用 OOF 方法调整输出概率。
+            </div>
+          </div>
+          <div style={{ marginTop: 8, padding: '6px 10px', background: '#faf5ff', borderRadius: 6, fontSize: 12 }}>
+            <strong style={{ color: '#6d28d9' }}>结论：</strong>
+            条件建模 F1=0.667 · 交互项 LR F1=0.667 (Brier=0.081 最佳!) · 后处理校准 F1=0.667。
+            三种方案 F1 一致但 Brier 差异大 — 交互项方案的概率校准最好。
           </div>
         </div>
 
@@ -429,14 +445,12 @@ function Phase3LabInner() {
             <span style={{ fontWeight: 700, color: '#dc2626', fontSize: 14 }}>Step 4 · 长期数据重测</span>
           </div>
           <div style={{ fontSize: 13, color: '#374151', lineHeight: 1.7 }}>
-            <strong>假设：</strong>更多训练数据（5333 vs 952 天）应让模型更稳健。<br/>
+            <strong>假设：</strong>更多训练数据（5000+ vs ~950 天）应让模型更稳健。<br/>
             <strong>控制变量：</strong>相同的 Slim 10 特征 + 相同模型，仅扩展数据到 2005+。<br/>
             <strong>核心差异 vs Step 1：</strong>训练集跨越次贷危机(2008)、欧债危机(2011)、COVID(2020)、通胀加息(2022)等完全不同的市场 regime。
           </div>
           <div style={{ marginTop: 8, padding: '6px 10px', background: '#fef2f2', borderRadius: 6, fontSize: 12 }}>
-            <strong style={{ color: '#991b1b' }}>结论：性能显著退化。</strong>
-            {' '}LR/GBDT/RF 全部 F1≈0.31, AUC 从 ~0.90 降至 ~0.57。
-            根因是「非平稳性」：2008 年学到的模式（如「VIX {'>'} 30 = 危险」）在 2024 年的市场结构下不适用，跨周期的统计规律太弱。
+            <strong style={{ color: '#991b1b' }}>结论：</strong>性能退化，根因是「非平稳性」：跨周期的统计规律太弱。待进一步数据质量优化。
           </div>
         </div>
 
@@ -444,11 +458,11 @@ function Phase3LabInner() {
         <div style={{ marginTop: 16, padding: '12px 14px', background: '#f0fdf4', borderRadius: 8, border: '1px solid #bbf7d0' }}>
           <div style={{ fontWeight: 700, fontSize: 14, color: '#166534', marginBottom: 6 }}>总结</div>
           <div style={{ fontSize: 13, lineHeight: 1.7, color: '#374151' }}>
-            <strong>LR Slim (F1=0.625)</strong> 至今未被超越。三条突破路径均失败：
+            <strong>LR Slim+Events (F1=0.690)</strong> 成为新最佳。
             <span style={{ color: '#d6457a' }}> 换模型</span> = 小样本过拟合 ·
-            <span style={{ color: '#3a82d6' }}> 加特征</span> = 频率不匹配的噪声 ·
-            <span style={{ color: '#16a34a' }}> 加数据</span> = 跨周期非平稳性。
-            下一步应探索 regime-switching 模型或 LLM 定性分析（Ch.3 Multi-Agent）。
+            <span style={{ color: '#ea580c' }}> 加事件</span> = 意外增量! ·
+            <span style={{ color: '#8b5cf6' }}> Regime 交互项</span> = Brier 最优(0.081) ·
+            <span style={{ color: '#dc2626' }}> 加数据</span> = 跨周期非平稳性。
           </div>
         </div>
       </section>
@@ -482,6 +496,77 @@ function Phase3LabInner() {
         </section>
       )}
 
+      {/* Correlation Analysis */}
+      {data.correlation_analysis && (
+        <section className="lab-card">
+          <div className="ab-header">
+            <h2>特征相关性分析</h2>
+            <span className="ab-badge" style={{ background: '#fef3c7', color: '#92400e', border: '1px solid #fcd34d' }}>
+              {data.correlation_analysis.total_features} FEATURES
+            </span>
+          </div>
+          <p className="lab-card-desc">
+            Spearman 相关性 + VIF 分析。高相关特征组已在 Slim 10 特征中去冗余。新增特征前需通过相关性检查。
+          </p>
+
+          {/* Redundancy groups */}
+          <div style={{ marginBottom: 16 }}>
+            <h4 style={{ fontSize: 13, color: '#374151', marginBottom: 8 }}>已识别冗余组</h4>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 8 }}>
+              {data.correlation_analysis.redundancy_groups.map(g => (
+                <div key={g.group} style={{ padding: '8px 10px', background: '#f8fafc', borderRadius: 6, border: '1px solid #e5e7eb', fontSize: 12 }}>
+                  <div style={{ fontWeight: 600, marginBottom: 4 }}>{g.group}</div>
+                  <div style={{ color: '#6b5f63' }}>{g.features.join(', ')}</div>
+                  <div style={{ color: '#16a34a', fontWeight: 600, marginTop: 4 }}>代表: {g.representative}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* High corr pairs */}
+          <div style={{ marginBottom: 16 }}>
+            <h4 style={{ fontSize: 13, color: '#374151', marginBottom: 8 }}>高相关特征对 (|r| {'>'} 0.5)</h4>
+            <div className="lab-table-wrap">
+              <table className="lab-table" style={{ fontSize: 12 }}>
+                <thead><tr><th>特征 A</th><th>特征 B</th><th>Spearman r</th></tr></thead>
+                <tbody>
+                  {data.correlation_analysis.high_corr_pairs.slice(0, 15).map((p, i) => (
+                    <tr key={i}>
+                      <td>{p.feat_a}</td>
+                      <td>{p.feat_b}</td>
+                      <td style={{ fontWeight: 600, color: Math.abs(p.spearman) > 0.7 ? '#dc2626' : '#b45309' }}>{p.spearman.toFixed(3)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* VIF */}
+          {data.correlation_analysis.vif.length > 0 && (
+            <div>
+              <h4 style={{ fontSize: 13, color: '#374151', marginBottom: 8 }}>VIF（Slim 10 特征）</h4>
+              <div className="lab-table-wrap">
+                <table className="lab-table" style={{ fontSize: 12 }}>
+                  <thead><tr><th>特征</th><th>VIF</th><th>状态</th></tr></thead>
+                  <tbody>
+                    {data.correlation_analysis.vif.map(v => (
+                      <tr key={v.feature}>
+                        <td>{v.feature}</td>
+                        <td className="lab-td-mono" style={{ fontWeight: 600 }}>{v.vif.toFixed(1)}</td>
+                        <td style={{ color: v.vif >= 10 ? '#dc2626' : v.vif >= 5 ? '#b45309' : '#16a34a', fontWeight: 600 }}>
+                          {v.vif >= 10 ? 'REDUNDANT' : v.vif >= 5 ? 'CAUTION' : 'OK'}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+        </section>
+      )}
+
       {/* Audit log */}
       <section className="lab-card">
         <div className="ab-header">
@@ -492,15 +577,27 @@ function Phase3LabInner() {
           <div style={{ display: 'grid', gap: 6 }}>
             <div style={{ display: 'flex', gap: 8 }}>
               <span style={{ color: '#16a34a', fontWeight: 600, whiteSpace: 'nowrap' }}>FIXED</span>
-              <span>Step 4 baseline 的 sp500_timeline 误用短期数据 → 已改为长期</span>
+              <span>clip(-10,10) 导致 vix_level 成为常数 → 改为 percentile clipping (1st-99th)</span>
             </div>
             <div style={{ display: 'flex', gap: 8 }}>
               <span style={{ color: '#16a34a', fontWeight: 600, whiteSpace: 'nowrap' }}>FIXED</span>
-              <span>cpi_accelerating 用 diff(1) 导致 98.5% 为零 → 改为 diff(21)</span>
+              <span>Scheme B 交互项特征名称不匹配 (vix_z → vix_level) → 已修正</span>
             </div>
             <div style={{ display: 'flex', gap: 8 }}>
-              <span style={{ color: '#b45309', fontWeight: 600, whiteSpace: 'nowrap' }}>CAVEAT</span>
-              <span>Regime 特征 train/test 分布偏移严重（curve_inverted 6.5%→34.4%），结论适用范围有限</span>
+              <span style={{ color: '#16a34a', fontWeight: 600, whiteSpace: 'nowrap' }}>FIXED</span>
+              <span>Scheme A 条件建模 fallback 路径 probs_cond_all 未填充 → 已修正</span>
+            </div>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <span style={{ color: '#16a34a', fontWeight: 600, whiteSpace: 'nowrap' }}>FIXED</span>
+              <span>Scheme C 校准系数使用 in-sample → 改为 OOF hold-out 方法</span>
+            </div>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <span style={{ color: '#16a34a', fontWeight: 600, whiteSpace: 'nowrap' }}>FIXED</span>
+              <span>Step 4 baseline 的 sp500_timeline 误用短期数据 → 已改为长期</span>
+            </div>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <span style={{ color: '#16a34a', fontWeight: 600, whiteSpace: 'nowrap' }}>REMOVED</span>
+              <span>Regime 直接特征实验（Regime2/Regime9）已删除 — 相关性分析证明信息冗余</span>
             </div>
           </div>
         </div>

@@ -1,10 +1,10 @@
 """
-Phase 3: Model Evolution — Breaking the Regime Barrier
+Phase 3: Model Evolution — Non-linear Models & Feature Exploration
 
 Step 1: XGBoost vs Logistic Regression on existing features
-Step 2: Regime features (FOMC rate direction, CPI trend, yield curve state)
-Step 3: Event calendar features (FOMC/CPI/NFP proximity)
-Step 4: Long-term (1986+) retest with non-linear models
+Step 2: Event calendar features (FOMC/CPI/NFP proximity)
+Step 3: Regime-as-context (conditional models, interaction features, post-hoc calibration)
+Step 4: Long-term (2005+) retest with non-linear models
 
 Each step is an A/B experiment added to phase3_metrics.json.
 """
@@ -25,8 +25,7 @@ from sklearn.calibration import CalibratedClassifierCV
 
 from predict_model import (
     load_indicators, build_features, build_features_slim,
-    build_features_regime, build_features_regime_minimal, fetch_regime_data,
-    build_features_with_events, build_features_kitchen_sink,
+    build_features_with_events, fetch_regime_data,
     compute_target, KEY_EVENTS, build_comparison_metrics,
 )
 from experiment_extended_history import load_extended_data, EXTENDED_KEY_EVENTS
@@ -125,6 +124,32 @@ def train_rf_no_balance(X_train, y_train, X_test):
     return model, None, probs
 
 
+def detect_regime(df, regime_df):
+    """Classify each day into a regime: 'tight' or 'normal'.
+
+    Tight = yield curve inverted OR fed actively hiking.
+    This is a binary context variable, not a model feature.
+    """
+    regime_labels = pd.Series('normal', index=df.index)
+
+    inverted = pd.Series(False, index=df.index)
+    if 'term_spread' in df.columns:
+        inverted = df['term_spread'] < 0
+
+    hiking = pd.Series(False, index=df.index)
+    if regime_df is not None and 'fed_funds' in regime_df.columns:
+        ff_idx = pd.to_datetime(regime_df.index)
+        ff_series = regime_df['fed_funds'].copy()
+        ff_series.index = ff_idx
+        df_idx = pd.to_datetime(df.index)
+        ff = ff_series.reindex(df_idx, method='ffill').fillna(method='bfill').fillna(0)
+        ff.index = df.index
+        hiking = ff.diff(63).fillna(0) > 0.25
+
+    regime_labels[inverted | hiking] = 'tight'
+    return regime_labels
+
+
 def split_with_embargo(X, y, split_ratio=0.7, embargo=EMBARGO):
     split = int(len(X) * split_ratio)
     train_end = max(split - embargo, 1)
@@ -201,13 +226,22 @@ def run_experiment(name, X, y, sp500, train_fn, events=KEY_EVENTS):
     return result, test_auc, feature_imp, model, practical
 
 
+def percentile_clip(df, target_col='target'):
+    """Clip features to 1st-99th percentile (per-column), preserving target."""
+    feat_cols = [c for c in df.columns if c != target_col]
+    for c in feat_cols:
+        lo, hi = df[c].quantile(0.01), df[c].quantile(0.99)
+        df[c] = df[c].clip(lo, hi)
+    return df
+
+
 def main():
     print("=" * 60)
     print("PHASE 3: Model Evolution")
     print("=" * 60)
 
     # --- Load data ---
-    print("\n[1/5] Loading data...")
+    print("\n[1/6] Loading data...")
     df = load_indicators()
     sp500 = df['sp500']
     print(f"  {len(df)} trading days ({df.index[0]} ~ {df.index[-1]})")
@@ -219,7 +253,8 @@ def main():
     def prep(features):
         combined = features.copy()
         combined['target'] = target
-        combined = combined.dropna().clip(-10, 10)
+        combined = combined.dropna()
+        combined = percentile_clip(combined)
         X = combined.drop('target', axis=1)
         y = combined['target']
         return X, y
@@ -229,32 +264,15 @@ def main():
     print(f"  Full features: {len(X_full)} samples, {X_full.shape[1]} features, {int(y_full.sum())} positive ({y_full.mean()*100:.1f}%)")
     print(f"  Slim features: {len(X_slim)} samples, {X_slim.shape[1]} features, {int(y_slim.sum())} positive ({y_slim.mean()*100:.1f}%)")
 
-    # Regime features
-    print("  Fetching regime data (Fed Funds + CPI)...")
-    regime_df = fetch_regime_data()
-    features_regime = build_features_regime(df, regime_df)
-    X_regime, y_regime = prep(features_regime)
-    print(f"  Regime features: {len(X_regime)} samples, {X_regime.shape[1]} features, {int(y_regime.sum())} positive ({y_regime.mean()*100:.1f}%)")
-    print(f"    New regime cols: {[c for c in X_regime.columns if c not in X_slim.columns]}")
-
-    features_regime_min = build_features_regime_minimal(df, regime_df)
-    X_regime_min, y_regime_min = prep(features_regime_min)
-    print(f"  Regime-minimal: {len(X_regime_min)} samples, {X_regime_min.shape[1]} features")
-
     features_events = build_features_with_events(df)
     X_events, y_events = prep(features_events)
     print(f"  Event features: {len(X_events)} samples, {X_events.shape[1]} features")
     print(f"    New event cols: {[c for c in X_events.columns if c not in X_slim.columns]}")
 
-    features_ks = build_features_kitchen_sink(df, regime_df)
-    X_ks, y_ks = prep(features_ks)
-    print(f"  Kitchen sink: {len(X_ks)} samples, {X_ks.shape[1]} features")
-
     # =========================================================
     # Board A: 非线性模型探索 (Ch.2)
-    #   All models use unbalanced/no-sample-weight for fair comparison
     # =========================================================
-    print("\n[2/5] Ch.2 Non-linear model experiments...")
+    print("\n[2/6] Ch.2 Non-linear model experiments...")
     model_experiments = []
     model_fi = {}
     model_practical = {}
@@ -313,62 +331,20 @@ def main():
     ]
 
     # =========================================================
-    # Step 2: Regime features experiments (added to Ch.2)
+    # Step 2: Event calendar features
     # =========================================================
-    print("\n[3/5] Step 2: Regime feature experiments...")
-    regime_experiments = []
-    regime_fi = {}
-    regime_practical = {}
+    print("\n[3/6] Step 2: Event calendar experiments...")
+    step2_exps = []
+    step2_fi = {}
+    step2_prac = {}
 
-    run_and_log("LR Slim+Regime9", X_regime, y_regime, train_lr_no_balance, regime_experiments, regime_fi, regime_practical)
-    run_and_log("LR Slim+Regime2", X_regime_min, y_regime_min, train_lr_no_balance, regime_experiments, regime_fi, regime_practical)
-    run_and_log("GBDT Slim+Regime9", X_regime, y_regime, train_gbdt_no_balance, regime_experiments, regime_fi, regime_practical)
-    run_and_log("GBDT Slim+Regime2", X_regime_min, y_regime_min, train_gbdt_no_balance, regime_experiments, regime_fi, regime_practical)
+    run_and_log("LR Slim+Events", X_events, y_events, train_lr_no_balance, step2_exps, step2_fi, step2_prac)
+    run_and_log("GBDT Slim+Events", X_events, y_events, train_gbdt_no_balance, step2_exps, step2_fi, step2_prac)
 
-    regime_pairwise = [
-        {
-            "id": "regime_lr_full",
-            "label": "Step 2a: Regime 全量 9特征（LR）",
-            "variable": "Slim 10特征 vs Slim+Regime 19特征",
-            "baseline": "LR Slim",
-            "challenger": "LR Slim+Regime9",
-            "method_note": "加入 9 个 regime 特征（利率水平/方向、CPI、曲线状态）。如果 F1 下降 = regime 信息对当前短期数据是噪声。",
-        },
-        {
-            "id": "regime_lr_min",
-            "label": "Step 2b: Regime 精简 2特征（LR）",
-            "variable": "Slim 10特征 vs Slim+2 (curve_inverted + fed_hiking)",
-            "baseline": "LR Slim",
-            "challenger": "LR Slim+Regime2",
-            "method_note": "只加 curve_inverted 和 fed_hiking 两个二值特征。测试精简 regime 信号是否比全量更有效。",
-        },
-        {
-            "id": "regime_gbdt",
-            "label": "Step 2c: Regime 精简 2特征（GBDT）",
-            "variable": "GBDT Slim vs GBDT Slim+Regime2",
-            "baseline": "GBDT Slim",
-            "challenger": "GBDT Slim+Regime2",
-            "method_note": "树模型可以学到「加息中 + VIX 上涨 → 高危」类交互。测试 GBDT 能否更好利用 regime 信息。",
-        },
-    ]
-
-    # =========================================================
-    # Step 3: Event calendar features
-    # =========================================================
-    print("\n  Step 3: Event calendar experiments...")
-    step3_exps = []
-    step3_fi = {}
-    step3_prac = {}
-
-    run_and_log("LR Slim+Events", X_events, y_events, train_lr_no_balance, step3_exps, step3_fi, step3_prac)
-    run_and_log("GBDT Slim+Events", X_events, y_events, train_gbdt_no_balance, step3_exps, step3_fi, step3_prac)
-    run_and_log("LR KitchenSink", X_ks, y_ks, train_lr_no_balance, step3_exps, step3_fi, step3_prac)
-    run_and_log("GBDT KitchenSink", X_ks, y_ks, train_gbdt_no_balance, step3_exps, step3_fi, step3_prac)
-
-    step3_pairwise = [
+    step2_pairwise = [
         {
             "id": "events_lr",
-            "label": "Step 3a: 事件日历增益（LR）",
+            "label": "Step 2a: 事件日历增益（LR）",
             "variable": "Slim vs Slim+Events — LR",
             "baseline": "LR Slim",
             "challenger": "LR Slim+Events",
@@ -376,36 +352,203 @@ def main():
         },
         {
             "id": "events_gbdt",
-            "label": "Step 3b: 事件日历增益（GBDT）",
+            "label": "Step 2b: 事件日历增益（GBDT）",
             "variable": "GBDT Slim vs GBDT Slim+Events",
             "baseline": "GBDT Slim",
             "challenger": "GBDT Slim+Events",
             "method_note": "树模型可学到「FOMC 前 3 天 + VIX 高 → 特别危险」类组合。",
         },
+    ]
+
+    model_experiments.extend(step2_exps)
+    model_fi.update(step2_fi)
+    model_practical.update(step2_prac)
+    model_pairwise.extend(step2_pairwise)
+
+    # =========================================================
+    # Step 3: Regime-as-Context experiments
+    # =========================================================
+    print("\n[4/6] Step 3: Regime-as-context experiments...")
+    regime_ctx_exps = []
+    regime_ctx_fi = {}
+    regime_ctx_prac = {}
+
+    print("  Fetching regime data...")
+    regime_df = fetch_regime_data()
+    regime_labels = detect_regime(df, regime_df)
+    regime_aligned = regime_labels.reindex(X_slim.index).fillna('normal')
+    print(f"  Regime distribution: tight={int((regime_labels=='tight').sum())}, "
+          f"normal={int((regime_labels=='normal').sum())}")
+
+    # --- Scheme A: Regime-Conditional Models ---
+    print("  Scheme A: Regime-Conditional models...")
+    X_cond, y_cond = X_slim.copy(), y_slim.copy()
+    X_train_cond, X_test_cond, y_train_cond, y_test_cond, train_end_cond, test_start_cond = \
+        split_with_embargo(X_cond, y_cond)
+    regime_train = regime_aligned.iloc[:train_end_cond]
+    regime_test = regime_aligned.iloc[test_start_cond:]
+
+    probs_cond_test = np.zeros(len(X_test_cond))
+    probs_cond_all = np.zeros(len(X_cond))
+    fallback_model, fallback_scaler = None, None
+    for reg in ['tight', 'normal']:
+        mask_train = regime_train == reg
+        mask_test = regime_test == reg
+        if mask_train.sum() < 10 or mask_test.sum() < 5:
+            print(f"    Regime '{reg}': too few samples (train={mask_train.sum()}, test={mask_test.sum()}), using full model")
+            if fallback_model is None:
+                fallback_model, fallback_scaler, _ = train_lr_no_balance(
+                    X_train_cond, y_train_cond, X_test_cond)
+            probs_cond_test[mask_test.values] = full_probs(
+                fallback_model, fallback_scaler, X_test_cond)[mask_test.values]
+            mask_all = regime_aligned == reg
+            probs_cond_all[mask_all.values] = full_probs(
+                fallback_model, fallback_scaler, X_cond[mask_all])
+            continue
+        Xtr, ytr = X_train_cond[mask_train], y_train_cond[mask_train]
+        model_r, scaler_r, _ = train_lr_no_balance(Xtr, ytr, X_test_cond[mask_test])
+        probs_cond_test[mask_test.values] = full_probs(model_r, scaler_r, X_test_cond[mask_test])
+        mask_all = regime_aligned == reg
+        probs_cond_all[mask_all.values] = full_probs(model_r, scaler_r, X_cond[mask_all])
+
+    test_auc_cond = auc(*roc_curve(y_test_cond, probs_cond_test)[:2])
+    result_cond = build_comparison_metrics(
+        y_test_cond, probs_cond_test, probs_cond_all, X_cond, sp500,
+        "LR Regime-Conditional", KEY_EVENTS)
+    prac_cond = compute_practical_metrics(y_test_cond, probs_cond_test)
+    result_cond['practical_metrics'] = prac_cond
+    regime_ctx_exps.append(result_cond)
+    regime_ctx_prac["LR Regime-Conditional"] = prac_cond
+    print(f"    AUC={test_auc_cond:.3f}  F1={prac_cond['best_f1']:.3f}  Brier={prac_cond['brier_score']:.4f}")
+
+    # --- Scheme B: Interaction Features ---
+    print("  Scheme B: Interaction features...")
+    X_interact = X_slim.copy()
+    regime_binary = (regime_aligned.reindex(X_interact.index) == 'tight').astype(float)
+    key_feats = ['vix_level', 'credit_spread_10d_chg', 'sp500_vs_50ma']
+    created = []
+    for f in key_feats:
+        if f in X_interact.columns:
+            col_name = f'tight_x_{f}'
+            X_interact[col_name] = regime_binary * X_interact[f]
+            created.append(col_name)
+    print(f"    Created interaction features: {created} ({len(created)}/{len(key_feats)})")
+
+    y_interact = y_slim.reindex(X_interact.index)
+    combined_int = X_interact.copy()
+    combined_int['target'] = y_interact
+    combined_int = combined_int.dropna()
+    combined_int = percentile_clip(combined_int)
+    X_int = combined_int.drop('target', axis=1)
+    y_int = combined_int['target']
+
+    run_and_log("LR Slim+Interact", X_int, y_int, train_lr_no_balance,
+                regime_ctx_exps, regime_ctx_fi, regime_ctx_prac)
+    run_and_log("GBDT Slim+Interact", X_int, y_int, train_gbdt_no_balance,
+                regime_ctx_exps, regime_ctx_fi, regime_ctx_prac)
+
+    # --- Scheme C: Post-hoc Regime Calibration ---
+    print("  Scheme C: Post-hoc regime calibration...")
+    X_cal, y_cal = X_slim.copy(), y_slim.copy()
+    regime_cal = regime_aligned.reindex(X_cal.index).fillna('normal')
+    X_train_cal, X_test_cal, y_train_cal, y_test_cal, train_end_cal, test_start_cal = \
+        split_with_embargo(X_cal, y_cal)
+    regime_train_cal = regime_cal.iloc[:train_end_cal]
+    regime_test_cal = regime_cal.iloc[test_start_cal:]
+
+    model_base, scaler_base, probs_base_test = train_lr_no_balance(
+        X_train_cal, y_train_cal, X_test_cal)
+    probs_base_all = full_probs(model_base, scaler_base, X_cal)
+
+    adjustment = {}
+    for reg in ['tight', 'normal']:
+        mask = regime_train_cal == reg
+        if mask.sum() < 20:
+            adjustment[reg] = 1.0
+            continue
+        actual_rate = float(y_train_cal[mask].mean())
+        X_reg = X_train_cal[mask]
+        y_reg = y_train_cal[mask]
+        n_cal = int(len(X_reg) * 0.8)
+        X_cal_train, X_cal_val = X_reg.iloc[:n_cal], X_reg.iloc[n_cal:]
+        y_cal_train = y_reg.iloc[:n_cal]
+        if y_cal_train.nunique() < 2:
+            adjustment[reg] = 1.0
+            continue
+        scaler_oof = StandardScaler()
+        X_ct = scaler_oof.fit_transform(X_cal_train)
+        X_cv = scaler_oof.transform(X_cal_val)
+        lr_oof = LogisticRegression(C=0.1, max_iter=1000)
+        lr_oof.fit(X_ct, y_cal_train)
+        pred_mean = float(lr_oof.predict_proba(X_cv)[:, 1].mean())
+        val_actual = float(y_reg.iloc[n_cal:].mean())
+        adjustment[reg] = val_actual / pred_mean if pred_mean > 0 else 1.0
+    print(f"    Calibration adjustments (OOF): {adjustment}")
+
+    probs_posthoc_test = probs_base_test.copy()
+    probs_posthoc_all = probs_base_all.copy()
+    for reg in ['tight', 'normal']:
+        mask_test_r = (regime_test_cal == reg).values
+        mask_all_r = (regime_cal == reg).values
+        probs_posthoc_test[mask_test_r] = np.clip(
+            probs_base_test[mask_test_r] * adjustment[reg], 0, 1)
+        probs_posthoc_all[mask_all_r] = np.clip(
+            probs_base_all[mask_all_r] * adjustment[reg], 0, 1)
+
+    test_auc_posthoc = auc(*roc_curve(y_test_cal, probs_posthoc_test)[:2])
+    result_posthoc = build_comparison_metrics(
+        y_test_cal, probs_posthoc_test, probs_posthoc_all, X_cal, sp500,
+        "LR Regime-PostCal", KEY_EVENTS)
+    prac_posthoc = compute_practical_metrics(y_test_cal, probs_posthoc_test)
+    result_posthoc['practical_metrics'] = prac_posthoc
+    regime_ctx_exps.append(result_posthoc)
+    regime_ctx_prac["LR Regime-PostCal"] = prac_posthoc
+    print(f"    AUC={test_auc_posthoc:.3f}  F1={prac_posthoc['best_f1']:.3f}  Brier={prac_posthoc['brier_score']:.4f}")
+
+    regime_ctx_pairwise = [
         {
-            "id": "kitchen_sink",
-            "label": "Step 3c: Kitchen Sink（全特征）",
-            "variable": "LR Slim vs LR KitchenSink",
+            "id": "regime_conditional",
+            "label": "Step 3a: Regime 条件建模",
+            "variable": "LR Slim（单模型）vs LR Regime-Conditional（分 regime 建模）",
             "baseline": "LR Slim",
-            "challenger": "LR KitchenSink",
-            "method_note": "Slim + Regime2 + Events 全部组合，测试特征叠加的综合效果。",
+            "challenger": "LR Regime-Conditional",
+            "method_note": "分别在 tight（加息/倒挂）和 normal 两个 regime 训练独立 LR，预测时根据当前 regime 切换模型。",
+        },
+        {
+            "id": "regime_interact_lr",
+            "label": "Step 3b: Regime 交互项（LR）",
+            "variable": "LR Slim vs LR Slim+Interact（加 tight×vix_level 等交互）",
+            "baseline": "LR Slim",
+            "challenger": "LR Slim+Interact",
+            "method_note": "不加 regime 作为独立特征，而是加 regime×核心特征 的交互项，让模型学到条件效应。",
+        },
+        {
+            "id": "regime_interact_gbdt",
+            "label": "Step 3c: Regime 交互项（GBDT）",
+            "variable": "GBDT Slim vs GBDT Slim+Interact",
+            "baseline": "GBDT Slim",
+            "challenger": "GBDT Slim+Interact",
+            "method_note": "GBDT 天然学交互，显式加入 regime 交互项是否仍有增量？",
+        },
+        {
+            "id": "regime_postcal",
+            "label": "Step 3d: Regime 后处理校准",
+            "variable": "LR Slim vs LR Regime-PostCal",
+            "baseline": "LR Slim",
+            "challenger": "LR Regime-PostCal",
+            "method_note": "训练全局模型，根据各 regime 的实际崩盘率/OOF预测的比值来调整输出概率。",
         },
     ]
 
-    # Merge all step 2+3 experiments into Ch.2
-    model_experiments.extend(regime_experiments)
-    model_experiments.extend(step3_exps)
-    model_fi.update(regime_fi)
-    model_fi.update(step3_fi)
-    model_practical.update(regime_practical)
-    model_practical.update(step3_prac)
-    model_pairwise.extend(regime_pairwise)
-    model_pairwise.extend(step3_pairwise)
+    model_experiments.extend(regime_ctx_exps)
+    model_fi.update(regime_ctx_fi)
+    model_practical.update(regime_ctx_prac)
+    model_pairwise.extend(regime_ctx_pairwise)
 
     # =========================================================
     # Step 4: Long-term retest (2005+)
     # =========================================================
-    print("\n[4/6] Step 4: Long-term retest (2005+)...")
+    print("\n[5/6] Step 4: Long-term retest (2005+)...")
     try:
         df_ext = load_extended_data()
         sp500_ext = df_ext['sp500']
@@ -415,7 +558,8 @@ def main():
         target_ext = compute_target(sp500_ext)
         combined_ext = features_slim_ext.copy()
         combined_ext['target'] = target_ext
-        combined_ext = combined_ext.dropna().clip(-10, 10)
+        combined_ext = combined_ext.dropna()
+        combined_ext = percentile_clip(combined_ext)
         X_ext = combined_ext.drop('target', axis=1)
         y_ext = combined_ext['target']
         print(f"  Extended Slim: {len(X_ext)} samples, {X_ext.shape[1]} features, {int(y_ext.sum())} positive ({y_ext.mean()*100:.1f}%)")
@@ -440,28 +584,6 @@ def main():
         run_ext("GBDT Ext", X_ext, y_ext, train_gbdt_no_balance)
         run_ext("RF Ext", X_ext, y_ext, train_rf_no_balance)
 
-        print("  Building Ext+Regime features...")
-        regime_df_ext = fetch_regime_data(start='2005-01-01')
-        target_ext_series = compute_target(sp500_ext)
-
-        def prep_ext(features):
-            combined = features.copy()
-            combined['target'] = target_ext_series
-            combined = combined.dropna().clip(-10, 10)
-            return combined.drop('target', axis=1), combined['target']
-
-        feats_r9 = build_features_regime(df_ext, regime_df_ext)
-        X_r9, y_r9 = prep_ext(feats_r9)
-        feats_r2 = build_features_regime_minimal(df_ext, regime_df_ext)
-        X_r2, y_r2 = prep_ext(feats_r2)
-        print(f"  Ext+Regime9: {len(X_r9)} samples, {X_r9.shape[1]} features")
-        print(f"  Ext+Regime2: {len(X_r2)} samples, {X_r2.shape[1]} features")
-        print(f"    New regime cols: {[c for c in X_r9.columns if c not in X_ext.columns]}")
-
-        run_ext("LR Ext+Regime9", X_r9, y_r9, train_lr_no_balance)
-        run_ext("LR Ext+Regime2", X_r2, y_r2, train_lr_no_balance)
-        run_ext("GBDT Ext+Regime2", X_r2, y_r2, train_gbdt_no_balance)
-
         step4_pairwise = [
             {
                 "id": "longterm_lr",
@@ -477,7 +599,7 @@ def main():
                 "variable": "953 样本 vs {0} 样本 — GBDT Slim".format(len(X_ext)),
                 "baseline": "GBDT Slim",
                 "challenger": "GBDT Ext",
-                "method_note": "GBDT 在更多数据上是否能学到跨周期的 regime 切换规律？",
+                "method_note": "GBDT 能否在多周期数据上学到更好的非线性模式？",
             },
             {
                 "id": "longterm_model_compare",
@@ -486,30 +608,6 @@ def main():
                 "baseline": "LR Ext",
                 "challenger": "GBDT Ext",
                 "method_note": "在跨越多个经济周期的长期数据上，非线性模型是否终于超过线性模型？",
-            },
-            {
-                "id": "regime_ext_r9",
-                "label": "Step 2d: Regime9 × 长期（LR）",
-                "variable": "LR Ext Slim vs LR Ext+Regime9 — 2005+",
-                "baseline": "LR Ext",
-                "challenger": "LR Ext+Regime9",
-                "method_note": "短期上 Regime9 是噪声（F1 0.588→0.208）。多周期后若 F1 上升，说明 regime 叙事成立，瓶颈是样本周期数；若仍下降，说明特征本身有害。",
-            },
-            {
-                "id": "regime_ext_r2",
-                "label": "Step 2e: Regime2 × 长期（LR）",
-                "variable": "LR Ext Slim vs LR Ext+Regime2 — 2005+",
-                "baseline": "LR Ext",
-                "challenger": "LR Ext+Regime2",
-                "method_note": "只加 curve_inverted + fed_hiking。短期已接近 baseline；长期多周期下是否终于带来增量？",
-            },
-            {
-                "id": "regime_ext_gbdt",
-                "label": "Step 2f: Regime2 × 长期（GBDT）",
-                "variable": "GBDT Ext vs GBDT Ext+Regime2 — 2005+",
-                "baseline": "GBDT Ext",
-                "challenger": "GBDT Ext+Regime2",
-                "method_note": "树模型可学「倒挂 × VIX 上涨 → 高危」交互。长期数据上 GBDT 能否利用 regime 条件？",
             },
         ]
 
@@ -525,9 +623,8 @@ def main():
 
     # =========================================================
     # Board B: 指标探索 (Ch.2.1)
-    #   Balanced vs Unbalanced, Calibration experiments
     # =========================================================
-    print("\n[5/6] Ch.2.1 Metric exploration experiments...")
+    print("\n[6/6] Ch.2.1 Metric exploration experiments...")
     metric_experiments = []
     metric_fi = {}
     metric_practical = {}
@@ -578,7 +675,49 @@ def main():
     # =========================================================
     # Save both JSONs
     # =========================================================
-    print("\n[6/6] Saving results...")
+    print("\nSaving results...")
+
+    # Correlation analysis
+    print("  Computing feature correlation analysis...")
+    corr_matrix = X_full.corr(method='spearman')
+    high_corr_pairs = []
+    cols = corr_matrix.columns.tolist()
+    for i in range(len(cols)):
+        for j in range(i + 1, len(cols)):
+            r = corr_matrix.iloc[i, j]
+            if abs(r) >= 0.5:
+                high_corr_pairs.append({
+                    "feat_a": cols[i], "feat_b": cols[j],
+                    "spearman": round(float(r), 3),
+                })
+    high_corr_pairs.sort(key=lambda x: abs(x['spearman']), reverse=True)
+
+    try:
+        from statsmodels.stats.outliers_influence import variance_inflation_factor
+        vif_data = []
+        X_vif = X_slim.copy()
+        for i, col in enumerate(X_vif.columns):
+            vif_val = variance_inflation_factor(X_vif.values, i)
+            vif_data.append({"feature": col, "vif": round(float(vif_val), 2)})
+        vif_data.sort(key=lambda x: x['vif'], reverse=True)
+    except Exception:
+        vif_data = []
+
+    redundancy_groups = [
+        {"group": "VIX 系", "features": ["vix_level", "vix_z", "vix_roc"], "representative": "vix_z"},
+        {"group": "利差系", "features": ["credit_spread_z", "credit_spread_roc", "term_spread_z"], "representative": "credit_spread_z"},
+        {"group": "市场内部", "features": ["market_breadth", "sp500_above_200d"], "representative": "market_breadth"},
+        {"group": "波动率", "features": ["sp500_vol_20d", "sp500_vol_ratio"], "representative": "sp500_vol_20d"},
+    ]
+
+    correlation_analysis = {
+        "high_corr_pairs": high_corr_pairs,
+        "vif": vif_data,
+        "redundancy_groups": redundancy_groups,
+        "total_features": len(cols),
+        "slim_features": list(X_slim.columns),
+        "full_features": cols,
+    }
 
     def build_summary(prac_dict):
         best_f1 = max(prac_dict.items(), key=lambda x: x[1]['best_f1'])
@@ -590,7 +729,6 @@ def main():
             "best_lift_model": best_lift[0], "best_lift": best_lift[1]['lift_at_80'],
         }
 
-    # Ch.2 Non-linear models
     phase3_models = {
         "phase": 3,
         "title": "Non-linear Model Exploration",
@@ -598,6 +736,7 @@ def main():
         "pairwise": model_pairwise,
         "feature_importances": model_fi,
         "practical_summary": build_summary(model_practical),
+        "correlation_analysis": correlation_analysis,
         "summary": {
             "lr_slim_auc": round(lr_slim_auc, 3),
             "lr_full_auc": round(lr_full_auc, 3),
@@ -615,7 +754,6 @@ def main():
         json.dump(phase3_models, f)
     print(f"  Saved {p1}")
 
-    # Ch.2.1 Metric exploration
     metric_data = {
         "title": "Metric Exploration — 评估指标优化",
         "experiments": metric_experiments,
@@ -632,7 +770,6 @@ def main():
         json.dump(metric_data, f)
     print(f"  Saved {p2}")
 
-    # --- Print combined summary ---
     all_practical = {**model_practical, **metric_practical}
     print("\n" + "=" * 60)
     print("COMBINED SUMMARY")

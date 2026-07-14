@@ -1,0 +1,59 @@
+---
+description: 新特征上线前必须做相关性/冗余检查
+alwaysApply: false
+---
+
+# 新特征相关性检查规则
+
+## 背景（经验教训）
+
+在 Phase 3 Step 2 中，我们将 `curve_inverted`、`fed_hiking` 等 regime 特征直接加入模型，结果 F1 无增量甚至下降。
+事后分析发现：这些 regime 特征与已有特征高度相关（如 `curve_inverted` ↔ `term_spread_z`、`fed_hiking` ↔ `credit_spread_roc`），
+模型已经隐式捕获了相同信息，新增特征只是噪声。
+
+**核心教训：任何新特征上线前，必须先验证它携带的信息是否已被现有特征覆盖。**
+
+## 必做检查清单
+
+在向模型添加新特征之前，必须完成以下步骤：
+
+### 1. Pearson/Spearman 相关性检查
+```python
+import pandas as pd
+corr = features.corr(method='spearman')
+new_feat_corr = corr['new_feature_name'].drop('new_feature_name').abs().sort_values(ascending=False)
+```
+
+**判定标准：**
+- |r| < 0.5：安全，可直接加入
+- 0.5 ≤ |r| < 0.7：需说明新特征提供了什么额外角度
+- |r| ≥ 0.7：**默认不加入**，除非有强理论依据说明信息互补
+
+### 2. VIF（方差膨胀因子）检查
+```python
+from statsmodels.stats.outliers_influence import variance_inflation_factor
+vif = [variance_inflation_factor(X.values, i) for i in range(X.shape[1])]
+```
+
+**判定标准：**
+- VIF < 5：安全
+- 5 ≤ VIF < 10：谨慎，可能冗余
+- VIF ≥ 10：**不应加入**，信息已被其他特征线性表达
+
+### 3. 增量信息测试
+如果相关性和 VIF 通过，仍需做 A/B 实验（参考 eval-metrics.mdc 的 Best F1 + Brier Score 标准）确认实际增量。
+
+## 已知冗余组（23 特征分析结果）
+
+| 冗余组 | 特征 | 代表特征 |
+|--------|------|----------|
+| VIX 系 | vix_level, vix_z, vix_roc | vix_z |
+| 利差系 | credit_spread_z, credit_spread_roc, term_spread_z | credit_spread_z |
+| 市场内部 | market_breadth, sp500_above_200d | market_breadth |
+| 波动率 | sp500_vol_20d, sp500_vol_ratio | sp500_vol_20d |
+
+## 执行时机
+
+- 添加任何新特征到 `build_features_*` 函数时
+- 合并外部数据源（FRED、Yahoo 等）的新指标时
+- 构建交互项或衍生特征时

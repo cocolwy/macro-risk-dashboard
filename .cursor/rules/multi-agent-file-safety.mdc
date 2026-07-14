@@ -1,0 +1,50 @@
+---
+description: 多 agent 并行工作时的文件安全规则，防止互相覆盖
+alwaysApply: true
+---
+
+# Multi-Agent 文件安全规则
+
+## 背景（惨痛教训）
+
+2026-07-14 事故：两个 agent 同时工作在同一个 repo 上，一个做「效率优化」，另一个做「实验开发」。
+效率优化 agent 执行了全局文件格式化/重构，覆盖了实验 agent 对以下文件的改动：
+
+- `experiment_phase3.py`（percentile clip 修复、regime-as-context 实验、相关性分析输出）
+- `Phase3Lab.tsx`（OptimizationJourney 折线图、CorrelationAnalysis 展示、实验步骤更新）
+- `experiment_regime_ext.py`（已删除的文件被恢复）
+
+**代价：花费大量 token 重建所有改动。**
+
+## 规则
+
+### 1. 修改前声明文件锁
+
+在开始修改任何文件前，先列出你计划修改的文件清单。如果用户提到有其他 agent 在运行，**立即暂停并确认文件不冲突**。
+
+### 2. 不碰不属于自己任务的文件
+
+- 只修改与你当前任务直接相关的文件
+- 不做"顺便优化"、"顺便格式化"等跨任务操作
+- 如果发现需要修改的文件与另一个 agent 冲突，告知用户让其协调
+
+### 3. 关键改动完成后立即 commit
+
+不要积累大量改动后才 commit。每完成一个逻辑单元（一个实验、一个 bug fix），立即 commit。
+这样即使被覆盖，也能从 git history 恢复，而不需要从零重写。
+
+### 4. 大改动前做 checkpoint
+
+对于超过 100 行的文件修改，先 `git stash` 或创建临时分支保存当前工作：
+
+```bash
+git stash push -m "WIP: regime-as-context experiments" -- dashboard/experiment_phase3.py
+```
+
+### 5. 被覆盖后的恢复流程
+
+如果发现自己的改动被另一个 agent 覆盖：
+
+1. `git log --all --oneline` 查找自己之前的 commit
+2. `git show <commit>:<file>` 恢复特定文件
+3. 不要从零重写 — 优先从 git history 恢复
