@@ -21,18 +21,15 @@
       "message": "Normal: 9.2"
     }
   },
-  "last_updated": "2026-07-14T03:45:28.143883",
+  "last_updated": "2026-07-14T14:21:57.558006",
   "indicators_available": [
     "term_spread",
     "credit_spread",
     "vix",
     "sp500",
     "breadth",
-    "sectors",
     "absorption_ratio",
-    "turbulence",
-    "composite_score",
-    "momentum"
+    "turbulence"
   ],
   "composite_score": {
     "score": 17.8,
@@ -48,5 +45,9 @@
       "breadth": 7.3
     },
     "date": "2026-07-13"
+  },
+  "model_review": {
+    "verdict": "WARN",
+    "n_warnings": 1
   }
 }
