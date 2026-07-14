@@ -1,5 +1,5 @@
 """
-Fetch today's finance headlines from free RSS feeds (Reuters, CNBC, MarketWatch).
+Fetch today's finance headlines from RSS feeds (Reuters, CNBC, FT, Fed).
 
 Output: dashboard/data/news_headlines.json
 """
@@ -8,10 +8,9 @@ from __future__ import annotations
 
 import datetime as dt
 import json
+import re
 from pathlib import Path
 from typing import Any
-
-import re
 
 import feedparser
 
@@ -32,73 +31,14 @@ FEEDS: dict[str, str] = {
         "q=site:ft.com+(markets+OR+economy+OR+rates+OR+fed+OR+inflation)"
         "&hl=en-US&gl=US&ceid=US:en"
     ),
-    # Fed official feeds — always macro-relevant, no noise filtering needed.
+    # Fed official feeds — FOMC statements and governor speeches.
     "Fed FOMC": "https://www.federalreserve.gov/feeds/press_monetary.xml",
     "Fed Speech": "https://www.federalreserve.gov/feeds/speeches.xml",
 }
 
-# Sources that are always macro-relevant — skip keyword allowlist check
-TRUSTED_SOURCES: frozenset[str] = frozenset(["Fed FOMC", "Fed Speech"])
-
 # Cap per source so the agent context stays focused
 MAX_PER_SOURCE = 8
-MAX_TOTAL = 30  # increased to accommodate 5 sources
-
-# ── Relevance filter ────────────────────────────────────────────────────────
-
-# Regex patterns that reliably indicate personal-finance / lifestyle / clickbait
-# content with no macro relevance.
-_BLOCKLIST_PATTERNS: list[re.Pattern[str]] = [re.compile(p, re.I) for p in [
-    r"\bI('m| am)\s+\d+\s*(years? old|and)",   # "I'm 45 and..."
-    r"\bturn\s+\$[\d,]+\s+into",                # "turn $1,000 into $250,000"
-    r"\bhow (can|do|to|should) (I|you|we)\b",   # "How can I / How to..."
-    r"\b(retirement|retire)\b.*\b(tip|trick|plan|saving|advice)\b",
-    r"\bbest (credit card|savings account|CD rate|high.yield|checking)\b",
-    r"\b(mortgage rate|home loan|refinanc)\b.*\b(tip|advice|how|guide)\b",
-    r"\b\d+ (ways?|tips?|thing|step|reason|mistake)\b.*\b(invest|sav|budget|retire)\b",
-    r"\b(avoid|beware|don.t make)\b.*\b(mistake|error)\b.*\b(invest|sav|retire|stock)\b",
-    r"\bhere.s (why|how|what)\b.*\b(you|your|i |we )",
-    r"\b(celebrity|divorce|wedding|house hunting|dream home)\b",
-    r"\bsuze orman\b|\bdave ramsey\b",           # personal-finance TV hosts
-]]
-
-# At least ONE of these macro keywords must appear in the title (case-insensitive)
-# for the headline to be considered relevant. Headlines with zero hits are dropped.
-_MACRO_KEYWORDS: frozenset[str] = frozenset([
-    "fed", "fomc", "powell", "rate", "rates", "yield", "treasury", "bond",
-    "inflation", "cpi", "pce", "gdp", "recession", "economic", "economy",
-    "market", "stock", "stocks", "s&p", "nasdaq", "dow", "equity", "equities",
-    "earnings", "profit", "revenue", "guidance", "outlook",
-    "oil", "crude", "energy", "commodity", "commodities", "gold",
-    "dollar", "euro", "yen", "currency", "forex",
-    "china", "trade", "tariff", "sanction", "geopolit",
-    "bank", "credit", "debt", "deficit", "fiscal", "budget",
-    "war", "iran", "israel", "ukraine", "russia", "taiwan",
-    "tech", "nvidia", "ai", "semiconductor",
-    "job", "jobs", "unemployment", "payroll", "nonfarm",
-    "ipo", "merger", "acquisition", "bankruptcy", "default",
-    "hedge fund", "private equity", "wall street",
-])
-
-
-def _is_macro_relevant(title: str) -> bool:
-    """Return False if the headline is personal-finance/lifestyle content."""
-    lower = title.lower()
-    # Block if matches any personal-finance pattern
-    for pat in _BLOCKLIST_PATTERNS:
-        if pat.search(title):
-            return False
-    # Require at least one macro keyword
-    words = re.split(r"\W+", lower)
-    word_set = set(words)
-    for kw in _MACRO_KEYWORDS:
-        if " " in kw:  # multi-word phrase
-            if kw in lower:
-                return True
-        else:
-            if kw in word_set:
-                return True
-    return False
+MAX_TOTAL = 30
 
 
 def _parse_published(entry: Any) -> str | None:
@@ -134,7 +74,6 @@ def _clean_description(raw: str, max_chars: int = 300) -> str:
     """Strip HTML tags and collapse whitespace; return empty string if not useful."""
     text = re.sub(r"<[^>]+>", " ", raw)
     text = re.sub(r"\s+", " ", text).strip()
-    # Drop if it's just a media placeholder or too short to be useful
     if len(text) < 20:
         return ""
     return text[:max_chars]
@@ -163,17 +102,14 @@ def fetch_headlines() -> list[dict[str, str]]:
             title = (entry.get("title") or "").strip()
             if not title:
                 continue
-            # Google News appends " - Source Name"; strip it for cleaner titles
+
+            # Google News appends " - Source Name"; strip for cleaner titles
             for suffix in (f" - {source}", f" – {source}", f" | {source}",
                            " - Financial Times", " – Financial Times",
                            " - Reuters", " – Reuters"):
                 if title.endswith(suffix):
                     title = title[: -len(suffix)].strip()
                     break
-
-            # Trusted sources (Fed) are always relevant — skip noise filter
-            if source not in TRUSTED_SOURCES and not _is_macro_relevant(title):
-                continue
 
             title_key = title.lower()
             if title_key in seen_titles:
@@ -185,7 +121,7 @@ def fetch_headlines() -> list[dict[str, str]]:
 
             link = (entry.get("link") or "").strip()
 
-            # RSS description: first paragraph, strip HTML tags, cap at 300 chars
+            # RSS description: first paragraph, strip HTML, cap at 300 chars
             raw_desc = (
                 entry.get("summary")
                 or entry.get("description")
@@ -207,11 +143,7 @@ def fetch_headlines() -> list[dict[str, str]]:
 
         print(f"  {source}: {count} headlines")
 
-    # Prefer most recent when trimming
-    def sort_key(h: dict[str, str]) -> str:
-        return h.get("published") or ""
-
-    headlines.sort(key=sort_key, reverse=True)
+    headlines.sort(key=lambda h: h.get("published") or "", reverse=True)
     return headlines[:MAX_TOTAL]
 
 
