@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-07-14T08:17:54.105701+00:00",
+  "timestamp": "2026-07-14T08:42:08.051960+00:00",
   "risk_score": 79,
   "risk_level": "high",
   "ml_probability": 0.6091,
@@ -13,6 +13,6 @@
   ],
   "news_analysis": "今日共纳入 23 条财经标题，主导主题为：地缘政治/能源冲击、利率/央行政策不确定性、信用/银行体系压力、波动率/市场抛售。代表性标题：Morning Bid: Fed in the spotlight as Warsh faces Congress；China's exports ride AI boom as domestic economy struggles；The U.S. is maxing out its strategic oil reserves as Trump vows to control the Strait of Hormuz。新闻面偏风险偏好压制，对模型高概率形成共振。",
   "recommendation": "建议降低新增风险暴露、检查对冲覆盖与杠杆；对高 beta 与流动性较差资产提高减仓优先级，并跟踪利率决议/地缘进展的日内冲击。",
-  "reasoning": "本地规则引擎：score = ML×100 (60.9) + 新闻主题调整 (+18.0) → 79。主题命中：地缘政治/能源冲击、利率/央行政策不确定性、信用/银行体系压力、波动率/市场抛售；缓和词命中 0。provider=local（无需 API）。",
-  "provider": "local"
+  "reasoning": "[openai 调用失败，已回退 local] OpenAI HTTP 429: {\n    \"error\": {\n        \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.\",\n        \"type\": \"insufficient_quota\",\n        \"param\": null,\n        \"code\": \"insufficient_quota\"\n    }\n}\n\n本地规则引擎：score = ML×100 (60.9) + 新闻主题调整 (+18.0) → 79。主题命中：地缘政治/能源冲击、利率/央行政策不确定性、信用/银行体系压力、波动率/市场抛售；缓和词命中 0。provider=local（无需 API）。",
+  "provider": "local(fallback_from_openai)"
 }

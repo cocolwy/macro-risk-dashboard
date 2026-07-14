@@ -10,7 +10,7 @@
     },
     "vix": {
       "level": "ok",
-      "message": "Normal: 17.3"
+      "message": "Normal: 17.2"
     },
     "absorption_ratio": {
       "level": "warning",
@@ -21,7 +21,7 @@
       "message": "Normal: 9.2"
     }
   },
-  "last_updated": "2026-07-14T08:32:46.427682",
+  "last_updated": "2026-07-14T08:42:04.501157",
   "indicators_available": [
     "term_spread",
     "credit_spread",
