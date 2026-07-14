@@ -41,7 +41,6 @@ jobs:
       - name: Run agent pipeline
         continue-on-error: true
         env:
-          # If OPENAI_API_KEY secret exists → ChatGPT; otherwise local rules
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           OPENAI_MODEL: gpt-4o-mini
         run: |
@@ -78,8 +77,7 @@ jobs:
           danger = [k for k, v in alerts.items() if v["level"] == "danger"]
           warning = [k for k, v in alerts.items() if v["level"] == "warning"]
 
-          out = os.environ["GITHUB_OUTPUT"]
-          with open(out, "a", encoding="utf-8") as fh:
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as fh:
               if danger:
                   msgs = "  |  ".join(f"🔴 {k}: {alerts[k]['message']}" for k in danger)
                   fh.write("has_danger=true\n")
@@ -90,12 +88,22 @@ jobs:
                   fh.write(f"warning_msg={msgs}\n")
           PY
 
-      # Skip mail entirely when ALERT_EMAIL_TO is not configured (avoids "to must be specified")
+      # secrets cannot be referenced in `if:` — probe via env instead
+      - name: Check email secrets
+        id: email
+        env:
+          ALERT_EMAIL_TO: ${{ secrets.ALERT_EMAIL_TO }}
+          ALERT_EMAIL_USER: ${{ secrets.ALERT_EMAIL_USER }}
+        run: |
+          if [ -n "$ALERT_EMAIL_TO" ] && [ -n "$ALERT_EMAIL_USER" ]; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo "Email alerts skipped (ALERT_EMAIL_TO / ALERT_EMAIL_USER not set)"
+          fi
+
       - name: Send email notification (danger)
-        if: >-
-          steps.check_alerts.outputs.has_danger == 'true'
-          && secrets.ALERT_EMAIL_TO != ''
-          && secrets.ALERT_EMAIL_USER != ''
+        if: steps.check_alerts.outputs.has_danger == 'true' && steps.email.outputs.enabled == 'true'
         continue-on-error: true
         uses: dawidd6/action-send-mail@v3
         with:
@@ -114,11 +122,7 @@ jobs:
           from: Macro Risk Bot <${{ secrets.ALERT_EMAIL_USER }}>
 
       - name: Send email notification (warning)
-        if: >-
-          steps.check_alerts.outputs.has_warning == 'true'
-          && steps.check_alerts.outputs.has_danger != 'true'
-          && secrets.ALERT_EMAIL_TO != ''
-          && secrets.ALERT_EMAIL_USER != ''
+        if: steps.check_alerts.outputs.has_warning == 'true' && steps.check_alerts.outputs.has_danger != 'true' && steps.email.outputs.enabled == 'true'
         continue-on-error: true
         uses: dawidd6/action-send-mail@v3
         with:
