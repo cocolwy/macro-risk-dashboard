@@ -1,8 +1,11 @@
 import { useState, useEffect, useMemo, Component, type ReactNode } from 'react';
 import {
-  LineChart, Line, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer,
-  BarChart, Bar, Cell, CartesianGrid, ReferenceLine,
+  BarChart, Bar, Cell, CartesianGrid,
+  XAxis, YAxis, Tooltip,
+  ResponsiveContainer,
 } from 'recharts';
+import { StackedProbSPChart } from './components/StackedProbSPChart';
+import { mergeExperimentTimeline, downsample } from './utils/chart';
 
 class ErrorBoundary extends Component<{ children: ReactNode }, { error: string | null }> {
   state = { error: null as string | null };
@@ -25,11 +28,13 @@ interface PracticalMetrics {
 }
 interface ThresholdRow { threshold: number; precision: number; recall: number; f1: number; alert_days: number; total_days: number; alert_pct: number; }
 interface EventBacktest { name: string; event_date: string; max_probability: number; lead_days: number | null; first_alert_date: string | null; }
+interface SP500Point { date: string; sp500: number; }
 interface ExperimentData {
   name: string; auc: number;
   threshold_analysis: ThresholdRow[];
   events_backtest: EventBacktest[];
   probability_timeline: { date: string; probability: number }[];
+  sp500_timeline?: SP500Point[];
   practical_metrics?: PracticalMetrics;
 }
 interface PairwiseConfig { id: string; label: string; variable: string; baseline: string; challenger: string; method_note: string; }
@@ -98,28 +103,27 @@ function OverviewTable({ experiments }: { experiments: ExperimentData[] }) {
 function ProbTimeline({ baseline, challenger, baseColor, challColor }: {
   baseline: ExperimentData; challenger: ExperimentData; baseColor: string; challColor: string;
 }) {
-  const data = useMemo(() => {
-    const challMap = new Map(challenger.probability_timeline.map(d => [d.date, d.probability]));
-    return baseline.probability_timeline
-      .filter((_, i) => i % 3 === 0)
-      .map(d => ({ date: d.date, [baseline.name]: d.probability, [challenger.name]: challMap.get(d.date) }));
-  }, [baseline, challenger]);
+  const sp500Timeline = baseline.sp500_timeline ?? challenger.sp500_timeline ?? [];
 
-  const baseRate = baseline.practical_metrics?.base_rate ?? 0.12;
+  const chartData = useMemo(() => {
+    const full = mergeExperimentTimeline([baseline, challenger], sp500Timeline);
+    return downsample(full);
+  }, [baseline, challenger, sp500Timeline]);
+
+  const series = useMemo(() => [
+    { dataKey: 'prob_0', name: baseline.name, color: baseColor },
+    { dataKey: 'prob_1', name: challenger.name, color: challColor },
+  ], [baseline.name, challenger.name, baseColor, challColor]);
 
   return (
-    <ResponsiveContainer width="100%" height={260}>
-      <LineChart data={data}>
-        <CartesianGrid strokeDasharray="3 3" stroke="rgba(241,216,226,0.6)" />
-        <XAxis dataKey="date" tick={{ fontSize: 10, fill: '#8a7882' }} tickFormatter={d => d?.slice(5, 10)} interval={Math.floor(data.length / 8)} minTickGap={50} />
-        <YAxis domain={[0, 1]} tick={{ fontSize: 10, fill: '#8a7882' }} tickFormatter={v => `${(v * 100).toFixed(0)}%`} />
-        <Tooltip formatter={(v: number) => `${(v * 100).toFixed(1)}%`} />
-        <Legend wrapperStyle={{ fontSize: 12 }} />
-        <ReferenceLine y={baseRate} stroke="#999" strokeDasharray="5 5" label={{ value: `base rate ${(baseRate * 100).toFixed(0)}%`, fontSize: 10, fill: '#999' }} />
-        <Line type="monotone" dataKey={baseline.name} stroke={baseColor} dot={false} strokeWidth={1.5} isAnimationActive={false} />
-        <Line type="monotone" dataKey={challenger.name} stroke={challColor} dot={false} strokeWidth={1.5} isAnimationActive={false} />
-      </LineChart>
-    </ResponsiveContainer>
+    <StackedProbSPChart
+      data={chartData}
+      series={series}
+      probHeight={220}
+      spHeight={110}
+      showLegend
+      showThreshold
+    />
   );
 }
 

@@ -524,6 +524,7 @@ def build_comparison_metrics(y_test, y_prob, all_probs, X, sp500, model_name, ke
             })
 
     prob_timeline = [{"date": d, "probability": round(float(p), 4)} for d, p in zip(X.index, all_probs)]
+    sp500_timeline = [{"date": d, "sp500": round(float(v), 2)} for d, v in zip(sp500.index, sp500.values) if np.isfinite(v)]
     latest = float(all_probs[-1])
 
     return {
@@ -534,6 +535,7 @@ def build_comparison_metrics(y_test, y_prob, all_probs, X, sp500, model_name, ke
         "threshold_analysis": threshold_analysis,
         "events_backtest": events_backtest,
         "probability_timeline": prob_timeline,
+        "sp500_timeline": sp500_timeline,
     }
 
 
