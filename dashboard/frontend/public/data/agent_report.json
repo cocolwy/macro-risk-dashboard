@@ -1,18 +1,18 @@
 {
-  "timestamp": "2026-07-14T12:22:20.410119+00:00",
-  "risk_score": 79,
+  "timestamp": "2026-07-14T12:27:22.706102+00:00",
+  "risk_score": 62,
   "risk_level": "high",
   "ml_probability": 0.6091,
   "key_risks": [
-    "地缘政治/能源冲击（标题命中 4）",
-    "利率/央行政策不确定性（标题命中 4）",
-    "盈利下修/财报冲击（标题命中 3）",
-    "信用/银行体系压力（标题命中 2）",
-    "ML 未来20日>5%回撤概率 60.9%",
-    "模型信号处于 elevated/high 区间，需提高仓位审视频率"
+    "美联储7月加息预期升温",
+    "IBM财报暴雷,科技股承压",
+    "地缘政治风险(霍尔木兹海峡/伊朗局势推升油价)",
+    "科技股外部预警信号(海外市场)",
+    "芯片股走势动荡",
+    "银行股财报强劲但股价下跌,显示获利了结/预期落差"
   ],
-  "news_analysis": "今日共纳入 24 条财经标题，主导主题为：地缘政治/能源冲击、利率/央行政策不确定性、盈利下修/财报冲击、信用/银行体系压力。代表性标题：Warren Buffett excludes Gates Foundation from his annual donations of Berkshire stock；I’m 45 and want to buy an apartment. How can I turn $1,000 into $250,000?；Americans are getting better at paying off their $1.25 trillion credit-card debt burden。新闻面偏风险偏好压制，对模型高概率形成共振。",
-  "recommendation": "建议降低新增风险暴露、检查对冲覆盖与杠杆；对高 beta 与流动性较差资产提高减仓优先级，并跟踪利率决议/地缘进展的日内冲击。",
-  "reasoning": "[anthropic 调用失败，已回退 local] Error code: 404 - {'type': 'error', 'error': {'type': 'not_found_error', 'message': 'model: claude-sonnet-4-20250514'}, 'request_id': 'req_011Cd1wb2UDedytEqSJ7LKqY'}\n本地规则引擎：score = ML×100 (60.9) + 新闻主题调整 (+18.0) → 79。主题命中：地缘政治/能源冲击、利率/央行政策不确定性、盈利下修/财报冲击、信用/银行体系压力；缓和词命中 0。provider=local（无需 API）。",
-  "provider": "local(fallback_from_anthropic)"
+  "news_analysis": "今日新闻显示市场情绪偏谨慎:美联储官员释放7月可能加息的信号,叠加特朗普对霍尔木兹海峡征收关税的威胁推高油价,地缘政治与货币政策的双重不确定性上升。同时IBM财报大幅不及预期导致股价重挫,银行股虽财报强劲但股价下跌,科技股出现来自海外市场的预警信号,显示市场对增长质量和估值的担忧正在累积。",
+  "recommendation": "建议风险管理者适度提升对冲仓位(如买入保护性看跌期权或VIX相关工具),降低高估值科技股和芯片股的集中度敞口,密切关注美联储7月议息会议前的通胀数据及官员讲话,同时对地缘政治(中东局势)相关的油价冲击保持流动性缓冲。",
+  "reasoning": "ML模型给出60.9%的较高崩盘概率,与当前新闻背景形成共振:加息预期升温压制风险资产估值,IBM等权重股财报暴雷引发对科技板块盈利质量的担忧,叠加中东地缘政治溢价推高油价,均为市场增加下行压力的催化因素。尽管消费信贷改善、银行盈利整体尚可等偏正面因素部分对冲风险,但综合考虑ML信号强度与新闻中多重风险因素叠加,判定当前风险等级为'high'。",
+  "provider": "anthropic"
 }
