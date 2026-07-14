@@ -28,6 +28,15 @@ export const SITE_NAV: Record<PageId, NavItem> = {
     level: 1,
     metrics: '107→459 stocks · 5 phases',
   },
+  ch3: {
+    id: 'ch3',
+    hash: 'ch3',
+    title: 'News Agent',
+    subtitle: 'RSS 新闻 + ML 概率 · Claude 宏观风险研报',
+    level: 1,
+    badge: 'NEW',
+    metrics: 'risk score · news synthesis',
+  },
   risk: {
     id: 'risk',
     hash: 'risk',
@@ -62,16 +71,6 @@ export const SITE_NAV: Record<PageId, NavItem> = {
     level: 3,
     parent: 'risk',
     metrics: 'F1 / Brier / Lift analysis',
-  },
-  ch3: {
-    id: 'ch3',
-    hash: 'ch3',
-    title: 'Ch.3 News Agent',
-    subtitle: 'RSS 新闻 + ML 概率 · Claude 宏观风险研报',
-    level: 3,
-    parent: 'risk',
-    badge: 'NEW',
-    metrics: 'risk score · news synthesis',
   },
 };
 
@@ -115,7 +114,7 @@ export const HOME_SECTIONS = [
   {
     level: 1,
     label: '一级 · 量化整体架构',
-    items: ['pipeline'] as PageId[],
+    items: ['pipeline', 'ch3'] as PageId[],
   },
   {
     level: 2,
@@ -126,6 +125,6 @@ export const HOME_SECTIONS = [
     level: 3,
     label: '三级 · 风控因子探索',
     parent: 'risk' as PageId,
-    items: ['ch1', 'ch2', 'ch2_1', 'ch3'] as PageId[],
+    items: ['ch1', 'ch2', 'ch2_1'] as PageId[],
   },
 ];

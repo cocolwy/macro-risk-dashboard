@@ -112,11 +112,11 @@ function AgentLabInner() {
     <div className="lab-container">
       <header className="lab-header">
         <div>
-          <h1>Ch.3 News Agent</h1>
+          <h1>News Agent</h1>
           <p className="lab-subtitle">RSS 新闻 + ML 概率 → Claude 宏观风险研报</p>
         </div>
         <div className="lab-model-badge">
-          <span className="lab-badge-version">L3</span>
+          <span className="lab-badge-version">L1</span>
           <span className="lab-badge-auc" style={{ color: level.color }}>
             Score {report.risk_score} · {level.label}
           </span>
