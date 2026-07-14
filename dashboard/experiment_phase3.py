@@ -424,9 +424,43 @@ def main():
         step4_fi = {}
         step4_prac = {}
 
-        run_and_log("LR Ext", X_ext, y_ext, train_lr_no_balance, step4_exps, step4_fi, step4_prac)
-        run_and_log("GBDT Ext", X_ext, y_ext, train_gbdt_no_balance, step4_exps, step4_fi, step4_prac)
-        run_and_log("RF Ext", X_ext, y_ext, train_rf_no_balance, step4_exps, step4_fi, step4_prac)
+        def run_ext(name, X, y, train_fn):
+            print(f"  Training {name}...")
+            result, test_auc, imp, _, practical = run_experiment(
+                name, X, y, sp500_ext, train_fn, events=EXTENDED_KEY_EVENTS,
+            )
+            step4_exps.append(result)
+            step4_prac[name] = practical
+            if imp:
+                step4_fi[name] = imp
+            print(f"    AUC={test_auc:.3f}  F1={practical['best_f1']:.3f}  "
+                  f"Brier={practical['brier_score']:.4f}")
+
+        run_ext("LR Ext", X_ext, y_ext, train_lr_no_balance)
+        run_ext("GBDT Ext", X_ext, y_ext, train_gbdt_no_balance)
+        run_ext("RF Ext", X_ext, y_ext, train_rf_no_balance)
+
+        print("  Building Ext+Regime features...")
+        regime_df_ext = fetch_regime_data(start='2005-01-01')
+        target_ext_series = compute_target(sp500_ext)
+
+        def prep_ext(features):
+            combined = features.copy()
+            combined['target'] = target_ext_series
+            combined = combined.dropna().clip(-10, 10)
+            return combined.drop('target', axis=1), combined['target']
+
+        feats_r9 = build_features_regime(df_ext, regime_df_ext)
+        X_r9, y_r9 = prep_ext(feats_r9)
+        feats_r2 = build_features_regime_minimal(df_ext, regime_df_ext)
+        X_r2, y_r2 = prep_ext(feats_r2)
+        print(f"  Ext+Regime9: {len(X_r9)} samples, {X_r9.shape[1]} features")
+        print(f"  Ext+Regime2: {len(X_r2)} samples, {X_r2.shape[1]} features")
+        print(f"    New regime cols: {[c for c in X_r9.columns if c not in X_ext.columns]}")
+
+        run_ext("LR Ext+Regime9", X_r9, y_r9, train_lr_no_balance)
+        run_ext("LR Ext+Regime2", X_r2, y_r2, train_lr_no_balance)
+        run_ext("GBDT Ext+Regime2", X_r2, y_r2, train_gbdt_no_balance)
 
         step4_pairwise = [
             {
@@ -452,6 +486,30 @@ def main():
                 "baseline": "LR Ext",
                 "challenger": "GBDT Ext",
                 "method_note": "在跨越多个经济周期的长期数据上，非线性模型是否终于超过线性模型？",
+            },
+            {
+                "id": "regime_ext_r9",
+                "label": "Step 2d: Regime9 × 长期（LR）",
+                "variable": "LR Ext Slim vs LR Ext+Regime9 — 2005+",
+                "baseline": "LR Ext",
+                "challenger": "LR Ext+Regime9",
+                "method_note": "短期上 Regime9 是噪声（F1 0.588→0.208）。多周期后若 F1 上升，说明 regime 叙事成立，瓶颈是样本周期数；若仍下降，说明特征本身有害。",
+            },
+            {
+                "id": "regime_ext_r2",
+                "label": "Step 2e: Regime2 × 长期（LR）",
+                "variable": "LR Ext Slim vs LR Ext+Regime2 — 2005+",
+                "baseline": "LR Ext",
+                "challenger": "LR Ext+Regime2",
+                "method_note": "只加 curve_inverted + fed_hiking。短期已接近 baseline；长期多周期下是否终于带来增量？",
+            },
+            {
+                "id": "regime_ext_gbdt",
+                "label": "Step 2f: Regime2 × 长期（GBDT）",
+                "variable": "GBDT Ext vs GBDT Ext+Regime2 — 2005+",
+                "baseline": "GBDT Ext",
+                "challenger": "GBDT Ext+Regime2",
+                "method_note": "树模型可学「倒挂 × VIX 上涨 → 高危」交互。长期数据上 GBDT 能否利用 regime 条件？",
             },
         ]
 

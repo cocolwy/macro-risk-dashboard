@@ -227,6 +227,36 @@ function Phase3LabInner() {
 
   const { experiments, pairwise, feature_importances, summary, practical_summary } = data;
 
+  const f1Of = (name: string) =>
+    experiments.find(e => e.name === name)?.practical_metrics?.best_f1;
+
+  const regimeExtNames = ['LR Ext+Regime9', 'LR Ext+Regime2', 'GBDT Ext+Regime2'] as const;
+  const regimeExtExps = regimeExtNames
+    .map(n => experiments.find(e => e.name === n))
+    .filter((e): e is ExperimentData => !!e && !!e.practical_metrics);
+  const lrExtF1 = f1Of('LR Ext');
+  const bestRegimeExt = regimeExtExps.length
+    ? regimeExtExps.reduce((a, b) =>
+        (a.practical_metrics!.best_f1 >= b.practical_metrics!.best_f1) ? a : b)
+    : null;
+  let regimeExtVerdict = '实验未跑 · 运行 experiment_regime_ext.py 后自动填入';
+  let regimeExtColor = '#8a7882';
+  if (bestRegimeExt && lrExtF1 != null) {
+    const f1 = bestRegimeExt.practical_metrics!.best_f1;
+    const r9 = f1Of('LR Ext+Regime9');
+    const r2 = f1Of('LR Ext+Regime2');
+    if (f1 > lrExtF1 + 0.01) {
+      regimeExtVerdict = `相对 LR Ext(${lrExtF1.toFixed(3)}) 有增量 · 多周期下 regime 信号成立`;
+      regimeExtColor = '#16a34a';
+    } else if (r9 != null && r9 < lrExtF1 - 0.05) {
+      regimeExtVerdict = `Regime9=${r9.toFixed(3)} / Regime2=${r2?.toFixed(3) ?? '—'} vs Ext=${lrExtF1.toFixed(3)} · 长样本仍无增量（或仍有害）`;
+      regimeExtColor = '#dc2626';
+    } else {
+      regimeExtVerdict = `最佳 ${bestRegimeExt.name} F1=${f1.toFixed(3)} vs LR Ext ${lrExtF1.toFixed(3)} · 多周期仍无明显增量`;
+      regimeExtColor = '#b45309';
+    }
+  }
+
   return (
     <div className="lab-container">
       <header className="lab-header">
@@ -280,7 +310,9 @@ function Phase3LabInner() {
       <section className="lab-card">
         <div className="ab-header">
           <h2>实验摘要</h2>
-          <span className="ab-badge" style={{ background: '#eff6ff', color: '#1e40af', border: '1px solid #bfdbfe' }}>4 STEPS</span>
+          <span className="ab-badge" style={{ background: '#eff6ff', color: '#1e40af', border: '1px solid #bfdbfe' }}>
+            {regimeExtExps.length > 0 ? '5 STEPS' : '4 STEPS'}
+          </span>
         </div>
         <div className="lab-table-wrap">
           <table className="lab-table">
@@ -302,6 +334,15 @@ function Phase3LabInner() {
                 <td className="lab-td-mono">0.529</td>
                 <td style={{ fontSize: 12, color: '#dc2626' }}>9 特征严重有害(0.208) · 2 特征仍不如 baseline</td>
               </tr>
+              <tr style={{ background: 'rgba(58,130,214,0.06)' }}>
+                <td style={{ fontWeight: 600 }}>2d · Regime × 长期</td>
+                <td style={{ fontSize: 12 }}>2005+ 多周期上重测 Regime9 / Regime2（LR + GBDT）· 验证「短样本噪声」假说</td>
+                <td style={{ fontWeight: 600 }}>{bestRegimeExt?.name ?? '—'}</td>
+                <td className="lab-td-mono" style={{ fontWeight: 700, color: regimeExtColor }}>
+                  {bestRegimeExt?.practical_metrics?.best_f1?.toFixed(3) ?? '—'}
+                </td>
+                <td style={{ fontSize: 12, color: regimeExtColor }}>{regimeExtVerdict}</td>
+              </tr>
               <tr>
                 <td style={{ fontWeight: 600 }}>3 · 事件日历</td>
                 <td style={{ fontSize: 12 }}>FOMC / CPI / NFP 前后天数 + 窗口标记 · 含 KitchenSink 全组合</td>
@@ -321,7 +362,42 @@ function Phase3LabInner() {
         </div>
         <div style={{ marginTop: 12, padding: '10px 12px', background: '#f0fdf4', borderRadius: 6, border: '1px solid #bbf7d0' }}>
           <p style={{ margin: 0, fontSize: 13, fontWeight: 600, color: '#166534' }}>
-            总结：LR Slim (10特征, F1=0.588) 至今未被超越。加特征 = 加噪声，换模型 = 加过拟合，加数据 = 加非平稳性。
+            总结：LR Slim (10特征, F1=0.625) 至今未被超越。加特征 = 加噪声，换模型 = 加过拟合，加数据 = 加非平稳性。
+          </p>
+        </div>
+      </section>
+
+      {/* Audit findings */}
+      <section className="lab-card">
+        <div className="ab-header">
+          <h2>审计发现</h2>
+          <span className="ab-badge" style={{ background: '#fef3c7', color: '#92400e', border: '1px solid #fcd34d' }}>AUDIT</span>
+        </div>
+        <div style={{ fontSize: 13, lineHeight: 1.8 }}>
+          <p style={{ margin: '0 0 8px', fontWeight: 600 }}>独立审计对 Step 2d (Regime × 长期) 实验的核查结果：</p>
+          <div style={{ display: 'grid', gap: 8 }}>
+            <div style={{ padding: '8px 12px', background: '#fef2f2', borderRadius: 6, border: '1px solid #fecaca' }}>
+              <strong style={{ color: '#991b1b' }}>BUG-1 已修复</strong>
+              <span style={{ fontSize: 12, color: '#6b5f63', marginLeft: 8 }}>
+                Step 4 baseline (LR Ext 等) 的 sp500_timeline 误用短期数据(1001点)，已改为正确的长期数据(5414点)
+              </span>
+            </div>
+            <div style={{ padding: '8px 12px', background: '#fef2f2', borderRadius: 6, border: '1px solid #fecaca' }}>
+              <strong style={{ color: '#991b1b' }}>BUG-2 已修复</strong>
+              <span style={{ fontSize: 12, color: '#6b5f63', marginLeft: 8 }}>
+                cpi_accelerating 原用 diff(1) 导致 98.5% 为零（月度数据日频 ffill 后相邻日相同），已改为 diff(21)
+              </span>
+            </div>
+            <div style={{ padding: '8px 12px', background: '#fffbeb', borderRadius: 6, border: '1px solid #fcd34d' }}>
+              <strong style={{ color: '#92400e' }}>DESIGN CAVEAT</strong>
+              <span style={{ fontSize: 12, color: '#6b5f63', marginLeft: 8 }}>
+                Regime 特征存在严重的 train/test 分布偏移（curve_inverted: 6.5%→34.4%, cpi_above_3: 21.7%→62.4%）。
+                「长周期下 Regime 仍无用」应读作「当前二值特征设计 + 固定 70/30 split 下无增量」，不否定 regime 假说本身
+              </span>
+            </div>
+          </div>
+          <p style={{ margin: '8px 0 0', fontSize: 12, color: '#8a7882' }}>
+            后续改进方向：z-score 化 regime 特征 · expanding window 评估 · 显式 regime-switching 模型
           </p>
         </div>
       </section>
@@ -374,6 +450,19 @@ function Phase3LabInner() {
             <div className="roadmap-step-body">
               <div className="roadmap-step-title">Step 2 · Regime 特征</div>
               <div className="roadmap-step-desc">9 特征全量反而有害 · 2 特征精简版 F1=0.529 · 结论：当前数据周期单一，regime 信号是噪声</div>
+            </div>
+          </div>
+          <div className={`roadmap-item ${regimeExtExps.length > 0 ? 'done' : 'pending'}`}>
+            {regimeExtExps.length > 0
+              ? <span className="roadmap-check">&#10003;</span>
+              : <span className="roadmap-dot" />}
+            <div className="roadmap-step-body">
+              <div className="roadmap-step-title">Step 2d · Regime × 长期 (2005+)</div>
+              <div className="roadmap-step-desc">
+                {regimeExtExps.length > 0
+                  ? regimeExtVerdict
+                  : '待跑：在多周期数据上重测 Regime9/2，验证短样本「噪声」结论是否成立'}
+              </div>
             </div>
           </div>
           <div className="roadmap-item done">

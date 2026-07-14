@@ -122,9 +122,12 @@ def build_features_slim(df: pd.DataFrame) -> pd.DataFrame:
     return features
 
 
-def fetch_regime_data() -> pd.DataFrame:
-    """Fetch Fed Funds Rate and CPI from FRED for regime features."""
-    start = '2016-01-01'
+def fetch_regime_data(start: str = '2005-01-01') -> pd.DataFrame:
+    """Fetch Fed Funds Rate and CPI from FRED for regime features.
+
+    Default start=2005 so the same series covers both short (~2022+) and
+    extended (2005+) experiments. Pass a later start only if needed.
+    """
     regime = pd.DataFrame()
 
     try:
@@ -190,7 +193,7 @@ def build_features_regime(df: pd.DataFrame, regime_df: pd.DataFrame = None) -> p
         cpi = cpi_series.reindex(df_idx, method='ffill').fillna(method='bfill').fillna(0)
         cpi.index = df.index
         features['cpi_yoy'] = cpi
-        features['cpi_accelerating'] = (cpi.diff(1).fillna(0) > 0).astype(float)
+        features['cpi_accelerating'] = (cpi.diff(21).fillna(0) > 0).astype(float)
         features['cpi_above_3'] = (cpi > 3.0).astype(float)
 
     return features
