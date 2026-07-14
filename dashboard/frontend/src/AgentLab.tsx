@@ -35,6 +35,7 @@ interface AgentReport {
   news_analysis: string;
   recommendation: string;
   reasoning: string;
+  provider?: string;
 }
 
 const LEVEL_META: Record<string, { label: string; color: string; bg: string; border: string }> = {
@@ -113,10 +114,10 @@ function AgentLabInner() {
       <header className="lab-header">
         <div>
           <h1>News Agent</h1>
-          <p className="lab-subtitle">RSS 新闻 + ML 概率 → Claude 宏观风险研报</p>
+          <p className="lab-subtitle">RSS 新闻 + ML 概率 → 本地规则引擎宏观风险研报</p>
         </div>
         <div className="lab-model-badge">
-          <span className="lab-badge-version">L1</span>
+          <span className="lab-badge-version">L1 · {report.provider || 'local'}</span>
           <span className="lab-badge-auc" style={{ color: level.color }}>
             Score {report.risk_score} · {level.label}
           </span>
@@ -173,7 +174,7 @@ function AgentLabInner() {
             <div className="agent-compare-bar">
               <div className="agent-compare-fill" style={{ width: `${agentAsPct}%`, background: level.color }} />
             </div>
-            <div className="agent-compare-hint">Claude · news + ML synthesis</div>
+            <div className="agent-compare-hint">Local synthesizer · news + ML</div>
           </div>
         </div>
       </section>

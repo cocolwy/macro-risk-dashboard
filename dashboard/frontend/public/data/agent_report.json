@@ -1,14 +1,18 @@
 {
-  "timestamp": "2026-07-14T06:15:03.673908+00:00",
-  "risk_score": 61,
-  "risk_level": "high",
-  "ml_probability": 0.6092,
+  "timestamp": "2026-07-14T08:04:09.759905+00:00",
+  "risk_score": 90,
+  "risk_level": "critical",
+  "ml_probability": 0.7249,
   "key_risks": [
-    "ML 模型当前大跌概率偏高",
-    "需结合利率与地缘政治新闻持续跟踪",
-    "流动性与波动率放大风险"
+    "地缘政治/能源冲击（标题命中 4）",
+    "利率/央行政策不确定性（标题命中 4）",
+    "信用/银行体系压力（标题命中 1）",
+    "波动率/市场抛售（标题命中 1）",
+    "ML 未来20日>5%回撤概率 72.5%",
+    "模型信号处于 elevated/high 区间，需提高仓位审视频率"
   ],
-  "news_analysis": "本地尚未配置 ANTHROPIC_API_KEY，以下为基于 ML 概率的占位研报。模型给出的未来20日>5%回撤概率为 60.9%。代表性标题：Morning Bid: Fed in the spotlight as Warsh faces Congress - Reuters；China's exports ride AI boom as domestic economy struggles - Reuters；The U.S. is maxing out its strategic oil reserves as Trump vows to control the Strait of Hormuz。",
-  "recommendation": "等待 GitHub Actions 配置 ANTHROPIC_API_KEY 后由 Claude Agent 生成正式研报；当前仅供前端联调。",
-  "reasoning": "占位逻辑：risk_score ≈ ML 概率×100 = 61，risk_level=high。正式环境由 agent_pipeline.py 调用 Claude 覆盖本文件。"
+  "news_analysis": "今日共纳入 23 条财经标题，主导主题为：地缘政治/能源冲击、利率/央行政策不确定性、信用/银行体系压力、波动率/市场抛售。代表性标题：Morning Bid: Fed in the spotlight as Warsh faces Congress；China's exports ride AI boom as domestic economy struggles；The U.S. is maxing out its strategic oil reserves as Trump vows to control the Strait of Hormuz。新闻面偏风险偏好压制，对模型高概率形成共振。",
+  "recommendation": "建议降低新增风险暴露、检查对冲覆盖与杠杆；对高 beta 与流动性较差资产提高减仓优先级，并跟踪利率决议/地缘进展的日内冲击。",
+  "reasoning": "本地规则引擎：score = ML×100 (72.5) + 新闻主题调整 (+18.0) → 90。主题命中：地缘政治/能源冲击、利率/央行政策不确定性、信用/银行体系压力、波动率/市场抛售；缓和词命中 0。provider=local（无需 API）。",
+  "provider": "local"
 }

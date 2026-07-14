@@ -32,7 +32,7 @@ export const SITE_NAV: Record<PageId, NavItem> = {
     id: 'ch3',
     hash: 'ch3',
     title: 'News Agent',
-    subtitle: 'RSS 新闻 + ML 概率 · Claude 宏观风险研报',
+    subtitle: 'RSS 新闻 + ML 概率 · 本地规则引擎研报',
     level: 1,
     badge: 'NEW',
     metrics: 'risk score · news synthesis',
