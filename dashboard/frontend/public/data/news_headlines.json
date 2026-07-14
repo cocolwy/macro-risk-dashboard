@@ -1,11 +1,83 @@
 {
-  "fetched_at": "2026-07-14T08:42:07.711464+00:00",
+  "fetched_at": "2026-07-14T12:18:13.702161+00:00",
   "headlines": [
+    {
+      "title": "Warren Buffett excludes Gates Foundation from his annual donations of Berkshire stock",
+      "source": "CNBC",
+      "published": "2026-07-14T12:16:42+00:00",
+      "url": "https://www.cnbc.com/2026/07/14/warren-buffett-excludes-gates-foundation-from-his-annual-donations-of-berkshire-stock.html"
+    },
+    {
+      "title": "I’m 45 and want to buy an apartment. How can I turn $1,000 into $250,000?",
+      "source": "MarketWatch",
+      "published": "2026-07-14T12:15:00+00:00",
+      "url": "https://www.marketwatch.com/story/im-45-and-want-to-buy-an-apartment-how-can-i-turn-1-000-into-250-000-2fd4b324?mod=mw_rss_topstories"
+    },
+    {
+      "title": "Americans are getting better at paying off their $1.25 trillion credit-card debt burden",
+      "source": "MarketWatch",
+      "published": "2026-07-14T12:15:00+00:00",
+      "url": "https://www.marketwatch.com/story/americans-are-getting-better-at-paying-off-their-1-25-trillion-credit-card-debt-burden-a83bea87?mod=mw_rss_topstories"
+    },
+    {
+      "title": "AI vs. robo advisers: How they stack up against each other —and human financial advisers",
+      "source": "MarketWatch",
+      "published": "2026-07-14T12:00:00+00:00",
+      "url": "https://www.marketwatch.com/story/ai-vs-robo-advisers-how-they-stack-up-against-each-other-and-human-financial-advisers-3132bb3d?mod=mw_rss_topstories"
+    },
+    {
+      "title": "Bank of America’s stock falls despite blockbuster earnings report",
+      "source": "MarketWatch",
+      "published": "2026-07-14T11:55:00+00:00",
+      "url": "https://www.marketwatch.com/story/bank-of-america-stock-falls-despite-earnings-beat-3d4db2b4?mod=mw_rss_topstories"
+    },
+    {
+      "title": "Lindsey Graham died from a rare heart condition. Here’s how to know if you’re at risk.",
+      "source": "MarketWatch",
+      "published": "2026-07-14T11:53:00+00:00",
+      "url": "https://www.marketwatch.com/story/lindsey-graham-died-from-a-rare-heart-condition-heres-how-to-know-if-youre-at-risk-8ca5a618?mod=mw_rss_topstories"
+    },
+    {
+      "title": "Why SpaceX and Tesla are ‘value’ stocks, according to this fund manager",
+      "source": "MarketWatch",
+      "published": "2026-07-14T11:52:00+00:00",
+      "url": "https://www.marketwatch.com/story/why-spacex-and-tesla-are-value-stocks-according-to-this-fund-manager-5f59ff86?mod=mw_rss_topstories"
+    },
+    {
+      "title": "IBM’s stock dives toward worst day in nearly 40 years after the surprise release of an earnings miss",
+      "source": "MarketWatch",
+      "published": "2026-07-14T11:50:00+00:00",
+      "url": "https://www.marketwatch.com/story/ibms-stock-dives-toward-worst-day-in-nearly-40-years-after-the-surprise-release-of-an-earnings-miss-8519741e?mod=mw_rss_topstories"
+    },
+    {
+      "title": "Stocks making the biggest moves premarket: JPMorgan Chase, Bank of America, IBM, Apple & more",
+      "source": "CNBC",
+      "published": "2026-07-14T11:45:19+00:00",
+      "url": "https://www.cnbc.com/2026/07/14/stocks-making-the-biggest-moves-premarket-jpm-bac-ibm-aapl.html"
+    },
+    {
+      "title": "Another warning sign is flashing for tech stocks — and this one comes from outside the U.S.",
+      "source": "MarketWatch",
+      "published": "2026-07-14T11:40:00+00:00",
+      "url": "https://www.marketwatch.com/story/another-warning-sign-is-flashing-for-tech-stocks-and-this-one-comes-from-outside-the-u-s-d51d6bfd?mod=mw_rss_topstories"
+    },
+    {
+      "title": "Big banks poised to report booming revenue propelled by SpaceX IPO, Iran war volatility",
+      "source": "CNBC",
+      "published": "2026-07-14T09:18:28+00:00",
+      "url": "https://www.cnbc.com/2026/07/13/bank-earnings-jpmorgan-chase-goldman-sachs-bank-of-america.html"
+    },
     {
       "title": "Morning Bid: Fed in the spotlight as Warsh faces Congress",
       "source": "Reuters",
       "published": "2026-07-14T04:32:00+00:00",
       "url": "https://news.google.com/rss/articles/CBMihgFBVV95cUxNejNzVDJ0X1diZnVDa0dSRU1KQjN0YllPMTQxNThmVzdlaERWV0oxRGdvOUpBby02U2txQV8waXFUaUpGalhZSExKTnhJMXl1azZaaGtrY3J0SXpSUHMxa3NLZ2J1d0ZQSnlXazA0cTZ2Y21TYXU2dDltd3gybFF3Vk5JcGFKdw?oc=5"
+    },
+    {
+      "title": "Gold bounces from two-week low, markets await US inflation data",
+      "source": "Reuters",
+      "published": "2026-07-14T03:19:00+00:00",
+      "url": "https://news.google.com/rss/articles/CBMiowFBVV95cUxOVWR0RmE4MVpQTF82M1c5VDlkYjBXQU1KRWNNdjQ5N2RrRlpHM1B2dmowSk1WQV9MQUJyYzRiVHl3aVE1dmVHb0RMZG9mOWN6alJmcjdhX0tGSmh3R0FoNXZ0dVM0c1R0QnBnRUl4VVBidWRJdDNUb1QyUkFOWkloU2tVOUs0RnhwbEFZSS1MWlc3aHhIMTkwMmVKV1JaeWk0RF9j?oc=5"
     },
     {
       "title": "China's exports ride AI boom as domestic economy struggles",
@@ -14,22 +86,10 @@
       "url": "https://news.google.com/rss/articles/CBMinwFBVV95cUxNRGpqNHVtR2tXdDB5RnBUeHF0U2oyRDRMNnduQVM0eHBWOTVxalVjSGdOMXlFZGxNRUc2dW9fcUttclVoVTdKbk5rRUlVOEdqWHFQRzd5WllrZGI2dnhOVEJXRDU1eFhSVlAtZDk2UEFCRExBdEQxMEdhTENzdzVRVWpaVUhJU2l2RU1KT0xobmNyeGtPcEY1S3Exb3doaG8?oc=5"
     },
     {
-      "title": "The U.S. is maxing out its strategic oil reserves as Trump vows to control the Strait of Hormuz",
-      "source": "MarketWatch",
-      "published": "2026-07-14T02:30:00+00:00",
-      "url": "https://www.marketwatch.com/story/the-u-s-is-maxing-out-its-strategic-oil-reserves-as-trump-vows-to-control-the-strait-of-hormuz-b71f88a9?mod=mw_rss_topstories"
-    },
-    {
-      "title": "Asian stocks dip as oil rises after Trump's Hormuz levy threat",
+      "title": "World stocks dip as oil rises after Trump's Hormuz levy threat",
       "source": "Reuters",
       "published": "2026-07-14T01:27:00+00:00",
       "url": "https://news.google.com/rss/articles/CBMigwFBVV95cUxPdWRaMVFPRFNSMDhQQ1dQT09aWlhsdzdhVGVFcGUzblZreE9kSms3eXc3ZjRlbVhvdUtFRW5IQ3ZSSE42bnhoTGxIaVlwbVVQR0tLUE0yY1N3NTJ2Qko2S01pNHREcW5CbmpweXpORmVRRzdCR0RDcTRjeG9oS2tqR2hIWQ?oc=5"
-    },
-    {
-      "title": "Sandisk’s stock is plunging, but some analysts are getting even more bullish",
-      "source": "MarketWatch",
-      "published": "2026-07-14T00:55:00+00:00",
-      "url": "https://www.marketwatch.com/story/sandisks-stock-is-plunging-but-some-analysts-are-getting-even-more-bullish-cba3472f?mod=mw_rss_topstories"
     },
     {
       "title": "'Listing is a must': Chinese humanoid startups are rushing to launch IPOs",
@@ -38,58 +98,22 @@
       "url": "https://www.cnbc.com/2026/07/13/chinese-humanoid-startups-ipo-limx-unitree.html"
     },
     {
-      "title": "‘It’s heartbreaking’: My brother claimed Social Security at 70. He died from cancer after one payment. Why wait to claim?",
-      "source": "MarketWatch",
-      "published": "2026-07-13T23:30:00+00:00",
-      "url": "https://www.marketwatch.com/story/its-heartbreaking-my-brother-claimed-social-security-at-70-he-died-from-cancer-after-one-payment-why-wait-to-claim-491669b6?mod=mw_rss_topstories"
-    },
-    {
-      "title": "I’m 67 with a $140,000 pension. Should I wait until 70 to claim Social Security so my wife gets more?",
-      "source": "MarketWatch",
-      "published": "2026-07-13T23:03:00+00:00",
-      "url": "https://www.marketwatch.com/story/im-67-with-a-140-000-pension-should-i-wait-until-70-to-claim-social-security-so-my-wife-gets-more-63759d48?mod=mw_rss_topstories"
-    },
-    {
-      "title": "Why a borrowing binge by investors is a warning sign for the stock market",
-      "source": "MarketWatch",
-      "published": "2026-07-13T22:19:00+00:00",
-      "url": "https://www.marketwatch.com/story/why-a-borrowing-binge-by-investors-is-a-warning-sign-for-the-stock-market-996ee446?mod=mw_rss_topstories"
-    },
-    {
-      "title": "SpaceX’s stock threatens to fall below the IPO price. Do investors face a ‘crisis’ if it does?",
-      "source": "MarketWatch",
-      "published": "2026-07-13T22:08:00+00:00",
-      "url": "https://www.marketwatch.com/story/spacexs-stock-threatens-to-fall-below-the-ipo-price-do-investors-face-a-crisis-if-it-does-2f330b09?mod=mw_rss_topstories"
-    },
-    {
-      "title": "Lindsey Graham died from a rare heart condition. Here’s how to know if you’re at risk.",
-      "source": "MarketWatch",
-      "published": "2026-07-13T20:48:00+00:00",
-      "url": "https://www.marketwatch.com/story/lindsey-graham-died-from-a-rare-heart-condition-heres-how-to-know-if-youre-at-risk-8ca5a618?mod=mw_rss_topstories"
-    },
-    {
-      "title": "You don’t have to be rich to be financially independent. Here’s how to take control of your money.",
-      "source": "MarketWatch",
-      "published": "2026-07-13T20:39:00+00:00",
-      "url": "https://www.marketwatch.com/story/you-dont-have-to-be-rich-to-be-financially-independent-heres-how-to-take-control-of-your-money-5345f146?mod=mw_rss_topstories"
-    },
-    {
       "title": "Waller says Fed shouldn't 'fight the last war' on inflation but warns hikes still possible",
       "source": "CNBC",
       "published": "2026-07-13T19:15:25+00:00",
       "url": "https://www.cnbc.com/2026/07/13/waller-says-fed-shouldnt-fight-the-last-war-on-inflation-but-warns-hikes-still-possible.html"
     },
     {
-      "title": "Fed's Waller says rate hike may be needed if core inflation stays hot",
-      "source": "Reuters",
-      "published": "2026-07-13T18:48:30+00:00",
-      "url": "https://news.google.com/rss/articles/CBMipAFBVV95cUxNaW0tUldZeEtOTXVXNFlST05jYjZUMzcxcVZQNl9MVXh3ZXltWVVUcUlMelA2OENsVmdtSDNqTUVBSTBNdEVpbzg3Q1E2N28wMVBlYlZCVS1SYU5XUkVuMUdtUzUwcEJrWmRDYVp2ajg3cHdXMnpHbHhfSHc4Z2VaNmpVZUNrLTFKY2hBdmFwNWt3b2xJdzdRYzFpbUMxSERsdmtTZQ?oc=5"
-    },
-    {
       "title": "A July rate hike from the Fed? The odds are rising",
       "source": "CNBC",
       "published": "2026-07-13T17:07:51+00:00",
       "url": "https://www.cnbc.com/2026/07/13/-a-july-rate-hike-from-the-fed-the-odds-are-rising.html"
+    },
+    {
+      "title": "Fed's Waller says rate hike may be needed if core inflation stays hot",
+      "source": "Reuters",
+      "published": "2026-07-13T16:32:00+00:00",
+      "url": "https://news.google.com/rss/articles/CBMipAFBVV95cUxNaW0tUldZeEtOTXVXNFlST05jYjZUMzcxcVZQNl9MVXh3ZXltWVVUcUlMelA2OENsVmdtSDNqTUVBSTBNdEVpbzg3Q1E2N28wMVBlYlZCVS1SYU5XUkVuMUdtUzUwcEJrWmRDYVp2ajg3cHdXMnpHbHhfSHc4Z2VaNmpVZUNrLTFKY2hBdmFwNWt3b2xJdzdRYzFpbUMxSERsdmtTZQ?oc=5"
     },
     {
       "title": "Crude stocks in US strategic reserve fall 3 million barrels to lowest level since 1983",
@@ -102,18 +126,6 @@
       "source": "CNBC",
       "published": "2026-07-13T16:21:26+00:00",
       "url": "https://www.cnbc.com/2026/07/13/stocks-making-the-biggest-moves-midday-nio-brai-app-spcx-skhy.html"
-    },
-    {
-      "title": "Big banks poised to report booming revenue propelled by SpaceX IPO, Iran war volatility",
-      "source": "CNBC",
-      "published": "2026-07-13T13:19:24+00:00",
-      "url": "https://www.cnbc.com/2026/07/13/bank-earnings-jpmorgan-chase-goldman-sachs-bank-of-america.html"
-    },
-    {
-      "title": "Stocks making the biggest moves premarket: SK Hynix, Micron, MGM Resorts & more",
-      "source": "CNBC",
-      "published": "2026-07-13T11:41:54+00:00",
-      "url": "https://www.cnbc.com/2026/07/13/stocks-making-the-biggest-moves-premarket-skhy-mu-mgm.html"
     },
     {
       "title": "Kalshi launches 'Pro' product for users trading multiple markets at same time, perpetual futures",
@@ -132,12 +144,6 @@
       "source": "Reuters",
       "published": "2026-07-13T10:03:36+00:00",
       "url": "https://news.google.com/rss/articles/CBMiiwFBVV95cUxObXBfajRWYzVsWXB3X0ZVdVRIYnp5X3djTGlEdDdKYlFaZHlpYmxUVXN4UkVZTVNGVGdVUVVXeUZiRG9WZFRpUzRfZ2lmQ2FCdnN3QUNnVlo2dmtCOWVPTDF0NFpoMEtFLXlqaVJVUEV5MGNSSHkwV3pTSXlhWTF0VGp5X3ZJUTB4QjRJ?oc=5"
-    },
-    {
-      "title": "Wall Street ends lower as Iran tensions dampen risk appetite; chipmakers drop",
-      "source": "Reuters",
-      "published": "2026-07-13T09:54:00+00:00",
-      "url": "https://news.google.com/rss/articles/CBMisAFBVV95cUxPSUxJelN2M2lFYXd0QzZIdkhQVGdKTFl2clAtSllTMzIxZ0xudk9CeFpNNVV5MVNVSTdhb251ZjZYbWZ3UFQxWGl0ZWRBRXc3NFVvbXpRT1pPUjZxWUw5VDhtZ2s0bDZVT2VrWEp6M01qeTgwcWFtdmxOcFBYdmQxU1J6anlGbURld1ZmdnloOFBOaTJYbUFxNGo0dTFvbEl1bFdZTXIwcjMtRldFd1BMTw?oc=5"
     }
   ]
 }
