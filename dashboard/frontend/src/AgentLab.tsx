@@ -27,13 +27,25 @@ interface NewsData {
   headlines: Headline[];
 }
 
+interface ThemeEntry {
+  summary: string;
+  signal: 'risk-off' | 'neutral' | 'risk-on' | string;
+}
+
 interface AgentReport {
   timestamp: string;
   risk_score: number;
   risk_level: 'low' | 'moderate' | 'elevated' | 'high' | 'critical' | string;
   ml_probability: number;
+  signal_basis?: string;
+  themes?: {
+    rates_fed?: ThemeEntry;
+    geopolitics_energy?: ThemeEntry;
+    equities_earnings?: ThemeEntry;
+    credit_liquidity?: ThemeEntry;
+  };
   key_risks: string[];
-  news_analysis: string;
+  news_analysis?: string;
   recommendation: string;
   reasoning: string;
   provider?: string;
@@ -52,6 +64,32 @@ const SOURCE_COLORS: Record<string, string> = {
   CNBC: '#1d4ed8',
   MarketWatch: '#0f766e',
 };
+
+const SIGNAL_META: Record<string, { label: string; color: string; bg: string; border: string }> = {
+  'risk-off': { label: '风险规避', color: '#dc2626', bg: '#fef2f2', border: '#fca5a5' },
+  'neutral':  { label: '中性',     color: '#6b7280', bg: '#f9fafb', border: '#d1d5db' },
+  'risk-on':  { label: '风险偏好', color: '#16a34a', bg: '#f0fdf4', border: '#86efac' },
+};
+
+const THEME_CONFIG = [
+  { key: 'rates_fed',           icon: '🏦', title: '央行 / 利率',   en: 'Rates & Fed' },
+  { key: 'geopolitics_energy',  icon: '🌍', title: '地缘 / 能源',   en: 'Geopolitics & Energy' },
+  { key: 'equities_earnings',   icon: '📈', title: '股市 / 财报',   en: 'Equities & Earnings' },
+  { key: 'credit_liquidity',    icon: '💧', title: '信用 / 流动性', en: 'Credit & Liquidity' },
+] as const;
+
+function SignalPill({ signal }: { signal: string }) {
+  const meta = SIGNAL_META[signal] ?? SIGNAL_META.neutral;
+  return (
+    <span style={{
+      fontSize: 11, fontWeight: 600, letterSpacing: '0.04em', padding: '2px 8px',
+      borderRadius: 10, color: meta.color, background: meta.bg,
+      border: `1px solid ${meta.border}`, whiteSpace: 'nowrap',
+    }}>
+      {meta.label}
+    </span>
+  );
+}
 
 function formatTime(iso: string | undefined): string {
   if (!iso) return '—';
@@ -200,17 +238,56 @@ function AgentLabInner() {
         </section>
       )}
 
-      {/* Analysis + recommendation + reasoning */}
+      {/* Themes (structured analysis) */}
+      {report.themes ? (
+        <section className="lab-card">
+          <div className="ab-header">
+            <h2>分主题解读</h2>
+            {report.signal_basis && (
+              <span className="ab-badge" style={{ background: '#f5f3ff', color: '#6d28d9', border: '1px solid #c4b5fd' }}>
+                {report.signal_basis}
+              </span>
+            )}
+          </div>
+          <p className="lab-card-desc">
+            四维度独立分析 · 每维度附信号方向（风险偏好 / 中性 / 风险规避）
+          </p>
+          <div className="agent-themes-grid">
+            {THEME_CONFIG.map(({ key, icon, title }) => {
+              const theme = report.themes?.[key as keyof typeof report.themes];
+              if (!theme) return null;
+              return (
+                <div key={key} className="agent-theme-card">
+                  <div className="agent-theme-header">
+                    <span className="agent-theme-icon">{icon}</span>
+                    <span className="agent-theme-title">{title}</span>
+                    <SignalPill signal={theme.signal} />
+                  </div>
+                  <p className="agent-prose" style={{ marginTop: 8, marginBottom: 0 }}>
+                    {theme.summary || '今日无明显相关信号。'}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      ) : report.news_analysis ? (
+        /* Backward compat: old single-block format */
+        <section className="lab-card">
+          <div className="ab-header"><h2>新闻解读</h2></div>
+          <p className="agent-prose">{report.news_analysis}</p>
+        </section>
+      ) : null}
+
+      {/* Recommendation + reasoning */}
       <section className="lab-card">
         <div className="ab-header">
-          <h2>Agent 分析</h2>
+          <h2>建议 &amp; 推理</h2>
         </div>
         <div className="agent-text-block">
-          <h3 className="lab-subsection-title" style={{ marginTop: 0 }}>新闻解读</h3>
-          <p className="agent-prose">{report.news_analysis || '—'}</p>
-          <h3 className="lab-subsection-title">建议</h3>
+          <h3 className="lab-subsection-title" style={{ marginTop: 0 }}>操作建议</h3>
           <p className="agent-prose">{report.recommendation || '—'}</p>
-          <h3 className="lab-subsection-title">推理过程</h3>
+          <h3 className="lab-subsection-title">评分推理</h3>
           <p className="agent-prose agent-reasoning">{report.reasoning || '—'}</p>
         </div>
       </section>

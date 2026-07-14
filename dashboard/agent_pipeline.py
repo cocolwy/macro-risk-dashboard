@@ -37,27 +37,51 @@ You receive:
 1) Today's finance news headlines (Reuters, CNBC, MarketWatch)
 2) An ML model's current probability of a >5% S&P 500 drawdown within the next 20 trading days
 
-Your job is to synthesize the news context with the ML signal into a concise risk assessment.
+Your job is to synthesize the news context with the ML signal into a structured daily risk brief.
 
-Respond with ONLY valid JSON (no markdown fences) matching this schema:
+Respond with ONLY valid JSON (no markdown fences, no extra keys) matching this schema exactly:
 {
   "timestamp": "<ISO-8601 UTC>",
   "risk_score": <integer 0-100>,
   "risk_level": "<low|moderate|elevated|high|critical>",
   "ml_probability": <float 0-1>,
+  "signal_basis": "<one of: ML主导|新闻主导|共振放大|背离缓和>",
+  "themes": {
+    "rates_fed": {
+      "summary": "<2-3 sentences on central bank policy, rate expectations, inflation data>",
+      "signal": "<risk-off|neutral|risk-on>"
+    },
+    "geopolitics_energy": {
+      "summary": "<2-3 sentences on geopolitical tensions, oil/commodity moves, sanctions>",
+      "signal": "<risk-off|neutral|risk-on>"
+    },
+    "equities_earnings": {
+      "summary": "<2-3 sentences on equity market moves, key earnings, sector rotation>",
+      "signal": "<risk-off|neutral|risk-on>"
+    },
+    "credit_liquidity": {
+      "summary": "<2-3 sentences on credit spreads, bank health, liquidity conditions>",
+      "signal": "<risk-off|neutral|risk-on>"
+    }
+  },
   "key_risks": ["<short risk phrase>", "..."],
-  "news_analysis": "<2-3 sentences analyzing the news backdrop>",
-  "recommendation": "<actionable recommendation for a risk manager>",
-  "reasoning": "<brief chain of reasoning linking ML signal and news>"
+  "recommendation": "<2-3 sentences: actionable guidance for a risk manager>",
+  "reasoning": "<2-3 sentences: how ML signal and news themes combine to justify the score>"
 }
 
 Guidelines:
-- risk_score should reflect both the ML probability and news tone (geopolitics, rates, credit, liquidity, earnings shocks).
+- risk_score: blend ML probability (anchor) + news tone adjustment. Max ±20 pts news adjustment.
 - risk_level bands: low 0-20, moderate 21-40, elevated 41-60, high 61-80, critical 81-100.
-- key_risks: 3-6 concrete items grounded in the headlines.
-- Be calibrated: do not scream "critical" on routine volatility news.
-- Write news_analysis, recommendation, and reasoning in Chinese (简体中文).
-- key_risks may be Chinese short phrases.
+- signal_basis:
+    "ML主导"   → score mostly driven by ML probability, news roughly neutral
+    "新闻主导"  → news tone clearly diverges from ML (e.g. ML low but headlines alarming)
+    "共振放大"  → ML high AND news risk-off → reinforce each other, justify higher score
+    "背离缓和"  → ML high BUT news risk-on → partially offset, justify lower score
+- themes.signal: "risk-off" = bearish/dangerous, "neutral" = no clear signal, "risk-on" = bullish/calming.
+- If headlines contain no relevant information for a theme, write "今日无明显相关信号。" for summary and "neutral" for signal.
+- key_risks: 3-6 items, each grounded in specific headlines. Be concrete, not generic.
+- Be calibrated: do not scream "critical" on routine volatility. Reserve "critical" for systemic shock signals.
+- Write ALL text fields in Chinese (简体中文). Only JSON keys remain in English.
 """
 
 # Theme lexicon: (theme_id, chinese_label, risk_delta, keywords)
@@ -160,6 +184,23 @@ def _parse_json_response(text: str) -> dict[str, Any]:
     return json.loads(text)
 
 
+_VALID_SIGNALS = {"risk-off", "neutral", "risk-on"}
+_THEME_KEYS = ("rates_fed", "geopolitics_energy", "equities_earnings", "credit_liquidity")
+_VALID_BASES = {"ML主导", "新闻主导", "共振放大", "背离缓和"}
+
+
+def _normalize_theme(raw_theme: Any) -> dict[str, str]:
+    if not isinstance(raw_theme, dict):
+        return {"summary": str(raw_theme or "今日无明显相关信号。"), "signal": "neutral"}
+    signal = str(raw_theme.get("signal") or "neutral").strip().lower()
+    if signal not in _VALID_SIGNALS:
+        signal = "neutral"
+    return {
+        "summary": str(raw_theme.get("summary") or "今日无明显相关信号。").strip(),
+        "signal": signal,
+    }
+
+
 def _normalize_report(raw: dict[str, Any], ml_prob: float, provider: str) -> dict[str, Any]:
     score = int(round(float(raw.get("risk_score", ml_prob * 100))))
     score = max(0, min(100, score))
@@ -172,13 +213,26 @@ def _normalize_report(raw: dict[str, Any], ml_prob: float, provider: str) -> dic
         key_risks = [str(key_risks)]
     key_risks = [str(r).strip() for r in key_risks if str(r).strip()][:8]
 
+    # Structured themes (new format)
+    raw_themes = raw.get("themes") or {}
+    themes = {k: _normalize_theme(raw_themes.get(k)) for k in _THEME_KEYS}
+
+    signal_basis = str(raw.get("signal_basis") or "").strip()
+    if signal_basis not in _VALID_BASES:
+        signal_basis = ""
+
+    # Backward compat: if old format had news_analysis, keep it
+    news_analysis = str(raw.get("news_analysis") or "").strip()
+
     report = {
         "timestamp": raw.get("timestamp") or dt.datetime.now(dt.timezone.utc).isoformat(),
         "risk_score": score,
         "risk_level": level,
         "ml_probability": round(float(raw.get("ml_probability", ml_prob)), 4),
+        "signal_basis": signal_basis,
+        "themes": themes,
         "key_risks": key_risks,
-        "news_analysis": str(raw.get("news_analysis") or "").strip(),
+        "news_analysis": news_analysis,
         "recommendation": str(raw.get("recommendation") or "").strip(),
         "reasoning": str(raw.get("reasoning") or "").strip(),
         "provider": provider,
@@ -266,11 +320,56 @@ def synthesize_local(headlines: list[dict[str, str]], ml_prob: float) -> dict[st
         f"provider=local（无需 API）。"
     )
 
+    # Determine signal_basis
+    if abs(news_adj) >= 8:
+        if news_adj > 0:
+            signal_basis = "共振放大"
+        else:
+            signal_basis = "背离缓和"
+    elif abs(news_adj) <= 3:
+        signal_basis = "ML主导"
+    else:
+        signal_basis = "新闻主导"
+
+    # Build structured themes from hit list
+    _THEME_SIGNALS: dict[str, tuple[str, str]] = {
+        "rates":       ("rates_fed",          "risk-off"),
+        "geopolitics": ("geopolitics_energy",  "risk-off"),
+        "credit":      ("credit_liquidity",    "risk-off"),
+        "volatility":  ("equities_earnings",   "risk-off"),
+        "growth":      ("equities_earnings",   "risk-off"),
+        "earnings":    ("equities_earnings",   "risk-off"),
+        "china":       ("geopolitics_energy",  "risk-off"),
+        "ai_tech":     ("equities_earnings",   "risk-on"),
+    }
+    built_themes: dict[str, dict[str, str]] = {
+        "rates_fed":          {"summary": "今日无明显相关信号。", "signal": "neutral"},
+        "geopolitics_energy": {"summary": "今日无明显相关信号。", "signal": "neutral"},
+        "equities_earnings":  {"summary": "今日无明显相关信号。", "signal": "neutral"},
+        "credit_liquidity":   {"summary": "今日无明显相关信号。", "signal": "neutral"},
+    }
+    # Assign top theme hits to the four buckets
+    for theme_id_key, label, _, count in top_themes:
+        mapped_key, sig = _THEME_SIGNALS.get(theme_id_key, (None, None))
+        if mapped_key and mapped_key in built_themes:
+            built_themes[mapped_key] = {
+                "summary": f"{label}主题命中 {count} 条标题。{tone}",
+                "signal": sig or "neutral",
+            }
+    # Overall market theme from news_analysis
+    built_themes["equities_earnings"]["summary"] = (
+        built_themes["equities_earnings"]["summary"]
+        if built_themes["equities_earnings"]["summary"] != "今日无明显相关信号。"
+        else news_analysis
+    )
+
     return {
         "timestamp": dt.datetime.now(dt.timezone.utc).isoformat(),
         "risk_score": score,
         "risk_level": level,
         "ml_probability": round(ml_prob, 4),
+        "signal_basis": signal_basis,
+        "themes": built_themes,
         "key_risks": key_risks[:6],
         "news_analysis": news_analysis,
         "recommendation": recommendation,
