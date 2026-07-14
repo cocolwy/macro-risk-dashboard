@@ -272,16 +272,62 @@ function Phase3LabInner() {
         </div>
       </section>
 
+      {/* Step-by-step summary */}
+      <section className="lab-card">
+        <div className="ab-header">
+          <h2>实验摘要</h2>
+          <span className="ab-badge" style={{ background: '#eff6ff', color: '#1e40af', border: '1px solid #bfdbfe' }}>4 STEPS</span>
+        </div>
+        <div className="lab-table-wrap">
+          <table className="lab-table">
+            <thead>
+              <tr><th>Step</th><th>做法</th><th>代表模型</th><th>F1</th><th>结论</th></tr>
+            </thead>
+            <tbody>
+              <tr style={{ background: 'rgba(34,197,94,0.06)' }}>
+                <td style={{ fontWeight: 600 }}>1 · 模型类型</td>
+                <td style={{ fontSize: 12 }}>LR / GBDT / RF × Slim(10) / Full(23) — 全部 Unbalanced</td>
+                <td style={{ fontWeight: 600, color: '#16a34a' }}>LR Slim</td>
+                <td className="lab-td-mono" style={{ fontWeight: 700, color: '#16a34a' }}>0.588</td>
+                <td style={{ fontSize: 12 }}>LR 最佳 · GBDT/RF 小样本下过拟合</td>
+              </tr>
+              <tr>
+                <td style={{ fontWeight: 600 }}>2 · Regime 特征</td>
+                <td style={{ fontSize: 12 }}>Fed利率方向 + CPI趋势 + 曲线倒挂 · 分 9 特征全量 / 2 特征精简</td>
+                <td>LR +2特征</td>
+                <td className="lab-td-mono">0.529</td>
+                <td style={{ fontSize: 12, color: '#dc2626' }}>9 特征严重有害(0.208) · 2 特征仍不如 baseline</td>
+              </tr>
+              <tr>
+                <td style={{ fontWeight: 600 }}>3 · 事件日历</td>
+                <td style={{ fontSize: 12 }}>FOMC / CPI / NFP 前后天数 + 窗口标记 · 含 KitchenSink 全组合</td>
+                <td>LR KitchenSink</td>
+                <td className="lab-td-mono">0.541</td>
+                <td style={{ fontSize: 12, color: '#dc2626' }}>事件特征无增量 · Brier=0.099 校准最佳</td>
+              </tr>
+              <tr>
+                <td style={{ fontWeight: 600 }}>4 · 长期重测</td>
+                <td style={{ fontSize: 12 }}>2005+ 数据(5333样本) · LR / GBDT / RF 全部重跑</td>
+                <td>RF Ext</td>
+                <td className="lab-td-mono">0.322</td>
+                <td style={{ fontSize: 12, color: '#dc2626' }}>AUC 从 0.89→0.57 · 跨周期非平稳性是根本瓶颈</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div style={{ marginTop: 12, padding: '10px 12px', background: '#f0fdf4', borderRadius: 6, border: '1px solid #bbf7d0' }}>
+          <p style={{ margin: 0, fontSize: 13, fontWeight: 600, color: '#166534' }}>
+            总结：LR Slim (10特征, F1=0.588) 至今未被超越。加特征 = 加噪声，换模型 = 加过拟合，加数据 = 加非平稳性。
+          </p>
+        </div>
+      </section>
+
       {/* Overview table */}
       <section className="lab-card ab-section">
         <div className="ab-header">
           <h2>全量模型对比</h2>
-          <span className="ab-badge" style={{ background: '#f0fdf4', color: '#166534', border: '1px solid #bbf7d0' }}>STEP 1-3</span>
           <span className="ab-badge">{experiments.length} MODELS</span>
         </div>
-        <p className="lab-card-desc">
-          Step 1 非线性模型 · Step 2 Regime 特征 · Step 3 事件日历 · Step 4 长期重测
-        </p>
         <OverviewTable experiments={experiments} />
       </section>
 
