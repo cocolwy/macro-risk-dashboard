@@ -67,7 +67,8 @@ export async function fetchDataJson<T>(filename: string): Promise<T> {
 }
 
 async function fetchJson<T>(filename: string): Promise<T> {
-  const cacheBust = import.meta.env.DEV ? `?_=${Date.now()}` : '';
+  // Always bust cache — GitHub Pages / browsers otherwise keep stale dashboard JSON.
+  const cacheBust = `?_=${Date.now()}`;
   const resp = await fetch(`${DATA_BASE_URL}/${filename}${cacheBust}`);
   if (!resp.ok) throw new Error(`Failed to fetch ${filename}: ${resp.status}`);
   return resp.json();
