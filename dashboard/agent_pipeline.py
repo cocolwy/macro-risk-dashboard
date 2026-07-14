@@ -309,7 +309,7 @@ def call_ollama(user_prompt: str) -> dict[str, Any]:
 
 
 def call_openai(user_prompt: str) -> dict[str, Any]:
-    api_key = os.environ.get("OPENAI_API_KEY")
+    api_key = _api_key("OPENAI_API_KEY")
     if not api_key:
         raise RuntimeError("OPENAI_API_KEY is not set")
 
@@ -353,7 +353,7 @@ def call_openai(user_prompt: str) -> dict[str, Any]:
 
 
 def call_anthropic(user_prompt: str) -> dict[str, Any]:
-    api_key = os.environ.get("ANTHROPIC_API_KEY")
+    api_key = _api_key("ANTHROPIC_API_KEY")
     if not api_key:
         raise RuntimeError("ANTHROPIC_API_KEY is not set")
 
@@ -376,6 +376,12 @@ def call_anthropic(user_prompt: str) -> dict[str, Any]:
     return _parse_json_response(text)
 
 
+def _api_key(name: str) -> str:
+    """Read an API key env var, stripping whitespace/quotes that break auth."""
+    raw = os.environ.get(name) or ""
+    return raw.strip().strip('"').strip("'")
+
+
 def resolve_provider() -> str:
     explicit = (os.environ.get("AGENT_LLM") or "").strip().lower()
     # aliases
@@ -387,9 +393,9 @@ def resolve_provider() -> str:
         raise RuntimeError(f"Unknown AGENT_LLM={explicit!r} (use local|openai|ollama|anthropic)")
 
     # Auto-detect when AGENT_LLM unset
-    if os.environ.get("OPENAI_API_KEY"):
+    if _api_key("OPENAI_API_KEY"):
         return "openai"
-    if os.environ.get("ANTHROPIC_API_KEY"):
+    if _api_key("ANTHROPIC_API_KEY"):
         return "anthropic"
     host = os.environ.get("OLLAMA_HOST", "http://127.0.0.1:11434").rstrip("/")
     try:
@@ -403,22 +409,40 @@ def resolve_provider() -> str:
 
 def generate_report(headlines: list[dict[str, str]], ml_prob: float, provider: str) -> dict[str, Any]:
     user_prompt = _build_user_prompt(headlines, ml_prob)
-    if provider == "local":
-        print("Using local rule synthesizer…")
-        raw = synthesize_local(headlines, ml_prob)
-    elif provider == "openai":
-        model = os.environ.get("OPENAI_MODEL", "gpt-4o-mini")
-        print(f"Calling OpenAI ({model})…")
-        raw = call_openai(user_prompt)
-    elif provider == "ollama":
-        print(f"Calling Ollama ({os.environ.get('OLLAMA_MODEL', 'llama3.2')})…")
-        raw = call_ollama(user_prompt)
-    elif provider == "anthropic":
-        print("Calling Claude API…")
-        raw = call_anthropic(user_prompt)
-    else:
-        raise RuntimeError(f"Unknown AGENT_LLM provider: {provider}")
-    return _normalize_report(raw, ml_prob, provider)
+    fallback_note = ""
+
+    def _run(p: str) -> dict[str, Any]:
+        if p == "local":
+            print("Using local rule synthesizer…")
+            return synthesize_local(headlines, ml_prob)
+        if p == "openai":
+            model = os.environ.get("OPENAI_MODEL", "gpt-4o-mini")
+            print(f"Calling OpenAI ({model})…")
+            return call_openai(user_prompt)
+        if p == "ollama":
+            print(f"Calling Ollama ({os.environ.get('OLLAMA_MODEL', 'llama3.2')})…")
+            return call_ollama(user_prompt)
+        if p == "anthropic":
+            print("Calling Claude API…")
+            return call_anthropic(user_prompt)
+        raise RuntimeError(f"Unknown AGENT_LLM provider: {p}")
+
+    try:
+        raw = _run(provider)
+        used = provider
+    except Exception as exc:  # noqa: BLE001
+        if provider == "local":
+            raise
+        print(f"WARN: {provider} failed ({exc}); falling back to local synthesizer", file=sys.stderr)
+        fallback_note = f"[{provider} 调用失败，已回退 local] {exc}"
+        raw = _run("local")
+        used = "local"
+
+    report = _normalize_report(raw, ml_prob, used)
+    if fallback_note:
+        report["reasoning"] = f"{fallback_note}\n{report.get('reasoning') or ''}".strip()
+        report["provider"] = f"local(fallback_from_{provider})"
+    return report
 
 
 def main() -> int:
@@ -434,16 +458,18 @@ def main() -> int:
     headlines = news.get("headlines") or []
     ml_prob = _extract_ml_probability(metrics)
     provider = resolve_provider()
+    key_len = len(_api_key("OPENAI_API_KEY"))
 
     print(f"  Headlines: {len(headlines)}")
     print(f"  ML probability: {ml_prob:.4f}")
     print(f"  Provider: {provider}")
+    print(f"  OPENAI_API_KEY length: {key_len} (0 means missing)")
 
     report = generate_report(headlines, ml_prob, provider)
 
     OUTPUT_PATH.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     print(f"  Saved agent report → {OUTPUT_PATH}")
-    print(f"  risk_score={report['risk_score']} level={report['risk_level']}")
+    print(f"  risk_score={report['risk_score']} level={report['risk_level']} provider={report.get('provider')}")
     return 0
 
 

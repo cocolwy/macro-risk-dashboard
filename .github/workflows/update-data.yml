@@ -39,17 +39,22 @@ jobs:
         run: python dashboard/news_fetcher.py
 
       - name: Run agent pipeline
-        continue-on-error: true
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           OPENAI_MODEL: gpt-4o-mini
         run: |
-          if [ -n "$OPENAI_API_KEY" ]; then
-            echo "OPENAI_API_KEY is set — agent will use OpenAI"
+          KEY_LEN=${#OPENAI_API_KEY}
+          echo "OPENAI_API_KEY length=$KEY_LEN"
+          if [ "$KEY_LEN" -gt 0 ]; then
+            export AGENT_LLM=openai
+            echo "Forcing AGENT_LLM=openai"
           else
-            echo "OPENAI_API_KEY is empty — agent will use local synthesizer"
+            export AGENT_LLM=local
+            echo "OPENAI_API_KEY missing — using local synthesizer"
           fi
           python dashboard/agent_pipeline.py
+          # Always show which provider landed in the report
+          python -c "import json; r=json.load(open('dashboard/data/agent_report.json')); print('report.provider=', r.get('provider')); print('report.timestamp=', r.get('timestamp'))"
 
       - name: Sync frontend public data
         run: |
