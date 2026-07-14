@@ -139,20 +139,30 @@ def _extract_ml_probability(metrics: dict[str, Any]) -> float:
     raise KeyError("No current ML probability found in model_metrics.json")
 
 
+_DESC_WITH_SUMMARY = 15   # top N headlines get description attached
+_DESC_MAX_CHARS    = 250  # truncation for each description
+
+
 def _build_user_prompt(headlines: list[dict[str, str]], ml_prob: float) -> str:
     lines = [
         f"ML crash probability (next 20d, >5% drawdown): {ml_prob:.4f} ({ml_prob * 100:.1f}%)",
         "",
-        "Today's headlines:",
+        "Today's headlines (top items include article summaries):",
     ]
     if not headlines:
         lines.append("(no headlines available)")
     else:
         for i, h in enumerate(headlines, 1):
-            lines.append(
+            title_line = (
                 f"{i}. [{h.get('source', '?')}] {h.get('title', '')} "
                 f"({h.get('published', 'n/a')})"
             )
+            lines.append(title_line)
+            if i <= _DESC_WITH_SUMMARY:
+                desc = (h.get("description") or "").strip()
+                if desc:
+                    truncated = desc[:_DESC_MAX_CHARS] + ("…" if len(desc) > _DESC_MAX_CHARS else "")
+                    lines.append(f"   → {truncated}")
     lines.append("")
     lines.append(f"Current UTC time: {dt.datetime.now(dt.timezone.utc).isoformat()}")
     lines.append("Return the JSON risk report now.")

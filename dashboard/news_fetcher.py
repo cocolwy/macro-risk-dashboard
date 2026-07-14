@@ -61,6 +61,17 @@ def _is_today_or_recent(published: str | None, now: dt.datetime, max_age_hours: 
     return age <= dt.timedelta(hours=max_age_hours)
 
 
+def _clean_description(raw: str, max_chars: int = 300) -> str:
+    """Strip HTML tags and collapse whitespace; return empty string if not useful."""
+    import re
+    text = re.sub(r"<[^>]+>", " ", raw)
+    text = re.sub(r"\s+", " ", text).strip()
+    # Drop if it's just a media placeholder or too short to be useful
+    if len(text) < 20:
+        return ""
+    return text[:max_chars]
+
+
 def fetch_headlines() -> list[dict[str, str]]:
     now = dt.datetime.now(dt.timezone.utc)
     headlines: list[dict[str, str]] = []
@@ -98,11 +109,23 @@ def fetch_headlines() -> list[dict[str, str]]:
                 continue
 
             link = (entry.get("link") or "").strip()
+
+            # RSS description: first paragraph, strip HTML tags, cap at 300 chars
+            raw_desc = (
+                entry.get("summary")
+                or entry.get("description")
+                or entry.get("content", [{}])[0].get("value", "")
+                if isinstance(entry.get("content"), list) else
+                entry.get("summary") or entry.get("description") or ""
+            )
+            desc = _clean_description(str(raw_desc))
+
             headlines.append({
                 "title": title,
                 "source": source,
                 "published": published or now.isoformat(),
                 "url": link,
+                "description": desc,
             })
             seen_titles.add(title_key)
             count += 1
