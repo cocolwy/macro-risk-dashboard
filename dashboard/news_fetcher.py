@@ -84,6 +84,11 @@ def fetch_headlines() -> list[dict[str, str]]:
             title = (entry.get("title") or "").strip()
             if not title:
                 continue
+            # Google News often appends " - Reuters"
+            for suffix in (f" - {source}", f" – {source}", f" | {source}"):
+                if title.endswith(suffix):
+                    title = title[: -len(suffix)].strip()
+                    break
             title_key = title.lower()
             if title_key in seen_titles:
                 continue
