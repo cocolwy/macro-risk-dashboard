@@ -27,7 +27,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install pandas numpy yfinance akshare scikit-learn requests feedparser
+          pip install pandas numpy yfinance akshare scikit-learn requests feedparser anthropic
 
       - name: Fetch macro data
         run: python dashboard/fetch_macro_data.py
@@ -40,21 +40,27 @@ jobs:
 
       - name: Run agent pipeline
         env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ANTHROPIC_MODEL: claude-sonnet-4-20250514
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           OPENAI_MODEL: gpt-4o-mini
         run: |
-          KEY_LEN=${#OPENAI_API_KEY}
-          echo "OPENAI_API_KEY length=$KEY_LEN"
-          if [ "$KEY_LEN" -gt 0 ]; then
+          A_LEN=${#ANTHROPIC_API_KEY}
+          O_LEN=${#OPENAI_API_KEY}
+          echo "ANTHROPIC_API_KEY length=$A_LEN"
+          echo "OPENAI_API_KEY length=$O_LEN"
+          if [ "$A_LEN" -gt 0 ]; then
+            export AGENT_LLM=anthropic
+            echo "Forcing AGENT_LLM=anthropic (Claude)"
+          elif [ "$O_LEN" -gt 0 ]; then
             export AGENT_LLM=openai
             echo "Forcing AGENT_LLM=openai"
           else
             export AGENT_LLM=local
-            echo "OPENAI_API_KEY missing — using local synthesizer"
+            echo "No LLM API key — using local synthesizer"
           fi
           python dashboard/agent_pipeline.py
-          # Always show which provider landed in the report
-          python -c "import json; r=json.load(open('dashboard/data/agent_report.json')); print('report.provider=', r.get('provider')); print('report.timestamp=', r.get('timestamp'))"
+          python -c "import json; r=json.load(open('dashboard/data/agent_report.json')); print('report.provider=', r.get('provider')); print('report.timestamp=', r.get('timestamp')); print('analysis=', (r.get('news_analysis') or '')[:120])"
 
       - name: Sync frontend public data
         run: |

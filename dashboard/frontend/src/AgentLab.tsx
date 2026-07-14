@@ -1,4 +1,5 @@
 import { useState, useEffect, Component, type ReactNode } from 'react';
+import { fetchDataJson } from './api';
 
 class ErrorBoundary extends Component<{ children: ReactNode }, { error: string | null }> {
   state = { error: null as string | null };
@@ -72,17 +73,9 @@ function AgentLabInner() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const base = import.meta.env.BASE_URL || '/';
-    const bust = `t=${Date.now()}`;
     Promise.all([
-      fetch(`${base}data/agent_report.json?${bust}`).then(r => {
-        if (!r.ok) throw new Error(`agent_report.json HTTP ${r.status}`);
-        return r.json();
-      }),
-      fetch(`${base}data/news_headlines.json?${bust}`).then(r => {
-        if (!r.ok) throw new Error(`news_headlines.json HTTP ${r.status}`);
-        return r.json();
-      }),
+      fetchDataJson<AgentReport>('agent_report.json'),
+      fetchDataJson<NewsData>('news_headlines.json'),
     ])
       .then(([rep, newsData]) => {
         setReport(rep);
@@ -114,11 +107,16 @@ function AgentLabInner() {
       <header className="lab-header">
         <div>
           <h1>News Agent</h1>
-          <p className="lab-subtitle">RSS 新闻 + ML 概率 → OpenAI / 本地规则引擎研报</p>
+          <p className="lab-subtitle">RSS 新闻 + ML 概率 → Claude / OpenAI / 本地规则引擎研报</p>
         </div>
         <div className="lab-model-badge">
           <span className="lab-badge-version">
-            L1 · {report.provider?.startsWith('openai') ? 'OpenAI' : (report.provider || 'local')}
+            L1 · {(() => {
+              const p = report.provider || 'local';
+              if (p.startsWith('anthropic') || p.includes('claude')) return 'Claude';
+              if (p.startsWith('openai')) return 'OpenAI';
+              return p;
+            })()}
           </span>
           <span className="lab-badge-auc" style={{ color: level.color }}>
             Score {report.risk_score} · {level.label}
@@ -126,9 +124,9 @@ function AgentLabInner() {
         </div>
       </header>
 
-      {report.provider && !report.provider.startsWith('openai') && (
+      {report.provider && !report.provider.startsWith('anthropic') && !report.provider.startsWith('openai') && (
         <div className="lab-signal-note" style={{ marginBottom: 16, color: '#b45309' }}>
-          当前研报来源：{report.provider}（不是 ChatGPT）。若已配置 OPENAI_API_KEY，请查看 Actions 日志中的 key length / OpenAI 报错。
+          当前研报来源：{report.provider}（不是 Claude/ChatGPT）。若已配置 API Key，请查看 Actions 日志中的 key length / 报错信息。
         </div>
       )}
 
@@ -182,7 +180,7 @@ function AgentLabInner() {
             <div className="agent-compare-bar">
               <div className="agent-compare-fill" style={{ width: `${agentAsPct}%`, background: level.color }} />
             </div>
-            <div className="agent-compare-hint">Local synthesizer · news + ML</div>
+            <div className="agent-compare-hint">Claude / LLM · news + ML synthesis</div>
           </div>
         </div>
       </section>

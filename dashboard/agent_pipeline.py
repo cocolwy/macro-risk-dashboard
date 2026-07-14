@@ -6,11 +6,12 @@ report, and writes dashboard/data/agent_report.json.
 
 Providers (env AGENT_LLM, default: auto):
   local     — keyword/theme synthesizer + ML probability (no API, CI-safe)
+  anthropic — Claude API (ANTHROPIC_API_KEY, optional ANTHROPIC_MODEL)
   openai    — ChatGPT / OpenAI API (OPENAI_API_KEY, optional OPENAI_MODEL)
   ollama    — local Ollama (OLLAMA_HOST, OLLAMA_MODEL)
-  anthropic — Claude API (ANTHROPIC_API_KEY)
 
-Auto (when AGENT_LLM unset): OPENAI_API_KEY → openai, else Ollama if up, else local.
+Auto (when AGENT_LLM unset): ANTHROPIC_API_KEY → anthropic, else OPENAI_API_KEY → openai,
+else Ollama if up, else local.
 """
 
 from __future__ import annotations
@@ -385,18 +386,20 @@ def _api_key(name: str) -> str:
 def resolve_provider() -> str:
     explicit = (os.environ.get("AGENT_LLM") or "").strip().lower()
     # aliases
+    if explicit in {"claude", "anthropic"}:
+        return "anthropic"
     if explicit in {"chatgpt", "gpt", "openai"}:
         return "openai"
-    if explicit in {"local", "ollama", "anthropic"}:
+    if explicit in {"local", "ollama"}:
         return explicit
     if explicit:
-        raise RuntimeError(f"Unknown AGENT_LLM={explicit!r} (use local|openai|ollama|anthropic)")
+        raise RuntimeError(f"Unknown AGENT_LLM={explicit!r} (use local|anthropic|openai|ollama)")
 
-    # Auto-detect when AGENT_LLM unset
-    if _api_key("OPENAI_API_KEY"):
-        return "openai"
+    # Auto-detect when AGENT_LLM unset — Anthropic preferred
     if _api_key("ANTHROPIC_API_KEY"):
         return "anthropic"
+    if _api_key("OPENAI_API_KEY"):
+        return "openai"
     host = os.environ.get("OLLAMA_HOST", "http://127.0.0.1:11434").rstrip("/")
     try:
         with urllib.request.urlopen(f"{host}/api/tags", timeout=1.5) as resp:
@@ -459,10 +462,12 @@ def main() -> int:
     ml_prob = _extract_ml_probability(metrics)
     provider = resolve_provider()
     key_len = len(_api_key("OPENAI_API_KEY"))
+    anth_len = len(_api_key("ANTHROPIC_API_KEY"))
 
     print(f"  Headlines: {len(headlines)}")
     print(f"  ML probability: {ml_prob:.4f}")
     print(f"  Provider: {provider}")
+    print(f"  ANTHROPIC_API_KEY length: {anth_len} (0 means missing)")
     print(f"  OPENAI_API_KEY length: {key_len} (0 means missing)")
 
     report = generate_report(headlines, ml_prob, provider)
