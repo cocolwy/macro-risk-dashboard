@@ -1,15 +1,10 @@
 """
-ScoreAgent — 计算复合风险分数 + 输出最终 JSON。
+ScoreAgent — 计算复合风险分数 + 输出最终 JSON, 指标列表从注册表读取。
 
 从 Bus 读取: raw_data, metrics, experiments, weight_comparison, review, alerts
 输出到 Bus:
-  composite_scores  list[dict]  每日复合分数时间序列
-  summary           dict        最终摘要 (含 alerts + score + prediction)
-输出文件:
-  data/model_metrics.json
-  data/crash_prediction.json
-  data/composite_score.json
-  data/summary.json
+  composite_scores  list[dict]
+  summary           dict
 """
 import json
 import shutil
@@ -18,6 +13,7 @@ import sys
 from pathlib import Path
 
 from ._base import BaseAgent
+from .registry import INDICATOR
 
 _DASHBOARD_DIR = str(Path(__file__).resolve().parent.parent)
 if _DASHBOARD_DIR not in sys.path:
@@ -61,10 +57,9 @@ class ScoreAgent(BaseAgent):
             }
             self.log("复合分数", f"{latest['composite_score']:.0f}/100 [{label['label']}]", status="success")
 
-        # --- Save individual JSON files ---
-        for key in ["term_spread", "credit_spread", "vix", "sp500",
-                     "breadth", "absorption_ratio", "turbulence"]:
-            if key in raw_data:
+        # --- Save individual JSON files (dynamic from registry) ---
+        for key in INDICATOR.keys():
+            if key in raw_data and raw_data[key]:
                 with open(data_dir / f"{key}.json", "w") as f:
                     json.dump(raw_data[key], f)
 
@@ -77,7 +72,6 @@ class ScoreAgent(BaseAgent):
             if weight_comparison:
                 metrics["weight_comparison"] = weight_comparison
 
-            # Preserve extended experiments from previous runs
             metrics_path = data_dir / "model_metrics.json"
             if metrics_path.exists():
                 try:
@@ -120,7 +114,6 @@ class ScoreAgent(BaseAgent):
         self.bus.put("summary", summary)
         self.log("输出", "summary.json", status="success")
 
-        # --- Sync to frontend ---
         if sync_frontend:
             public_dir = Path(__file__).resolve().parent.parent / "frontend" / "public" / "data"
             if public_dir.parent.exists():

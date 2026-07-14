@@ -1,16 +1,18 @@
 """
-RiskOrchestrator — 风控模型流水线编排器。
-
-复用 quant multi-agent 基础设施 (BaseAgent + MessageBus + Orchestrator 模式)。
+RiskOrchestrator — 风控模型流水线编排器, 配置驱动。
 
 Pipeline:
   MacroDataAgent → FeatureAgent → ModelTrainerAgent → ModelCriticAgent → ScoreAgent
-                                                        ↑ 打回则报告但不停止
+
+所有配置通过 config dict 传入, 流转到各 Agent:
+  config = {
+      "indicators": ["vix", "sp500", "gold"],     # 要获取的指标
+      "features": ["full", "slim", "my_feats"],    # 要构建的特征集
+      "target_col": "sp500",                       # 标签基于哪个列
+      "embargo": 20,                               # 训练测试间隔
+  }
 """
 import time
-import sys
-from pathlib import Path
-
 from ._base import MessageBus, AgentStatus
 
 from .data_agent import MacroDataAgent
@@ -31,40 +33,68 @@ RISK_PIPELINE = [
 
 class RiskOrchestrator:
     """
-    风控流水线编排器
+    风控流水线编排器 — 配置驱动, 可适应不同任务。
 
     MacroDataAgent → FeatureAgent → ModelTrainerAgent → ModelCriticAgent → ScoreAgent
     """
 
-    def __init__(self, workspace="workspace/risk_pipeline"):
+    def __init__(self, workspace="workspace/risk_pipeline", config=None):
+        """
+        Parameters
+        ----------
+        config : dict | None
+            流水线配置, 支持以下 key:
+            - indicators: list[str]   选择哪些指标 (默认全部注册指标)
+            - features: list[str]     选择哪些特征集 (默认全部注册特征)
+            - target_col: str         标签列 (默认 "sp500")
+            - target_fn: callable     自定义标签函数
+            - embargo: int            训练测试间隔天数 (默认 20)
+            - split_ratio: float      训练集比例 (默认 0.7)
+        """
         self.bus = MessageBus(workspace=workspace)
+        self.config = config or {}
         self.agents = {}
         self.results = {}
 
         for name, cls, _ in RISK_PIPELINE:
             self.agents[name] = cls(self.bus)
 
-    def run(self, use_cached=False, stop_on_reject=False):
-        """
-        执行完整风控流水线。
+    def _get_agent_kwargs(self, name, use_cached):
+        """根据 config 为每个 Agent 生成 kwargs。"""
+        c = self.config
 
-        Parameters
-        ----------
-        use_cached : bool
-            True 时跳过数据下载, 使用已有 JSON (快速模式)
-        stop_on_reject : bool
-            True 时, ModelCritic 打回后停止流水线
-        """
+        if name == "macro_data":
+            return {
+                "use_cached": use_cached,
+                "indicators": c.get("indicators"),
+            }
+        elif name == "feature_eng":
+            kw = {}
+            if "features" in c:
+                kw["feature_variants"] = c["features"]
+            if "target_col" in c:
+                kw["target_col"] = c["target_col"]
+            if "target_fn" in c:
+                kw["target_fn"] = c["target_fn"]
+            return kw
+        elif name == "model_trainer":
+            kw = {}
+            if "embargo" in c:
+                kw["embargo"] = c["embargo"]
+            if "split_ratio" in c:
+                kw["split_ratio"] = c["split_ratio"]
+            return kw
+        else:
+            return {}
+
+    def run(self, use_cached=False, stop_on_reject=False):
         start = time.time()
         self.bus.log("orchestrator", "info", "风控流水线启动",
-                     f"共 {len(RISK_PIPELINE)} 个阶段, cached={use_cached}")
+                     f"共 {len(RISK_PIPELINE)} 个阶段, cached={use_cached}, config={list(self.config.keys())}")
 
-        for i, (name, cls, default_kwargs) in enumerate(RISK_PIPELINE, 1):
+        for i, (name, cls, _) in enumerate(RISK_PIPELINE, 1):
             agent = self.agents[name]
-            kwargs = dict(default_kwargs)
-
-            if name == "macro_data":
-                kwargs["use_cached"] = use_cached
+            kwargs = self._get_agent_kwargs(name, use_cached)
 
             self.bus.log("orchestrator", "info", f"[{i}/{len(RISK_PIPELINE)}] 调度",
                          f"→ {agent.role} ({name})")
@@ -92,11 +122,9 @@ class RiskOrchestrator:
         elapsed = time.time() - start
         self.bus.log("orchestrator", "success", "风控流水线完成",
                      f"{len(self.results)} 阶段完成, 耗时 {elapsed:.1f}s")
-
         return self.results
 
     def get_summary(self) -> dict:
-        """生成执行摘要。"""
         review = self.bus.get("review", {})
         metrics = self.bus.get("metrics", {})
         experiments = self.bus.get("experiments", [])
@@ -104,6 +132,7 @@ class RiskOrchestrator:
 
         return {
             "pipeline": "RiskOrchestrator",
+            "config": self.config,
             "stages": {
                 name: self.bus.get_status(name).value
                 for name, _, _ in RISK_PIPELINE
@@ -116,11 +145,12 @@ class RiskOrchestrator:
         }
 
     def print_summary(self):
-        """打印人类可读的执行摘要。"""
         summary = self.get_summary()
 
         print("\n" + "=" * 60)
         print("Risk Pipeline Summary")
+        if summary["config"]:
+            print(f"Config: {summary['config']}")
         print("=" * 60)
 
         print("\n[Stages]")
