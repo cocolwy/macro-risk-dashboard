@@ -41,7 +41,7 @@ jobs:
       - name: Run agent pipeline
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-          ANTHROPIC_MODEL: claude-sonnet-4-20250514
+          ANTHROPIC_MODEL: claude-sonnet-5
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           OPENAI_MODEL: gpt-4o-mini
         run: |
@@ -151,4 +151,4 @@ jobs:
           to: ${{ secrets.ALERT_EMAIL_TO }}
           from: Macro Risk Bot <${{ secrets.ALERT_EMAIL_USER }}>
 
-# last-manual-trigger: 2026-07-14T12:20:54Z
+# last-manual-trigger: 2026-07-14T12:26:25Z
