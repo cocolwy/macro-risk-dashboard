@@ -198,6 +198,17 @@ body {
   color: var(--text-2);
 }
 
+.chart-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-2);
+  font-size: 13px;
+  background: rgba(241, 216, 226, 0.15);
+  border-radius: 8px;
+  border: 1px dashed rgba(214, 69, 122, 0.2);
+}
+
 .error-banner {
   background: var(--accent-red-bg);
   border: 1px solid #fca5a5;

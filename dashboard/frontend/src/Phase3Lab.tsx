@@ -6,6 +6,8 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { StackedProbSPChart } from './components/StackedProbSPChart';
+import { LazyMount } from './components/LazyMount';
+import { fetchDataJson } from './api';
 import { mergeExperimentTimeline, downsample } from './utils/chart';
 
 class ErrorBoundary extends Component<{ children: ReactNode }, { error: string | null }> {
@@ -129,14 +131,16 @@ function ProbTimeline({ baseline, challenger, baseColor, challColor }: {
   ], [baseline.name, challenger.name, baseColor, challColor]);
 
   return (
-    <StackedProbSPChart
-      data={chartData}
-      series={series}
-      probHeight={220}
-      spHeight={110}
-      showLegend
-      showThreshold
-    />
+    <LazyMount minHeight={340}>
+      <StackedProbSPChart
+        data={chartData}
+        series={series}
+        probHeight={220}
+        spHeight={110}
+        showLegend
+        showThreshold
+      />
+    </LazyMount>
   );
 }
 
@@ -275,9 +279,7 @@ function Phase3LabInner() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const base = import.meta.env.BASE_URL || '/';
-    fetch(`${base}data/phase3_metrics.json?t=${Date.now()}`)
-      .then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); })
+    fetchDataJson<Phase3Data>('phase3_metrics.json')
       .then(d => setData(d))
       .catch(e => setError(e.message));
   }, []);

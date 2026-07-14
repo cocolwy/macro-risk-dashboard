@@ -6,6 +6,7 @@ import {
 } from 'recharts';
 import { downsample, mergeExperimentTimeline, CHART_TOOLTIP_STYLE } from './utils/chart';
 import { StackedProbSPChart } from './components/StackedProbSPChart';
+import { fetchDataJson } from './api';
 
 interface ModelInfo {
   name: string;
@@ -86,8 +87,6 @@ interface ModelMetrics {
   experiments?: ExperimentData[];
   weight_comparison?: WeightComparison[];
 }
-
-const DATA_BASE_URL = import.meta.env.PROD ? './data' : '/data';
 
 const FEATURE_LABELS: Record<string, string> = {
   'credit_spread_10d_chg': '信用利差 10日变化',
@@ -553,8 +552,7 @@ export function PredictionLab() {
   const [mainRange, setMainRange] = useState<DateRange>('1y');
 
   useEffect(() => {
-    fetch(`${DATA_BASE_URL}/model_metrics.json`)
-      .then(r => { if (!r.ok) throw new Error(`${r.status}`); return r.json(); })
+    fetchDataJson<ModelMetrics>('model_metrics.json')
       .then(setMetrics)
       .catch(e => setError(e.message));
   }, []);

@@ -62,6 +62,10 @@ export function resolveCompositeScore(
   };
 }
 
+export async function fetchDataJson<T>(filename: string): Promise<T> {
+  return fetchJson<T>(filename);
+}
+
 async function fetchJson<T>(filename: string): Promise<T> {
   const cacheBust = import.meta.env.DEV ? `?_=${Date.now()}` : '';
   const resp = await fetch(`${DATA_BASE_URL}/${filename}${cacheBust}`);

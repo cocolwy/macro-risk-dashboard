@@ -1,5 +1,7 @@
 import { useState, useEffect, useMemo, Component, type ReactNode } from 'react';
 import { StackedProbSPChart } from './components/StackedProbSPChart';
+import { LazyMount } from './components/LazyMount';
+import { fetchDataJson } from './api';
 import { mergeExperimentTimeline, downsample } from './utils/chart';
 
 class ErrorBoundary extends Component<{ children: ReactNode }, { error: string | null }> {
@@ -60,14 +62,16 @@ function ProbTimeline({ baseline, challenger, baseColor, challColor }: {
   ], [baseline.name, challenger.name, baseColor, challColor]);
 
   return (
-    <StackedProbSPChart
-      data={chartData}
-      series={series}
-      probHeight={220}
-      spHeight={110}
-      showLegend
-      showThreshold
-    />
+    <LazyMount minHeight={340}>
+      <StackedProbSPChart
+        data={chartData}
+        series={series}
+        probHeight={220}
+        spHeight={110}
+        showLegend
+        showThreshold
+      />
+    </LazyMount>
   );
 }
 
@@ -76,9 +80,7 @@ function MetricLabInner() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const base = import.meta.env.BASE_URL || '/';
-    fetch(`${base}data/metric_exploration.json?t=${Date.now()}`)
-      .then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); })
+    fetchDataJson<MetricData>('metric_exploration.json')
       .then(d => setData(d))
       .catch(e => setError(e.message));
   }, []);
