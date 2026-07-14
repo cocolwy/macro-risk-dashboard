@@ -114,7 +114,7 @@ function AgentLabInner() {
       <header className="lab-header">
         <div>
           <h1>News Agent</h1>
-          <p className="lab-subtitle">RSS 新闻 + ML 概率 → 本地规则引擎宏观风险研报</p>
+          <p className="lab-subtitle">RSS 新闻 + ML 概率 → OpenAI / 本地规则引擎研报</p>
         </div>
         <div className="lab-model-badge">
           <span className="lab-badge-version">L1 · {report.provider || 'local'}</span>

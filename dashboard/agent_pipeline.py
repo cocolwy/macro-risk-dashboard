@@ -4,10 +4,13 @@ Macro risk agent pipeline.
 Reads news_headlines.json + model_metrics.json, synthesizes a structured risk
 report, and writes dashboard/data/agent_report.json.
 
-Providers (env AGENT_LLM, default: local):
+Providers (env AGENT_LLM, default: auto):
   local     — keyword/theme synthesizer + ML probability (no API, CI-safe)
-  ollama    — local Ollama OpenAI-compatible /api/chat (OLLAMA_HOST, OLLAMA_MODEL)
+  openai    — ChatGPT / OpenAI API (OPENAI_API_KEY, optional OPENAI_MODEL)
+  ollama    — local Ollama (OLLAMA_HOST, OLLAMA_MODEL)
   anthropic — Claude API (ANTHROPIC_API_KEY)
+
+Auto (when AGENT_LLM unset): OPENAI_API_KEY → openai, else Ollama if up, else local.
 """
 
 from __future__ import annotations
@@ -305,6 +308,50 @@ def call_ollama(user_prompt: str) -> dict[str, Any]:
     return _parse_json_response(text)
 
 
+def call_openai(user_prompt: str) -> dict[str, Any]:
+    api_key = os.environ.get("OPENAI_API_KEY")
+    if not api_key:
+        raise RuntimeError("OPENAI_API_KEY is not set")
+
+    model = os.environ.get("OPENAI_MODEL", "gpt-4o-mini")
+    base = os.environ.get("OPENAI_BASE_URL", "https://api.openai.com/v1").rstrip("/")
+    url = f"{base}/chat/completions"
+    payload = {
+        "model": model,
+        "temperature": 0.3,
+        "response_format": {"type": "json_object"},
+        "messages": [
+            {"role": "system", "content": SYSTEM_PROMPT},
+            {"role": "user", "content": user_prompt},
+        ],
+    }
+    req = urllib.request.Request(
+        url,
+        data=json.dumps(payload).encode("utf-8"),
+        headers={
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {api_key}",
+        },
+        method="POST",
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=120) as resp:
+            body = json.loads(resp.read().decode("utf-8"))
+    except urllib.error.HTTPError as exc:
+        detail = exc.read().decode("utf-8", errors="replace")
+        raise RuntimeError(f"OpenAI HTTP {exc.code}: {detail[:500]}") from exc
+    except urllib.error.URLError as exc:
+        raise RuntimeError(f"OpenAI unreachable: {exc}") from exc
+
+    choices = body.get("choices") or []
+    if not choices:
+        raise RuntimeError("Empty choices from OpenAI")
+    text = ((choices[0].get("message") or {}).get("content") or "").strip()
+    if not text:
+        raise RuntimeError("Empty response from OpenAI")
+    return _parse_json_response(text)
+
+
 def call_anthropic(user_prompt: str) -> dict[str, Any]:
     api_key = os.environ.get("ANTHROPIC_API_KEY")
     if not api_key:
@@ -331,9 +378,19 @@ def call_anthropic(user_prompt: str) -> dict[str, Any]:
 
 def resolve_provider() -> str:
     explicit = (os.environ.get("AGENT_LLM") or "").strip().lower()
+    # aliases
+    if explicit in {"chatgpt", "gpt", "openai"}:
+        return "openai"
     if explicit in {"local", "ollama", "anthropic"}:
         return explicit
-    # Auto: prefer Ollama if reachable, else local
+    if explicit:
+        raise RuntimeError(f"Unknown AGENT_LLM={explicit!r} (use local|openai|ollama|anthropic)")
+
+    # Auto-detect when AGENT_LLM unset
+    if os.environ.get("OPENAI_API_KEY"):
+        return "openai"
+    if os.environ.get("ANTHROPIC_API_KEY"):
+        return "anthropic"
     host = os.environ.get("OLLAMA_HOST", "http://127.0.0.1:11434").rstrip("/")
     try:
         with urllib.request.urlopen(f"{host}/api/tags", timeout=1.5) as resp:
@@ -349,6 +406,10 @@ def generate_report(headlines: list[dict[str, str]], ml_prob: float, provider: s
     if provider == "local":
         print("Using local rule synthesizer…")
         raw = synthesize_local(headlines, ml_prob)
+    elif provider == "openai":
+        model = os.environ.get("OPENAI_MODEL", "gpt-4o-mini")
+        print(f"Calling OpenAI ({model})…")
+        raw = call_openai(user_prompt)
     elif provider == "ollama":
         print(f"Calling Ollama ({os.environ.get('OLLAMA_MODEL', 'llama3.2')})…")
         raw = call_ollama(user_prompt)

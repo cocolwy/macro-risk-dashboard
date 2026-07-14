@@ -38,10 +38,12 @@ jobs:
       - name: Fetch news headlines
         run: python dashboard/news_fetcher.py
 
-      - name: Run agent pipeline (local synthesizer)
+      - name: Run agent pipeline
         continue-on-error: true
         env:
-          AGENT_LLM: local
+          # If OPENAI_API_KEY secret exists → ChatGPT; otherwise local rules
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_MODEL: gpt-4o-mini
         run: python dashboard/agent_pipeline.py
 
       - name: Sync frontend public data
