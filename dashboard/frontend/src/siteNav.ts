@@ -1,4 +1,4 @@
-export type PageId = 'home' | 'pipeline' | 'risk' | 'ch1' | 'ch2' | 'ch2_1';
+export type PageId = 'home' | 'pipeline' | 'risk' | 'ch1' | 'ch2' | 'ch2_1' | 'ch3';
 
 export interface NavItem {
   id: PageId;
@@ -61,8 +61,17 @@ export const SITE_NAV: Record<PageId, NavItem> = {
     subtitle: '评估指标优化 · Balanced vs Unbalanced · 概率校准实验',
     level: 3,
     parent: 'risk',
-    badge: 'NEW',
     metrics: 'F1 / Brier / Lift analysis',
+  },
+  ch3: {
+    id: 'ch3',
+    hash: 'ch3',
+    title: 'Ch.3 News Agent',
+    subtitle: 'RSS 新闻 + ML 概率 · Claude 宏观风险研报',
+    level: 3,
+    parent: 'risk',
+    badge: 'NEW',
+    metrics: 'risk score · news synthesis',
   },
 };
 
@@ -79,6 +88,8 @@ const HASH_ALIASES: Record<string, PageId> = {
   phase3: 'ch2',
   'ch2-1': 'ch2_1',
   metrics: 'ch2_1',
+  ch3: 'ch3',
+  agent: 'ch3',
 };
 
 export function pageFromHash(hash: string): PageId {
@@ -115,6 +126,6 @@ export const HOME_SECTIONS = [
     level: 3,
     label: '三级 · 风控因子探索',
     parent: 'risk' as PageId,
-    items: ['ch1', 'ch2', 'ch2_1'] as PageId[],
+    items: ['ch1', 'ch2', 'ch2_1', 'ch3'] as PageId[],
   },
 ];

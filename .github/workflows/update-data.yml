@@ -27,13 +27,22 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install pandas numpy yfinance akshare scikit-learn requests
+          pip install pandas numpy yfinance akshare scikit-learn requests feedparser anthropic
 
       - name: Fetch macro data
         run: python dashboard/fetch_macro_data.py
 
       - name: Run prediction model
         run: python dashboard/predict_model.py
+
+      - name: Fetch news headlines
+        run: python dashboard/news_fetcher.py
+
+      - name: Run agent pipeline
+        continue-on-error: true
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: python dashboard/agent_pipeline.py
 
       - name: Sync frontend public data
         run: |

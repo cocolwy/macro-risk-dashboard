@@ -1,0 +1,82 @@
+---
+description: 自审计模式 — 用户说「审计」「audit」「自查」「review实验」时触发
+alwaysApply: false
+---
+
+# 自审计 Multi-Agent 模式
+
+当用户要求审计/自查实验时，启动一个 Task subagent（subagent_type="generalPurpose", readonly=true）作为独立审计员。
+
+## 触发词
+
+用户说「审计一下」「自查」「audit」「review 实验」「检查实验设计」等。
+
+## 审计员 Prompt 模板
+
+启动 subagent 时使用以下 prompt 结构（根据具体实验填充）：
+
+```
+你是量化实验审计员。请严格检查「{实验名称}」实验是否设计正确、实现正确、跑法正确。
+不要默认信任作者结论；要对照代码与 JSON 结果自己验证。
+
+项目路径：/Users/licoco/Developer/vibecoding/quant
+
+## 审查清单
+
+### A. 对照是否公平
+- baseline 和 challenger 是否同一次 run、同一批数据、同一个 split？
+- 唯一变量是否真的只有一个？
+
+### B. 数据泄漏 / 对齐
+- 特征是否混入未来信息？
+- fillna / dropna / clip 是否合理？
+- train/test 特征分布是否严重偏移？
+
+### C. 训练评估协议
+- split_with_embargo 参数是否一致？
+- events 参数是否污染了主指标？
+- 是否有变量作用域 bug（如闭包捕获错误变量）？
+
+### D. JSON 数据完整性
+- merge 是否正确去重？
+- 字段名与前端是否匹配？
+- sp500_timeline 范围是否正确？
+
+### E. 结论是否过度
+- 结论的适用范围有多窄？
+- 有没有更好的实验设计被遗漏？
+
+## 交付物
+1. Verdict：大体正确 / 有关键缺陷 / 完全跑错
+2. 问题清单（按严重程度），每条给出：文件、函数、为什么错、如何扭曲结论
+3. 对照表：从 JSON 读到的真实指标 vs 作者报告
+4. 若要重跑：最小正确实验设计
+5. 一句话：用户该不该相信这个结论
+
+请直接读代码和 JSON 验证，不要只看叙述。
+关键文件：
+- dashboard/experiment_phase3.py
+- dashboard/experiment_extended_history.py
+- dashboard/predict_model.py
+- dashboard/data/phase3_metrics.json
+- dashboard/frontend/src/Phase3Lab.tsx
+```
+
+## 调用方式
+
+```
+Task(
+  subagent_type="generalPurpose",
+  readonly=true,
+  run_in_background=false,
+  description="审计: {实验名称}",
+  prompt=上述模板填充后的内容,
+)
+```
+
+## 收到审计结果后
+
+1. 将发现的 bug 按严重程度排列
+2. 询问用户是否要修复
+3. 修复后重跑实验并更新看板
+4. 在看板中添加「审计发现」卡片记录修复历史
