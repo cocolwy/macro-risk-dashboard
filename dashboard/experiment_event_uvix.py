@@ -17,6 +17,19 @@ from predict_model import build_event_features, get_event_dates
 from fetch_macro_data import fetch_yfinance_history, sync_public_data
 
 DATA_DIR = Path(__file__).parent / "data"
+ANALYSIS_YEARS = 10
+VIX_PERIOD = f"{ANALYSIS_YEARS}y"
+EVENT_START_YEAR = 2016
+EVENT_END_YEAR = 2027
+
+# Pre-registered primary windows (no post-hoc selection)
+PRIMARY_PRE_WINDOW = (5, 1)   # T-5 ~ T-1
+PRIMARY_POST_WINDOW = 1       # T+1 close-to-close
+BASELINE_STRIDE = 5           # decorrelate overlapping baseline anchors
+N_PRIMARY_TESTS = 6           # 3 events × 2 hypotheses
+BONFERRONI_ALPHA = round(0.05 / N_PRIMARY_TESTS, 5)
+COVID_EXCLUDE_START = pd.Timestamp("2020-03-01")
+COVID_EXCLUDE_END = pd.Timestamp("2020-06-30")
 
 EVENT_FEATURES = [
     "fomc_days_to", "fomc_days_since", "fomc_within_3d", "fomc_within_7d",
@@ -44,7 +57,7 @@ EVENT_WINDOW_CONFIG = {
 }
 
 
-def get_nfp_dates(start_year=2022, end_year=2027):
+def get_nfp_dates(start_year=EVENT_START_YEAR, end_year=EVENT_END_YEAR):
     dates = set()
     for year in range(start_year, end_year):
         for month in range(1, 13):
@@ -68,7 +81,7 @@ def add_nfp_days_to(features: pd.DataFrame, dates_index: pd.DatetimeIndex) -> pd
 
 
 def fetch_vix_series() -> pd.Series:
-    df = fetch_yfinance_history("^VIX", period="5y")
+    df = fetch_yfinance_history("^VIX", period=VIX_PERIOD)
     if df.empty:
         raise RuntimeError("VIX data unavailable")
     s = df["Close"].copy()
@@ -106,7 +119,7 @@ def window_label_post(post_off: int) -> str:
     return f"T+0~T+{post_off}" if post_off > 1 else "T+1"
 
 
-def proportion_test(success_a: int, n_a: int, success_b: int, n_b: int) -> dict:
+def proportion_test(success_a: int, n_a: int, success_b: int, n_b: int, one_sided: bool = False) -> dict:
     if n_a < 5 or n_b < 5:
         return {"z_stat": None, "p_value": None}
     p1, p2 = success_a / n_a, success_b / n_b
@@ -115,7 +128,11 @@ def proportion_test(success_a: int, n_a: int, success_b: int, n_b: int) -> dict:
         return {"z_stat": None, "p_value": None}
     se = np.sqrt(p_pool * (1 - p_pool) * (1 / n_a + 1 / n_b))
     z = (p1 - p2) / se
-    return {"z_stat": round(float(z), 3), "p_value": round(float(2 * (1 - stats.norm.cdf(abs(z)))), 4)}
+    if one_sided:
+        p_val = float(1 - stats.norm.cdf(z)) if z > 0 else 1.0
+    else:
+        p_val = float(2 * (1 - stats.norm.cdf(abs(z))))
+    return {"z_stat": round(float(z), 3), "p_value": round(p_val, 4)}
 
 
 def phi_correlation(flags: list, outcomes: list) -> dict:
@@ -134,8 +151,136 @@ def _verdict(sig: bool, event_rate, base_rate, want_higher: bool) -> str:
     return "显著正相关" if (diff > 0) == want_higher else "显著负相关"
 
 
+def filter_event_dates_in_range(vix: pd.Series, event_dates: list, max_pre: int = 10, max_post: int = 5) -> list:
+    """Keep events with enough trading days before/after for the widest tested window."""
+    idx = vix.index
+    out = []
+    for ed in event_dates:
+        t0 = event_trading_day(idx, pd.Timestamp(ed))
+        if t0 is None:
+            continue
+        pos = idx.get_loc(t0)
+        if pos >= max_pre and pos + max_post < len(idx):
+            out.append(pd.Timestamp(ed))
+    return out
+
+
 def collect_event_trading_days(vix: pd.Series, event_dates: list) -> set:
     return {t for d in event_dates if (t := event_trading_day(vix.index, pd.Timestamp(d))) is not None}
+
+
+# ── Level-based measurement helpers ──────────────────────────────────────────
+
+def event_vix_window_avg(vix: pd.Series, event_dates: list, start_off: int, end_off: int = 1) -> list:
+    """Average VIX level across T-start_off … T-end_off before each event."""
+    idx = vix.index
+    out = []
+    for ed in event_dates:
+        t0 = event_trading_day(idx, pd.Timestamp(ed))
+        if t0 is None:
+            continue
+        d_start = trading_offset(idx, t0, -start_off)
+        d_end = trading_offset(idx, t0, -end_off)
+        if d_start is None or d_end is None or d_start >= d_end:
+            continue
+        vals = vix.loc[d_start:d_end]
+        if len(vals) >= 2:
+            out.append(float(vals.mean()))
+    return out
+
+
+def event_vix_t1_level(vix: pd.Series, event_dates: list) -> list:
+    """VIX level at T-1 (one trading day before event)."""
+    idx = vix.index
+    out = []
+    for ed in event_dates:
+        t0 = event_trading_day(idx, pd.Timestamp(ed))
+        if t0 is None:
+            continue
+        t1 = trading_offset(idx, t0, -1)
+        if t1 is not None:
+            out.append(float(vix.loc[t1]))
+    return out
+
+
+def baseline_vix_window_avg(vix: pd.Series, exclude: set, start_off: int, end_off: int = 1, stride: int = 1) -> list:
+    """Average VIX level in window for non-event anchor days."""
+    idx = vix.index
+    out = []
+    for i, t0 in enumerate(idx):
+        if t0 in exclude:
+            continue
+        if stride > 1 and i % stride != 0:
+            continue
+        d_start = trading_offset(idx, t0, -start_off)
+        d_end = trading_offset(idx, t0, -end_off)
+        if d_start is None or d_end is None or d_start >= d_end:
+            continue
+        vals = vix.loc[d_start:d_end]
+        if len(vals) >= 2:
+            out.append(float(vals.mean()))
+    return out
+
+
+def welch_ttest_greater(event_vals: list, base_vals: list, alpha: float = 0.05) -> dict:
+    """One-sided Welch t-test: H1 event_mean > base_mean."""
+    if len(event_vals) < 5 or len(base_vals) < 5:
+        return {"t_stat": None, "p_value": None, "significant": False}
+    t_stat, _ = stats.ttest_ind(event_vals, base_vals, equal_var=False)
+    p_one = float(1 - stats.norm.cdf(t_stat)) if t_stat > 0 else 1.0
+    sig = p_one < alpha
+    return {
+        "t_stat": round(float(t_stat), 3),
+        "p_value": round(p_one, 4),
+        "event_mean": round(float(np.mean(event_vals)), 2),
+        "baseline_mean": round(float(np.mean(base_vals)), 2),
+        "excess": round(float(np.mean(event_vals)) - float(np.mean(base_vals)), 2),
+        "event_n": len(event_vals),
+        "baseline_n": len(base_vals),
+        "significant": sig,
+        "alpha_used": alpha,
+        "verdict": ("VIX 显著偏高" if sig else ("VIX 偏高但不显著" if float(np.mean(event_vals)) > float(np.mean(base_vals)) else "VIX 无差异")),
+    }
+
+
+def build_level_analysis(vix: pd.Series, date_map: dict, all_event_days: set) -> dict:
+    """
+    Method A: compare avg VIX level in T-5~T-1 window vs non-event baseline.
+    Method B: compare VIX at T-1 vs full-sample unconditional mean.
+    """
+    pre_start, pre_end = PRIMARY_PRE_WINDOW
+    full_mean = round(float(vix.mean()), 2)
+
+    method_a_rows = []
+    method_b_rows = []
+    ba_window = baseline_vix_window_avg(vix, all_event_days, pre_start, pre_end, stride=BASELINE_STRIDE)
+
+    for et, label in [("fomc", "FOMC"), ("cpi", "CPI"), ("nfp", "NFP")]:
+        dates = date_map[et]
+
+        # Method A
+        ev_window = event_vix_window_avg(vix, dates, pre_start, pre_end)
+        res_a = welch_ttest_greater(ev_window, ba_window, alpha=BONFERRONI_ALPHA)
+        method_a_rows.append({"event": label, **res_a})
+
+        # Method B
+        ev_t1 = event_vix_t1_level(vix, dates)
+        res_b = welch_ttest_greater(ev_t1, list(vix), alpha=BONFERRONI_ALPHA)
+        method_b_rows.append({"event": label, **res_b})
+
+    return {
+        "description_a": (
+            f"Method A · 窗口均值比较：T-{pre_start}~T-{pre_end} 期间 VIX 平均水平 "
+            f"vs 非事件日同窗口基准（稀疏 stride={BASELINE_STRIDE}）"
+        ),
+        "description_b": (
+            f"Method B · 绝对水平比较：T-1 日 VIX 水平 vs 全样本 VIX 均值 {full_mean}"
+        ),
+        "full_sample_mean_vix": full_mean,
+        "method_a": method_a_rows,
+        "method_b": method_b_rows,
+        "note": "统计检验为单侧 Welch t-test，Bonferroni α 同主结论",
+    }
 
 
 def event_pre_returns(vix: pd.Series, event_dates: list, start_off: int, end_off: int = 1) -> list:
@@ -164,11 +309,13 @@ def event_post_returns(vix: pd.Series, event_dates: list, post_off: int) -> list
     return out
 
 
-def baseline_pre_returns(vix: pd.Series, exclude: set, start_off: int, end_off: int = 1) -> list:
+def baseline_pre_returns(vix: pd.Series, exclude: set, start_off: int, end_off: int = 1, stride: int = 1) -> list:
     idx = vix.index
     out = []
-    for t0 in idx:
+    for i, t0 in enumerate(idx):
         if t0 in exclude:
+            continue
+        if stride > 1 and i % stride != 0:
             continue
         r = pct_return(vix, trading_offset(idx, t0, -start_off), trading_offset(idx, t0, -end_off))
         if r is not None:
@@ -176,11 +323,13 @@ def baseline_pre_returns(vix: pd.Series, exclude: set, start_off: int, end_off: 
     return out
 
 
-def baseline_post_returns(vix: pd.Series, exclude: set, post_off: int) -> list:
+def baseline_post_returns(vix: pd.Series, exclude: set, post_off: int, stride: int = 1) -> list:
     idx = vix.index
     out = []
-    for t0 in idx:
+    for i, t0 in enumerate(idx):
         if t0 in exclude:
+            continue
+        if stride > 1 and i % stride != 0:
             continue
         r = pct_return(vix, t0, trading_offset(idx, t0, post_off))
         if r is not None:
@@ -188,7 +337,13 @@ def baseline_post_returns(vix: pd.Series, exclude: set, post_off: int) -> list:
     return out
 
 
-def test_window(event_vals: list, base_vals: list, direction: str = "up") -> dict:
+def test_window(
+    event_vals: list,
+    base_vals: list,
+    direction: str = "up",
+    one_sided: bool = False,
+    alpha: float = 0.05,
+) -> dict:
     if direction == "up":
         ev_succ = sum(1 for r in event_vals if r > 0)
         ba_succ = sum(1 for r in base_vals if r > 0)
@@ -198,9 +353,12 @@ def test_window(event_vals: list, base_vals: list, direction: str = "up") -> dic
     ev_n, ba_n = len(event_vals), len(base_vals)
     ev_rate = round(ev_succ / ev_n, 3) if ev_n else None
     ba_rate = round(ba_succ / ba_n, 3) if ba_n else None
-    test = proportion_test(ev_succ, ev_n, ba_succ, ba_n) if ev_n and ba_n else {"z_stat": None, "p_value": None}
+    test = (
+        proportion_test(ev_succ, ev_n, ba_succ, ba_n, one_sided=one_sided)
+        if ev_n and ba_n else {"z_stat": None, "p_value": None}
+    )
     excess = round(ev_rate - ba_rate, 3) if ev_rate is not None and ba_rate is not None else None
-    sig = test["p_value"] is not None and test["p_value"] < 0.05
+    sig = test["p_value"] is not None and test["p_value"] < alpha and excess is not None and excess > 0
     phi = phi_correlation(
         [1] * ev_n + [0] * ba_n,
         ([1 if r > 0 else 0 for r in event_vals] if direction == "up"
@@ -219,7 +377,9 @@ def test_window(event_vals: list, base_vals: list, direction: str = "up") -> dic
         "z_stat": test["z_stat"],
         "p_value": test["p_value"],
         "phi": phi["phi"],
-        "significant": sig and excess is not None and excess > 0,
+        "significant": sig,
+        "alpha_used": alpha,
+        "one_sided": one_sided,
         "verdict": _verdict(sig, ev_rate, ba_rate, want_higher=True),
     }
 
@@ -232,6 +392,175 @@ def pick_best(candidates: list, hypothesis: str) -> dict:
     positive = [c for c in valid if (c.get("excess_hit_rate") or 0) > 0]
     pool = positive if positive else valid
     return min(pool, key=lambda c: c["p_value"])
+
+
+def run_primary_event_test(vix: pd.Series, event_type: str, event_dates: list, all_event_days: set) -> dict:
+    cfg = EVENT_WINDOW_CONFIG[event_type]
+    pre_start, pre_end = PRIMARY_PRE_WINDOW
+    post_off = PRIMARY_POST_WINDOW
+
+    ev_pre = event_pre_returns(vix, event_dates, pre_start, pre_end)
+    ba_pre = baseline_pre_returns(vix, all_event_days, pre_start, pre_end, stride=BASELINE_STRIDE)
+    h1 = test_window(ev_pre, ba_pre, "up", one_sided=True, alpha=BONFERRONI_ALPHA)
+    h1["window"] = window_label_pre(pre_start, pre_end)
+    h1["start_off"] = pre_start
+    h1["end_off"] = pre_end
+
+    ev_post = event_post_returns(vix, event_dates, post_off)
+    ba_post = baseline_post_returns(vix, all_event_days, post_off, stride=BASELINE_STRIDE)
+    h2 = test_window(ev_post, ba_post, "down", one_sided=True, alpha=BONFERRONI_ALPHA)
+    h2["window"] = window_label_post(post_off)
+    h2["post_off"] = post_off
+
+    return {
+        "event": cfg["label"],
+        "event_type": event_type,
+        "pre_window": h1["window"],
+        "post_window": h2["window"],
+        "h1_pre_rise": h1,
+        "h2_post_fall": h2,
+    }
+
+
+def build_conclusion_summary(primary_rows: list) -> str:
+    parts = []
+    for row in primary_rows:
+        h1 = row["h1_pre_rise"]
+        ev = row["event"]
+        win = row["pre_window"]
+        if h1.get("significant"):
+            parts.append(
+                f"{ev} 前 {win} 经 Bonferroni 校正后显著"
+                f"（上涨率 {h1['event_hit_rate']*100:.0f}% vs 基准 {h1['baseline_hit_rate']*100:.0f}%，"
+                f"p={h1['p_value']:.4f}）"
+            )
+        elif (h1.get("excess_hit_rate") or 0) > 0:
+            parts.append(f"{ev} 前 {win} 有正向差异但不显著（p={h1['p_value']:.3f}）")
+        else:
+            parts.append(f"{ev} 前 {win} 无显著相关")
+    h2_confirmed = [row["event"] for row in primary_rows if row["h2_post_fall"].get("significant")]
+    if h2_confirmed:
+        parts.append(f"发布后下跌显著：{', '.join(h2_confirmed)}")
+    else:
+        parts.append("三类事件发布后 VIX 下跌率经 Bonferroni 校正后均未显著高于基准")
+    return "；".join(parts) + "。"
+
+
+def build_primary_analysis(vix: pd.Series, date_map: dict, all_event_days: set) -> dict:
+    rows = [run_primary_event_test(vix, et, date_map[et], all_event_days) for et in EVENT_WINDOW_CONFIG]
+    pre_start, pre_end = PRIMARY_PRE_WINDOW
+    base_pre = baseline_pre_returns(vix, all_event_days, pre_start, pre_end, stride=BASELINE_STRIDE)
+    base_post = baseline_post_returns(vix, all_event_days, PRIMARY_POST_WINDOW, stride=BASELINE_STRIDE)
+    return {
+        "method": (
+            f"预注册固定窗口 · 稀疏基准(每{BASELINE_STRIDE}交易日取anchor) · "
+            f"单侧z检验 · Bonferroni α={BONFERRONI_ALPHA} ({N_PRIMARY_TESTS} tests)"
+        ),
+        "windows": {
+            "h1_pre": window_label_pre(*PRIMARY_PRE_WINDOW),
+            "h2_post": window_label_post(PRIMARY_POST_WINDOW),
+        },
+        "baseline_stride": BASELINE_STRIDE,
+        "bonferroni_tests": N_PRIMARY_TESTS,
+        "bonferroni_alpha": BONFERRONI_ALPHA,
+        "baseline_reference": {
+            "pre": {
+                "hit_rate_up": round(sum(1 for r in base_pre if r > 0) / len(base_pre), 3) if base_pre else None,
+                "mean_pct": round(float(np.mean(base_pre)), 3) if base_pre else None,
+                "n": len(base_pre),
+                "description": f"稀疏基准：非事件日 {window_label_pre(*PRIMARY_PRE_WINDOW)}",
+            },
+            "post": {
+                "hit_rate_down": round(sum(1 for r in base_post if r < 0) / len(base_post), 3) if base_post else None,
+                "mean_pct": round(float(np.mean(base_post)), 3) if base_post else None,
+                "n": len(base_post),
+                "description": f"稀疏基准：非事件日 {window_label_post(PRIMARY_POST_WINDOW)}",
+            },
+        },
+        "by_event": rows,
+        "conclusion_summary": build_conclusion_summary(rows),
+    }
+
+
+def build_subsample_analysis(vix: pd.Series, date_map: dict, all_event_days: set) -> dict:
+    """Re-run primary + level analysis on 1y and 2y trailing sub-samples."""
+    today = vix.index[-1]
+    results = {}
+    for label, months in [("1y", 12), ("2y", 24)]:
+        cutoff = today - pd.DateOffset(months=months)
+        sub_date_map = {
+            et: [d for d in dates if pd.Timestamp(d) >= cutoff]
+            for et, dates in date_map.items()
+        }
+        sub_event_days = (
+            collect_event_trading_days(vix, sub_date_map["fomc"])
+            | collect_event_trading_days(vix, sub_date_map["cpi"])
+            | collect_event_trading_days(vix, sub_date_map["nfp"])
+        )
+        sub_vix = vix[vix.index >= cutoff]
+
+        rows = []
+        pre_start, pre_end = PRIMARY_PRE_WINDOW
+        ba_ret = baseline_pre_returns(sub_vix, sub_event_days, pre_start, pre_end, stride=1)
+        ba_lvl = baseline_vix_window_avg(sub_vix, sub_event_days, pre_start, pre_end, stride=1)
+
+        for et, ev_label in [("fomc", "FOMC"), ("cpi", "CPI"), ("nfp", "NFP")]:
+            dates = sub_date_map[et]
+
+            # return-based (original method)
+            ev_ret = event_pre_returns(sub_vix, dates, pre_start, pre_end)
+            ret_result = test_window(ev_ret, ba_ret, "up", one_sided=True, alpha=0.05)
+
+            # level-based Method A
+            ev_lvl = event_vix_window_avg(sub_vix, dates, pre_start, pre_end)
+            lvl_result = welch_ttest_greater(ev_lvl, ba_lvl, alpha=0.05)
+
+            rows.append({
+                "event": ev_label,
+                "n_events": len(dates),
+                "return_based": {
+                    "event_hit_rate": ret_result.get("event_hit_rate"),
+                    "baseline_hit_rate": ret_result.get("baseline_hit_rate"),
+                    "excess_hit_rate": ret_result.get("excess_hit_rate"),
+                    "p_value": ret_result.get("p_value"),
+                    "verdict": ret_result.get("verdict"),
+                },
+                "level_based": {
+                    "event_mean_vix": lvl_result.get("event_mean"),
+                    "baseline_mean_vix": lvl_result.get("baseline_mean"),
+                    "excess_vix": lvl_result.get("excess"),
+                    "p_value": lvl_result.get("p_value"),
+                    "verdict": lvl_result.get("verdict"),
+                },
+            })
+
+        results[label] = {
+            "label": f"近 {label}",
+            "date_range": f"{cutoff.strftime('%Y-%m-%d')} ~ {today.strftime('%Y-%m-%d')}",
+            "note": "小样本：n<15 时 p 值仅供参考",
+            "by_event": rows,
+        }
+    return results
+
+
+def build_covid_sensitivity(vix: pd.Series, date_map: dict, all_event_days: set) -> dict:
+    fomc_dates = [
+        d for d in date_map["fomc"]
+        if not (COVID_EXCLUDE_START <= pd.Timestamp(d) <= COVID_EXCLUDE_END)
+    ]
+    row = run_primary_event_test(vix, "fomc", fomc_dates, all_event_days)
+    h1 = row["h1_pre_rise"]
+    return {
+        "description": f"排除 {COVID_EXCLUDE_START.date()} ~ {COVID_EXCLUDE_END.date()} 的 FOMC 事件",
+        "events_remaining": len(fomc_dates),
+        "pre_window": row["pre_window"],
+        "hit_rate_up": h1.get("event_hit_rate"),
+        "baseline_hit_rate_up": h1.get("baseline_hit_rate"),
+        "excess_hit_rate": h1.get("excess_hit_rate"),
+        "p_value": h1.get("p_value"),
+        "significant": h1.get("significant", False),
+        "verdict": h1.get("verdict"),
+    }
 
 
 def sweep_event_windows(vix: pd.Series, event_type: str, event_dates: list, all_event_days: set) -> dict:
@@ -268,13 +597,12 @@ def sweep_event_windows(vix: pd.Series, event_type: str, event_dates: list, all_
     }
 
 
-def build_event_study_detail(vix: pd.Series, event_dates: list, event_type: str, sweep: dict) -> dict:
-    """Per-event table using best windows."""
-    best_pre = sweep["best_pre"]
-    best_post = sweep["best_post"]
-    pre_start = best_pre.get("start_off", 7)
-    pre_end = best_pre.get("end_off", 1)
-    post_off = best_post.get("post_off", 1)
+def build_event_study_detail(vix: pd.Series, event_dates: list, event_type: str, primary_row: dict) -> dict:
+    """Per-event table using pre-registered primary windows."""
+    h1, h2 = primary_row["h1_pre_rise"], primary_row["h2_post_fall"]
+    pre_start = h1.get("start_off", PRIMARY_PRE_WINDOW[0])
+    pre_end = h1.get("end_off", PRIMARY_PRE_WINDOW[1])
+    post_off = h2.get("post_off", PRIMARY_POST_WINDOW)
 
     idx = vix.index
     events = []
@@ -288,11 +616,11 @@ def build_event_study_detail(vix: pd.Series, event_dates: list, event_type: str,
             "trading_day": t0.strftime("%Y-%m-%d"),
             "vix_at_event": round(float(vix.loc[t0]), 2),
             "pre_return_pct": pre_r,
-            "pre_window": best_pre.get("window", ""),
+            "pre_window": primary_row["pre_window"],
         }
         for po in EVENT_WINDOW_CONFIG[event_type]["post"]:
             row[f"post_{po}d_return_pct"] = pct_return(vix, t0, trading_offset(idx, t0, po))
-        row["best_post_window"] = best_post.get("window", "")
+        row["best_post_window"] = primary_row["post_window"]
         events.append(row)
 
     pre_vals = [e["pre_return_pct"] for e in events if e["pre_return_pct"] is not None]
@@ -308,8 +636,8 @@ def build_event_study_detail(vix: pd.Series, event_dates: list, event_type: str,
 
     return {
         "event_type": event_type,
-        "best_pre_window": best_pre.get("window"),
-        "best_post_window": best_post.get("window"),
+        "best_pre_window": primary_row["pre_window"],
+        "best_post_window": primary_row["post_window"],
         "events": events[-12:],
         "summary": {
             "count": len(events),
@@ -319,94 +647,93 @@ def build_event_study_detail(vix: pd.Series, event_dates: list, event_type: str,
     }
 
 
-def build_hypothesis_verdict(sweeps: list) -> dict:
+def build_hypothesis_verdict(primary: dict) -> dict:
     by_event = []
-    for s in sweeps:
-        bp, bpo = s["best_pre"], s["best_post"]
+    for row in primary["by_event"]:
+        h1, h2 = row["h1_pre_rise"], row["h2_post_fall"]
         by_event.append({
-            "event": s["event"],
-            "best_pre_window": bp.get("window"),
-            "best_post_window": bpo.get("window"),
+            "event": row["event"],
+            "best_pre_window": row["pre_window"],
+            "best_post_window": row["post_window"],
             "h1_pre_rise": {
-                "confirmed": bp.get("significant", False),
-                "mean_pct": bp.get("event_mean_pct"),
-                "hit_rate_up": bp.get("event_hit_rate"),
-                "baseline_hit_rate_up": bp.get("baseline_hit_rate"),
-                "excess_hit_rate": bp.get("excess_hit_rate"),
-                "p_value": bp.get("p_value"),
-                "verdict": bp.get("verdict"),
+                "confirmed": h1.get("significant", False),
+                "mean_pct": h1.get("event_mean_pct"),
+                "hit_rate_up": h1.get("event_hit_rate"),
+                "baseline_hit_rate_up": h1.get("baseline_hit_rate"),
+                "excess_hit_rate": h1.get("excess_hit_rate"),
+                "p_value": h1.get("p_value"),
+                "verdict": h1.get("verdict"),
             },
             "h2_post_fall": {
-                "confirmed": bpo.get("significant", False),
-                "mean_pct": bpo.get("event_mean_pct"),
-                "hit_rate_down": bpo.get("event_hit_rate"),
-                "baseline_hit_rate_down": bpo.get("baseline_hit_rate"),
-                "excess_hit_rate": bpo.get("excess_hit_rate"),
-                "p_value": bpo.get("p_value"),
-                "verdict": bpo.get("verdict"),
+                "confirmed": h2.get("significant", False),
+                "mean_pct": h2.get("event_mean_pct"),
+                "hit_rate_down": h2.get("event_hit_rate"),
+                "baseline_hit_rate_down": h2.get("baseline_hit_rate"),
+                "excess_hit_rate": h2.get("excess_hit_rate"),
+                "p_value": h2.get("p_value"),
+                "verdict": h2.get("verdict"),
             },
         })
+    win = primary["windows"]
     return {
-        "h1": "发布前 VIX 上涨率是否显著高于非事件日（各事件独立选最优窗口）",
-        "h2": "发布后 VIX 下跌率是否显著高于非事件日（各事件独立选最优窗口）",
+        "h1": f"发布前 VIX 上涨率是否显著高于非事件日（固定窗口 {win['h1_pre']}，Bonferroni 校正）",
+        "h2": f"发布后 VIX 下跌率是否显著高于非事件日（固定窗口 {win['h2_post']}，Bonferroni 校正）",
         "by_event": by_event,
     }
 
 
-def build_correlation_analysis(sweeps: list, vix: pd.Series, all_event_days: set) -> dict:
-    # Shared baseline for default T-7~T-1 / T+1 reference
-    base_pre = baseline_pre_returns(vix, all_event_days, 7, 1)
-    base_post = baseline_post_returns(vix, all_event_days, 1)
+def build_correlation_analysis(primary: dict) -> dict:
+    ref = primary["baseline_reference"]
     by_event = []
-    for s in sweeps:
-        bp, bpo = s["best_pre"], s["best_post"]
+    for row in primary["by_event"]:
+        h1, h2 = row["h1_pre_rise"], row["h2_post_fall"]
         by_event.append({
-            "event": s["event"],
-            "best_pre_window": bp.get("window"),
-            "best_post_window": bpo.get("window"),
+            "event": row["event"],
+            "best_pre_window": row["pre_window"],
+            "best_post_window": row["post_window"],
             "h1_pre_rise": {
-                "event_hit_rate_up": bp.get("event_hit_rate"),
-                "baseline_hit_rate_up": bp.get("baseline_hit_rate"),
-                "excess_hit_rate": bp.get("excess_hit_rate"),
-                "event_mean_pct": bp.get("event_mean_pct"),
-                "baseline_mean_pct": bp.get("baseline_mean_pct"),
-                "event_n": bp.get("event_n"),
-                "baseline_n": bp.get("baseline_n"),
-                "z_stat": bp.get("z_stat"),
-                "p_value": bp.get("p_value"),
-                "phi": bp.get("phi"),
-                "significant": bp.get("significant", False),
-                "verdict": bp.get("verdict"),
+                "event_hit_rate_up": h1.get("event_hit_rate"),
+                "baseline_hit_rate_up": h1.get("baseline_hit_rate"),
+                "excess_hit_rate": h1.get("excess_hit_rate"),
+                "event_mean_pct": h1.get("event_mean_pct"),
+                "baseline_mean_pct": h1.get("baseline_mean_pct"),
+                "event_n": h1.get("event_n"),
+                "baseline_n": h1.get("baseline_n"),
+                "z_stat": h1.get("z_stat"),
+                "p_value": h1.get("p_value"),
+                "phi": h1.get("phi"),
+                "significant": h1.get("significant", False),
+                "verdict": h1.get("verdict"),
             },
             "h2_post_fall": {
-                "event_hit_rate_down": bpo.get("event_hit_rate"),
-                "baseline_hit_rate_down": bpo.get("baseline_hit_rate"),
-                "excess_hit_rate": bpo.get("excess_hit_rate"),
-                "event_mean_pct": bpo.get("event_mean_pct"),
-                "baseline_mean_pct": bpo.get("baseline_mean_pct"),
-                "event_n": bpo.get("event_n"),
-                "baseline_n": bpo.get("baseline_n"),
-                "z_stat": bpo.get("z_stat"),
-                "p_value": bpo.get("p_value"),
-                "phi": bpo.get("phi"),
-                "significant": bpo.get("significant", False),
-                "verdict": bpo.get("verdict"),
+                "event_hit_rate_down": h2.get("event_hit_rate"),
+                "baseline_hit_rate_down": h2.get("baseline_hit_rate"),
+                "excess_hit_rate": h2.get("excess_hit_rate"),
+                "event_mean_pct": h2.get("event_mean_pct"),
+                "baseline_mean_pct": h2.get("baseline_mean_pct"),
+                "event_n": h2.get("event_n"),
+                "baseline_n": h2.get("baseline_n"),
+                "z_stat": h2.get("z_stat"),
+                "p_value": h2.get("p_value"),
+                "phi": h2.get("phi"),
+                "significant": h2.get("significant", False),
+                "verdict": h2.get("verdict"),
             },
         })
     return {
-        "method": "各事件独立扫描多个时间窗口 · 命中率 vs 同窗口非事件日基准 · 双比例 z 检验",
+        "method": primary["method"],
         "baseline_reference": {
             "pre_7d": {
-                "hit_rate_up": round(sum(1 for r in base_pre if r > 0) / len(base_pre), 3),
-                "mean_pct": round(float(np.mean(base_pre)), 3),
-                "n": len(base_pre),
-                "description": "参考基准：非事件日 T-7~T-1",
+                "hit_rate_up": ref["pre"]["hit_rate_up"],
+                "mean_pct": ref["pre"]["mean_pct"],
+                "n": ref["pre"]["n"],
+                "description": ref["pre"]["description"],
             },
             "post_1d": {
-                "hit_rate_down": round(sum(1 for r in base_post if r < 0) / len(base_post), 3),
-                "mean_pct": round(float(np.mean(base_post)), 3),
-                "n": len(base_post),
-                "description": "参考基准：非事件日 T+1",
+                "hit_rate_down": ref["post"]["hit_rate_down"],
+                "mean_pct": ref["post"]["mean_pct"],
+                "n": ref["post"]["n"],
+                "description": ref["post"]["description"],
             },
         },
         "by_event": by_event,
@@ -433,18 +760,43 @@ def build_output() -> dict:
 
     event_dates = get_event_dates()
     nfp_dates = get_nfp_dates()
-    all_event_days = (
-        collect_event_trading_days(vix, event_dates["fomc"])
-        | collect_event_trading_days(vix, event_dates["cpi"])
-        | collect_event_trading_days(vix, nfp_dates)
+    date_map = {
+        "fomc": filter_event_dates_in_range(vix, event_dates["fomc"]),
+        "cpi": filter_event_dates_in_range(vix, event_dates["cpi"]),
+        "nfp": filter_event_dates_in_range(vix, nfp_dates),
+    }
+    print(
+        "  Events in range:",
+        {k: len(v) for k, v in date_map.items()},
     )
 
-    date_map = {"fomc": event_dates["fomc"], "cpi": event_dates["cpi"], "nfp": nfp_dates}
-    sweeps = [sweep_event_windows(vix, et, date_map[et], all_event_days) for et in EVENT_WINDOW_CONFIG]
-    studies = [build_event_study_detail(vix, date_map[et], et, sw) for et, sw in zip(EVENT_WINDOW_CONFIG, sweeps)]
+    all_event_days = (
+        collect_event_trading_days(vix, date_map["fomc"])
+        | collect_event_trading_days(vix, date_map["cpi"])
+        | collect_event_trading_days(vix, date_map["nfp"])
+    )
 
-    corr_analysis = build_correlation_analysis(sweeps, vix, all_event_days)
-    verdict = build_hypothesis_verdict(sweeps)
+    sweeps = [sweep_event_windows(vix, et, date_map[et], all_event_days) for et in EVENT_WINDOW_CONFIG]
+    primary = build_primary_analysis(vix, date_map, all_event_days)
+    studies = [
+        build_event_study_detail(vix, date_map[et], et, primary["by_event"][i])
+        for i, et in enumerate(EVENT_WINDOW_CONFIG)
+    ]
+
+    corr_analysis = build_correlation_analysis(primary)
+    verdict = build_hypothesis_verdict(primary)
+    covid_sensitivity = build_covid_sensitivity(vix, date_map, all_event_days)
+    level_analysis = build_level_analysis(vix, date_map, all_event_days)
+    subsample = build_subsample_analysis(vix, date_map, all_event_days)
+    print("  Subsample event counts:")
+    for period, r in subsample.items():
+        counts = {row["event"]: row["n_events"] for row in r["by_event"]}
+        print(f"    {period}: {counts}")
+
+    n_exploratory = sum(
+        len(EVENT_WINDOW_CONFIG[et]["pre"]) + len(EVENT_WINDOW_CONFIG[et]["post"])
+        for et in EVENT_WINDOW_CONFIG
+    )
 
     # Feature correlations (unchanged)
     df = pd.DataFrame({"vix": vix, "daily_return": vix.pct_change(), "return_7d": vix.pct_change(7)})
@@ -469,24 +821,41 @@ def build_output() -> dict:
 
     return {
         "title": "VIX × Event Calendar Analysis",
-        "subtitle": "FOMC / CPI / NFP · 各事件独立扫描时间窗口 · 命中率 vs 基准",
+        "subtitle": "FOMC / CPI / NFP · 预注册固定窗口 + 探索性窗口扫描",
+        "primary_analysis": primary,
+        "conclusion_summary": primary["conclusion_summary"],
         "hypothesis": verdict,
         "correlation_analysis": corr_analysis,
         "window_sweep": window_sweep_summary,
+        "sensitivity": {"covid_fomc": covid_sensitivity},
+        "level_analysis": level_analysis,
+        "subsample_analysis": subsample,
         "summary": {
             "data_range": f"{merged.index[0].strftime('%Y-%m-%d')} ~ {merged.index[-1].strftime('%Y-%m-%d')}",
+            "analysis_years": ANALYSIS_YEARS,
             "instrument": "^VIX (CBOE Volatility Index)",
             "total_trading_days": len(merged),
-            "method": "Per-event window sweep with matched baseline",
+            "event_counts": {k: len(v) for k, v in date_map.items()},
+            "method": "Pre-registered T-5~T-1 / T+1 with sparse baseline + Bonferroni",
         },
         "event_studies": studies,
         "upcoming_events": get_upcoming_events(),
         "vix_timeline": timeline,
         "methodology": {
             "instrument": "Yahoo Finance ^VIX",
-            "window_config": EVENT_WINDOW_CONFIG,
-            "baseline": "Same window on non-event trading days; two-proportion z-test",
-            "best_window_rule": "Lowest p-value among candidates with positive excess hit rate",
+            "primary_windows": {
+                "h1_pre": window_label_pre(*PRIMARY_PRE_WINDOW),
+                "h2_post": window_label_post(PRIMARY_POST_WINDOW),
+            },
+            "baseline_stride": BASELINE_STRIDE,
+            "bonferroni_primary": {"tests": N_PRIMARY_TESTS, "alpha": BONFERRONI_ALPHA},
+            "exploratory_sweep": {
+                "window_config": EVENT_WINDOW_CONFIG,
+                "tests": n_exploratory,
+                "bonferroni_alpha": round(0.05 / n_exploratory, 5),
+                "warning": "探索性扫描存在多重检验风险，不作为主结论依据",
+            },
+            "baseline": "Sparse non-event anchors; one-sided two-proportion z-test",
         },
     }
 

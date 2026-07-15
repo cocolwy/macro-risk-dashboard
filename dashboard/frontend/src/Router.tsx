@@ -11,7 +11,7 @@ const EventVolLab = lazy(() => import('./EventVolLab').then(m => ({ default: m.E
 const AgentLab = lazy(() => import('./AgentLab').then(m => ({ default: m.AgentLab })));
 const ProjectBoard = lazy(() => import('./ProjectBoard').then(m => ({ default: m.ProjectBoard })));
 
-const RISK_CHILDREN: PageId[] = ['ch1', 'ch2', 'ch2_1', 'ch2_2'];
+const RISK_CHILDREN: PageId[] = ['ch1', 'ch2', 'ch2_1'];
 
 function getInitialPage(): PageId {
   return pageFromHash(window.location.hash);
@@ -82,12 +82,21 @@ export function Router() {
             ))}
           </div>
         </div>
+
+        <button
+          className={`nav-btn ${page === 'ch2_2' ? 'nav-active' : ''}`}
+          onClick={() => navigate('ch2_2')}
+        >
+          <span className="nav-level">L2</span>
+          Event × VIX
+          {SITE_NAV.ch2_2.badge && <span className="nav-badge-dev">{SITE_NAV.ch2_2.badge}</span>}
+        </button>
       </nav>
 
       {page !== 'home' && (
         <div className="page-context">
           <Breadcrumb page={page} onNavigate={navigate} />
-          {isRiskChild && (
+          {(isRiskChild || SITE_NAV[page].level === 2) && (
             <div className="page-context-meta">
               {SITE_NAV[page].subtitle}
             </div>

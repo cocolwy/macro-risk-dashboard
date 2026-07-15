@@ -75,10 +75,9 @@ export const SITE_NAV: Record<PageId, NavItem> = {
   ch2_2: {
     id: 'ch2_2',
     hash: 'ch2-2',
-    title: 'Ch.2.2 Event × VIX',
-    subtitle: 'FOMC / CPI / NFP · 发布前 T-7~T-1 上涨 & 发布后下跌验证',
-    level: 3,
-    parent: 'risk',
+    title: 'Event × VIX',
+    subtitle: 'FOMC / CPI / NFP 宏观数据发布前后 · VIX 事件研究',
+    level: 2,
     badge: 'NEW',
     metrics: 'VIX event study · H1/H2',
   },
@@ -131,12 +130,12 @@ export const HOME_SECTIONS = [
   {
     level: 2,
     label: '二级 · 项目',
-    items: ['risk'] as PageId[],
+    items: ['risk', 'ch2_2'] as PageId[],
   },
   {
     level: 3,
     label: '三级 · 风控因子探索',
     parent: 'risk' as PageId,
-    items: ['ch1', 'ch2', 'ch2_1', 'ch2_2'] as PageId[],
+    items: ['ch1', 'ch2', 'ch2_1'] as PageId[],
   },
 ];

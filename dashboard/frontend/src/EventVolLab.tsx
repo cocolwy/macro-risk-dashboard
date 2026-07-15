@@ -80,13 +80,50 @@ interface EventStudy {
 }
 interface EventVolData {
   title: string; subtitle: string;
+  primary_analysis?: {
+    method: string;
+    windows: { h1_pre: string; h2_post: string };
+    baseline_stride: number;
+    bonferroni_tests: number;
+    bonferroni_alpha: number;
+    baseline_reference: {
+      pre: { hit_rate_up: number; mean_pct: number; n: number; description: string };
+      post: { hit_rate_down: number; mean_pct: number; n: number; description: string };
+    };
+    conclusion_summary: string;
+  };
+  conclusion_summary?: string;
   hypothesis: { h1: string; h2: string; by_event: HypothesisEvent[] };
   correlation_analysis: CorrelationAnalysis;
   window_sweep: WindowSweepEntry[];
-  summary: { data_range: string; instrument: string; total_trading_days: number; method: string };
+  sensitivity?: {
+    covid_fomc: {
+      description: string; events_remaining: number; pre_window: string;
+      hit_rate_up: number; baseline_hit_rate_up: number; excess_hit_rate: number;
+      p_value: number; significant: boolean; verdict: string;
+    };
+  };
+  level_analysis?: {
+    description_a: string; description_b: string; full_sample_mean_vix: number;
+    method_a: Array<{ event: string; event_mean: number; baseline_mean: number; excess: number; p_value: number; significant: boolean; verdict: string; event_n: number; baseline_n: number }>;
+    method_b: Array<{ event: string; event_mean: number; baseline_mean: number; excess: number; p_value: number; significant: boolean; verdict: string; event_n: number; baseline_n: number }>;
+    note: string;
+  };
+  subsample_analysis?: Record<string, {
+    label: string; date_range: string; note: string;
+    by_event: Array<{
+      event: string; n_events: number;
+      return_based: { event_hit_rate: number | null; baseline_hit_rate: number | null; excess_hit_rate: number | null; p_value: number | null; verdict: string };
+      level_based: { event_mean_vix: number | null; baseline_mean_vix: number | null; excess_vix: number | null; p_value: number | null; verdict: string };
+    }>;
+  }>;
+  summary: { data_range: string; analysis_years?: number; instrument: string; total_trading_days: number; method: string; event_counts?: Record<string, number> };
   event_studies: EventStudy[];
   upcoming_events: { event: string; date: string }[];
   vix_timeline: { date: string; vix: number; daily_return_pct: number | null; event_flags: string[] }[];
+  methodology?: {
+    exploratory_sweep?: { warning: string; bonferroni_alpha: number; tests: number };
+  };
 }
 
 const EVENT_COLORS: Record<string, string> = { FOMC: '#ea580c', CPI: '#3a82d6', NFP: '#16a34a' };
@@ -97,10 +134,10 @@ function fmtPct(v: number | null | undefined, digits = 2) {
   return `${v > 0 ? '+' : ''}${v.toFixed(digits)}%`;
 }
 
-function sigBadge(p: number | null) {
+function sigBadge(p: number | null, alpha = 0.05) {
   if (p == null) return null;
-  if (p < 0.05) return <span style={{ fontSize: 10, color: '#166534', background: '#dcfce7', padding: '1px 5px', borderRadius: 4 }}>p&lt;0.05</span>;
-  if (p < 0.1) return <span style={{ fontSize: 10, color: '#92400e', background: '#fef3c7', padding: '1px 5px', borderRadius: 4 }}>p&lt;0.1</span>;
+  if (p < alpha) return <span style={{ fontSize: 10, color: '#166534', background: '#dcfce7', padding: '1px 5px', borderRadius: 4 }}>p&lt;{alpha}</span>;
+  if (p < alpha * 2) return <span style={{ fontSize: 10, color: '#92400e', background: '#fef3c7', padding: '1px 5px', borderRadius: 4 }}>边际</span>;
   return null;
 }
 
@@ -162,7 +199,8 @@ function EventVolLabInner() {
   if (error) return <div className="lab-container"><div className="lab-card"><p>Event VIX data not available: {error}</p></div></div>;
   if (!data) return <div className="loading">Loading...</div>;
 
-  const { hypothesis, correlation_analysis, window_sweep, summary, event_studies, upcoming_events } = data;
+  const { hypothesis, correlation_analysis, window_sweep, summary, event_studies, upcoming_events, primary_analysis, conclusion_summary, sensitivity, methodology, level_analysis, subsample_analysis } = data;
+  const bonferroniAlpha = primary_analysis?.bonferroni_alpha ?? 0.05;
   const sweep = window_sweep.find(s => s.event === activeSweep);
   const study = event_studies.find(s => EVENT_TYPE_LABEL[s.event_type] === activeSweep);
 
@@ -170,11 +208,12 @@ function EventVolLabInner() {
     <div className="lab-container">
       <header className="lab-header">
         <div>
-          <h1>Ch.2.2 Event × VIX</h1>
+          <h1>Event × VIX</h1>
           <p className="lab-subtitle">{data.subtitle}</p>
         </div>
         <div className="lab-model-badge">
-          <span className="lab-badge-version">L3</span>
+          <span className="lab-badge-version">L2</span>
+          <span className="lab-badge-auc">{summary.data_range}</span>
           <span className="lab-badge-auc">{summary.instrument}</span>
         </div>
       </header>
@@ -184,11 +223,15 @@ function EventVolLabInner() {
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
           <div style={{ padding: 14, borderRadius: 8, border: '1px solid #fed7aa', background: '#fff7ed' }}>
             <div style={{ fontWeight: 700, color: '#c2410c', marginBottom: 6 }}>H1 · {hypothesis.h1}</div>
-            <div style={{ fontSize: 13, color: '#374151' }}>各事件独立扫描多个窗口，选最优</div>
+            <div style={{ fontSize: 13, color: '#374151' }}>
+              固定窗口 {primary_analysis?.windows.h1_pre ?? 'T-5~T-1'} · Bonferroni α={bonferroniAlpha}
+            </div>
           </div>
           <div style={{ padding: 14, borderRadius: 8, border: '1px solid #bfdbfe', background: '#eff6ff' }}>
             <div style={{ fontWeight: 700, color: '#1d4ed8', marginBottom: 6 }}>H2 · {hypothesis.h2}</div>
-            <div style={{ fontSize: 13, color: '#374151' }}>各事件独立扫描多个窗口，选最优</div>
+            <div style={{ fontSize: 13, color: '#374151' }}>
+              固定窗口 {primary_analysis?.windows.h2_post ?? 'T+1'} · 稀疏基准 stride={primary_analysis?.baseline_stride ?? 5}
+            </div>
           </div>
         </div>
       </section>
@@ -197,7 +240,7 @@ function EventVolLabInner() {
       <section className="lab-card">
         <h2 style={{ fontSize: 16, marginBottom: 10 }}>非事件日基准（对照组）</h2>
         <p style={{ fontSize: 13, color: '#6b7280', marginBottom: 12 }}>
-          {correlation_analysis.method} · 只有和基准对比才能判断事件是否真正相关
+          {correlation_analysis.method}
         </p>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
           <div style={{ padding: 12, borderRadius: 8, background: '#f9fafb', border: '1px solid #e5e7eb', fontSize: 13 }}>
@@ -213,16 +256,16 @@ function EventVolLabInner() {
         </div>
       </section>
 
-      {/* Verdict cards */}
+      {/* Verdict cards — primary analysis */}
       <section className="lab-card">
-        <h2 style={{ fontSize: 16, marginBottom: 12 }}>相关性验证（事件 vs 基准）</h2>
+        <h2 style={{ fontSize: 16, marginBottom: 12 }}>主结论（预注册固定窗口）</h2>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
           {hypothesis.by_event.map(e => (
             <div key={e.event} style={{ padding: 14, borderRadius: 8, border: '1px solid #e5e7eb' }}>
               <div style={{ fontWeight: 700, color: EVENT_COLORS[e.event], marginBottom: 10 }}>
                 {e.event}
                 <div style={{ fontSize: 11, fontWeight: 400, color: '#6b7280' }}>
-                  最优窗口：{e.best_pre_window} / {e.best_post_window}
+                  固定窗口：{e.best_pre_window} / {e.best_post_window}
                 </div>
               </div>
               <div style={{ fontSize: 13, lineHeight: 2 }}>
@@ -231,32 +274,156 @@ function EventVolLabInner() {
                   <span style={{ marginLeft: 6, fontSize: 11, color: pctColor(e.h1_pre_rise.excess_hit_rate ?? null) }}>
                     ({e.h1_pre_rise.excess_hit_rate! > 0 ? '+' : ''}{(e.h1_pre_rise.excess_hit_rate! * 100).toFixed(0)}pp)
                   </span>
-                  <div><ConfirmBadge ok={e.h1_pre_rise.confirmed} label={e.h1_pre_rise.verdict ?? ''} /> {sigBadge(e.h1_pre_rise.p_value ?? null)}</div>
+                  <div><ConfirmBadge ok={e.h1_pre_rise.confirmed} label={e.h1_pre_rise.verdict ?? ''} /> {sigBadge(e.h1_pre_rise.p_value ?? null, bonferroniAlpha)}</div>
                 </div>
                 <div>
                   H2 下跌率：{(e.h2_post_fall.hit_rate_down! * 100).toFixed(0)}% vs 基准 {(e.h2_post_fall.baseline_hit_rate_down! * 100).toFixed(0)}%
                   <span style={{ marginLeft: 6, fontSize: 11, color: pctColor(e.h2_post_fall.excess_hit_rate ?? null) }}>
                     ({e.h2_post_fall.excess_hit_rate! > 0 ? '+' : ''}{(e.h2_post_fall.excess_hit_rate! * 100).toFixed(0)}pp)
                   </span>
-                  <div><ConfirmBadge ok={e.h2_post_fall.confirmed} label={e.h2_post_fall.verdict ?? ''} /> {sigBadge(e.h2_post_fall.p_value ?? null)}</div>
+                  <div><ConfirmBadge ok={e.h2_post_fall.confirmed} label={e.h2_post_fall.verdict ?? ''} /> {sigBadge(e.h2_post_fall.p_value ?? null, bonferroniAlpha)}</div>
                 </div>
               </div>
             </div>
           ))}
         </div>
         <div style={{ marginTop: 12, padding: '10px 12px', background: '#f0fdf4', borderRadius: 8, fontSize: 13, lineHeight: 1.7, border: '1px solid #bbf7d0' }}>
-          <strong style={{ color: '#166534' }}>结论（各事件最优窗口）：</strong>
-          <strong>FOMC 前 T-3~T-1</strong>显著正相关（上涨率 69% vs 基准 45%，p=0.003）；
-          <strong>CPI 前 T-7~T-1</strong>显著正相关（62% vs 46%，p=0.026）；
-          NFP 前 T-5~T-1 有差异但不显著（56% vs 46%，p=0.12）。
-          三类事件发布后 VIX 下跌率均未显著高于同窗口基准。
+          <strong style={{ color: '#166534' }}>结论：</strong>
+          {conclusion_summary ?? primary_analysis?.conclusion_summary ?? '—'}
         </div>
+        {sensitivity?.covid_fomc && (
+          <div style={{ marginTop: 10, padding: '10px 12px', background: '#fffbeb', borderRadius: 8, fontSize: 12, lineHeight: 1.6, border: '1px solid #fde68a', color: '#78350f' }}>
+            <strong>敏感性分析：</strong>{sensitivity.covid_fomc.description} — FOMC 前 {sensitivity.covid_fomc.pre_window}{' '}
+            {(sensitivity.covid_fomc.hit_rate_up * 100).toFixed(0)}% vs {(sensitivity.covid_fomc.baseline_hit_rate_up * 100).toFixed(0)}%，
+            p={sensitivity.covid_fomc.p_value.toFixed(3)}（{sensitivity.covid_fomc.verdict}）
+          </div>
+        )}
       </section>
 
-      {/* Window sweep table */}
+      {/* Level Analysis */}
+      {level_analysis && (
+        <section className="lab-card">
+          <h2 style={{ fontSize: 16, marginBottom: 4 }}>水平比较分析（Level-Based）</h2>
+          <p style={{ fontSize: 12, color: '#6b7280', marginBottom: 14 }}>
+            与涨跌方向不同，这里直接比较 VIX <strong>绝对水平</strong>。
+            VIX 的 30 天前瞻性意味着：如果市场在事件前普遍焦虑，VIX 水平应高于无事件期。
+          </p>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+            {/* Method A */}
+            <div>
+              <div style={{ fontSize: 12, fontWeight: 700, color: '#374151', marginBottom: 8 }}>
+                Method A · 窗口均值
+              </div>
+              <div style={{ fontSize: 11, color: '#6b7280', marginBottom: 10 }}>{level_analysis.description_a}</div>
+              <table className="ab-table" style={{ fontSize: 12 }}>
+                <thead>
+                  <tr><th>事件</th><th>事件窗口均值</th><th>基准均值</th><th>超额</th><th>p</th><th>判定</th></tr>
+                </thead>
+                <tbody>
+                  {level_analysis.method_a.map(r => (
+                    <tr key={r.event}>
+                      <td><span style={{ color: EVENT_COLORS[r.event], fontWeight: 600 }}>{r.event}</span></td>
+                      <td>{r.event_mean?.toFixed(1) ?? '—'}</td>
+                      <td>{r.baseline_mean?.toFixed(1) ?? '—'}</td>
+                      <td style={{ color: pctColor(r.excess) }}>{r.excess != null ? `${r.excess > 0 ? '+' : ''}${r.excess.toFixed(1)}` : '—'}</td>
+                      <td>{r.p_value?.toFixed(3) ?? '—'} {sigBadge(r.p_value, bonferroniAlpha)}</td>
+                      <td>{r.verdict}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            {/* Method B */}
+            <div>
+              <div style={{ fontSize: 12, fontWeight: 700, color: '#374151', marginBottom: 8 }}>
+                Method B · T-1 绝对水平
+              </div>
+              <div style={{ fontSize: 11, color: '#6b7280', marginBottom: 10 }}>{level_analysis.description_b}</div>
+              <table className="ab-table" style={{ fontSize: 12 }}>
+                <thead>
+                  <tr><th>事件</th><th>T-1 均值</th><th>全样本均值</th><th>超额</th><th>p</th><th>判定</th></tr>
+                </thead>
+                <tbody>
+                  {level_analysis.method_b.map(r => (
+                    <tr key={r.event}>
+                      <td><span style={{ color: EVENT_COLORS[r.event], fontWeight: 600 }}>{r.event}</span></td>
+                      <td>{r.event_mean?.toFixed(1) ?? '—'}</td>
+                      <td>{r.baseline_mean?.toFixed(1) ?? '—'}</td>
+                      <td style={{ color: pctColor(r.excess) }}>{r.excess != null ? `${r.excess > 0 ? '+' : ''}${r.excess.toFixed(1)}` : '—'}</td>
+                      <td>{r.p_value?.toFixed(3) ?? '—'} {sigBadge(r.p_value, bonferroniAlpha)}</td>
+                      <td>{r.verdict}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div style={{ marginTop: 12, padding: '10px 12px', background: '#fefce8', borderRadius: 8, fontSize: 12, lineHeight: 1.7, border: '1px solid #fef08a', color: '#713f12' }}>
+            <strong>解读：</strong>
+            两种水平比较方法均显示，事件前 VIX 水平与非事件日<strong>几乎相同</strong>（超额仅 ±0.2）。
+            这说明 VIX 的"事件焦虑"在更长的周期里已被定价——因为 FOMC/CPI/NFP 每月都有，
+            VIX 的 30 天前瞻窗口几乎始终在定价某个即将到来的事件。真正的"清醒期"很短，
+            导致事件期 vs 非事件期的<strong>水平差别趋近于零</strong>。
+            这也解释了为何涨跌方向（return-based）的信号更有意义：它问的是事件是否让 VIX <em>额外加速</em>，而不是水平本身是否更高。
+          </div>
+        </section>
+      )}
+
+      {/* Sub-sample Analysis */}
+      {subsample_analysis && (
+        <section className="lab-card">
+          <h2 style={{ fontSize: 16, marginBottom: 4 }}>近期子样本分析</h2>
+          <p style={{ fontSize: 12, color: '#6b7280', marginBottom: 14 }}>
+            近期样本量较小（1y: n≈8~12 / 2y: n≈16~24），p 值仅供方向参考，不作主要结论依据。
+          </p>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+            {Object.entries(subsample_analysis).map(([key, sub]) => (
+              <div key={key} style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 14 }}>
+                <div style={{ fontWeight: 700, marginBottom: 2 }}>{sub.label}</div>
+                <div style={{ fontSize: 11, color: '#6b7280', marginBottom: 10 }}>{sub.date_range}</div>
+                <table className="ab-table" style={{ fontSize: 11 }}>
+                  <thead>
+                    <tr><th>事件</th><th>n</th><th>涨跌方向 p</th><th>水平均值 p</th><th>判定</th></tr>
+                  </thead>
+                  <tbody>
+                    {sub.by_event.map(row => (
+                      <tr key={row.event}>
+                        <td><span style={{ color: EVENT_COLORS[row.event], fontWeight: 600 }}>{row.event}</span></td>
+                        <td>{row.n_events}</td>
+                        <td style={{ color: (row.return_based.p_value ?? 1) < 0.05 ? '#166534' : '#374151' }}>
+                          {row.return_based.p_value?.toFixed(3) ?? '—'}
+                        </td>
+                        <td style={{ color: (row.level_based.p_value ?? 1) < 0.05 ? '#166534' : '#374151' }}>
+                          {row.level_based.p_value?.toFixed(3) ?? '—'}
+                        </td>
+                        <td style={{ fontSize: 10 }}>{row.return_based.verdict}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ))}
+          </div>
+          <div style={{ marginTop: 12, padding: '10px 12px', background: '#f0f9ff', borderRadius: 8, fontSize: 12, lineHeight: 1.7, border: '1px solid #bae6fd', color: '#0c4a6e' }}>
+            <strong>近两年要点：</strong>
+            2024-2026 美联储进入降息周期，利率不确定性格局与 2022-2023 加息期不同。
+            近一年 FOMC 前 VIX 甚至呈负向（p=1.0），表明市场对降息节奏已高度预期，预期本身差异在收窄。
+            近两年 NFP 前 return p=0.015 有亮点，但水平比较不支持，需更多数据验证。
+          </div>
+        </section>
+      )}
+
+      {/* Exploratory window sweep */}
       <section className="lab-card ab-section">
         <div className="ab-header">
-          <h2>时间窗口扫描</h2>
+          <div>
+            <h2>探索性窗口扫描</h2>
+            {methodology?.exploratory_sweep && (
+              <p style={{ fontSize: 12, color: '#b45309', margin: '4px 0 0' }}>
+                ⚠ {methodology.exploratory_sweep.warning}（Bonferroni α≈{methodology.exploratory_sweep.bonferroni_alpha}，{methodology.exploratory_sweep.tests} tests）
+              </p>
+            )}
+          </div>
           <div style={{ display: 'flex', gap: 6 }}>
             {window_sweep.map(s => (
               <button key={s.event} onClick={() => setActiveSweep(s.event)}
@@ -410,7 +577,7 @@ function EventVolLabInner() {
       {/* Per-event detail */}
       <section className="lab-card ab-section">
         <div className="ab-header">
-          <h2>逐事件明细（最优窗口）</h2>
+          <h2>逐事件明细（固定窗口）</h2>
           <div style={{ display: 'flex', gap: 6 }}>
             {event_studies.map(s => (
               <button key={s.event_type} onClick={() => setActiveSweep(EVENT_TYPE_LABEL[s.event_type])}
@@ -429,7 +596,7 @@ function EventVolLabInner() {
         {study && (
           <>
             <div style={{ marginBottom: 12, fontSize: 12, color: '#6b7280' }}>
-              最优窗口：发布前 <strong>{study.best_pre_window}</strong> · 发布后 <strong>{study.best_post_window}</strong>
+              固定窗口：发布前 <strong>{study.best_pre_window}</strong> · 发布后 <strong>{study.best_post_window}</strong>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 14 }}>
               <div style={{ padding: 10, borderRadius: 6, background: '#fff7ed', border: '1px solid #fed7aa', fontSize: 12 }}>
