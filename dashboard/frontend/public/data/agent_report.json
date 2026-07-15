@@ -1,18 +1,36 @@
 {
-  "timestamp": "2026-07-14T12:27:22.706102+00:00",
-  "risk_score": 62,
+  "timestamp": "2026-07-15T03:46:17.346978+00:00",
+  "risk_score": 68,
   "risk_level": "high",
-  "ml_probability": 0.6091,
+  "ml_probability": 0.4977,
+  "signal_basis": "共振放大",
+  "themes": {
+    "rates_fed": {
+      "summary": "利率/央行政策不确定性主题命中 5 条标题。新闻面偏风险偏好压制，对模型高概率形成共振。",
+      "signal": "risk-off"
+    },
+    "geopolitics_energy": {
+      "summary": "地缘政治/能源冲击主题命中 4 条标题。新闻面偏风险偏好压制，对模型高概率形成共振。",
+      "signal": "risk-off"
+    },
+    "equities_earnings": {
+      "summary": "科技/AI 叙事波动主题命中 2 条标题。新闻面偏风险偏好压制，对模型高概率形成共振。",
+      "signal": "risk-on"
+    },
+    "credit_liquidity": {
+      "summary": "信用/银行体系压力主题命中 1 条标题。新闻面偏风险偏好压制，对模型高概率形成共振。",
+      "signal": "risk-off"
+    }
+  },
   "key_risks": [
-    "美联储7月加息预期升温",
-    "IBM财报暴雷,科技股承压",
-    "地缘政治风险(霍尔木兹海峡/伊朗局势推升油价)",
-    "科技股外部预警信号(海外市场)",
-    "芯片股走势动荡",
-    "银行股财报强劲但股价下跌,显示获利了结/预期落差"
+    "利率/央行政策不确定性（标题命中 5）",
+    "地缘政治/能源冲击（标题命中 4）",
+    "科技/AI 叙事波动（标题命中 2）",
+    "信用/银行体系压力（标题命中 1）",
+    "ML 未来20日>5%回撤概率 49.8%"
   ],
-  "news_analysis": "今日新闻显示市场情绪偏谨慎:美联储官员释放7月可能加息的信号,叠加特朗普对霍尔木兹海峡征收关税的威胁推高油价,地缘政治与货币政策的双重不确定性上升。同时IBM财报大幅不及预期导致股价重挫,银行股虽财报强劲但股价下跌,科技股出现来自海外市场的预警信号,显示市场对增长质量和估值的担忧正在累积。",
-  "recommendation": "建议风险管理者适度提升对冲仓位(如买入保护性看跌期权或VIX相关工具),降低高估值科技股和芯片股的集中度敞口,密切关注美联储7月议息会议前的通胀数据及官员讲话,同时对地缘政治(中东局势)相关的油价冲击保持流动性缓冲。",
-  "reasoning": "ML模型给出60.9%的较高崩盘概率,与当前新闻背景形成共振:加息预期升温压制风险资产估值,IBM等权重股财报暴雷引发对科技板块盈利质量的担忧,叠加中东地缘政治溢价推高油价,均为市场增加下行压力的催化因素。尽管消费信贷改善、银行盈利整体尚可等偏正面因素部分对冲风险,但综合考虑ML信号强度与新闻中多重风险因素叠加,判定当前风险等级为'high'。",
-  "provider": "anthropic"
+  "news_analysis": "今日共纳入 28 条财经标题，主导主题为：利率/央行政策不确定性、地缘政治/能源冲击、科技/AI 叙事波动、信用/银行体系压力。代表性标题：SK Hynix shares surge 13% on AI hopes as US tech stocks resume their climb；Manic markets show no mercy to IBM；Stocks gain on softer inflation, bank results while oil rises on US-Iran hostilities。新闻面偏风险偏好压制，对模型高概率形成共振。",
+  "recommendation": "建议降低新增风险暴露、检查对冲覆盖与杠杆；对高 beta 与流动性较差资产提高减仓优先级，并跟踪利率决议/地缘进展的日内冲击。",
+  "reasoning": "[anthropic 调用失败，已回退 local] Expecting ',' delimiter: line 15 column 6 (char 474)\n本地规则引擎：score = ML×100 (49.8) + 新闻主题调整 (+18.0) → 68。主题命中：利率/央行政策不确定性、地缘政治/能源冲击、科技/AI 叙事波动、信用/银行体系压力；缓和词命中 1。provider=local（无需 API）。",
+  "provider": "local(fallback_from_anthropic)"
 }

@@ -1,149 +1,201 @@
 {
-  "fetched_at": "2026-07-14T12:27:22.608721+00:00",
+  "fetched_at": "2026-07-15T03:45:59.537187+00:00",
   "headlines": [
+    {
+      "title": "SK Hynix shares surge 13% on AI hopes as US tech stocks resume their climb",
+      "source": "Reuters",
+      "published": "2026-07-15T00:55:00+00:00",
+      "url": "https://news.google.com/rss/articles/CBMirgFBVV95cUxOUGIxNS16MnpFT1RUSHlscHBBVnNOLTF3cmxLckNrUFotYUR2dzVFazM4aHpzb1QyX0UwaDZmUWxBT0wtelVpS1prcjVkcE9fSDAyRjFWb0gyX0tOM0JzU1RTR1B5dlJoQ3BGaTdvNnllX2htR3luNE83ZDdaOGg1UmdzT0kwSUp0ZW9udWhGSWl1SzRGMDl6R3pucGNhZnhBclFHU2F4YkZITkR1UEE?oc=5",
+      "description": "SK Hynix shares surge 13% on AI hopes as US tech stocks resume their climb &nbsp;&nbsp; Reuters"
+    },
+    {
+      "title": "Manic markets show no mercy to IBM",
+      "source": "FT",
+      "published": "2026-07-14T22:07:17+00:00",
+      "url": "https://news.google.com/rss/articles/CBMicEFVX3lxTE5lSUNiVk1FbE1QaWNIRkF2UGQ1VWtucDJSRThxekxnOHlZbXB5OVpQSGlZYm5iNHJEWVd6OTg0YlJpbmVTQnhtcW9YQWhoUUUtQUV5NXRGMDJZRGhGckhmYVI5SEw1X0VCUWxxTFluYWw?oc=5",
+      "description": "Manic markets show no mercy to IBM &nbsp;&nbsp; Financial Times"
+    },
+    {
+      "title": "Stocks gain on softer inflation, bank results while oil rises on US-Iran hostilities",
+      "source": "Reuters",
+      "published": "2026-07-14T21:13:54+00:00",
+      "url": "https://news.google.com/rss/articles/CBMigwFBVV95cUxPdWRaMVFPRFNSMDhQQ1dQT09aWlhsdzdhVGVFcGUzblZreE9kSms3eXc3ZjRlbVhvdUtFRW5IQ3ZSSE42bnhoTGxIaVlwbVVQR0tLUE0yY1N3NTJ2Qko2S01pNHREcW5CbmpweXpORmVRRzdCR0RDcTRjeG9oS2tqR2hIWQ?oc=5",
+      "description": "Stocks gain on softer inflation, bank results while oil rises on US-Iran hostilities &nbsp;&nbsp; Reuters"
+    },
+    {
+      "title": "New Zealand PM Chris Luxon warns against ‘sugar rush economics’ of Jacinda Ardern era",
+      "source": "FT",
+      "published": "2026-07-14T21:00:05+00:00",
+      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxQLU5hWUw5LWZTX2dzRFBBakJoaGRhRkRZREpoa2VDSm53cXhkRVVrMXJweG05SzhtdTRIeUdhcjRNMy1DZ1lsdkVWZzU5OGg2czdyT0lMTDFRWS1FTjRKUlhDT0UwTGhpS2dLTGRfT0lsNnEwSDNPRVpjTFlWUGUzWTR6dk0?oc=5",
+      "description": "New Zealand PM Chris Luxon warns against ‘sugar rush economics’ of Jacinda Ardern era &nbsp;&nbsp; Financial Times"
+    },
+    {
+      "title": "The AI boom just found two new winners: Goldman Sachs and JPMorgan Chase",
+      "source": "CNBC",
+      "published": "2026-07-14T19:50:48+00:00",
+      "url": "https://www.cnbc.com/2026/07/14/goldman-sachs-and-jpmorgan-chase-are-emerging-as-ai-winners.html",
+      "description": "Goldman Sachs and JPMorgan showed that Wall Street is a major beneficiary of the AI boom, with record revenue driven by surging trading and investment banking."
+    },
+    {
+      "title": "Bowman, Responsible Innovation and Financial Inclusion",
+      "source": "Fed Speech",
+      "published": "2026-07-14T18:55:00+00:00",
+      "url": "https://www.federalreserve.gov/newsevents/speech/bowman20260714a.htm",
+      "description": "Speech At “Next-Gen Financial Inclusion,” the third annual Financial Inclusion Conference hosted by the Federal Reserve Board, Washington, D.C. (via pre-recorded video)"
+    },
+    {
+      "title": "Fed chief Warsh vows to 'do my job' if challenged by Trump",
+      "source": "Reuters",
+      "published": "2026-07-14T18:39:22+00:00",
+      "url": "https://news.google.com/rss/articles/CBMipgFBVV95cUxPY2lZbFpmejAtNW91RmFHRWZqT0NkdzF5M3NOQWF6UUZxVXZHYW0xTnlZX1FQZ1lvcTE0UlBqV3l1MnY3WHVoVl92OWJYUW44Sjl5Zk1oMzFSQ0s2NjlYQ1hpUVRIc1RzVEZVY1ZuTE9nVVpwUXhRRmJnU0s4emhnbXh4ellpV01qc3VOeVo5eEJ6VHVMUnhmSXR5c1dCS2dXREhsdmtB?oc=5",
+      "description": "Fed chief Warsh vows to 'do my job' if challenged by Trump &nbsp;&nbsp; Reuters"
+    },
     {
       "title": "Warren Buffett excludes Gates Foundation from his annual donations of Berkshire stock",
       "source": "CNBC",
-      "published": "2026-07-14T12:16:42+00:00",
-      "url": "https://www.cnbc.com/2026/07/14/warren-buffett-excludes-gates-foundation-from-his-annual-donations-of-berkshire-stock.html"
+      "published": "2026-07-14T18:34:31+00:00",
+      "url": "https://www.cnbc.com/2026/07/14/warren-buffett-excludes-gates-foundation-from-his-annual-donations-of-berkshire-stock.html",
+      "description": "Warren Buffett omitted the Gates Foundation from his annual charitable stock gifts."
     },
     {
-      "title": "I’m 45 and want to buy an apartment. How can I turn $1,000 into $250,000?",
-      "source": "MarketWatch",
-      "published": "2026-07-14T12:15:00+00:00",
-      "url": "https://www.marketwatch.com/story/im-45-and-want-to-buy-an-apartment-how-can-i-turn-1-000-into-250-000-2fd4b324?mod=mw_rss_topstories"
+      "title": "Minutes of the Board's discount rate meetings on June 8 and June 17, 2026",
+      "source": "Fed FOMC",
+      "published": "2026-07-14T18:00:00+00:00",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260714a.htm",
+      "description": "Minutes of the Board's discount rate meetings on June 8 and June 17, 2026"
     },
     {
-      "title": "Americans are getting better at paying off their $1.25 trillion credit-card debt burden",
-      "source": "MarketWatch",
-      "published": "2026-07-14T12:15:00+00:00",
-      "url": "https://www.marketwatch.com/story/americans-are-getting-better-at-paying-off-their-1-25-trillion-credit-card-debt-burden-a83bea87?mod=mw_rss_topstories"
+      "title": "Warsh pledges Fed policy 'regime change' to rid inflation 'tax' on American people",
+      "source": "CNBC",
+      "published": "2026-07-14T17:29:07+00:00",
+      "url": "https://www.cnbc.com/2026/07/14/warsh-promises-inflation-will-be-a-thing-of-the-past-cites-benefits-of-ai-investment-boom.html",
+      "description": "Warsh pledged Tuesday to \"get monetary policy right\" and defeat the inflation that has bedeviled the central bank for the past five years."
     },
     {
-      "title": "AI vs. robo advisers: How they stack up against each other —and human financial advisers",
-      "source": "MarketWatch",
-      "published": "2026-07-14T12:00:00+00:00",
-      "url": "https://www.marketwatch.com/story/ai-vs-robo-advisers-how-they-stack-up-against-each-other-and-human-financial-advisers-3132bb3d?mod=mw_rss_topstories"
+      "title": "Watch: Fed Chairman Kevin Warsh testifies to House Financial Services committee",
+      "source": "CNBC",
+      "published": "2026-07-14T17:26:37+00:00",
+      "url": "https://www.cnbc.com/2026/07/14/watch-fed-chairman-kevin-warsh-testify-live-to-house-financial-services-committee.html",
+      "description": "In remarks prepared for the appearance, Warsh promised a vigilant fight to return inflation to the Fed's 2% target."
     },
     {
-      "title": "Bank of America’s stock falls despite blockbuster earnings report",
-      "source": "MarketWatch",
-      "published": "2026-07-14T11:55:00+00:00",
-      "url": "https://www.marketwatch.com/story/bank-of-america-stock-falls-despite-earnings-beat-3d4db2b4?mod=mw_rss_topstories"
+      "title": "Stocks making the biggest moves midday: IBM, Goldman Sachs, CleanSpark, HCA Healthcare & more",
+      "source": "CNBC",
+      "published": "2026-07-14T16:48:07+00:00",
+      "url": "https://www.cnbc.com/2026/07/14/stocks-making-big-moves-midday-ibm-goldman-cleanspark-hca-more-.html",
+      "description": "These are some of the stocks posting the largest moves midday."
     },
     {
-      "title": "Lindsey Graham died from a rare heart condition. Here’s how to know if you’re at risk.",
-      "source": "MarketWatch",
-      "published": "2026-07-14T11:53:00+00:00",
-      "url": "https://www.marketwatch.com/story/lindsey-graham-died-from-a-rare-heart-condition-heres-how-to-know-if-youre-at-risk-8ca5a618?mod=mw_rss_topstories"
+      "title": "Barr, Will Artificial Intelligence Broadly Raise Living Standards or Drive Income and Wealth Inequality?",
+      "source": "Fed Speech",
+      "published": "2026-07-14T16:40:00+00:00",
+      "url": "https://www.federalreserve.gov/newsevents/speech/barr20260714a.htm",
+      "description": "Speech At “Next-Gen Financial Inclusion,” the third annual Financial Inclusion Conference hosted by the Federal Reserve Board"
     },
     {
-      "title": "Why SpaceX and Tesla are ‘value’ stocks, according to this fund manager",
-      "source": "MarketWatch",
-      "published": "2026-07-14T11:52:00+00:00",
-      "url": "https://www.marketwatch.com/story/why-spacex-and-tesla-are-value-stocks-according-to-this-fund-manager-5f59ff86?mod=mw_rss_topstories"
+      "title": "Instant View: CPI comes in cool, soothing markets",
+      "source": "Reuters",
+      "published": "2026-07-14T16:18:46+00:00",
+      "url": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxOa1pCUXk1VjhhOGRPZXEtTW5FZHBSSEY5ZEJubERmZ2hwVTNPdlgxdUFlZERfZU9jMXd5d3VLcHlqTFhIN0JBSS1iVlk3WnNzenhrRTZ6Z210YVBXamdUWVA1UWlkSmJUMHlPeFl6TWFFU1d6UWdGRXE0VzRfWjBHWmxpZW5idWJX?oc=5",
+      "description": "Instant View: CPI comes in cool, soothing markets &nbsp;&nbsp; Reuters"
     },
     {
-      "title": "IBM’s stock dives toward worst day in nearly 40 years after the surprise release of an earnings miss",
-      "source": "MarketWatch",
-      "published": "2026-07-14T11:50:00+00:00",
-      "url": "https://www.marketwatch.com/story/ibms-stock-dives-toward-worst-day-in-nearly-40-years-after-the-surprise-release-of-an-earnings-miss-8519741e?mod=mw_rss_topstories"
+      "title": "Kevin Warsh vows Federal Reserve will be ‘resolute’ in inflation fight",
+      "source": "FT",
+      "published": "2026-07-14T15:13:34+00:00",
+      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxOZ0taREhMWE53em1EU0NqWkxaYVI1Nk9qaVZaVWVjMkdXMUxnRU5kN1BnU2pWN3E4ZzBUeDF2MnFsZ0o1SjZNQklleUdvRjlCSloxdl9UVUMzdTQxMnNNVndNN3lBSVhKWEt2SDBJeUtQRVE2NF9BWU1NYmlCMUp3dVNQSEs?oc=5",
+      "description": "Kevin Warsh vows Federal Reserve will be ‘resolute’ in inflation fight &nbsp;&nbsp; Financial Times"
+    },
+    {
+      "title": "Earnings season plays: Profit expectations are growing for these stocks while their valuations get cheaper",
+      "source": "CNBC",
+      "published": "2026-07-14T14:38:42+00:00",
+      "url": "https://www.cnbc.com/2026/07/14/earnings-season-plays-profit-expectations-are-growing-for-these-stocks.html",
+      "description": "Investors can find opportunities in stocks where declining share prices are pushing valuations below their historical average."
+    },
+    {
+      "title": "Traders expect Fed to skip July rate hike as inflation cools",
+      "source": "Reuters",
+      "published": "2026-07-14T13:49:07+00:00",
+      "url": "https://news.google.com/rss/articles/CBMiowFBVV95cUxPejVocHU3MHFoUThMM0FoSk5ILWllYXdVa09OYmEtTjFoelpoVFl3T2kyYUR3UE85SnVLb01CbjV4TkJhMC0zajNCUHhza3c5RnJJaElFbnUyMV9YSmJ6VDUtWHFBUEdwSHd4eWUxMjNONzd2SS1zaENIdVJfWFFmX200YnV3Ym5YekpxVXBjVm91OWRXUy1xVTJHbkE4cHFOTDJF?oc=5",
+      "description": "Traders expect Fed to skip July rate hike as inflation cools &nbsp;&nbsp; Reuters"
     },
     {
       "title": "Stocks making the biggest moves premarket: JPMorgan Chase, Bank of America, IBM, Apple & more",
       "source": "CNBC",
-      "published": "2026-07-14T11:45:19+00:00",
-      "url": "https://www.cnbc.com/2026/07/14/stocks-making-the-biggest-moves-premarket-jpm-bac-ibm-aapl.html"
+      "published": "2026-07-14T12:36:31+00:00",
+      "url": "https://www.cnbc.com/2026/07/14/stocks-making-the-biggest-moves-premarket-jpm-bac-ibm-aapl.html",
+      "description": "These are the stocks posting the largest moves in early trading."
     },
     {
-      "title": "Another warning sign is flashing for tech stocks — and this one comes from outside the U.S.",
-      "source": "MarketWatch",
-      "published": "2026-07-14T11:40:00+00:00",
-      "url": "https://www.marketwatch.com/story/another-warning-sign-is-flashing-for-tech-stocks-and-this-one-comes-from-outside-the-u-s-d51d6bfd?mod=mw_rss_topstories"
+      "title": "US inflation fell more than expected to 3.5% in June as petrol prices tumbled",
+      "source": "FT",
+      "published": "2026-07-14T12:31:06+00:00",
+      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxQMmFLWHRoUE9ORGZ2eHNRSWlWSU5fejViWlBjT1NWcndmX2ZRUXQxd1lQNWU5WGlLbjI5WmpYVnJUQk1icWJUdXV1NEUtck15cDgtWk5sZDVic01NRzRNbWpzbDBxWndhRDlENnphU3ZuOXlWUWgydEc1WVlzLVlVR1BEMVA?oc=5",
+      "description": "US inflation fell more than expected to 3.5% in June as petrol prices tumbled &nbsp;&nbsp; Financial Times"
     },
     {
-      "title": "Big banks poised to report booming revenue propelled by SpaceX IPO, Iran war volatility",
-      "source": "CNBC",
-      "published": "2026-07-14T09:18:28+00:00",
-      "url": "https://www.cnbc.com/2026/07/13/bank-earnings-jpmorgan-chase-goldman-sachs-bank-of-america.html"
+      "title": "Oil touches $87 as battle for Strait of Hormuz alarms energy markets",
+      "source": "FT",
+      "published": "2026-07-14T06:58:38+00:00",
+      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxNbGFESFlWMnNUb0E1V2JOSTFCU2VWb1lkS1V2R28yWEdFQS1pUkxxaTUyUkQ5WWs4d0hZazF1bXpsc0lnUmpYemZVUUdsMGhCMGgyMGpiN2NSMGc0TDliQjl4bl9DM3BEQTlnWkUwbjBPZXJCZmxzLThrVXFjcE1pQktiT3k?oc=5",
+      "description": "Oil touches $87 as battle for Strait of Hormuz alarms energy markets &nbsp;&nbsp; Financial Times"
+    },
+    {
+      "title": "India presses banks to court diaspora for deposits to support rupee",
+      "source": "FT",
+      "published": "2026-07-14T06:40:14+00:00",
+      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxNWjZVZzFtTm9hVzJpUzlpS0JQVTZxVVdxOGlnMHpwYkt6ZV9EMkw0NEdVbWpKSjVGdW5JWGFwZWRYd3A3dFRUYjE0ODVOQXQ5UnBoR3pZWHZVX0NiLWZ6YWZmaFd0V1VjekZoeUJBNnNMdmM3eGlSR29tY1ZSSk0tNV9pbjI?oc=5",
+      "description": "India presses banks to court diaspora for deposits to support rupee &nbsp;&nbsp; Financial Times"
     },
     {
       "title": "Morning Bid: Fed in the spotlight as Warsh faces Congress",
       "source": "Reuters",
       "published": "2026-07-14T04:32:00+00:00",
-      "url": "https://news.google.com/rss/articles/CBMihgFBVV95cUxNejNzVDJ0X1diZnVDa0dSRU1KQjN0YllPMTQxNThmVzdlaERWV0oxRGdvOUpBby02U2txQV8waXFUaUpGalhZSExKTnhJMXl1azZaaGtrY3J0SXpSUHMxa3NLZ2J1d0ZQSnlXazA0cTZ2Y21TYXU2dDltd3gybFF3Vk5JcGFKdw?oc=5"
-    },
-    {
-      "title": "Gold bounces off two-week low, markets await US inflation data",
-      "source": "Reuters",
-      "published": "2026-07-14T03:19:00+00:00",
-      "url": "https://news.google.com/rss/articles/CBMiowFBVV95cUxOVWR0RmE4MVpQTF82M1c5VDlkYjBXQU1KRWNNdjQ5N2RrRlpHM1B2dmowSk1WQV9MQUJyYzRiVHl3aVE1dmVHb0RMZG9mOWN6alJmcjdhX0tGSmh3R0FoNXZ0dVM0c1R0QnBnRUl4VVBidWRJdDNUb1QyUkFOWkloU2tVOUs0RnhwbEFZSS1MWlc3aHhIMTkwMmVKV1JaeWk0RF9j?oc=5"
+      "url": "https://news.google.com/rss/articles/CBMihgFBVV95cUxNejNzVDJ0X1diZnVDa0dSRU1KQjN0YllPMTQxNThmVzdlaERWV0oxRGdvOUpBby02U2txQV8waXFUaUpGalhZSExKTnhJMXl1azZaaGtrY3J0SXpSUHMxa3NLZ2J1d0ZQSnlXazA0cTZ2Y21TYXU2dDltd3gybFF3Vk5JcGFKdw?oc=5",
+      "description": "Morning Bid: Fed in the spotlight as Warsh faces Congress &nbsp;&nbsp; Reuters"
     },
     {
       "title": "China's exports ride AI boom as domestic economy struggles",
       "source": "Reuters",
       "published": "2026-07-14T02:57:00+00:00",
-      "url": "https://news.google.com/rss/articles/CBMinwFBVV95cUxNRGpqNHVtR2tXdDB5RnBUeHF0U2oyRDRMNnduQVM0eHBWOTVxalVjSGdOMXlFZGxNRUc2dW9fcUttclVoVTdKbk5rRUlVOEdqWHFQRzd5WllrZGI2dnhOVEJXRDU1eFhSVlAtZDk2UEFCRExBdEQxMEdhTENzdzVRVWpaVUhJU2l2RU1KT0xobmNyeGtPcEY1S3Exb3doaG8?oc=5"
-    },
-    {
-      "title": "World stocks dip as oil rises after Trump's Hormuz levy threat",
-      "source": "Reuters",
-      "published": "2026-07-14T01:27:00+00:00",
-      "url": "https://news.google.com/rss/articles/CBMigwFBVV95cUxPdWRaMVFPRFNSMDhQQ1dQT09aWlhsdzdhVGVFcGUzblZreE9kSms3eXc3ZjRlbVhvdUtFRW5IQ3ZSSE42bnhoTGxIaVlwbVVQR0tLUE0yY1N3NTJ2Qko2S01pNHREcW5CbmpweXpORmVRRzdCR0RDcTRjeG9oS2tqR2hIWQ?oc=5"
+      "url": "https://news.google.com/rss/articles/CBMinwFBVV95cUxNRGpqNHVtR2tXdDB5RnBUeHF0U2oyRDRMNnduQVM0eHBWOTVxalVjSGdOMXlFZGxNRUc2dW9fcUttclVoVTdKbk5rRUlVOEdqWHFQRzd5WllrZGI2dnhOVEJXRDU1eFhSVlAtZDk2UEFCRExBdEQxMEdhTENzdzVRVWpaVUhJU2l2RU1KT0xobmNyeGtPcEY1S3Exb3doaG8?oc=5",
+      "description": "China's exports ride AI boom as domestic economy struggles &nbsp;&nbsp; Reuters"
     },
     {
       "title": "'Listing is a must': Chinese humanoid startups are rushing to launch IPOs",
       "source": "CNBC",
       "published": "2026-07-14T00:31:01+00:00",
-      "url": "https://www.cnbc.com/2026/07/13/chinese-humanoid-startups-ipo-limx-unitree.html"
+      "url": "https://www.cnbc.com/2026/07/13/chinese-humanoid-startups-ipo-limx-unitree.html",
+      "description": "Shenzhen-based LimX Dynamics is the latest humanoid company in China to raise capital in recent weeks as investors eye IPO exits."
     },
     {
-      "title": "Waller says Fed shouldn't 'fight the last war' on inflation but warns hikes still possible",
-      "source": "CNBC",
-      "published": "2026-07-13T19:15:25+00:00",
-      "url": "https://www.cnbc.com/2026/07/13/waller-says-fed-shouldnt-fight-the-last-war-on-inflation-but-warns-hikes-still-possible.html"
+      "title": "Mexican food chain Chipotle takes its burritos and bowls to Mexico",
+      "source": "FT",
+      "published": "2026-07-13T20:10:03+00:00",
+      "url": "https://news.google.com/rss/articles/CBMicEFVX3lxTE5YWDFkczRqMGdZdWdsbkU2TTlwejV3TEFNbjAzaC14TV9VajZqN2c4dm5FYzJleTBnNkdEOThsXzZVOUw1cXlaV2dVNmJYZmt4dUdIeVFuc2stY1I5bGx6cGlkR0tDSHdEZ0hUZHhFUUM?oc=5",
+      "description": "Mexican food chain Chipotle takes its burritos and bowls to Mexico &nbsp;&nbsp; Financial Times"
     },
     {
-      "title": "A July rate hike from the Fed? The odds are rising",
-      "source": "CNBC",
-      "published": "2026-07-13T17:07:51+00:00",
-      "url": "https://www.cnbc.com/2026/07/13/-a-july-rate-hike-from-the-fed-the-odds-are-rising.html"
-    },
-    {
-      "title": "Fed's Waller says rate hike may be needed if core inflation stays hot",
-      "source": "Reuters",
-      "published": "2026-07-13T16:32:00+00:00",
-      "url": "https://news.google.com/rss/articles/CBMipAFBVV95cUxNaW0tUldZeEtOTXVXNFlST05jYjZUMzcxcVZQNl9MVXh3ZXltWVVUcUlMelA2OENsVmdtSDNqTUVBSTBNdEVpbzg3Q1E2N28wMVBlYlZCVS1SYU5XUkVuMUdtUzUwcEJrWmRDYVp2ajg3cHdXMnpHbHhfSHc4Z2VaNmpVZUNrLTFKY2hBdmFwNWt3b2xJdzdRYzFpbUMxSERsdmtTZQ?oc=5"
+      "title": "Top Federal Reserve official warns ‘hot’ inflation could trigger rate rise",
+      "source": "FT",
+      "published": "2026-07-13T17:23:38+00:00",
+      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxQd002OGVMSXR0bnhSVWkwMHpjUDlhZDlzR0NhWGdfRkhLNngtTFFYS2dYMkxNTXg2R25IS3lDT1poN0tKLVc5OEVsaG45RV80MW1JQ3FrMFJoRE0wTUpEcXg5NXFKUG93T0NSajNfVU9MSGtLSlFUbFVCRkF3R1NWeUhCbDA?oc=5",
+      "description": "Top Federal Reserve official warns ‘hot’ inflation could trigger rate rise &nbsp;&nbsp; Financial Times"
     },
     {
       "title": "Crude stocks in US strategic reserve fall 3 million barrels to lowest level since 1983",
       "source": "Reuters",
       "published": "2026-07-13T16:30:11+00:00",
-      "url": "https://news.google.com/rss/articles/CBMizAFBVV95cUxNWGdyZ3luamhTRnhBS3Vsd196WXI4TWZmSVh4eUJwaHZQSExkX3ROV09wdm45Wk9DWVBkOHZCTV94UG1ybktzNS00UG95eFRvQTBJdC1xckxwTjVJQVNjaEpnMHIwTDhMTXBpV25lSVlKaWFWWm1OM3hNNC16NDNuUlc3RmVKMmNlUHlMNGlvdGVodFVITnNmSVduZklHekVqMHoxYzRqYW9tdGI2WTRKN2hnZlpOOEpiY0hnX3Fka0w5Qk5fLWtWa0RZSzc?oc=5"
+      "url": "https://news.google.com/rss/articles/CBMizAFBVV95cUxNWGdyZ3luamhTRnhBS3Vsd196WXI4TWZmSVh4eUJwaHZQSExkX3ROV09wdm45Wk9DWVBkOHZCTV94UG1ybktzNS00UG95eFRvQTBJdC1xckxwTjVJQVNjaEpnMHIwTDhMTXBpV25lSVlKaWFWWm1OM3hNNC16NDNuUlc3RmVKMmNlUHlMNGlvdGVodFVITnNmSVduZklHekVqMHoxYzRqYW9tdGI2WTRKN2hnZlpOOEpiY0hnX3Fka0w5Qk5fLWtWa0RZSzc?oc=5",
+      "description": "Crude stocks in US strategic reserve fall 3 million barrels to lowest level since 1983 &nbsp;&nbsp; Reuters"
     },
     {
-      "title": "Stocks making the biggest moves midday: Nio, Braiin, AppLovin, SpaceX, SK Hynix & more",
-      "source": "CNBC",
-      "published": "2026-07-13T16:21:26+00:00",
-      "url": "https://www.cnbc.com/2026/07/13/stocks-making-the-biggest-moves-midday-nio-brai-app-spcx-skhy.html"
-    },
-    {
-      "title": "Kalshi launches 'Pro' product for users trading multiple markets at same time, perpetual futures",
-      "source": "CNBC",
-      "published": "2026-07-13T11:36:00+00:00",
-      "url": "https://www.cnbc.com/2026/07/13/kalshi-launches-pro-product-for-users-trading-multiple-markets-at-same-time-perpetual-futures.html"
-    },
-    {
-      "title": "Trump invested crypto gains in stocks and bonds, filings show",
-      "source": "Reuters",
-      "published": "2026-07-13T11:11:00+00:00",
-      "url": "https://news.google.com/rss/articles/CBMiqgFBVV95cUxQM3U2SGdWREdQMXNjRUt5M2tfVXdoWUNzLXJ0RVdpWkRqdVM2V1RwcmtEbFNpRHJVUjM1cWJyZUZBLTJLSDJJd01FZGlpU2xQcUc1enlnVHZvNzBod0ZmV2ZVMktEMVVlcWJvcmpQbW5DOUMyZkNWNHpTTmR1YlNMMXY2cndwX3BwbDJnM0NzV0JpYlhXa2xKbUdjLTJQNk43amNPekF0RXRVQQ?oc=5"
-    },
-    {
-      "title": "Chip stocks hit rocky patch. What's next?",
-      "source": "Reuters",
-      "published": "2026-07-13T10:03:36+00:00",
-      "url": "https://news.google.com/rss/articles/CBMiiwFBVV95cUxObXBfajRWYzVsWXB3X0ZVdVRIYnp5X3djTGlEdDdKYlFaZHlpYmxUVXN4UkVZTVNGVGdVUVVXeUZiRG9WZFRpUzRfZ2lmQ2FCdnN3QUNnVlo2dmtCOWVPTDF0NFpoMEtFLXlqaVJVUEV5MGNSSHkwV3pTSXlhWTF0VGp5X3ZJUTB4QjRJ?oc=5"
+      "title": "Waller, Monetary Policy at a Crossroads",
+      "source": "Fed Speech",
+      "published": "2026-07-13T16:30:00+00:00",
+      "url": "https://www.federalreserve.gov/newsevents/speech/waller20260713a.htm",
+      "description": "Speech At the New York Association for Business Economics, New York, New York"
     }
   ]
 }
