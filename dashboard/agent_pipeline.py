@@ -84,6 +84,69 @@ Guidelines:
 - Write ALL text fields in Chinese (简体中文). Only JSON keys remain in English.
 """
 
+_THEME_SIGNAL_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "summary": {"type": "string"},
+        "signal": {"type": "string", "enum": ["risk-off", "neutral", "risk-on"]},
+    },
+    "required": ["summary", "signal"],
+    "additionalProperties": False,
+}
+
+RISK_REPORT_TOOL = {
+    "name": "submit_risk_report",
+    "description": "Submit the structured daily macro risk brief.",
+    "strict": True,
+    "input_schema": {
+        "type": "object",
+        "properties": {
+            "timestamp": {"type": "string"},
+            "risk_score": {"type": "integer", "minimum": 0, "maximum": 100},
+            "risk_level": {
+                "type": "string",
+                "enum": ["low", "moderate", "elevated", "high", "critical"],
+            },
+            "ml_probability": {"type": "number", "minimum": 0, "maximum": 1},
+            "signal_basis": {
+                "type": "string",
+                "enum": ["ML主导", "新闻主导", "共振放大", "背离缓和"],
+            },
+            "themes": {
+                "type": "object",
+                "properties": {
+                    "rates_fed": _THEME_SIGNAL_SCHEMA,
+                    "geopolitics_energy": _THEME_SIGNAL_SCHEMA,
+                    "equities_earnings": _THEME_SIGNAL_SCHEMA,
+                    "credit_liquidity": _THEME_SIGNAL_SCHEMA,
+                },
+                "required": [
+                    "rates_fed",
+                    "geopolitics_energy",
+                    "equities_earnings",
+                    "credit_liquidity",
+                ],
+                "additionalProperties": False,
+            },
+            "key_risks": {"type": "array", "items": {"type": "string"}, "minItems": 3, "maxItems": 6},
+            "recommendation": {"type": "string"},
+            "reasoning": {"type": "string"},
+        },
+        "required": [
+            "timestamp",
+            "risk_score",
+            "risk_level",
+            "ml_probability",
+            "signal_basis",
+            "themes",
+            "key_risks",
+            "recommendation",
+            "reasoning",
+        ],
+        "additionalProperties": False,
+    },
+}
+
 # Theme lexicon: (theme_id, chinese_label, risk_delta, keywords)
 THEME_LEXICON: list[tuple[str, str, int, tuple[str, ...]]] = [
     ("geopolitics", "地缘政治/能源冲击", 12, (
@@ -479,8 +542,16 @@ def call_anthropic(user_prompt: str) -> dict[str, Any]:
         model=os.environ.get("ANTHROPIC_MODEL", "claude-sonnet-4-6"),
         max_tokens=2048,
         system=SYSTEM_PROMPT,
+        tools=[RISK_REPORT_TOOL],
+        tool_choice={"type": "tool", "name": "submit_risk_report"},
         messages=[{"role": "user", "content": user_prompt}],
     )
+    for block in message.content:
+        if getattr(block, "type", None) == "tool_use" and block.name == "submit_risk_report":
+            if isinstance(block.input, dict):
+                return block.input
+            raise RuntimeError("Claude tool_use input was not a JSON object")
+    # Fallback for older models that still return raw JSON text
     parts = []
     for block in message.content:
         if getattr(block, "type", None) == "text":
