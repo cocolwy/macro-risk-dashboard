@@ -398,15 +398,37 @@ function Phase3LabInner() {
         <div style={{ marginBottom: 16, padding: 12, borderRadius: 8, background: 'rgba(234,88,12,0.04)', border: '1px solid rgba(234,88,12,0.2)' }}>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 6 }}>
             <span style={{ fontWeight: 700, color: '#ea580c', fontSize: 14 }}>Step 2 · 事件日历特征</span>
+            <span style={{ fontSize: 11, color: '#166534', background: '#f0fdf4', padding: '2px 6px', borderRadius: 4 }}>NEW BEST</span>
           </div>
           <div style={{ fontSize: 13, color: '#374151', lineHeight: 1.7 }}>
-            <strong>假设：</strong>重大经济事件发布前后（FOMC 利率决议、CPI 数据公布、非农就业报告）市场波动加剧，接近事件 = 更高风险。<br/>
-            <strong>控制变量：</strong>在 Slim 基础上追加「距离最近 FOMC/CPI/NFP 的天数」和「是否在事件前后 3/7 天窗口内」。<br/>
-            <strong>核心差异：</strong>Events 是「时间邻近性」（快变量/周期性），而非经济状态。
+            <strong>假设：</strong>三大宏观事件发布前后市场波动加剧，接近事件 = 更高风险。<br/>
+            <strong>控制变量：</strong>在 Slim 10 特征基础上追加 9 个事件日历特征（共 19 特征），模型不变（LR / GBDT）。
+          </div>
+          <div style={{ marginTop: 10, padding: '8px 10px', background: '#fff', borderRadius: 6, border: '1px solid #e5e7eb', fontSize: 12, lineHeight: 1.8 }}>
+            <div style={{ fontWeight: 600, marginBottom: 4 }}>三大事件</div>
+            <div><span style={{ fontWeight: 600, color: '#ea580c' }}>FOMC</span>（Federal Open Market Committee） — 美联储公开市场委员会，每年 8 次会议决定利率。利率决议直接影响全市场资产定价，是美股最大的单日波动源。</div>
+            <div><span style={{ fontWeight: 600, color: '#ea580c' }}>CPI</span>（Consumer Price Index） — 消费者物价指数，每月公布。通胀数据超/低预期直接改变市场对加息/降息的预期。</div>
+            <div><span style={{ fontWeight: 600, color: '#ea580c' }}>NFP</span>（Non-Farm Payrolls） — 非农就业报告，每月第一个周五公布。就业市场强弱影响美联储决策路径。</div>
+          </div>
+          <div style={{ marginTop: 8, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+            <div style={{ padding: '8px 10px', background: '#fff', borderRadius: 6, border: '1px solid #e5e7eb', fontSize: 12 }}>
+              <div style={{ fontWeight: 600, marginBottom: 4 }}>新增 9 个特征</div>
+              <div style={{ color: '#6b5f63', lineHeight: 1.6 }}>
+                fomc_days_to · fomc_days_since · fomc_within_3d · fomc_within_7d ·
+                cpi_days_to · cpi_days_since · cpi_within_3d · cpi_within_7d · nfp_within_3d
+              </div>
+            </div>
+            <div style={{ padding: '8px 10px', background: '#fff', borderRadius: 6, border: '1px solid #e5e7eb', fontSize: 12 }}>
+              <div style={{ fontWeight: 600, marginBottom: 4 }}>为什么 FOMC 最重要？</div>
+              <div style={{ color: '#6b5f63', lineHeight: 1.6 }}>
+                特征重要性排名中，fomc_days_since 和 fomc_days_to 排前 3。
+                FOMC 会后市场需要消化利率路径变化，"距上次 FOMC 多久" 反映了这种消化周期。
+              </div>
+            </div>
           </div>
           <div style={{ marginTop: 8, padding: '6px 10px', background: '#f0fdf4', borderRadius: 6, fontSize: 12 }}>
             <strong style={{ color: '#166534' }}>结论：LR Slim+Events F1=0.690（新最佳！），Brier=0.098。</strong>
-            {' '}事件日历特征提供了意外增量，可能因为 FOMC/CPI 前后市场确实更紧张。
+            {' '}FOMC 时间邻近性是核心增量来源。GBDT+Events 反而下降（F1=0.421），说明事件特征适合线性模型捕捉，非线性模型在小样本下过度拟合事件模式。
           </div>
         </div>
 
