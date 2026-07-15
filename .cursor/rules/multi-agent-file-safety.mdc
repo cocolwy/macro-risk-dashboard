@@ -28,10 +28,15 @@ alwaysApply: true
 - 不做"顺便优化"、"顺便格式化"等跨任务操作
 - 如果发现需要修改的文件与另一个 agent 冲突，告知用户让其协调
 
-### 3. 关键改动完成后立即 commit
+### 3. 关键改动完成后立即 commit + 确认 push
 
 不要积累大量改动后才 commit。每完成一个逻辑单元（一个实验、一个 bug fix），立即 commit。
 这样即使被覆盖，也能从 git history 恢复，而不需要从零重写。
+
+**commit 后必须立即询问用户是否 push**，不要假设用户会自己 push。格式：
+> 已 commit（xxx）。要现在 push 上线吗？
+
+如果 push 被系统拦截，必须明确告知用户并等待确认，不能跳过。
 
 ### 4. 大改动前做 checkpoint
 

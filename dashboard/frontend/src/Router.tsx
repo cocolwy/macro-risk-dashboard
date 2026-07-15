@@ -10,6 +10,7 @@ const MetricLab = lazy(() => import('./MetricLab').then(m => ({ default: m.Metri
 const EventVolLab = lazy(() => import('./EventVolLab').then(m => ({ default: m.EventVolLab })));
 const AgentLab = lazy(() => import('./AgentLab').then(m => ({ default: m.AgentLab })));
 const ProjectBoard = lazy(() => import('./ProjectBoard').then(m => ({ default: m.ProjectBoard })));
+const FactorLab = lazy(() => import('./FactorLab').then(m => ({ default: m.FactorLab })));
 
 const RISK_CHILDREN: PageId[] = ['ch1', 'ch2', 'ch2_1'];
 
@@ -58,6 +59,15 @@ export function Router() {
           <span className="nav-level">L1</span>
           News Agent
           {SITE_NAV.ch3.badge && <span className="nav-badge-dev">{SITE_NAV.ch3.badge}</span>}
+        </button>
+
+        <button
+          className={`nav-btn ${page === 'factorlab' ? 'nav-active' : ''}`}
+          onClick={() => navigate('factorlab')}
+        >
+          <span className="nav-level">L1</span>
+          Alpha Deck
+          {SITE_NAV.factorlab.badge && <span className="nav-badge-dev">{SITE_NAV.factorlab.badge}</span>}
         </button>
 
         <div className="nav-group">
@@ -113,6 +123,7 @@ export function Router() {
         {page === 'ch2_1' && <MetricLab />}
         {page === 'ch2_2' && <EventVolLab />}
         {page === 'ch3' && <AgentLab />}
+        {page === 'factorlab' && <FactorLab />}
       </Suspense>
     </>
   );

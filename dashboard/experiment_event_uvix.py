@@ -13,7 +13,7 @@ import numpy as np
 import pandas as pd
 from scipy import stats
 
-from predict_model import build_event_features, get_event_dates
+from predict_model import build_event_features, get_event_dates, get_historical_fomc_dates
 from fetch_macro_data import fetch_yfinance_history, sync_public_data
 
 DATA_DIR = Path(__file__).parent / "data"
@@ -793,6 +793,13 @@ def build_output() -> dict:
         counts = {row["event"]: row["n_events"] for row in r["by_event"]}
         print(f"    {period}: {counts}")
 
+    print("  Building historical replication...")
+    historical_replication = build_historical_replication()
+    print("  Building conditional analysis...")
+    conditional_analysis = build_conditional_analysis(vix, date_map)
+    print("  Building SKEW analysis...")
+    skew_analysis = build_skew_analysis(vix, date_map)
+
     n_exploratory = sum(
         len(EVENT_WINDOW_CONFIG[et]["pre"]) + len(EVENT_WINDOW_CONFIG[et]["post"])
         for et in EVENT_WINDOW_CONFIG
@@ -830,6 +837,9 @@ def build_output() -> dict:
         "sensitivity": {"covid_fomc": covid_sensitivity},
         "level_analysis": level_analysis,
         "subsample_analysis": subsample,
+        "historical_replication": historical_replication,
+        "conditional_analysis": conditional_analysis,
+        "skew_analysis": skew_analysis,
         "summary": {
             "data_range": f"{merged.index[0].strftime('%Y-%m-%d')} ~ {merged.index[-1].strftime('%Y-%m-%d')}",
             "analysis_years": ANALYSIS_YEARS,
@@ -857,6 +867,286 @@ def build_output() -> dict:
             },
             "baseline": "Sparse non-event anchors; one-sided two-proportion z-test",
         },
+    }
+
+
+def build_historical_replication() -> dict:
+    """
+    Replicate Lucca & Moench (2015) context on VIX dimension.
+    Compare FOMC pre-event VIX effect in pre-2015 vs post-2015 period.
+    Requires max-history VIX data from Yahoo Finance.
+    """
+    print("  Fetching historical VIX (max)...")
+    try:
+        df_hist = fetch_yfinance_history("^VIX", period="max")
+        if df_hist.empty:
+            return {"error": "历史 VIX 数据不可用"}
+        vix_hist = df_hist["Close"].copy()
+        vix_hist.index = pd.to_datetime(vix_hist.index).tz_localize(None).normalize()
+        vix_hist = vix_hist.dropna()
+    except Exception as e:
+        return {"error": str(e)}
+
+    # Historical FOMC dates (1994-2015) + existing (2016+)
+    hist_fomc = get_historical_fomc_dates()
+    curr_fomc = get_event_dates()["fomc"]
+    all_fomc = sorted(set(hist_fomc + curr_fomc))
+
+    # Split: paper covers 1994-2011; we define pre/post publication as pre/post Jan 2015
+    split_date = pd.Timestamp("2015-01-01")
+    fomc_pre = [d for d in all_fomc if d < split_date]
+    fomc_post = [d for d in all_fomc if d >= split_date]
+
+    def run_period(label: str, fomc_dates: list, vix: pd.Series) -> dict:
+        dates_in_range = filter_event_dates_in_range(vix, fomc_dates)
+        if not dates_in_range:
+            return {"label": label, "n_events": 0, "error": "无数据"}
+        event_days = collect_event_trading_days(vix, dates_in_range)
+        pre_start, pre_end = 5, 1   # T-5~T-1 (same primary window)
+        ev_ret = event_pre_returns(vix, dates_in_range, pre_start, pre_end)
+        ba_ret = baseline_pre_returns(vix, event_days, pre_start, pre_end, stride=BASELINE_STRIDE)
+        result = test_window(ev_ret, ba_ret, "up", one_sided=True, alpha=0.05)
+
+        ev_lvl = event_vix_window_avg(vix, dates_in_range, pre_start, pre_end)
+        ba_lvl = baseline_vix_window_avg(vix, event_days, pre_start, pre_end, stride=BASELINE_STRIDE)
+        lvl_result = welch_ttest_greater(ev_lvl, ba_lvl, alpha=0.05)
+
+        date_range = f"{vix.index[0].strftime('%Y')}" if not dates_in_range else \
+            f"{min(dates_in_range).strftime('%Y-%m')} ~ {max(dates_in_range).strftime('%Y-%m')}"
+        return {
+            "label": label,
+            "date_range": date_range,
+            "n_events": len(dates_in_range),
+            "return_based": {
+                "event_hit_rate": result.get("event_hit_rate"),
+                "baseline_hit_rate": result.get("baseline_hit_rate"),
+                "excess_hit_rate": result.get("excess_hit_rate"),
+                "event_mean_pct": result.get("event_mean_pct"),
+                "p_value": result.get("p_value"),
+                "significant": result.get("significant"),
+                "verdict": result.get("verdict"),
+            },
+            "level_based": {
+                "event_mean_vix": lvl_result.get("event_mean"),
+                "baseline_mean_vix": lvl_result.get("baseline_mean"),
+                "excess_vix": lvl_result.get("excess"),
+                "p_value": lvl_result.get("p_value"),
+                "significant": lvl_result.get("significant"),
+                "verdict": lvl_result.get("verdict"),
+            },
+        }
+
+    pre_result = run_period("Pre-2015 (论文发表前 1994-2014)", fomc_pre, vix_hist)
+    post_result = run_period("Post-2015 (论文发表后 2015-今)", fomc_post, vix_hist)
+
+    vix_start = vix_hist.index[0].strftime("%Y-%m-%d") if not vix_hist.empty else "N/A"
+    vix_end = vix_hist.index[-1].strftime("%Y-%m-%d") if not vix_hist.empty else "N/A"
+
+    return {
+        "description": (
+            "Lucca & Moench (2015) 复现检验 · 论文研究 1994-2011 年标普500 FOMC 前漂移。"
+            "本分析在 VIX 维度对比论文发表前后效应是否衰减。"
+        ),
+        "reference": "Lucca & Moench (2015) Journal of Finance — Pre-FOMC Announcement Drift",
+        "split_date": "2015-01-01",
+        "vix_data_range": f"{vix_start} ~ {vix_end}",
+        "total_fomc_events": len(all_fomc),
+        "window": "T-5~T-1",
+        "periods": [pre_result, post_result],
+        "interpretation": (
+            "若 Pre-2015 效应显著而 Post-2015 消失，说明论文发表后套利者进入导致效应衰减（因子被 exploit）。"
+            "这是量化研究中「发表后效应衰减」的典型案例。"
+        ),
+    }
+
+
+def build_conditional_analysis(vix: pd.Series, date_map: dict) -> dict:
+    """
+    Conditional Factor Analysis: split FOMC events by VIX regime at T-5
+    (low/mid/high tercile) and re-run T-5~T-1 return effect within each regime.
+    """
+    fomc_dates = date_map["fomc"]
+    idx = vix.index
+    pre_start, pre_end = PRIMARY_PRE_WINDOW
+
+    # Collect (vix_level_at_t5, pre_return) for each event
+    records = []
+    for ed in fomc_dates:
+        t0 = event_trading_day(idx, pd.Timestamp(ed))
+        if t0 is None:
+            continue
+        t5 = trading_offset(idx, t0, -pre_start)
+        t1 = trading_offset(idx, t0, -pre_end)
+        if t5 is None or t1 is None:
+            continue
+        vix_at_t5 = float(vix.loc[t5])
+        ret = pct_return(vix, t5, t1)
+        if ret is None:
+            continue
+        records.append({
+            "date": ed,
+            "vix_at_t5": vix_at_t5,
+            "pre_return": ret,
+        })
+
+    if len(records) < 15:
+        return {"error": "FOMC 样本不足，无法做条件分析"}
+
+    vix_levels = [r["vix_at_t5"] for r in records]
+    p33 = float(np.percentile(vix_levels, 33))
+    p67 = float(np.percentile(vix_levels, 67))
+
+    def regime_label(v: float) -> str:
+        if v < p33:
+            return "低波动 (VIX < p33)"
+        if v < p67:
+            return "中波动 (p33 ≤ VIX < p67)"
+        return "高波动 (VIX ≥ p67)"
+
+    for r in records:
+        r["regime"] = regime_label(r["vix_at_t5"])
+
+    regime_results = []
+    for regime_name in ["低波动 (VIX < p33)", "中波动 (p33 ≤ VIX < p67)", "高波动 (VIX ≥ p67)"]:
+        subset = [r for r in records if r["regime"] == regime_name]
+        vals = [r["pre_return"] for r in subset]
+        n = len(vals)
+        if n < 5:
+            regime_results.append({
+                "regime": regime_name, "n": n, "error": "样本不足",
+                "hit_rate": None, "mean_pct": None, "p_value": None,
+            })
+            continue
+        hit = sum(1 for v in vals if v > 0)
+        hit_rate = round(hit / n, 3)
+        mean_pct = round(float(np.mean(vals)), 3)
+        vix_range_lo = min(r["vix_at_t5"] for r in subset)
+        vix_range_hi = max(r["vix_at_t5"] for r in subset)
+        # Simple one-sample t-test: is mean significantly > 0?
+        if len(vals) >= 5:
+            t_stat, p_two = stats.ttest_1samp(vals, 0)
+            p_one = float(p_two / 2) if t_stat > 0 else 1.0
+        else:
+            p_one = None
+        regime_results.append({
+            "regime": regime_name,
+            "n": n,
+            "hit_rate_up": hit_rate,
+            "mean_pct": mean_pct,
+            "p_value": round(p_one, 4) if p_one is not None else None,
+            "significant": p_one is not None and p_one < 0.05 and mean_pct > 0,
+            "vix_range": [round(vix_range_lo, 1), round(vix_range_hi, 1)],
+        })
+
+    full_hit = sum(1 for r in records if r["pre_return"] > 0)
+    return {
+        "description": (
+            f"按 FOMC 事件当日 T-5 的 VIX 水平分三档（低/中/高），"
+            f"分别检验 T-5~T-1 期间 VIX 涨跌倾向。"
+            f"三档阈值：p33={p33:.1f}，p67={p67:.1f}"
+        ),
+        "window": f"T-{pre_start}~T-{pre_end} return",
+        "total_events": len(records),
+        "overall_hit_rate": round(full_hit / len(records), 3),
+        "thresholds": {"p33": round(p33, 1), "p67": round(p67, 1)},
+        "by_regime": regime_results,
+        "interpretation": (
+            "若高波动期效应更强，说明市场恐慌时 FOMC 不确定性溢价更大。"
+            "若低波动期效应更强，说明 VIX 从低位积累上升空间更大。"
+        ),
+    }
+
+
+def build_skew_analysis(vix: pd.Series, date_map: dict) -> dict:
+    """
+    Fetch CBOE SKEW index and analyze change around FOMC events.
+    SKEW measures tail-risk demand; rising SKEW before FOMC = event anxiety.
+    """
+    print("  Fetching SKEW index...")
+    try:
+        df_skew = fetch_yfinance_history("^SKEW", period="10y")
+        if df_skew.empty:
+            raise ValueError("Empty SKEW data")
+        skew = df_skew["Close"].copy()
+        skew.index = pd.to_datetime(skew.index).tz_localize(None).normalize()
+        skew = skew.dropna()
+    except Exception as e:
+        return {"error": f"SKEW 数据不可用: {e}"}
+
+    fomc_dates = date_map["fomc"]
+    pre_start, pre_end = 5, 1
+
+    event_changes = []
+    for ed in fomc_dates:
+        t0 = event_trading_day(skew.index, pd.Timestamp(ed))
+        if t0 is None:
+            continue
+        t5 = trading_offset(skew.index, t0, -pre_start)
+        t1 = trading_offset(skew.index, t0, -pre_end)
+        if t5 is None or t1 is None:
+            continue
+        if t5 not in skew.index or t1 not in skew.index:
+            continue
+        change = float(skew.loc[t1]) - float(skew.loc[t5])
+        event_changes.append({
+            "date": pd.Timestamp(ed).strftime("%Y-%m-%d"),
+            "skew_at_t5": round(float(skew.loc[t5]), 2),
+            "skew_at_t1": round(float(skew.loc[t1]), 2),
+            "skew_change": round(change, 2),
+        })
+
+    if not event_changes:
+        return {"error": "无足够 SKEW 数据点"}
+
+    changes = [r["skew_change"] for r in event_changes]
+    n = len(changes)
+    hit_up = sum(1 for c in changes if c > 0)
+
+    # Compare to non-event baseline SKEW change
+    fomc_event_days = collect_event_trading_days(skew, fomc_dates)
+    baseline_changes = []
+    for i, t0 in enumerate(skew.index):
+        if t0 in fomc_event_days or i % BASELINE_STRIDE != 0:
+            continue
+        t5 = trading_offset(skew.index, t0, -pre_start)
+        t1 = trading_offset(skew.index, t0, -pre_end)
+        if t5 is None or t1 is None:
+            continue
+        if t5 not in skew.index or t1 not in skew.index:
+            continue
+        baseline_changes.append(float(skew.loc[t1]) - float(skew.loc[t5]))
+
+    if len(changes) >= 5 and len(baseline_changes) >= 5:
+        t_stat, _ = stats.ttest_ind(changes, baseline_changes, equal_var=False)
+        p_two = float(_)
+        p_one = float(p_two / 2) if t_stat > 0 else 1.0
+    else:
+        p_one = None
+
+    return {
+        "description": (
+            "CBOE SKEW 指数衡量市场对尾部风险（隐含偏斜）的需求。"
+            "SKEW 上升表示市场购买更多下行保护。"
+            "若 FOMC 前 SKEW 系统性上升，说明事件焦虑被体现在期权价格中。"
+        ),
+        "instrument": "^SKEW (CBOE SKEW Index)",
+        "window": f"T-{pre_start}~T-{pre_end} SKEW 绝对变化",
+        "data_range": f"{skew.index[0].strftime('%Y-%m-%d')} ~ {skew.index[-1].strftime('%Y-%m-%d')}",
+        "n_fomc_events": n,
+        "skew_stats": {
+            "mean_full_period": round(float(skew.mean()), 2),
+            "event_mean_change": round(float(np.mean(changes)), 2),
+            "baseline_mean_change": round(float(np.mean(baseline_changes)), 2) if baseline_changes else None,
+            "excess_change": round(float(np.mean(changes)) - float(np.mean(baseline_changes)), 2) if baseline_changes else None,
+            "hit_rate_up": round(hit_up / n, 3),
+            "p_value": round(p_one, 4) if p_one is not None else None,
+            "significant": p_one is not None and p_one < 0.05 and float(np.mean(changes)) > float(np.mean(baseline_changes)),
+        },
+        "recent_events": sorted(event_changes, key=lambda x: x["date"])[-12:],
+        "interpretation": (
+            "SKEW 上升（正变化）意味着市场购买更多深度虚值看跌期权以对冲事件尾部风险。"
+            "与 VIX 上涨结合，可提供更完整的事件焦虑图景。"
+        ),
     }
 
 

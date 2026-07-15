@@ -1,4 +1,4 @@
-export type PageId = 'home' | 'pipeline' | 'risk' | 'ch1' | 'ch2' | 'ch2_1' | 'ch2_2' | 'ch3';
+export type PageId = 'home' | 'pipeline' | 'risk' | 'ch1' | 'ch2' | 'ch2_1' | 'ch2_2' | 'ch3' | 'factorlab';
 
 export interface NavItem {
   id: PageId;
@@ -81,6 +81,15 @@ export const SITE_NAV: Record<PageId, NavItem> = {
     badge: 'NEW',
     metrics: 'VIX event study · H1/H2',
   },
+  factorlab: {
+    id: 'factorlab',
+    hash: 'factorlab',
+    title: 'Alpha Deck',
+    subtitle: '因子研究日志 · 假设 · 检验方法 · 发现与结论',
+    level: 1,
+    badge: 'NEW',
+    metrics: 'F001 VIX Event Effect',
+  },
 };
 
 const HASH_ALIASES: Record<string, PageId> = {
@@ -100,6 +109,8 @@ const HASH_ALIASES: Record<string, PageId> = {
   eventvol: 'ch2_2',
   ch3: 'ch3',
   agent: 'ch3',
+  factorlab: 'factorlab',
+  alphadeck: 'factorlab',
 };
 
 export function pageFromHash(hash: string): PageId {
@@ -125,7 +136,7 @@ export const HOME_SECTIONS = [
   {
     level: 1,
     label: '一级 · 量化整体架构',
-    items: ['pipeline', 'ch3'] as PageId[],
+    items: ['pipeline', 'ch3', 'factorlab'] as PageId[],
   },
   {
     level: 2,

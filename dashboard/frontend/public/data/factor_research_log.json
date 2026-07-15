@@ -1,0 +1,131 @@
+{
+  "version": "1.0",
+  "description": "量化因子研究日志 · Alpha Deck",
+  "updated": "2026-07-15",
+  "factors": [
+    {
+      "id": "F001",
+      "name": "VIX Event Calendar Effect",
+      "name_zh": "宏观事件日历 × VIX 预期积累效应",
+      "hypothesis": "FOMC / CPI / NFP 重大宏观数据发布前，市场不确定性上升，VIX 应系统性高于非事件期；发布后靴子落地，VIX 应回落。",
+      "motivation": "量化直觉：市场参与者在不确定结果发布前会买入保护，推高隐含波动率。",
+      "status": "conditional",
+      "status_note": "在严格 Bonferroni 校正下主假设不成立；探索性发现 FOMC T-3~T-1 效应较大但需独立验证；效应可能已于 2015 年论文发表后衰减。",
+      "tags": ["VIX", "events", "macro", "FOMC", "CPI", "NFP"],
+      "data": {
+        "instrument": "^VIX (CBOE Volatility Index)",
+        "source": "Yahoo Finance",
+        "primary_period": "2016-07-15 ~ 2026-07-15",
+        "n_trading_days": 2513,
+        "events": { "fomc": 81, "cpi": 119, "nfp": 120 }
+      },
+      "methods": [
+        {
+          "name": "return_based_primary",
+          "description": "预注册固定窗口 T-5~T-1 涨跌方向命中率 vs 稀疏非事件日基准，单侧 z 检验，Bonferroni α=0.0083",
+          "result": "FOMC p=0.083 / CPI p=0.087 / NFP p=0.133 — 均不显著"
+        },
+        {
+          "name": "return_based_exploratory",
+          "description": "窗口扫描（T-10/7/5/3~T-1），选最优窗口（多重检验警告）",
+          "result": "FOMC T-3~T-1 命中率 72% vs 基准 45%，+27pp，p≈0（探索性，需独立验证）"
+        },
+        {
+          "name": "level_based_method_a",
+          "description": "T-5~T-1 期间 VIX 平均水平 vs 非事件日同窗口均值，Welch t-test",
+          "result": "FOMC +0.1 / CPI -0.1 / NFP -0.2 VIX 点 — 无差异"
+        },
+        {
+          "name": "level_based_method_b",
+          "description": "T-1 日 VIX 绝对水平 vs 全样本均值（18.57）",
+          "result": "三类事件均仅 +0.1~+0.4 VIX 点，不显著"
+        },
+        {
+          "name": "subsample_1y",
+          "description": "近 1 年（2025-07 ~ 2026-07），n=8/11/12",
+          "result": "FOMC 前 return p=1.0（反向），说明近期降息预期内化，效应消失甚至反转"
+        },
+        {
+          "name": "subsample_2y",
+          "description": "近 2 年（2024-07 ~ 2026-07），n=16/23/24",
+          "result": "FOMC p=1.0；NFP return p=0.015 但水平比较不支持，不稳定"
+        }
+      ],
+      "key_findings": [
+        "VIX 30 天前瞻性导致「非事件日」已隐含下次事件定价，水平比较天然趋零",
+        "涨跌方向信号：FOMC 有边际正向倾向（p≈0.08），但经 Bonferroni 校正后不显著",
+        "FOMC T-3~T-1 探索性发现效应显著（+27pp），但属于多重检验，需独立期外验证",
+        "近期（2025-2026）效应消失甚至反转，与美联储降息路径高度可预期一致",
+        "H2（发布后 VIX 下跌）全样本/所有方法均不显著",
+        "历史复现：Pre-2015 命中率54% p=0.049（边际显著），Post-2015 命中率53% p=0.14（不显著），支持论文发表后效应衰减假设",
+        "条件分析（关键发现）：低VIX环境（VIX<p33）下FOMC前命中率70.4%，p=0.015（显著）；中/高VIX环境无效应",
+        "CBOE SKEW 指数在 FOMC 前略降（-0.23 vs 基准 +0.15），不支持期权焦虑假设"
+      ],
+      "verdict": "全样本下效应弱；但在低波动环境（VIX<p33）下 FOMC 前效应显著（p=0.015）。条件因子有研究价值，需进一步验证。历史复现支持「因子在论文发表后被套利磨损」。",
+      "next_steps": [
+        "低VIX条件因子：独立期外验证 VIX<p33 时 FOMC T-5~T-1 效应（2015-2019 样本）",
+        "低VIX × FOMC 组合信号：与其他宏观因子叠加，测试策略稳健性",
+        "日内数据（待外部数据源）：用 FOMC 当天下午收盘前 1 小时 VIX 变化",
+        "VIX 期限结构：测试 VIX/VIX3M（前端/远端对比）在 FOMC 前的期限溢价变化"
+      ],
+      "references": [
+        {
+          "title": "Pre-FOMC Announcement Drift",
+          "authors": "Lucca, D. O. & Moench, E.",
+          "journal": "Journal of Finance",
+          "year": 2015,
+          "note": "记录 1994-2011 年标普 500 在 FOMC 前 24 小时系统性正收益；本研究发现该效应在 VIX 维度已大幅衰减"
+        }
+      ],
+      "created": "2026-07-15",
+      "last_updated": "2026-07-15",
+      "methods": [
+        {
+          "name": "return_based_primary",
+          "description": "预注册固定窗口 T-5~T-1 涨跌方向命中率 vs 稀疏非事件日基准，单侧 z 检验，Bonferroni α=0.0083",
+          "result": "FOMC p=0.083 / CPI p=0.087 / NFP p=0.133 — 均不显著"
+        },
+        {
+          "name": "return_based_exploratory",
+          "description": "窗口扫描（T-10/7/5/3~T-1），选最优窗口（多重检验警告）",
+          "result": "FOMC T-3~T-1 命中率 72% vs 基准 45%，+27pp，p≈0（探索性，需独立验证）"
+        },
+        {
+          "name": "level_based_method_a",
+          "description": "T-5~T-1 期间 VIX 平均水平 vs 非事件日同窗口均值，Welch t-test",
+          "result": "FOMC +0.1 / CPI -0.1 / NFP -0.2 VIX 点 — 无差异"
+        },
+        {
+          "name": "level_based_method_b",
+          "description": "T-1 日 VIX 绝对水平 vs 全样本均值（18.57）",
+          "result": "三类事件均仅 +0.1~+0.4 VIX 点，不显著"
+        },
+        {
+          "name": "subsample_1y",
+          "description": "近 1 年（2025-07 ~ 2026-07），n=8/11/12",
+          "result": "FOMC 前 return p=1.0（反向），说明近期降息预期内化，效应消失甚至反转"
+        },
+        {
+          "name": "subsample_2y",
+          "description": "近 2 年（2024-07 ~ 2026-07），n=16/23/24",
+          "result": "FOMC p=1.0；NFP return p=0.015 但水平比较不支持，不稳定"
+        },
+        {
+          "name": "historical_replication",
+          "description": "分 Pre-2015（1994-2014）vs Post-2015 两段，用历史 VIX max 数据",
+          "result": "Pre-2015: 命中率54%, p=0.049（边际显著）；Post-2015: 命中率53%, p=0.137（不显著）"
+        },
+        {
+          "name": "conditional_vix_regime",
+          "description": "按 FOMC 事件 T-5 VIX 水平三档分组（低/中/高），分别跑 T-5~T-1 涨跌命中率",
+          "result": "低VIX (n=27): 命中率70.4%, p=0.015（显著）；中VIX: 44.4%；高VIX: 48.1%"
+        },
+        {
+          "name": "skew_analysis",
+          "description": "CBOE ^SKEW 指数在 FOMC T-5~T-1 的绝对变化 vs 非事件日基准",
+          "result": "FOMC 前 SKEW 变化 -0.23 vs 基准 +0.15，p=1.0，不显著（期权焦虑假设不成立）"
+        }
+      ]
+    }
+  ]
+}

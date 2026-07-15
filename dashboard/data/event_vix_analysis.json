@@ -390,7 +390,7 @@
         "baseline_hit_rate": 0.54,
         "excess_hit_rate": 0.028,
         "event_mean_pct": 1.698,
-        "baseline_mean_pct": 0.581,
+        "baseline_mean_pct": 0.58,
         "event_n": 81,
         "baseline_n": 2198,
         "z_stat": 0.494,
@@ -505,7 +505,7 @@
           "baseline_hit_rate": 0.54,
           "excess_hit_rate": 0.028,
           "event_mean_pct": 1.698,
-          "baseline_mean_pct": 0.581,
+          "baseline_mean_pct": 0.58,
           "event_n": 81,
           "baseline_n": 2198,
           "z_stat": 0.494,
@@ -523,7 +523,7 @@
           "baseline_hit_rate": 0.533,
           "excess_hit_rate": -0.076,
           "event_mean_pct": 5.057,
-          "baseline_mean_pct": 0.819,
+          "baseline_mean_pct": 0.818,
           "event_n": 81,
           "baseline_n": 2197,
           "z_stat": -1.35,
@@ -541,12 +541,12 @@
           "baseline_hit_rate": 0.54,
           "excess_hit_rate": -0.021,
           "event_mean_pct": 1.795,
-          "baseline_mean_pct": 1.464,
+          "baseline_mean_pct": 1.463,
           "event_n": 81,
           "baseline_n": 2195,
-          "z_stat": -0.378,
-          "p_value": 0.7051,
-          "phi": -0.0079,
+          "z_stat": -0.387,
+          "p_value": 0.6991,
+          "phi": -0.0081,
           "significant": false,
           "alpha_used": 0.05,
           "one_sided": false,
@@ -709,7 +709,7 @@
           "baseline_hit_rate": 0.54,
           "excess_hit_rate": 0.031,
           "event_mean_pct": -0.787,
-          "baseline_mean_pct": 0.581,
+          "baseline_mean_pct": 0.58,
           "event_n": 119,
           "baseline_n": 2198,
           "z_stat": 0.669,
@@ -727,7 +727,7 @@
           "baseline_hit_rate": 0.533,
           "excess_hit_rate": 0.03,
           "event_mean_pct": -0.465,
-          "baseline_mean_pct": 0.819,
+          "baseline_mean_pct": 0.818,
           "event_n": 119,
           "baseline_n": 2197,
           "z_stat": 0.64,
@@ -745,12 +745,12 @@
           "baseline_hit_rate": 0.54,
           "excess_hit_rate": -0.011,
           "event_mean_pct": 1.658,
-          "baseline_mean_pct": 1.464,
+          "baseline_mean_pct": 1.463,
           "event_n": 119,
           "baseline_n": 2195,
-          "z_stat": -0.223,
-          "p_value": 0.8237,
-          "phi": -0.0046,
+          "z_stat": -0.233,
+          "p_value": 0.8161,
+          "phi": -0.0048,
           "significant": false,
           "alpha_used": 0.05,
           "one_sided": false,
@@ -797,12 +797,12 @@
         "baseline_hit_rate": 0.54,
         "excess_hit_rate": 0.077,
         "event_mean_pct": -0.057,
-        "baseline_mean_pct": 1.464,
+        "baseline_mean_pct": 1.463,
         "event_n": 120,
         "baseline_n": 2195,
-        "z_stat": 1.645,
-        "p_value": 0.1,
-        "phi": 0.0342,
+        "z_stat": 1.635,
+        "p_value": 0.102,
+        "phi": 0.034,
         "significant": false,
         "alpha_used": 0.05,
         "one_sided": false,
@@ -912,7 +912,7 @@
           "baseline_hit_rate": 0.533,
           "excess_hit_rate": -0.033,
           "event_mean_pct": 1.234,
-          "baseline_mean_pct": 0.819,
+          "baseline_mean_pct": 0.818,
           "event_n": 120,
           "baseline_n": 2197,
           "z_stat": -0.705,
@@ -930,12 +930,12 @@
           "baseline_hit_rate": 0.54,
           "excess_hit_rate": 0.077,
           "event_mean_pct": -0.057,
-          "baseline_mean_pct": 1.464,
+          "baseline_mean_pct": 1.463,
           "event_n": 120,
           "baseline_n": 2195,
-          "z_stat": 1.645,
-          "p_value": 0.1,
-          "phi": 0.0342,
+          "z_stat": 1.635,
+          "p_value": 0.102,
+          "phi": 0.034,
           "significant": false,
           "alpha_used": 0.05,
           "one_sided": false,
@@ -1034,7 +1034,7 @@
       {
         "event": "NFP",
         "t_stat": 0.147,
-        "p_value": 0.4416,
+        "p_value": 0.4415,
         "event_mean": 18.66,
         "baseline_mean": 18.57,
         "excess": 0.09,
@@ -1170,6 +1170,201 @@
         }
       ]
     }
+  },
+  "historical_replication": {
+    "description": "Lucca & Moench (2015) \u590d\u73b0\u68c0\u9a8c \u00b7 \u8bba\u6587\u7814\u7a76 1994-2011 \u5e74\u6807\u666e500 FOMC \u524d\u6f02\u79fb\u3002\u672c\u5206\u6790\u5728 VIX \u7ef4\u5ea6\u5bf9\u6bd4\u8bba\u6587\u53d1\u8868\u524d\u540e\u6548\u5e94\u662f\u5426\u8870\u51cf\u3002",
+    "reference": "Lucca & Moench (2015) Journal of Finance \u2014 Pre-FOMC Announcement Drift",
+    "split_date": "2015-01-01",
+    "vix_data_range": "1990-01-02 ~ 2026-07-15",
+    "total_fomc_events": 269,
+    "window": "T-5~T-1",
+    "periods": [
+      {
+        "label": "Pre-2015 (\u8bba\u6587\u53d1\u8868\u524d 1994-2014)",
+        "date_range": "1994-02 ~ 2014-12",
+        "n_events": 174,
+        "return_based": {
+          "event_hit_rate": 0.54,
+          "baseline_hit_rate": 0.475,
+          "excess_hit_rate": 0.065,
+          "event_mean_pct": 2.495,
+          "p_value": 0.0488,
+          "significant": true,
+          "verdict": "\u663e\u8457\u6b63\u76f8\u5173"
+        },
+        "level_based": {
+          "event_mean_vix": 21.12,
+          "baseline_mean_vix": 19.4,
+          "excess_vix": 1.72,
+          "p_value": 0.0064,
+          "significant": true,
+          "verdict": "VIX \u663e\u8457\u504f\u9ad8"
+        }
+      },
+      {
+        "label": "Post-2015 (\u8bba\u6587\u53d1\u8868\u540e 2015-\u4eca)",
+        "date_range": "2015-01 ~ 2026-06",
+        "n_events": 94,
+        "return_based": {
+          "event_hit_rate": 0.532,
+          "baseline_hit_rate": 0.474,
+          "excess_hit_rate": 0.058,
+          "event_mean_pct": 1.912,
+          "p_value": 0.1373,
+          "significant": false,
+          "verdict": "\u6709\u5dee\u5f02\u4f46\u4e0d\u663e\u8457"
+        },
+        "level_based": {
+          "event_mean_vix": 18.52,
+          "baseline_mean_vix": 19.47,
+          "excess_vix": -0.95,
+          "p_value": 1.0,
+          "significant": false,
+          "verdict": "VIX \u65e0\u5dee\u5f02"
+        }
+      }
+    ],
+    "interpretation": "\u82e5 Pre-2015 \u6548\u5e94\u663e\u8457\u800c Post-2015 \u6d88\u5931\uff0c\u8bf4\u660e\u8bba\u6587\u53d1\u8868\u540e\u5957\u5229\u8005\u8fdb\u5165\u5bfc\u81f4\u6548\u5e94\u8870\u51cf\uff08\u56e0\u5b50\u88ab exploit\uff09\u3002\u8fd9\u662f\u91cf\u5316\u7814\u7a76\u4e2d\u300c\u53d1\u8868\u540e\u6548\u5e94\u8870\u51cf\u300d\u7684\u5178\u578b\u6848\u4f8b\u3002"
+  },
+  "conditional_analysis": {
+    "description": "\u6309 FOMC \u4e8b\u4ef6\u5f53\u65e5 T-5 \u7684 VIX \u6c34\u5e73\u5206\u4e09\u6863\uff08\u4f4e/\u4e2d/\u9ad8\uff09\uff0c\u5206\u522b\u68c0\u9a8c T-5~T-1 \u671f\u95f4 VIX \u6da8\u8dcc\u503e\u5411\u3002\u4e09\u6863\u9608\u503c\uff1ap33=14.4\uff0cp67=19.7",
+    "window": "T-5~T-1 return",
+    "total_events": 81,
+    "overall_hit_rate": 0.543,
+    "thresholds": {
+      "p33": 14.4,
+      "p67": 19.7
+    },
+    "by_regime": [
+      {
+        "regime": "\u4f4e\u6ce2\u52a8 (VIX < p33)",
+        "n": 27,
+        "hit_rate_up": 0.704,
+        "mean_pct": 4.682,
+        "p_value": 0.0155,
+        "significant": true,
+        "vix_range": [
+          9.8,
+          14.2
+        ]
+      },
+      {
+        "regime": "\u4e2d\u6ce2\u52a8 (p33 \u2264 VIX < p67)",
+        "n": 27,
+        "hit_rate_up": 0.444,
+        "mean_pct": 0.881,
+        "p_value": 0.3385,
+        "significant": false,
+        "vix_range": [
+          14.6,
+          19.5
+        ]
+      },
+      {
+        "regime": "\u9ad8\u6ce2\u52a8 (VIX \u2265 p67)",
+        "n": 27,
+        "hit_rate_up": 0.481,
+        "mean_pct": 0.111,
+        "p_value": 0.4883,
+        "significant": false,
+        "vix_range": [
+          19.9,
+          54.5
+        ]
+      }
+    ],
+    "interpretation": "\u82e5\u9ad8\u6ce2\u52a8\u671f\u6548\u5e94\u66f4\u5f3a\uff0c\u8bf4\u660e\u5e02\u573a\u6050\u614c\u65f6 FOMC \u4e0d\u786e\u5b9a\u6027\u6ea2\u4ef7\u66f4\u5927\u3002\u82e5\u4f4e\u6ce2\u52a8\u671f\u6548\u5e94\u66f4\u5f3a\uff0c\u8bf4\u660e VIX \u4ece\u4f4e\u4f4d\u79ef\u7d2f\u4e0a\u5347\u7a7a\u95f4\u66f4\u5927\u3002"
+  },
+  "skew_analysis": {
+    "description": "CBOE SKEW \u6307\u6570\u8861\u91cf\u5e02\u573a\u5bf9\u5c3e\u90e8\u98ce\u9669\uff08\u9690\u542b\u504f\u659c\uff09\u7684\u9700\u6c42\u3002SKEW \u4e0a\u5347\u8868\u793a\u5e02\u573a\u8d2d\u4e70\u66f4\u591a\u4e0b\u884c\u4fdd\u62a4\u3002\u82e5 FOMC \u524d SKEW \u7cfb\u7edf\u6027\u4e0a\u5347\uff0c\u8bf4\u660e\u4e8b\u4ef6\u7126\u8651\u88ab\u4f53\u73b0\u5728\u671f\u6743\u4ef7\u683c\u4e2d\u3002",
+    "instrument": "^SKEW (CBOE SKEW Index)",
+    "window": "T-5~T-1 SKEW \u7edd\u5bf9\u53d8\u5316",
+    "data_range": "2016-07-15 ~ 2026-07-13",
+    "n_fomc_events": 81,
+    "skew_stats": {
+      "mean_full_period": 135.98,
+      "event_mean_change": -0.23,
+      "baseline_mean_change": 0.15,
+      "excess_change": -0.38,
+      "hit_rate_up": 0.469,
+      "p_value": 1.0,
+      "significant": false
+    },
+    "recent_events": [
+      {
+        "date": "2025-01-29",
+        "skew_at_t5": 179.98,
+        "skew_at_t1": 163.64,
+        "skew_change": -16.34
+      },
+      {
+        "date": "2025-03-19",
+        "skew_at_t5": 128.69,
+        "skew_at_t1": 136.75,
+        "skew_change": 8.06
+      },
+      {
+        "date": "2025-05-07",
+        "skew_at_t5": 132.73,
+        "skew_at_t1": 133.24,
+        "skew_change": 0.51
+      },
+      {
+        "date": "2025-06-18",
+        "skew_at_t5": 141.39,
+        "skew_at_t1": 154.36,
+        "skew_change": 12.97
+      },
+      {
+        "date": "2025-07-30",
+        "skew_at_t5": 159.29,
+        "skew_at_t1": 149.12,
+        "skew_change": -10.17
+      },
+      {
+        "date": "2025-09-17",
+        "skew_at_t5": 151.92,
+        "skew_at_t1": 148.21,
+        "skew_change": -3.71
+      },
+      {
+        "date": "2025-10-29",
+        "skew_at_t5": 152.85,
+        "skew_at_t1": 140.37,
+        "skew_change": -12.48
+      },
+      {
+        "date": "2025-12-17",
+        "skew_at_t5": 147.55,
+        "skew_at_t1": 156.99,
+        "skew_change": 9.44
+      },
+      {
+        "date": "2026-01-28",
+        "skew_at_t5": 144.41,
+        "skew_at_t1": 147.25,
+        "skew_change": 2.84
+      },
+      {
+        "date": "2026-03-18",
+        "skew_at_t5": 152.44,
+        "skew_at_t1": 145.04,
+        "skew_change": -7.4
+      },
+      {
+        "date": "2026-05-06",
+        "skew_at_t5": 141.88,
+        "skew_at_t1": 138.74,
+        "skew_change": -3.14
+      },
+      {
+        "date": "2026-06-17",
+        "skew_at_t5": 143.08,
+        "skew_at_t1": 142.66,
+        "skew_change": -0.42
+      }
+    ],
+    "interpretation": "SKEW \u4e0a\u5347\uff08\u6b63\u53d8\u5316\uff09\u610f\u5473\u7740\u5e02\u573a\u8d2d\u4e70\u66f4\u591a\u6df1\u5ea6\u865a\u503c\u770b\u8dcc\u671f\u6743\u4ee5\u5bf9\u51b2\u4e8b\u4ef6\u5c3e\u90e8\u98ce\u9669\u3002\u4e0e VIX \u4e0a\u6da8\u7ed3\u5408\uff0c\u53ef\u63d0\u4f9b\u66f4\u5b8c\u6574\u7684\u4e8b\u4ef6\u7126\u8651\u56fe\u666f\u3002"
   },
   "summary": {
     "data_range": "2016-07-15 ~ 2026-07-15",
@@ -16766,8 +16961,8 @@
     },
     {
       "date": "2026-07-15",
-      "vix": 16.26,
-      "daily_return_pct": -5.245,
+      "vix": 15.98,
+      "daily_return_pct": -6.876,
       "event_flags": []
     }
   ],
