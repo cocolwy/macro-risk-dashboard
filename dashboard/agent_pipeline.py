@@ -191,7 +191,12 @@ def _parse_json_response(text: str) -> dict[str, Any]:
         match = re.search(r"\{[\s\S]*\}", text)
         if match:
             text = match.group(0)
-    return json.loads(text)
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError:
+        # Common LLM issues: trailing commas before } or ]
+        repaired = re.sub(r",\s*([}\]])", r"\1", text)
+        return json.loads(repaired)
 
 
 _VALID_SIGNALS = {"risk-off", "neutral", "risk-on"}
@@ -471,8 +476,8 @@ def call_anthropic(user_prompt: str) -> dict[str, Any]:
 
     client = anthropic.Anthropic(api_key=api_key)
     message = client.messages.create(
-        model=os.environ.get("ANTHROPIC_MODEL", "claude-sonnet-5"),
-        max_tokens=1200,
+        model=os.environ.get("ANTHROPIC_MODEL", "claude-sonnet-4-6"),
+        max_tokens=2048,
         system=SYSTEM_PROMPT,
         messages=[{"role": "user", "content": user_prompt}],
     )
@@ -535,7 +540,8 @@ def generate_report(headlines: list[dict[str, str]], ml_prob: float, provider: s
             print(f"Calling Ollama ({os.environ.get('OLLAMA_MODEL', 'llama3.2')})…")
             return call_ollama(user_prompt)
         if p == "anthropic":
-            print("Calling Claude API…")
+            model = os.environ.get("ANTHROPIC_MODEL", "claude-sonnet-4-6")
+            print(f"Calling Claude API ({model})…")
             return call_anthropic(user_prompt)
         raise RuntimeError(f"Unknown AGENT_LLM provider: {p}")
 
