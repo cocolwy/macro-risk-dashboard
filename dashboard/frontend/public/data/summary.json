@@ -10,7 +10,7 @@
     },
     "vix": {
       "level": "ok",
-      "message": "Normal: 16.4"
+      "message": "Normal: 16.3"
     },
     "absorption_ratio": {
       "level": "warning",
@@ -21,13 +21,14 @@
       "message": "Normal: 9.2"
     }
   },
-  "last_updated": "2026-07-15T12:02:17.946208",
+  "last_updated": "2026-07-15T12:09:40.458759",
   "indicators_available": [
     "term_spread",
     "credit_spread",
     "vix",
     "sp500",
     "breadth",
+    "sectors",
     "absorption_ratio",
     "turbulence",
     "composite_score",

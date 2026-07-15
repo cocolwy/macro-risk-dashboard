@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-07-15T12:02:49.703259+00:00",
+  "timestamp": "2026-07-15T12:09:45.316046+00:00",
   "risk_score": 77,
   "risk_level": "high",
   "ml_probability": 0.5894,
@@ -32,6 +32,6 @@
   ],
   "news_analysis": "今日共纳入 27 条财经标题，主导主题为：利率/央行政策不确定性、地缘政治/能源冲击、盈利下修/财报冲击、科技/AI 叙事波动。代表性标题：Morgan Stanley posts record quarterly revenue and profit as equities trading surges 69%；Star analyst Dan Ives forms Yorkville Ives merchant bank after leaving Wedbush；Stocks making the biggest moves premarket: BlackRock, PayPal, ASML, Morgan Stanley & more。新闻面偏风险偏好压制，对模型高概率形成共振。",
   "recommendation": "建议降低新增风险暴露、检查对冲覆盖与杠杆；对高 beta 与流动性较差资产提高减仓优先级，并跟踪利率决议/地缘进展的日内冲击。",
-  "reasoning": "[anthropic 调用失败，已回退 local] Expecting ',' delimiter: line 9 column 80 (char 255)\n本地规则引擎：score = ML×100 (58.9) + 新闻主题调整 (+18.0) → 77。主题命中：利率/央行政策不确定性、地缘政治/能源冲击、盈利下修/财报冲击、科技/AI 叙事波动；缓和词命中 1。provider=local（无需 API）。",
+  "reasoning": "[anthropic 调用失败，已回退 local] Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': \"tools.0.custom: For 'integer' type, properties maximum, minimum are not supported\"}, 'request_id': 'req_011Cd3pSHTp2PUBApN4Qy886'}\n本地规则引擎：score = ML×100 (58.9) + 新闻主题调整 (+18.0) → 77。主题命中：利率/央行政策不确定性、地缘政治/能源冲击、盈利下修/财报冲击、科技/AI 叙事波动；缓和词命中 1。provider=local（无需 API）。",
   "provider": "local(fallback_from_anthropic)"
 }
