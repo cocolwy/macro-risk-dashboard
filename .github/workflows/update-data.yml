@@ -151,4 +151,4 @@ jobs:
           to: ${{ secrets.ALERT_EMAIL_TO }}
           from: Macro Risk Bot <${{ secrets.ALERT_EMAIL_USER }}>
 
-# last-manual-trigger: 2026-07-14T12:26:25Z
+# last-manual-trigger: 2026-07-15T12:10:00Z
