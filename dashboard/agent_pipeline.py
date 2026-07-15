@@ -102,12 +102,12 @@ RISK_REPORT_TOOL = {
         "type": "object",
         "properties": {
             "timestamp": {"type": "string"},
-            "risk_score": {"type": "integer", "minimum": 0, "maximum": 100},
+            "risk_score": {"type": "integer"},
             "risk_level": {
                 "type": "string",
                 "enum": ["low", "moderate", "elevated", "high", "critical"],
             },
-            "ml_probability": {"type": "number", "minimum": 0, "maximum": 1},
+            "ml_probability": {"type": "number"},
             "signal_basis": {
                 "type": "string",
                 "enum": ["ML主导", "新闻主导", "共振放大", "背离缓和"],
@@ -128,7 +128,7 @@ RISK_REPORT_TOOL = {
                 ],
                 "additionalProperties": False,
             },
-            "key_risks": {"type": "array", "items": {"type": "string"}, "minItems": 3, "maxItems": 6},
+            "key_risks": {"type": "array", "items": {"type": "string"}},
             "recommendation": {"type": "string"},
             "reasoning": {"type": "string"},
         },
