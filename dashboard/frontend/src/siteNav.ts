@@ -1,4 +1,4 @@
-export type PageId = 'home' | 'pipeline' | 'risk' | 'ch1' | 'ch2' | 'ch2_1' | 'ch3';
+export type PageId = 'home' | 'pipeline' | 'risk' | 'ch1' | 'ch2' | 'ch2_1' | 'ch2_2' | 'ch3';
 
 export interface NavItem {
   id: PageId;
@@ -72,6 +72,16 @@ export const SITE_NAV: Record<PageId, NavItem> = {
     parent: 'risk',
     metrics: 'F1 / Brier / Lift analysis',
   },
+  ch2_2: {
+    id: 'ch2_2',
+    hash: 'ch2-2',
+    title: 'Ch.2.2 Event × UVIX',
+    subtitle: 'FOMC / CPI / NFP 发布前 UVIX 相关性 · +Events 9 特征',
+    level: 3,
+    parent: 'risk',
+    badge: 'NEW',
+    metrics: 'Spearman · event study',
+  },
 };
 
 const HASH_ALIASES: Record<string, PageId> = {
@@ -87,6 +97,8 @@ const HASH_ALIASES: Record<string, PageId> = {
   phase3: 'ch2',
   'ch2-1': 'ch2_1',
   metrics: 'ch2_1',
+  'ch2-2': 'ch2_2',
+  eventvol: 'ch2_2',
   ch3: 'ch3',
   agent: 'ch3',
 };
@@ -125,6 +137,6 @@ export const HOME_SECTIONS = [
     level: 3,
     label: '三级 · 风控因子探索',
     parent: 'risk' as PageId,
-    items: ['ch1', 'ch2', 'ch2_1'] as PageId[],
+    items: ['ch1', 'ch2', 'ch2_1', 'ch2_2'] as PageId[],
   },
 ];
