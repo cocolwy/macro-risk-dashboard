@@ -75,12 +75,12 @@ export const SITE_NAV: Record<PageId, NavItem> = {
   ch2_2: {
     id: 'ch2_2',
     hash: 'ch2-2',
-    title: 'Ch.2.2 Event × UVIX',
-    subtitle: 'FOMC / CPI / NFP 发布前 UVIX 相关性 · +Events 9 特征',
+    title: 'Ch.2.2 Event × VIX',
+    subtitle: 'FOMC / CPI / NFP · 发布前 T-7~T-1 上涨 & 发布后下跌验证',
     level: 3,
     parent: 'risk',
     badge: 'NEW',
-    metrics: 'Spearman · event study',
+    metrics: 'VIX event study · H1/H2',
   },
 };
 
