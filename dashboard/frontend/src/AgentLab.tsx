@@ -61,8 +61,9 @@ const LEVEL_META: Record<string, { label: string; color: string; bg: string; bor
 
 const SOURCE_COLORS: Record<string, string> = {
   Reuters: '#b45309',
-  CNBC: '#1d4ed8',
-  MarketWatch: '#0f766e',
+  FT: '#1e3a5f',
+  'Fed FOMC': '#166534',
+  'Fed Speech': '#15803d',
 };
 
 const SIGNAL_META: Record<string, { label: string; color: string; bg: string; border: string }> = {
@@ -299,7 +300,7 @@ function AgentLabInner() {
           <span className="ab-badge">{news.headlines.length} headlines</span>
         </div>
         <p className="lab-card-desc">
-          抓取时间 {formatTime(news.fetched_at)} · Reuters / CNBC / MarketWatch RSS
+          抓取时间 {formatTime(news.fetched_at)} · Reuters / FT / Fed RSS
         </p>
         {news.headlines.length === 0 ? (
           <p style={{ color: '#8a7882', fontSize: 13 }}>暂无标题</p>

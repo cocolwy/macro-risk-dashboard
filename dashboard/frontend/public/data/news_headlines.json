@@ -1,40 +1,12 @@
 {
-  "fetched_at": "2026-07-15T12:46:15.097270+00:00",
+  "fetched_at": "2026-07-15T13:46:03.000602+00:00",
   "headlines": [
     {
-      "title": "Buffett says Trump's pick of Kevin Warsh for Fed chair was 'good choice'",
-      "source": "CNBC",
-      "published": "2026-07-15T12:21:33+00:00",
-      "url": "https://www.cnbc.com/2026/07/15/buffett-says-trumps-pick-of-kevin-warsh-for-fed-chair-was-good-choice.html",
-      "description": "Warren Buffett believes Fed Chair Kevin Warsh will do the best job he can."
-    },
-    {
-      "title": "Morgan Stanley posts record quarterly revenue and profit as equities trading surges 69%",
-      "source": "CNBC",
-      "published": "2026-07-15T12:14:59+00:00",
-      "url": "https://www.cnbc.com/2026/07/15/morgan-stanley-ms-earnings-q2-2026-.html",
-      "description": "Like at peers Goldman Sachs and JPMorgan Chase, a massive beat in equities trading drove the quarter's outsized results."
-    },
-    {
-      "title": "Warren Buffett calls Bill Gates' actions with Epstein 'distasteful,' but people make mistakes",
-      "source": "CNBC",
-      "published": "2026-07-15T12:10:02+00:00",
-      "url": "https://www.cnbc.com/2026/07/15/warren-buffett-calls-bill-gates-actions-with-epstein-distasteful-but-people-make-mistakes.html",
-      "description": "The Berkshire Hathaway chairman left out the Gates Foundation from his annual charitable stock gifts for the first time in 20 years."
-    },
-    {
-      "title": "Star analyst Dan Ives forms Yorkville Ives merchant bank after leaving Wedbush",
-      "source": "CNBC",
-      "published": "2026-07-15T11:51:55+00:00",
-      "url": "https://www.cnbc.com/2026/07/15/star-analyst-dan-ives-forms-yorkville-ives-merchant-bank-after-leaving-wedbush.html",
-      "description": "The new firm, Yorkville Ives & Co., will combine investment banking, equity research, institutional trading and principal investing."
-    },
-    {
-      "title": "Stocks making the biggest moves premarket: BlackRock, PayPal, ASML, Morgan Stanley & more",
-      "source": "CNBC",
-      "published": "2026-07-15T11:41:57+00:00",
-      "url": "https://www.cnbc.com/2026/07/15/stocks-making-the-biggest-moves-premarket-blk-pypl-asml.html",
-      "description": "These are the stocks posting the largest moves premarket."
+      "title": "BlackRock assets hit record $15 trillion on boost from buoyant markets, ETF inflows",
+      "source": "Reuters",
+      "published": "2026-07-15T10:48:09+00:00",
+      "url": "https://news.google.com/rss/articles/CBMinAFBVV95cUxQNGtraFlFOWdCLWZ5TkpheTdhUkEwMW1oMEVxa3NzOTk3RGxLOEhacDBTQnRYc0ZaNVdzTWtmWkptZEl5MTNKVm05QVZFb3ZBSWJRelpiT3QzdG5LdEZsVDZmWkNoUXFad2xOZ1hNQklNeWtTOEJVYWpuYVoyeGM2OXNQVE1uRWdzZWdEZnF6amJhMzZtNTZSTHZOVTA?oc=5",
+      "description": "BlackRock assets hit record $15 trillion on boost from buoyant markets, ETF inflows &nbsp;&nbsp; Reuters"
     },
     {
       "title": "China’s economy grows at one of lowest rates in decades",
@@ -79,20 +51,6 @@
       "description": "Top Fed officials embrace cooler inflation reading, clamor for more &nbsp;&nbsp; Reuters"
     },
     {
-      "title": "Stocks gain on softer inflation, bank results while oil rises on US-Iran hostilities",
-      "source": "Reuters",
-      "published": "2026-07-14T21:13:54+00:00",
-      "url": "https://news.google.com/rss/articles/CBMigwFBVV95cUxPdWRaMVFPRFNSMDhQQ1dQT09aWlhsdzdhVGVFcGUzblZreE9kSms3eXc3ZjRlbVhvdUtFRW5IQ3ZSSE42bnhoTGxIaVlwbVVQR0tLUE0yY1N3NTJ2Qko2S01pNHREcW5CbmpweXpORmVRRzdCR0RDcTRjeG9oS2tqR2hIWQ?oc=5",
-      "description": "Stocks gain on softer inflation, bank results while oil rises on US-Iran hostilities &nbsp;&nbsp; Reuters"
-    },
-    {
-      "title": "The AI boom just found two new winners: Goldman Sachs and JPMorgan Chase",
-      "source": "CNBC",
-      "published": "2026-07-14T19:50:48+00:00",
-      "url": "https://www.cnbc.com/2026/07/14/goldman-sachs-and-jpmorgan-chase-are-emerging-as-ai-winners.html",
-      "description": "Goldman Sachs and JPMorgan showed that Wall Street is a major beneficiary of the AI boom, with record revenue driven by surging trading and investment banking."
-    },
-    {
       "title": "Bowman, Responsible Innovation and Financial Inclusion",
       "source": "Fed Speech",
       "published": "2026-07-14T18:55:00+00:00",
@@ -105,13 +63,6 @@
       "published": "2026-07-14T18:00:00+00:00",
       "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260714a.htm",
       "description": "Minutes of the Board's discount rate meetings on June 8 and June 17, 2026"
-    },
-    {
-      "title": "Stocks making the biggest moves midday: IBM, Goldman Sachs, CleanSpark, HCA Healthcare & more",
-      "source": "CNBC",
-      "published": "2026-07-14T16:48:07+00:00",
-      "url": "https://www.cnbc.com/2026/07/14/stocks-making-big-moves-midday-ibm-goldman-cleanspark-hca-more-.html",
-      "description": "These are some of the stocks posting the largest moves midday."
     },
     {
       "title": "Barr, Will Artificial Intelligence Broadly Raise Living Standards or Drive Income and Wealth Inequality?",
@@ -133,13 +84,6 @@
       "published": "2026-07-14T15:13:34+00:00",
       "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxOZ0taREhMWE53em1EU0NqWkxaYVI1Nk9qaVZaVWVjMkdXMUxnRU5kN1BnU2pWN3E4ZzBUeDF2MnFsZ0o1SjZNQklleUdvRjlCSloxdl9UVUMzdTQxMnNNVndNN3lBSVhKWEt2SDBJeUtQRVE2NF9BWU1NYmlCMUp3dVNQSEs?oc=5",
       "description": "Kevin Warsh vows Federal Reserve will be ‘resolute’ in inflation fight &nbsp;&nbsp; Financial Times"
-    },
-    {
-      "title": "Earnings season plays: Profit expectations are growing for these stocks while their valuations get cheaper",
-      "source": "CNBC",
-      "published": "2026-07-14T14:38:42+00:00",
-      "url": "https://www.cnbc.com/2026/07/14/earnings-season-plays-profit-expectations-are-growing-for-these-stocks.html",
-      "description": "Investors can find opportunities in stocks where declining share prices are pushing valuations below their historical average."
     },
     {
       "title": "Traders expect Fed to skip July rate hike as inflation cools",

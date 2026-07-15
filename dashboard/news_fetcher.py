@@ -1,5 +1,5 @@
 """
-Fetch today's finance headlines from RSS feeds (Reuters, CNBC, FT, Fed).
+Fetch today's finance headlines from RSS feeds (Reuters, FT, Fed).
 
 Output: dashboard/data/news_headlines.json
 """
@@ -24,7 +24,6 @@ FEEDS: dict[str, str] = {
         "https://news.google.com/rss/search?"
         "q=site:reuters.com+(markets+OR+stocks+OR+economy+OR+fed)&hl=en-US&gl=US&ceid=US:en"
     ),
-    "CNBC": "https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=10000664",
     # FT direct RSS is paywalled; Google News mirror surfaces headlines reliably.
     "FT": (
         "https://news.google.com/rss/search?"
