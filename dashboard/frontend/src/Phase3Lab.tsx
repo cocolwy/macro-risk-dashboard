@@ -171,8 +171,8 @@ const JOURNEY_STEPS = [
   { step: 2, label: 'Embargo 20d', f1: 0.520, brier: 0.15, note: '防 look-ahead bias' },
   { step: 3, label: 'Unbalanced', f1: 0.588, brier: 0.10, note: '去 class_weight=balanced' },
   { step: 4, label: 'Percentile Clip', f1: 0.647, brier: 0.099, note: '修复 clip(-10,10) → percentile clipping' },
-  { step: 5, label: '+Events', f1: 0.690, brier: 0.098, note: 'LR Slim+Events: 加入事件日历特征' },
-  { step: 6, label: 'Interact', f1: 0.667, brier: 0.081, note: 'LR Slim+Interact: regime 交互项（Brier 最佳）' },
+  { step: 5, label: '+Events', f1: 0.690, brier: 0.098, note: 'LR Slim+Events: FOMC/CPI/NFP 日历特征' },
+  { step: 6, label: 'Events+Interact', f1: 0.688, brier: 0.080, note: 'Events + regime 交互项合并 — F1 持平，Brier 最优' },
 ];
 
 function JourneyTooltip({ active, payload }: { active?: boolean; payload?: Array<{ payload: typeof JOURNEY_STEPS[0] }> }) {
@@ -374,7 +374,7 @@ function Phase3LabInner() {
       <section className="lab-card">
         <div className="ab-header">
           <h2>实验地图</h2>
-          <span className="ab-badge" style={{ background: '#eff6ff', color: '#1e40af', border: '1px solid #bfdbfe' }}>4 STEPS</span>
+          <span className="ab-badge" style={{ background: '#eff6ff', color: '#1e40af', border: '1px solid #bfdbfe' }}>5 STEPS</span>
         </div>
 
         {/* Step 1 */}
@@ -426,9 +426,21 @@ function Phase3LabInner() {
               </div>
             </div>
           </div>
+          <div style={{ marginTop: 8, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+            <div style={{ padding: '8px 10px', background: '#fff', borderRadius: 6, border: '1px solid #e5e7eb', fontSize: 12 }}>
+              <div style={{ fontWeight: 600, marginBottom: 4 }}>优化尝试 A: 精简到 4 特征</div>
+              <div style={{ color: '#6b5f63' }}>只保留 fomc_days_since, fomc_days_to, cpi_within_3d, nfp_within_3d</div>
+              <div style={{ color: '#dc2626', fontWeight: 600, marginTop: 4 }}>F1=0.632 — 精简反而下降，"冗余"特征有用</div>
+            </div>
+            <div style={{ padding: '8px 10px', background: '#fff', borderRadius: 6, border: '1px solid #e5e7eb', fontSize: 12 }}>
+              <div style={{ fontWeight: 600, marginBottom: 4 }}>优化尝试 B: 衰减函数变换</div>
+              <div style={{ color: '#6b5f63' }}>{'exp(-days/5)'} 替换线性天数，捕捉"越近越危险"</div>
+              <div style={{ color: '#dc2626', fontWeight: 600, marginTop: 4 }}>F1=0.552 — 非线性变换无效，线性距离已够用</div>
+            </div>
+          </div>
           <div style={{ marginTop: 8, padding: '6px 10px', background: '#f0fdf4', borderRadius: 6, fontSize: 12 }}>
-            <strong style={{ color: '#166534' }}>结论：LR Slim+Events F1=0.690（新最佳！），Brier=0.098。</strong>
-            {' '}FOMC 时间邻近性是核心增量来源。GBDT+Events 反而下降（F1=0.421），说明事件特征适合线性模型捕捉，非线性模型在小样本下过度拟合事件模式。
+            <strong style={{ color: '#166534' }}>结论：全量 9 特征 LR Slim+Events F1=0.690 仍为最佳。</strong>
+            {' '}FOMC 时间邻近性是核心增量来源。精简和非线性变换均无法超越，说明模型已充分利用了线性距离信息。
           </div>
         </div>
 
@@ -478,15 +490,32 @@ function Phase3LabInner() {
           </div>
         </div>
 
+        {/* Step 5 — Combined */}
+        <div style={{ marginBottom: 4, padding: 12, borderRadius: 8, background: 'rgba(13,148,136,0.04)', border: '1px solid rgba(13,148,136,0.2)' }}>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 6 }}>
+            <span style={{ fontWeight: 700, color: '#0d9488', fontSize: 14 }}>Step 5 · Events + Interact 合并</span>
+            <span style={{ fontSize: 11, color: '#0d9488', background: '#f0fdfa', padding: '2px 6px', borderRadius: 4 }}>BEST BRIER</span>
+          </div>
+          <div style={{ fontSize: 13, color: '#374151', lineHeight: 1.7 }}>
+            <strong>假设：</strong>Step 2 的 Events（F1 最佳）和 Step 3 的 Interact（Brier 最佳）捕捉的是不同信号，合并应该同时提升两个指标。<br/>
+            <strong>控制变量：</strong>LR Slim + 全量 Events 9 特征 + 3 个 regime 交互项（共 22 特征）。<br/>
+            <strong>核心差异：</strong>Events 捕捉「什么时候危险」（时间维度），Interact 捕捉「什么条件下更危险」（状态维度）。
+          </div>
+          <div style={{ marginTop: 8, padding: '6px 10px', background: '#f0fdfa', borderRadius: 6, fontSize: 12 }}>
+            <strong style={{ color: '#0d9488' }}>结论：LR Events+Interact F1=0.688, Brier=0.080（全局最优 Brier！）。</strong>
+            {' '}F1 与 Events 持平（0.690 vs 0.688），但 Brier 从 0.098 降至 0.080 — 概率校准显著提升。
+            这是目前最平衡的模型：预测能力和概率准确度兼顾。
+          </div>
+        </div>
+
         {/* Overall conclusion */}
         <div style={{ marginTop: 16, padding: '12px 14px', background: '#f0fdf4', borderRadius: 8, border: '1px solid #bbf7d0' }}>
           <div style={{ fontWeight: 700, fontSize: 14, color: '#166534', marginBottom: 6 }}>总结</div>
           <div style={{ fontSize: 13, lineHeight: 1.7, color: '#374151' }}>
-            <strong>LR Slim+Events (F1=0.690)</strong> 成为新最佳。
-            <span style={{ color: '#d6457a' }}> 换模型</span> = 小样本过拟合 ·
-            <span style={{ color: '#ea580c' }}> 加事件</span> = 意外增量! ·
-            <span style={{ color: '#8b5cf6' }}> Regime 交互项</span> = Brier 最优(0.081) ·
-            <span style={{ color: '#dc2626' }}> 加数据</span> = 跨周期非平稳性。
+            两个推荐模型：
+            <strong> LR Slim+Events</strong> (F1=0.690, Brier=0.098) — 预测能力最强；
+            <strong> LR Events+Interact</strong> (F1=0.688, Brier=0.080) — 概率校准最优。
+            Events 精简和衰减变换均无增量，全量 9 特征已是最佳。
           </div>
         </div>
       </section>

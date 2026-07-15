@@ -25,7 +25,8 @@ from sklearn.calibration import CalibratedClassifierCV
 
 from predict_model import (
     load_indicators, build_features, build_features_slim,
-    build_features_with_events, fetch_regime_data,
+    build_features_with_events, build_features_events_slim,
+    build_features_events_decay, fetch_regime_data,
     compute_target, KEY_EVENTS, build_comparison_metrics,
 )
 from experiment_extended_history import load_extended_data, EXTENDED_KEY_EVENTS
@@ -341,18 +342,46 @@ def main():
     run_and_log("LR Slim+Events", X_events, y_events, train_lr_no_balance, step2_exps, step2_fi, step2_prac)
     run_and_log("GBDT Slim+Events", X_events, y_events, train_gbdt_no_balance, step2_exps, step2_fi, step2_prac)
 
+    # Events Slim: keep only top 4 event features
+    features_events_slim = build_features_events_slim(df)
+    X_ev_slim, y_ev_slim = prep(features_events_slim)
+    print(f"  Events Slim: {X_ev_slim.shape[1]} features ({[c for c in X_ev_slim.columns if c not in X_slim.columns]})")
+    run_and_log("LR Events-Slim", X_ev_slim, y_ev_slim, train_lr_no_balance, step2_exps, step2_fi, step2_prac)
+
+    # Events Decay: exponential decay transform on distances
+    features_events_decay = build_features_events_decay(df)
+    X_ev_decay, y_ev_decay = prep(features_events_decay)
+    print(f"  Events Decay: {X_ev_decay.shape[1]} features ({[c for c in X_ev_decay.columns if c not in X_slim.columns]})")
+    run_and_log("LR Events-Decay", X_ev_decay, y_ev_decay, train_lr_no_balance, step2_exps, step2_fi, step2_prac)
+
     step2_pairwise = [
         {
             "id": "events_lr",
-            "label": "Step 2a: 事件日历增益（LR）",
+            "label": "Step 2a: 事件日历（全 9 特征）",
             "variable": "Slim vs Slim+Events — LR",
             "baseline": "LR Slim",
             "challenger": "LR Slim+Events",
-            "method_note": "加入 FOMC/CPI/NFP 前后天数和窗口标记。测试事件邻近性是否有预测价值。",
+            "method_note": "加入 FOMC/CPI/NFP 前后天数和窗口标记（9 个特征）。测试事件邻近性是否有预测价值。",
+        },
+        {
+            "id": "events_slim_lr",
+            "label": "Step 2b: 事件精简（4 特征）",
+            "variable": "9 特征 vs 4 特征 — 去冗余",
+            "baseline": "LR Slim+Events",
+            "challenger": "LR Events-Slim",
+            "method_note": "只保留 top 4 特征（fomc_days_since, fomc_days_to, cpi_within_3d, nfp_within_3d），去掉 within_7d 等冗余项。",
+        },
+        {
+            "id": "events_decay_lr",
+            "label": "Step 2c: 距离衰减变换",
+            "variable": "线性 days_to vs exp(-days/5) 衰减",
+            "baseline": "LR Slim+Events",
+            "challenger": "LR Events-Decay",
+            "method_note": "将 fomc/cpi_days_to 和 days_since 替换为 exp(-d/5) 衰减函数。捕捉「越临近事件风险越陡增」的非线性效应。",
         },
         {
             "id": "events_gbdt",
-            "label": "Step 2b: 事件日历增益（GBDT）",
+            "label": "Step 2d: 事件日历（GBDT）",
             "variable": "GBDT Slim vs GBDT Slim+Events",
             "baseline": "GBDT Slim",
             "challenger": "GBDT Slim+Events",
@@ -544,6 +573,64 @@ def main():
     model_fi.update(regime_ctx_fi)
     model_practical.update(regime_ctx_prac)
     model_pairwise.extend(regime_ctx_pairwise)
+
+    # =========================================================
+    # Step 2+3 Combined: Best Events + Interact
+    # =========================================================
+    print("\n  Step 2+3 Combined: Best Events variant + Interact...")
+
+    # Pick best Events variant by F1
+    ev_candidates = {
+        "LR Slim+Events": (X_events, y_events),
+        "LR Events-Slim": (X_ev_slim, y_ev_slim),
+        "LR Events-Decay": (X_ev_decay, y_ev_decay),
+    }
+    best_ev_name = max(
+        (n for n in ev_candidates if n in model_practical),
+        key=lambda n: model_practical[n]['best_f1'],
+    )
+    best_ev_f1 = model_practical[best_ev_name]['best_f1']
+    print(f"  Best Events variant: {best_ev_name} (F1={best_ev_f1:.3f})")
+
+    # Build combined: best events features + interact features
+    best_ev_X, best_ev_y = ev_candidates[best_ev_name]
+    X_combined = best_ev_X.copy()
+    regime_for_combined = regime_aligned.reindex(X_combined.index).fillna('normal')
+    regime_bin_combined = (regime_for_combined == 'tight').astype(float)
+    interact_feats = ['vix_level', 'credit_spread_10d_chg', 'sp500_vs_50ma']
+    for f in interact_feats:
+        if f in X_combined.columns:
+            X_combined[f'tight_x_{f}'] = regime_bin_combined * X_combined[f]
+
+    combined_combo = X_combined.copy()
+    combined_combo['target'] = best_ev_y.reindex(X_combined.index)
+    combined_combo = combined_combo.dropna()
+    combined_combo = percentile_clip(combined_combo)
+    X_combo = combined_combo.drop('target', axis=1)
+    y_combo = combined_combo['target']
+    print(f"  Combined: {X_combo.shape[1]} features, {len(X_combo)} samples")
+
+    combo_exps = []
+    combo_fi = {}
+    combo_prac = {}
+    run_and_log("LR Events+Interact", X_combo, y_combo, train_lr_no_balance,
+                combo_exps, combo_fi, combo_prac)
+
+    combo_pairwise = [
+        {
+            "id": "events_interact_combined",
+            "label": "Step 5: Events + Interact 合并",
+            "variable": f"{best_ev_name} vs Events+Interact — LR",
+            "baseline": best_ev_name,
+            "challenger": "LR Events+Interact",
+            "method_note": f"合并最佳 Events 变体（{best_ev_name}, F1={best_ev_f1:.3f}）和 regime 交互项。测试两种增量来源是否叠加。",
+        },
+    ]
+
+    model_experiments.extend(combo_exps)
+    model_fi.update(combo_fi)
+    model_practical.update(combo_prac)
+    model_pairwise.extend(combo_pairwise)
 
     # =========================================================
     # Step 4: Long-term retest (2005+)
