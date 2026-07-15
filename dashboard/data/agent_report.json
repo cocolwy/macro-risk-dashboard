@@ -1,37 +1,37 @@
 {
-  "timestamp": "2026-07-15T12:09:45.316046+00:00",
-  "risk_score": 77,
+  "timestamp": "2026-07-15T12:46:15Z",
+  "risk_score": 62,
   "risk_level": "high",
   "ml_probability": 0.5894,
-  "signal_basis": "共振放大",
+  "signal_basis": "背离缓和",
   "themes": {
     "rates_fed": {
-      "summary": "利率/央行政策不确定性主题命中 7 条标题。新闻面偏风险偏好压制，对模型高概率形成共振。",
-      "signal": "risk-off"
+      "summary": "美联储多位官员对6月CPI低于预期（同比3.5%，汽油价格大幅回落）持欢迎态度，交易员普遍预计7月会议将暂停加息。新任美联储主席沃什（Kevin Warsh）公开承诺将对抗通胀保持",
+      "signal": "neutral"
     },
     "geopolitics_energy": {
-      "summary": "地缘政治/能源冲击主题命中 4 条标题。新闻面偏风险偏好压制，对模型高概率形成共振。",
+      "summary": "美伊紧张局势升温，霍尔木兹海峡争夺战引发能源市场警惕，油价触及87美元/桶高位。BP因伊朗战争推动的油价飙升而削减净债务。高油价既是地缘政治风险信号，也对通胀走势形成上行压力，构成市场潜在扰动因素。",
       "signal": "risk-off"
     },
     "equities_earnings": {
-      "summary": "科技/AI 叙事波动主题命中 2 条标题。新闻面偏风险偏好压制，对模型高概率形成共振。",
+      "summary": "大型银行财报季表现亮眼，摩根士丹利创下季度收入与利润历史纪录，股票交易收入大涨69%；高盛与摩根大通同样因AI驱动的交易与投行业务受益颇丰。AI概念持续催化，SK海力士单日大涨13%，科技股整体回升，但IBM遭遇市场",
       "signal": "risk-on"
     },
     "credit_liquidity": {
-      "summary": "今日无明显相关信号。",
+      "summary": "今日无明显信用利差或流动性压力相关报道。大型银行整体盈利强劲，显示金融体系流动性短期内保持稳健。印度推动海外侨民存款、中国经济增速创数十年新低等信号值得关注，但尚未引发系统性流动性风险。",
       "signal": "neutral"
     }
   },
   "key_risks": [
-    "利率/央行政策不确定性（标题命中 7）",
-    "地缘政治/能源冲击（标题命中 4）",
-    "盈利下修/财报冲击（标题命中 2）",
-    "科技/AI 叙事波动（标题命中 2）",
-    "ML 未来20日>5%回撤概率 58.9%",
-    "模型信号处于 elevated/high 区间，需提高仓位审视频率"
+    "美伊军事冲突升级，霍尔木兹海峡局势紧张，油价破87美元或进一步推升通胀预期",
+    "中国经济增速创数十年新低，国内需求疲软，出口依赖AI订单难以持续支撑整体增长",
+    "沃什美联储对通胀态度偏鹰，若后续CPI数据反弹将打破市场对暂停加息的乐观预期",
+    "IBM等个股遭遇剧烈波动，",
+    "高油价与地缘风险共振，可能通过能源成本渠道侵蚀企业盈利预期",
+    "ML模型20日内>5%回撤概率高达58.9%，市场脆弱性显著高于历史均值"
   ],
-  "news_analysis": "今日共纳入 27 条财经标题，主导主题为：利率/央行政策不确定性、地缘政治/能源冲击、盈利下修/财报冲击、科技/AI 叙事波动。代表性标题：Morgan Stanley posts record quarterly revenue and profit as equities trading surges 69%；Star analyst Dan Ives forms Yorkville Ives merchant bank after leaving Wedbush；Stocks making the biggest moves premarket: BlackRock, PayPal, ASML, Morgan Stanley & more。新闻面偏风险偏好压制，对模型高概率形成共振。",
-  "recommendation": "建议降低新增风险暴露、检查对冲覆盖与杠杆；对高 beta 与流动性较差资产提高减仓优先级，并跟踪利率决议/地缘进展的日内冲击。",
-  "reasoning": "[anthropic 调用失败，已回退 local] Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': \"tools.0.custom: For 'integer' type, properties maximum, minimum are not supported\"}, 'request_id': 'req_011Cd3pSHTp2PUBApN4Qy886'}\n本地规则引擎：score = ML×100 (58.9) + 新闻主题调整 (+18.0) → 77。主题命中：利率/央行政策不确定性、地缘政治/能源冲击、盈利下修/财报冲击、科技/AI 叙事波动；缓和词命中 1。provider=local（无需 API）。",
-  "provider": "local(fallback_from_anthropic)"
+  "news_analysis": "",
+  "recommendation": "风险管理者应在维持核心权益仓位的同时，优先为能源与科技板块建立尾部对冲头寸（如买入标普500看跌期权或VIX多头），以应对ML模型所显示的较高回撤概率。建议密切跟踪霍尔木兹海峡局势进展及后续CPI/PPI数据，一旦油价持续突破90美元或通胀预期出现反弹，应及时收缩风险敞口。组合层面可适度增配黄金、短久期国债等防御性资产，以对冲地缘政治与利率双重不确定性。",
+  "reasoning": "ML模型给出58.9%的较高回撤概率，构成本次评分的核心锚点（对应基础分约59分）。新闻面呈现明显分化：银行财报强劲、CPI低于预期、AI主题持续催化等利好因素形成局部\"风险偏好\"氛围，对ML信号产生一定缓和作用（−5至−8分调整）；但与此同时，美伊地缘冲突推动油价大幅上涨，中国经济增长显著放缓，两项风险因素合计带来约+8分的新闻风险溢价。综合考量后，正负抵消，最终风险评分定为62分，对应\"high\"级别，信号基础判定为\"背离缓和\"——即ML偏高但新闻面存在明显利好分项，整体风险略有压缩但仍不容忽视。",
+  "provider": "anthropic"
 }

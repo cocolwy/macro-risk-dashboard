@@ -1,12 +1,26 @@
 {
-  "fetched_at": "2026-07-15T12:09:44.211225+00:00",
+  "fetched_at": "2026-07-15T12:46:15.097270+00:00",
   "headlines": [
+    {
+      "title": "Buffett says Trump's pick of Kevin Warsh for Fed chair was 'good choice'",
+      "source": "CNBC",
+      "published": "2026-07-15T12:21:33+00:00",
+      "url": "https://www.cnbc.com/2026/07/15/buffett-says-trumps-pick-of-kevin-warsh-for-fed-chair-was-good-choice.html",
+      "description": "Warren Buffett believes Fed Chair Kevin Warsh will do the best job he can."
+    },
     {
       "title": "Morgan Stanley posts record quarterly revenue and profit as equities trading surges 69%",
       "source": "CNBC",
-      "published": "2026-07-15T12:08:28+00:00",
+      "published": "2026-07-15T12:14:59+00:00",
       "url": "https://www.cnbc.com/2026/07/15/morgan-stanley-ms-earnings-q2-2026-.html",
       "description": "Like at peers Goldman Sachs and JPMorgan Chase, a massive beat in equities trading drove the quarter's outsized results."
+    },
+    {
+      "title": "Warren Buffett calls Bill Gates' actions with Epstein 'distasteful,' but people make mistakes",
+      "source": "CNBC",
+      "published": "2026-07-15T12:10:02+00:00",
+      "url": "https://www.cnbc.com/2026/07/15/warren-buffett-calls-bill-gates-actions-with-epstein-distasteful-but-people-make-mistakes.html",
+      "description": "The Berkshire Hathaway chairman left out the Gates Foundation from his annual charitable stock gifts for the first time in 20 years."
     },
     {
       "title": "Star analyst Dan Ives forms Yorkville Ives merchant bank after leaving Wedbush",
@@ -23,13 +37,6 @@
       "description": "These are the stocks posting the largest moves premarket."
     },
     {
-      "title": "Warren Buffett calls Bill Gates' actions with Epstein 'distasteful,' but people make mistakes",
-      "source": "CNBC",
-      "published": "2026-07-15T11:16:59+00:00",
-      "url": "https://www.cnbc.com/2026/07/15/warren-buffett-calls-bill-gates-actions-with-epstein-distasteful-but-people-make-mistakes.html",
-      "description": "The Berkshire Hathaway chairman left out the Gates Foundation from his annual charitable stock gifts for the first time in 20 years."
-    },
-    {
       "title": "China’s economy grows at one of lowest rates in decades",
       "source": "FT",
       "published": "2026-07-15T08:15:01+00:00",
@@ -37,11 +44,11 @@
       "description": "China’s economy grows at one of lowest rates in decades &nbsp;&nbsp; Financial Times"
     },
     {
-      "title": "Stocks steady as oil surge offsets ASML boost to tech shares",
+      "title": "Stocks steady as oil surge offsets ASML lift to tech",
       "source": "Reuters",
       "published": "2026-07-15T01:48:00+00:00",
       "url": "https://news.google.com/rss/articles/CBMigwFBVV95cUxQcEtOY19xRkd1VVhIYWg3cmFaU1BOUXRpRDhzaXN6UzFSa2Z2c3cwOE5YYjV5bXRwQVhiX2VhTGE1d1dvR2dQS3FnQm56VkZwOE00WER6bWoyM3U5aWtjd0xjUENON1dXcWVlLW85TGhZazVKY3BZbmRQT19IaE9TMm43Yw?oc=5",
-      "description": "Stocks steady as oil surge offsets ASML boost to tech shares &nbsp;&nbsp; Reuters"
+      "description": "Stocks steady as oil surge offsets ASML lift to tech &nbsp;&nbsp; Reuters"
     },
     {
       "title": "SK Hynix shares surge 13% on AI hopes as US tech stocks resume their climb",
@@ -58,6 +65,13 @@
       "description": "Manic markets show no mercy to IBM &nbsp;&nbsp; Financial Times"
     },
     {
+      "title": "FirstFT: Payments group Stripe swoops for Silicon Valley stalwart PayPal",
+      "source": "FT",
+      "published": "2026-07-14T21:57:17+00:00",
+      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxNN3dPbWQ2OG5NOEx1Y3AtaERXd2NxNndfVVE4WGFLLUVDSTFybVZGRFoyS25uOTFqR1ZCd25VYk9waUVFaWswWjg4NFVobDh2MF9WSTZKZTUwMGZfN2RiZ0pBWXJydzVwZWNWSU5LMEpDbU5GNjAwd3NVSUFBYjVjTFU0S1I?oc=5",
+      "description": "FirstFT: Payments group Stripe swoops for Silicon Valley stalwart PayPal &nbsp;&nbsp; Financial Times"
+    },
+    {
       "title": "Top Fed officials embrace cooler inflation reading, clamor for more",
       "source": "Reuters",
       "published": "2026-07-14T21:29:15+00:00",
@@ -70,13 +84,6 @@
       "published": "2026-07-14T21:13:54+00:00",
       "url": "https://news.google.com/rss/articles/CBMigwFBVV95cUxPdWRaMVFPRFNSMDhQQ1dQT09aWlhsdzdhVGVFcGUzblZreE9kSms3eXc3ZjRlbVhvdUtFRW5IQ3ZSSE42bnhoTGxIaVlwbVVQR0tLUE0yY1N3NTJ2Qko2S01pNHREcW5CbmpweXpORmVRRzdCR0RDcTRjeG9oS2tqR2hIWQ?oc=5",
       "description": "Stocks gain on softer inflation, bank results while oil rises on US-Iran hostilities &nbsp;&nbsp; Reuters"
-    },
-    {
-      "title": "New Zealand PM Chris Luxon warns against ‘sugar rush economics’ of Jacinda Ardern era",
-      "source": "FT",
-      "published": "2026-07-14T21:00:05+00:00",
-      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxQLU5hWUw5LWZTX2dzRFBBakJoaGRhRkRZREpoa2VDSm53cXhkRVVrMXJweG05SzhtdTRIeUdhcjRNMy1DZ1lsdkVWZzU5OGg2czdyT0lMTDFRWS1FTjRKUlhDT0UwTGhpS2dLTGRfT0lsNnEwSDNPRVpjTFlWUGUzWTR6dk0?oc=5",
-      "description": "New Zealand PM Chris Luxon warns against ‘sugar rush economics’ of Jacinda Ardern era &nbsp;&nbsp; Financial Times"
     },
     {
       "title": "The AI boom just found two new winners: Goldman Sachs and JPMorgan Chase",
@@ -98,13 +105,6 @@
       "published": "2026-07-14T18:00:00+00:00",
       "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260714a.htm",
       "description": "Minutes of the Board's discount rate meetings on June 8 and June 17, 2026"
-    },
-    {
-      "title": "Watch: Fed Chairman Kevin Warsh testifies to House Financial Services committee",
-      "source": "CNBC",
-      "published": "2026-07-14T17:26:37+00:00",
-      "url": "https://www.cnbc.com/2026/07/14/watch-fed-chairman-kevin-warsh-testify-live-to-house-financial-services-committee.html",
-      "description": "In remarks prepared for the appearance, Warsh promised a vigilant fight to return inflation to the Fed's 2% target."
     },
     {
       "title": "Stocks making the biggest moves midday: IBM, Goldman Sachs, CleanSpark, HCA Healthcare & more",
