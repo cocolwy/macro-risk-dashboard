@@ -1,26 +1,96 @@
 {
-  "fetched_at": "2026-07-15T13:46:03.000602+00:00",
+  "fetched_at": "2026-07-16T03:48:40.057412+00:00",
   "headlines": [
+    {
+      "title": "As Fed Chair Warsh sticks to policy silence, colleagues voice their views",
+      "source": "Reuters",
+      "published": "2026-07-15T22:43:25+00:00",
+      "url": "https://news.google.com/rss/articles/CBMisAFBVV95cUxPZWpIdEM2YTJxTGRTSEVWLTV3ZUhQTWo3bWItNUlzekVHZDNpR3hDRFFvc0lvWTNCdjBRdlpGcnJoekd3VURCOGZucWQyaWZndG5BcDNJb0o2NFdZRHJ4WE9UZXJOUGpxdmFOWnVNRWQ0WElqbGZfS2ZBSUNtZl93RUdncElueHN3OHVoRHBlelA4TlFQaHJRRG52dnJqSHJYNkh5ZThmTm4xcTEtTkRsVw?oc=5",
+      "description": "As Fed Chair Warsh sticks to policy silence, colleagues voice their views &nbsp;&nbsp; Reuters"
+    },
+    {
+      "title": "FirstFT: China’s economy grows at one of lowest rates in years",
+      "source": "FT",
+      "published": "2026-07-15T21:57:02+00:00",
+      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxPcndXNVRjVTg1N1R2cDZOSjY3VENBeEdVUmhyUy1PX2FDOFQtWDF1enZlWi1oczFnd0hSVmg0NW1nal85aFo1dm5ZS2NHemo4bjgwNDIzaUlQTEpLUy1FSWFQTkctaFFSXzU5Y2JzMXRzMkhkZGRRc21MN2M1bnR2YmpiYjY?oc=5",
+      "description": "FirstFT: China’s economy grows at one of lowest rates in years &nbsp;&nbsp; Financial Times"
+    },
+    {
+      "title": "Economic activity rising and inflation easing slightly, Fed survey shows",
+      "source": "Reuters",
+      "published": "2026-07-15T19:14:37+00:00",
+      "url": "https://news.google.com/rss/articles/CBMisAFBVV95cUxQRUQ3OW9PNzNUalA5VmRRb2Jmb0t4YUNLRTlZUk90RW9FdTBza2xPalR1Q3dUdzRXYVhOdktERGJPSVVPdFRLTndSbTBPQ1hZc0N5YTMyLVh4ZnJlTGpwMkxjcHdzcnZZV3laZV9JZDlqQlg0bndwbFQyelJTTm81RmRaOW1hVjlzV3VNWmk5LThnX2p4UVdqclZqNExmT3U2WlZnM28xVG9JUmhHa0F0Rw?oc=5",
+      "description": "Economic activity rising and inflation easing slightly, Fed survey shows &nbsp;&nbsp; Reuters"
+    },
+    {
+      "title": "Cook, Economic Outlook",
+      "source": "Fed Speech",
+      "published": "2026-07-15T17:00:00+00:00",
+      "url": "https://www.federalreserve.gov/newsevents/speech/cook20260715a.htm",
+      "description": "Speech At The Exchequer Club of Washington D.C., Washington, D.C."
+    },
     {
       "title": "BlackRock assets hit record $15 trillion on boost from buoyant markets, ETF inflows",
       "source": "Reuters",
-      "published": "2026-07-15T10:48:09+00:00",
+      "published": "2026-07-15T14:08:31+00:00",
       "url": "https://news.google.com/rss/articles/CBMinAFBVV95cUxQNGtraFlFOWdCLWZ5TkpheTdhUkEwMW1oMEVxa3NzOTk3RGxLOEhacDBTQnRYc0ZaNVdzTWtmWkptZEl5MTNKVm05QVZFb3ZBSWJRelpiT3QzdG5LdEZsVDZmWkNoUXFad2xOZ1hNQklNeWtTOEJVYWpuYVoyeGM2OXNQVE1uRWdzZWdEZnF6amJhMzZtNTZSTHZOVTA?oc=5",
       "description": "BlackRock assets hit record $15 trillion on boost from buoyant markets, ETF inflows &nbsp;&nbsp; Reuters"
     },
     {
+      "title": "BlackRock assets rise to record $15.3tn",
+      "source": "FT",
+      "published": "2026-07-15T10:10:51+00:00",
+      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxQMWkwcEpEOFgySnBSYzNVYnA3UDNCSXNkSE5zVGp1ekZvbGFENTlEM2JBNl9ILTZ2U1dlR0xLTUdwbGpuOVJpQ2hZMEdaeVgxN09HMVUxTWgwRnZMOXEzVnRENms2a2R4NTl2aWlqLTJiMWVBaDFCa3pvY2NwNEJwSWNGejQ?oc=5",
+      "description": "BlackRock assets rise to record $15.3tn &nbsp;&nbsp; Financial Times"
+    },
+    {
+      "title": "Stripe and Advent make $53bn bid for PayPal",
+      "source": "FT",
+      "published": "2026-07-15T05:54:23+00:00",
+      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxOTjlfS0o5dEVPN29zUDN4eVFJMG5TdkZzbVh4YTNBdTFhYjdLcmIyTkl4V1Y2M0tNSEItYnNpODNLb2VweGtEM1VHQ3B1M1RQdG1GZ0ZVb0tyd2ppTmZaUEY3X1ZHUVNBMEtkazZoZUNMZ09YN0RhWjJzM2lKZ3VyVk9SWmk?oc=5",
+      "description": "Stripe and Advent make $53bn bid for PayPal &nbsp;&nbsp; Financial Times"
+    },
+    {
+      "title": "Wall Street banks are AI stocks now",
+      "source": "FT",
+      "published": "2026-07-15T05:30:09+00:00",
+      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxNM2hINGYyV2ZuQ3lPbHVPQXpoSF9TU0NBdWU2V21NNm5tNGUwbXVNck15VTdGLWdRdHltdFVRV3Q1TEZUajd5UjR0TE1UNlJaSFZzbFYxaTZJWFItM1EtRXg0THlWd2lYWnkzUHdVYXNQNm1ReWlRTk9iZ3lpNm1wQ3JiNVM?oc=5",
+      "description": "Wall Street banks are AI stocks now &nbsp;&nbsp; Financial Times"
+    },
+    {
+      "title": "China and the new era of critical minerals diplomacy",
+      "source": "FT",
+      "published": "2026-07-15T04:00:11+00:00",
+      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxNWkRXQkNZWG4yOHE2c2ZHY3pjR3oteXBYbHZXZVNZUGVwS0tuZ0s0N2ljeFVreEFDQXhDMlVuZFBMVzZ0M2w0TFh6bjdMU2xYb1JQS0lfS0RDMHFObXM4Z1RfdzNaN1N3WGtCOGZqR3dtX1N4YVRZSG96a2VEYU40M0VnRzk?oc=5",
+      "description": "China and the new era of critical minerals diplomacy &nbsp;&nbsp; Financial Times"
+    },
+    {
       "title": "China’s economy grows at one of lowest rates in decades",
       "source": "FT",
-      "published": "2026-07-15T08:15:01+00:00",
+      "published": "2026-07-15T02:09:53+00:00",
       "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxQMXlEeTFQUjVUWVVJLUY5ZXRCNW1nUnFiWkR2bThYR2RyTVExaHk0cWI2eEcxVHd4UjBwRmlXaGxQaXRKU2FHaHhORUZuU0RZQ2FpdWZpNnNZdHNlcmhnZDhWOTJKXzNVN1hPNExGZW8wWjJqNUt6al96YTFySGZjZi1namM?oc=5",
       "description": "China’s economy grows at one of lowest rates in decades &nbsp;&nbsp; Financial Times"
     },
     {
-      "title": "Stocks steady as oil surge offsets ASML lift to tech",
+      "title": "Dollar falls after cooling producer prices, Middle East escalation in focus",
+      "source": "Reuters",
+      "published": "2026-07-15T01:51:00+00:00",
+      "url": "https://news.google.com/rss/articles/CBMiowFBVV95cUxObC1UaFRZQU5BRjNINFJ1a0pSZlNMdGZkd0FnSTREekFuZ0g2OHg1ZEZtc2R0Ni1FVHpkUkVSNGpIMGd4cGdDQVhOOUtlX0czVUhaclRSd1lRM1ZsT1BzVm1KUzFpRS15SFJyeDZxZzdQYUxVbmJmZllBT1N4TXo4eWNzemRISm1uM2xMeTl6eGlLRUd0ejhucEpsZTIzUGt3WEtJ?oc=5",
+      "description": "Dollar falls after cooling producer prices, Middle East escalation in focus &nbsp;&nbsp; Reuters"
+    },
+    {
+      "title": "Stocks rise after soft US inflation reading with Middle East in focus",
       "source": "Reuters",
       "published": "2026-07-15T01:48:00+00:00",
       "url": "https://news.google.com/rss/articles/CBMigwFBVV95cUxQcEtOY19xRkd1VVhIYWg3cmFaU1BOUXRpRDhzaXN6UzFSa2Z2c3cwOE5YYjV5bXRwQVhiX2VhTGE1d1dvR2dQS3FnQm56VkZwOE00WER6bWoyM3U5aWtjd0xjUENON1dXcWVlLW85TGhZazVKY3BZbmRQT19IaE9TMm43Yw?oc=5",
-      "description": "Stocks steady as oil surge offsets ASML lift to tech &nbsp;&nbsp; Reuters"
+      "description": "Stocks rise after soft US inflation reading with Middle East in focus &nbsp;&nbsp; Reuters"
+    },
+    {
+      "title": "China-backed copper mine threatens Pakistan shutdown over security risk",
+      "source": "FT",
+      "published": "2026-07-15T01:28:26+00:00",
+      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxQT040bGthSm8xQVF4NFVyTGgyQklnTTVVbTQ3bmhvX0dCRUhPUWtlUjBmelQ2WTZkb3hsbU1YVHBBdUJXSHFzYWRVREJPaURHYjVoU3dkLW1XY2pIa2pOcUIzVENXTXVZSVJGdFdYWExVbGg0Q0lIYlRZb3FhemQ1dzROdmY?oc=5",
+      "description": "China-backed copper mine threatens Pakistan shutdown over security risk &nbsp;&nbsp; Financial Times"
     },
     {
       "title": "SK Hynix shares surge 13% on AI hopes as US tech stocks resume their climb",
@@ -35,13 +105,6 @@
       "published": "2026-07-14T22:07:17+00:00",
       "url": "https://news.google.com/rss/articles/CBMicEFVX3lxTE5lSUNiVk1FbE1QaWNIRkF2UGQ1VWtucDJSRThxekxnOHlZbXB5OVpQSGlZYm5iNHJEWVd6OTg0YlJpbmVTQnhtcW9YQWhoUUUtQUV5NXRGMDJZRGhGckhmYVI5SEw1X0VCUWxxTFluYWw?oc=5",
       "description": "Manic markets show no mercy to IBM &nbsp;&nbsp; Financial Times"
-    },
-    {
-      "title": "FirstFT: Payments group Stripe swoops for Silicon Valley stalwart PayPal",
-      "source": "FT",
-      "published": "2026-07-14T21:57:17+00:00",
-      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxNN3dPbWQ2OG5NOEx1Y3AtaERXd2NxNndfVVE4WGFLLUVDSTFybVZGRFoyS25uOTFqR1ZCd25VYk9waUVFaWswWjg4NFVobDh2MF9WSTZKZTUwMGZfN2RiZ0pBWXJydzVwZWNWSU5LMEpDbU5GNjAwd3NVSUFBYjVjTFU0S1I?oc=5",
-      "description": "FirstFT: Payments group Stripe swoops for Silicon Valley stalwart PayPal &nbsp;&nbsp; Financial Times"
     },
     {
       "title": "Top Fed officials embrace cooler inflation reading, clamor for more",
@@ -77,62 +140,6 @@
       "published": "2026-07-14T16:18:46+00:00",
       "url": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxOa1pCUXk1VjhhOGRPZXEtTW5FZHBSSEY5ZEJubERmZ2hwVTNPdlgxdUFlZERfZU9jMXd5d3VLcHlqTFhIN0JBSS1iVlk3WnNzenhrRTZ6Z210YVBXamdUWVA1UWlkSmJUMHlPeFl6TWFFU1d6UWdGRXE0VzRfWjBHWmxpZW5idWJX?oc=5",
       "description": "Instant View: CPI comes in cool, soothing markets &nbsp;&nbsp; Reuters"
-    },
-    {
-      "title": "Kevin Warsh vows Federal Reserve will be ‘resolute’ in inflation fight",
-      "source": "FT",
-      "published": "2026-07-14T15:13:34+00:00",
-      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxOZ0taREhMWE53em1EU0NqWkxaYVI1Nk9qaVZaVWVjMkdXMUxnRU5kN1BnU2pWN3E4ZzBUeDF2MnFsZ0o1SjZNQklleUdvRjlCSloxdl9UVUMzdTQxMnNNVndNN3lBSVhKWEt2SDBJeUtQRVE2NF9BWU1NYmlCMUp3dVNQSEs?oc=5",
-      "description": "Kevin Warsh vows Federal Reserve will be ‘resolute’ in inflation fight &nbsp;&nbsp; Financial Times"
-    },
-    {
-      "title": "Traders expect Fed to skip July rate hike as inflation cools",
-      "source": "Reuters",
-      "published": "2026-07-14T13:49:07+00:00",
-      "url": "https://news.google.com/rss/articles/CBMiowFBVV95cUxPejVocHU3MHFoUThMM0FoSk5ILWllYXdVa09OYmEtTjFoelpoVFl3T2kyYUR3UE85SnVLb01CbjV4TkJhMC0zajNCUHhza3c5RnJJaElFbnUyMV9YSmJ6VDUtWHFBUEdwSHd4eWUxMjNONzd2SS1zaENIdVJfWFFmX200YnV3Ym5YekpxVXBjVm91OWRXUy1xVTJHbkE4cHFOTDJF?oc=5",
-      "description": "Traders expect Fed to skip July rate hike as inflation cools &nbsp;&nbsp; Reuters"
-    },
-    {
-      "title": "US inflation fell more than expected to 3.5% in June as petrol prices tumbled",
-      "source": "FT",
-      "published": "2026-07-14T12:31:06+00:00",
-      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxQMmFLWHRoUE9ORGZ2eHNRSWlWSU5fejViWlBjT1NWcndmX2ZRUXQxd1lQNWU5WGlLbjI5WmpYVnJUQk1icWJUdXV1NEUtck15cDgtWk5sZDVic01NRzRNbWpzbDBxWndhRDlENnphU3ZuOXlWUWgydEc1WVlzLVlVR1BEMVA?oc=5",
-      "description": "US inflation fell more than expected to 3.5% in June as petrol prices tumbled &nbsp;&nbsp; Financial Times"
-    },
-    {
-      "title": "Oil touches $87 as battle for Strait of Hormuz alarms energy markets",
-      "source": "FT",
-      "published": "2026-07-14T10:28:34+00:00",
-      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxNbGFESFlWMnNUb0E1V2JOSTFCU2VWb1lkS1V2R28yWEdFQS1pUkxxaTUyUkQ5WWs4d0hZazF1bXpsc0lnUmpYemZVUUdsMGhCMGgyMGpiN2NSMGc0TDliQjl4bl9DM3BEQTlnWkUwbjBPZXJCZmxzLThrVXFjcE1pQktiT3k?oc=5",
-      "description": "Oil touches $87 as battle for Strait of Hormuz alarms energy markets &nbsp;&nbsp; Financial Times"
-    },
-    {
-      "title": "Fed chief Warsh vows to 'do my job' if challenged by Trump",
-      "source": "Reuters",
-      "published": "2026-07-14T10:07:00+00:00",
-      "url": "https://news.google.com/rss/articles/CBMipgFBVV95cUxPY2lZbFpmejAtNW91RmFHRWZqT0NkdzF5M3NOQWF6UUZxVXZHYW0xTnlZX1FQZ1lvcTE0UlBqV3l1MnY3WHVoVl92OWJYUW44Sjl5Zk1oMzFSQ0s2NjlYQ1hpUVRIc1RzVEZVY1ZuTE9nVVpwUXhRRmJnU0s4emhnbXh4ellpV01qc3VOeVo5eEJ6VHVMUnhmSXR5c1dCS2dXREhsdmtB?oc=5",
-      "description": "Fed chief Warsh vows to 'do my job' if challenged by Trump &nbsp;&nbsp; Reuters"
-    },
-    {
-      "title": "BP cuts net debt after Iran war drives oil price surge",
-      "source": "FT",
-      "published": "2026-07-14T07:23:27+00:00",
-      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxPWV9VeU1FSklvenI2N25SMHlIYy1MdFNuSkRUZXREUk5hcG9JNVg5UUVsQXJFWm5ITDBpQ2NydGlXUURPQzZPaWFSS0JmSEgxQjZodVNkNG1nSlQ0eENoeXo2aTNMakh2VjVpUmkyRk43SEhPOWtzdTUyVjFmNVlKTU5VSFQ?oc=5",
-      "description": "BP cuts net debt after Iran war drives oil price surge &nbsp;&nbsp; Financial Times"
-    },
-    {
-      "title": "India presses banks to court diaspora for deposits to support rupee",
-      "source": "FT",
-      "published": "2026-07-14T06:40:29+00:00",
-      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxNWjZVZzFtTm9hVzJpUzlpS0JQVTZxVVdxOGlnMHpwYkt6ZV9EMkw0NEdVbWpKSjVGdW5JWGFwZWRYd3A3dFRUYjE0ODVOQXQ5UnBoR3pZWHZVX0NiLWZ6YWZmaFd0V1VjekZoeUJBNnNMdmM3eGlSR29tY1ZSSk0tNV9pbjI?oc=5",
-      "description": "India presses banks to court diaspora for deposits to support rupee &nbsp;&nbsp; Financial Times"
-    },
-    {
-      "title": "China's exports ride AI boom as domestic economy struggles",
-      "source": "Reuters",
-      "published": "2026-07-14T02:57:00+00:00",
-      "url": "https://news.google.com/rss/articles/CBMinwFBVV95cUxNRGpqNHVtR2tXdDB5RnBUeHF0U2oyRDRMNnduQVM0eHBWOTVxalVjSGdOMXlFZGxNRUc2dW9fcUttclVoVTdKbk5rRUlVOEdqWHFQRzd5WllrZGI2dnhOVEJXRDU1eFhSVlAtZDk2UEFCRExBdEQxMEdhTENzdzVRVWpaVUhJU2l2RU1KT0xobmNyeGtPcEY1S3Exb3doaG8?oc=5",
-      "description": "China's exports ride AI boom as domestic economy struggles &nbsp;&nbsp; Reuters"
     }
   ]
 }
