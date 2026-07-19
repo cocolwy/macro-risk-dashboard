@@ -1,0 +1,99 @@
+{
+  "id": "F000",
+  "name": "Factor Name",
+  "name_zh": "中文名",
+  "created": "YYYY-MM-DD",
+  "last_updated": "YYYY-MM-DD",
+  "pipeline_version": "1.0",
+  "status": "pending",
+  "current_stage": "S0",
+  "tags": [],
+
+  "S0_goal": {
+    "status": "pending",
+    "trading_objective": "一句话：用什么标的、做什么动作、赚什么钱",
+    "instrument": {
+      "research": "研究用序列，如 ^VIX",
+      "tradable": "可交易产品，如 UVIX",
+      "mapping_gap": "研究序列与可交易产品之间已知差异"
+    },
+    "action": "long | short | filter | size",
+    "horizon": "持有期描述，如 T-5 close → T-1 close",
+    "success_metric": "如何判定成功：期望收益 / 夏普 / 命中率+成本后 PnL"
+  },
+
+  "S1_hypothesis": {
+    "status": "pending",
+    "hypothesis": "可证伪的一句话假设",
+    "mechanism": "谁、什么约束、留下什么痕迹",
+    "failure_modes": ["列出预期失效场景"]
+  },
+
+  "S2_preregister": {
+    "status": "pending",
+    "primary_window": "T-5~T-1",
+    "sample_period": "起止日期",
+    "baseline": "非事件日稀疏基准描述",
+    "test": "单侧 z / Welch t 等",
+    "alpha_rule": "Bonferroni α=…",
+    "exploratory_allowed": true,
+    "note": "写完再跑主检验"
+  },
+
+  "S3_data": {
+    "status": "pending",
+    "sources": [],
+    "script": "相对仓库路径",
+    "output_json": "相对仓库路径",
+    "lookahead_checked": false,
+    "notes": []
+  },
+
+  "S4_explore": {
+    "status": "pending",
+    "items": [
+      {
+        "name": "window_sweep",
+        "result": "",
+        "exploratory": true,
+        "warning": "多重检验，不作主结论"
+      }
+    ]
+  },
+
+  "S5_confirm": {
+    "status": "pending",
+    "primary_result": "",
+    "sensitivity": [],
+    "verdict_research": "仅针对研究序列（如 VIX）的统计结论"
+  },
+
+  "S6_tradability": {
+    "status": "pending",
+    "bridge_to_product": "VIX 结论如何映射到 UVIX",
+    "costs_considered": false,
+    "product_test_done": false,
+    "verdict_trading": "针对可交易目标的结论",
+    "blockers": []
+  },
+
+  "S7_archive": {
+    "status": "pending",
+    "alpha_deck_id": "F000",
+    "dashboard_hash": "#factorlab",
+    "experiment_hash": "",
+    "key_findings": [],
+    "next_steps": []
+  },
+
+  "stage_checklist": [
+    { "id": "S0", "name": "目标锚定", "status": "pending", "notes": [] },
+    { "id": "S1", "name": "经济直觉", "status": "pending", "notes": [] },
+    { "id": "S2", "name": "预注册", "status": "pending", "notes": [] },
+    { "id": "S3", "name": "数据实现", "status": "pending", "notes": [] },
+    { "id": "S4", "name": "探索分析", "status": "pending", "notes": [] },
+    { "id": "S5", "name": "确认检验", "status": "pending", "notes": [] },
+    { "id": "S6", "name": "可交易性", "status": "pending", "notes": [] },
+    { "id": "S7", "name": "归档看板", "status": "pending", "notes": [] }
+  ]
+}

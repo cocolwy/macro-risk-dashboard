@@ -22,6 +22,21 @@ interface FactorData {
   events?: Record<string, number>;
 }
 
+interface PipelineStage {
+  id: string;
+  name: string;
+  status: 'pending' | 'in_progress' | 'done' | 'blocked' | 'skipped';
+  summary?: string;
+}
+
+interface FactorGoal {
+  trading_objective: string;
+  research_instrument: string;
+  tradable_instrument: string;
+  mapping_gap: string;
+  horizon: string;
+}
+
 interface Factor {
   id: string;
   name: string;
@@ -30,7 +45,12 @@ interface Factor {
   motivation: string;
   status: 'confirmed' | 'conditional' | 'weak' | 'dead' | 'pending';
   status_note: string;
+  current_stage?: string;
+  case_file?: string;
+  experiment_hash?: string;
   tags: string[];
+  goal?: FactorGoal;
+  pipeline_stages?: PipelineStage[];
   data: FactorData;
   methods: FactorMethod[];
   key_findings: string[];
@@ -45,6 +65,12 @@ interface FactorLog {
   version: string;
   description: string;
   updated: string;
+  pipeline?: {
+    doc: string;
+    readme: string;
+    stages: string[];
+    stage_names: Record<string, string>;
+  };
   factors: Factor[];
 }
 
@@ -54,6 +80,14 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; 
   weak:        { label: 'Weak',        color: '#f97316', bg: '#431407', icon: '~' },
   dead:        { label: 'Dead',        color: '#ef4444', bg: '#450a0a', icon: '✗' },
   pending:     { label: 'Pending',     color: '#6b7280', bg: '#111827', icon: '?' },
+};
+
+const STAGE_COLOR: Record<string, string> = {
+  done: '#10b981',
+  in_progress: '#f59e0b',
+  pending: '#4b5563',
+  blocked: '#ef4444',
+  skipped: '#374151',
 };
 
 function StatusBadge({ status }: { status: string }) {
@@ -79,6 +113,40 @@ function TagPill({ tag }: { tag: string }) {
     }}>
       {tag}
     </span>
+  );
+}
+
+function PipelineStrip({ stages, compact = false }: { stages: PipelineStage[]; compact?: boolean }) {
+  return (
+    <div style={{ display: 'flex', gap: 4, flexWrap: compact ? 'nowrap' : 'wrap', overflowX: compact ? 'auto' : undefined }}>
+      {stages.map((s, i) => {
+        const color = STAGE_COLOR[s.status] ?? STAGE_COLOR.pending;
+        return (
+          <div
+            key={s.id}
+            title={`${s.id} ${s.name}: ${s.status}${s.summary ? ` — ${s.summary}` : ''}`}
+            style={{
+              flex: compact ? '0 0 auto' : 1,
+              minWidth: compact ? 44 : 0,
+              background: `${color}18`,
+              border: `1px solid ${color}55`,
+              borderRadius: 6,
+              padding: compact ? '4px 6px' : '8px 6px',
+              textAlign: 'center',
+            }}
+          >
+            <div style={{ fontSize: 10, fontFamily: 'monospace', color, fontWeight: 700 }}>{s.id}</div>
+            {!compact && (
+              <>
+                <div style={{ fontSize: 10, color: '#9ca3af', marginTop: 2 }}>{s.name}</div>
+                <div style={{ fontSize: 9, color: '#6b7280', marginTop: 2 }}>{s.status}</div>
+              </>
+            )}
+            {compact && i < stages.length - 1 && <span style={{ display: 'none' }} />}
+          </div>
+        );
+      })}
+    </div>
   );
 }
 
@@ -137,13 +205,27 @@ function FactorCard({ factor, onSelect }: { factor: Factor; onSelect: () => void
         </div>
         <StatusBadge status={factor.status} />
       </div>
+      {factor.goal && (
+        <div style={{
+          fontSize: 12, color: '#fbbf24', background: '#451a0311',
+          border: '1px solid #92400e55', borderRadius: 8, padding: '8px 10px', marginBottom: 10,
+        }}>
+          Goal: {factor.goal.tradable_instrument} · {factor.goal.trading_objective}
+        </div>
+      )}
       <p style={{ fontSize: 13, color: '#9ca3af', margin: '0 0 12px', lineHeight: 1.6 }}>
         {factor.hypothesis}
       </p>
+      {factor.pipeline_stages && (
+        <div style={{ marginBottom: 12 }}>
+          <PipelineStrip stages={factor.pipeline_stages} compact />
+        </div>
+      )}
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 10 }}>
         {factor.tags.map(t => <TagPill key={t} tag={t} />)}
       </div>
       <div style={{ fontSize: 11, color: '#4b5563' }}>
+        {factor.current_stage ? `Stage ${factor.current_stage} · ` : ''}
         {factor.data.primary_period} · {factor.data.n_trading_days.toLocaleString()} trading days
       </div>
     </div>
@@ -165,7 +247,6 @@ function FactorDetail({ factor, onBack }: { factor: Factor; onBack: () => void }
         ← Back
       </button>
 
-      {/* Header */}
       <div style={{
         background: '#111827', border: '1px solid #1f2937',
         borderRadius: 12, padding: '24px 28px', marginBottom: 20,
@@ -192,13 +273,77 @@ function FactorDetail({ factor, onBack }: { factor: Factor; onBack: () => void }
             </span>
           )}
         </div>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 12 }}>
           {factor.tags.map(t => <TagPill key={t} tag={t} />)}
         </div>
+        {(factor.case_file || factor.experiment_hash) && (
+          <div style={{ fontSize: 11, color: '#6b7280' }}>
+            {factor.case_file && <span>Case: <code style={{ color: '#93c5fd' }}>{factor.case_file}</code></span>}
+            {factor.experiment_hash && (
+              <a href={factor.experiment_hash} style={{ marginLeft: 12, color: '#60a5fa' }}>
+                实验页 {factor.experiment_hash}
+              </a>
+            )}
+          </div>
+        )}
       </div>
 
+      {/* Goal */}
+      {factor.goal && (
+        <div style={{
+          background: '#1c1408', border: '1px solid #92400e',
+          borderRadius: 12, padding: '18px 22px', marginBottom: 20,
+        }}>
+          <h3 style={{ color: '#fbbf24', margin: '0 0 10px', fontSize: 15 }}>S0 · Trading Goal</h3>
+          <div style={{ fontSize: 13, color: '#fde68a', lineHeight: 1.7, marginBottom: 8 }}>
+            {factor.goal.trading_objective}
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, fontSize: 12 }}>
+            <div style={{ color: '#9ca3af' }}>
+              Research: <span style={{ color: '#e5e7eb' }}>{factor.goal.research_instrument}</span>
+            </div>
+            <div style={{ color: '#9ca3af' }}>
+              Tradable: <span style={{ color: '#e5e7eb' }}>{factor.goal.tradable_instrument}</span>
+            </div>
+          </div>
+          <div style={{ fontSize: 12, color: '#f97316', marginTop: 10, lineHeight: 1.6 }}>
+            Mapping gap: {factor.goal.mapping_gap}
+          </div>
+          <div style={{ fontSize: 11, color: '#78716c', marginTop: 6 }}>Horizon: {factor.goal.horizon}</div>
+        </div>
+      )}
+
+      {/* Pipeline */}
+      {factor.pipeline_stages && (
+        <div style={{ background: '#111827', border: '1px solid #1f2937', borderRadius: 12, padding: '20px 24px', marginBottom: 20 }}>
+          <h3 style={{ color: '#e5e7eb', margin: '0 0 6px', fontSize: 15 }}>
+            Pipeline S0–S7
+            {factor.current_stage && (
+              <span style={{ color: '#f59e0b', fontWeight: 400, fontSize: 13, marginLeft: 8 }}>
+                current: {factor.current_stage}
+              </span>
+            )}
+          </h3>
+          <p style={{ fontSize: 11, color: '#4b5563', margin: '0 0 14px' }}>
+            协议见仓库 factor_pipeline/PIPELINE.md
+          </p>
+          <PipelineStrip stages={factor.pipeline_stages} />
+          <div style={{ marginTop: 16, display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {factor.pipeline_stages.map(s => (
+              <div key={s.id} style={{ display: 'flex', gap: 10, fontSize: 12, lineHeight: 1.5 }}>
+                <span style={{
+                  fontFamily: 'monospace', fontWeight: 700, minWidth: 28,
+                  color: STAGE_COLOR[s.status] ?? '#6b7280',
+                }}>{s.id}</span>
+                <span style={{ color: '#9ca3af', minWidth: 72 }}>{s.name}</span>
+                <span style={{ color: '#6b7280', flex: 1 }}>{s.summary ?? '—'}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginBottom: 20 }}>
-        {/* Key Findings */}
         <div style={{ background: '#111827', border: '1px solid #1f2937', borderRadius: 12, padding: '20px 24px' }}>
           <h3 style={{ color: '#e5e7eb', margin: '0 0 14px', fontSize: 15 }}>Key Findings</h3>
           <ul style={{ margin: 0, padding: '0 0 0 16px' }}>
@@ -208,7 +353,6 @@ function FactorDetail({ factor, onBack }: { factor: Factor; onBack: () => void }
           </ul>
         </div>
 
-        {/* Verdict + Next Steps */}
         <div style={{ background: '#111827', border: '1px solid #1f2937', borderRadius: 12, padding: '20px 24px' }}>
           <h3 style={{ color: '#e5e7eb', margin: '0 0 10px', fontSize: 15 }}>Verdict</h3>
           <div style={{
@@ -227,7 +371,6 @@ function FactorDetail({ factor, onBack }: { factor: Factor; onBack: () => void }
         </div>
       </div>
 
-      {/* Methods */}
       <div style={{ background: '#111827', border: '1px solid #1f2937', borderRadius: 12, padding: '20px 24px', marginBottom: 20 }}>
         <h3 style={{ color: '#e5e7eb', margin: '0 0 14px', fontSize: 15 }}>
           Methods Tried <span style={{ color: '#4b5563', fontWeight: 400, fontSize: 13 }}>({factor.methods.length})</span>
@@ -235,7 +378,6 @@ function FactorDetail({ factor, onBack }: { factor: Factor; onBack: () => void }
         {factor.methods.map((m, i) => <MethodRow key={m.name} m={m} idx={i} />)}
       </div>
 
-      {/* Status Note */}
       <div style={{
         background: '#0f172a', border: '1px solid #1e3a5f', borderRadius: 10,
         padding: '14px 18px', marginBottom: 20,
@@ -244,7 +386,6 @@ function FactorDetail({ factor, onBack }: { factor: Factor; onBack: () => void }
         <strong style={{ color: '#3b82f6' }}>Status Note: </strong>{factor.status_note}
       </div>
 
-      {/* References */}
       {factor.references.length > 0 && (
         <div style={{ background: '#111827', border: '1px solid #1f2937', borderRadius: 12, padding: '20px 24px' }}>
           <h3 style={{ color: '#e5e7eb', margin: '0 0 14px', fontSize: 15 }}>References</h3>
@@ -284,7 +425,7 @@ export function FactorLab() {
 
   if (selected) {
     return (
-      <div className="container" style={{ maxWidth: 900, margin: '0 auto', padding: '32px 24px' }}>
+      <div className="container" style={{ maxWidth: 960, margin: '0 auto', padding: '32px 24px' }}>
         <FactorDetail factor={selected} onBack={() => setSelected(null)} />
       </div>
     );
@@ -298,17 +439,25 @@ export function FactorLab() {
   );
 
   return (
-    <div className="container" style={{ maxWidth: 900, margin: '0 auto', padding: '32px 24px' }}>
-      {/* Page Header */}
-      <div style={{ marginBottom: 32 }}>
+    <div className="container" style={{ maxWidth: 960, margin: '0 auto', padding: '32px 24px' }}>
+      <div style={{ marginBottom: 28 }}>
         <div style={{ fontSize: 12, color: '#4b5563', marginBottom: 6, letterSpacing: 1 }}>ALPHA DECK</div>
         <h1 style={{ margin: 0, fontSize: 28, fontWeight: 800, color: '#f9fafb' }}>Factor Research Log</h1>
         <p style={{ margin: '8px 0 0', color: '#6b7280', fontSize: 14 }}>
-          系统化记录每个量化因子的假设、检验方法、发现与结论
+          S0–S7 流水线记录 · 假设 · 检验 · 可交易性 · 结论
         </p>
+        {log.pipeline && (
+          <div style={{
+            marginTop: 14, fontSize: 12, color: '#93c5fd',
+            background: '#0f172a', border: '1px solid #1e3a5f', borderRadius: 8, padding: '10px 14px',
+          }}>
+            流水线协议：仓库内 <code style={{ color: '#e2e8f0' }}>{log.pipeline.doc}</code>
+            {' · '}用法 <code style={{ color: '#e2e8f0' }}>{log.pipeline.readme}</code>
+            {' · '}阶段 {log.pipeline.stages.join(' → ')}
+          </div>
+        )}
       </div>
 
-      {/* Summary Cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 10, marginBottom: 28 }}>
         {Object.entries(STATUS_CONFIG).map(([status, cfg]) => (
           <div key={status} style={{
@@ -321,7 +470,6 @@ export function FactorLab() {
         ))}
       </div>
 
-      {/* Filter Tabs */}
       <div style={{ display: 'flex', gap: 8, marginBottom: 20 }}>
         {statuses.map(s => (
           <button
@@ -339,7 +487,6 @@ export function FactorLab() {
         ))}
       </div>
 
-      {/* Factor List */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
         {visible.map(f => (
           <FactorCard key={f.id} factor={f} onSelect={() => setSelected(f)} />
@@ -349,7 +496,6 @@ export function FactorLab() {
         )}
       </div>
 
-      {/* Footer */}
       <div style={{ marginTop: 40, textAlign: 'right', fontSize: 11, color: '#374151' }}>
         Alpha Deck v{log.version} · Last updated {log.updated} · {log.factors.length} factors
       </div>

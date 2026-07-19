@@ -1,0 +1,207 @@
+{
+  "id": "F001",
+  "name": "VIX Event Calendar Effect → UVIX Timing",
+  "name_zh": "宏观事件日历 × VIX → 交易 UVIX",
+  "created": "2026-07-15",
+  "last_updated": "2026-07-19",
+  "pipeline_version": "1.0",
+  "status": "weak",
+  "current_stage": "S6",
+  "tags": ["UVIX", "VIX", "events", "macro", "FOMC", "CPI", "NFP"],
+
+  "S0_goal": {
+    "status": "done",
+    "trading_objective": "在 FOMC/CPI/NFP 发布前做多 UVIX，赚取事件前隐含波动率上升带来的收益；发布后若「靴子落地」则可考虑平仓或反向。",
+    "instrument": {
+      "research": "^VIX (CBOE Volatility Index) — 本次实验实际检验对象",
+      "tradable": "UVIX (2x 长期 VIX 期货 ETN) — 真实交易目标",
+      "mapping_gap": "VIX 现货指数 ≠ UVIX。UVIX 跟踪 VIX 期货（常处于 contango），有杠杆再平衡衰减、跟踪误差与更高买卖价差。VIX 上涨命中率高并不自动等于 UVIX 期望收益为正。"
+    },
+    "action": "long UVIX before event; optional exit/short after release",
+    "horizon": "主策略：事件前 T-5~T-1（日线）；发布后 T+1 是否平仓/做空为次要假设",
+    "success_metric": "成本后 UVIX 事件窗口期望收益 / 命中率；本次仅完成 VIX 代理检验，UVIX 实盘桥接未完成",
+    "retrospective_note": "研究启动时目标未写清，实际跑的是 ^VIX 事件研究。2026-07-19 回溯锚定为「交易 UVIX」，并据此重审结论：S5 对 VIX 的统计结论不能直接当作 UVIX 可交易证据。"
+  },
+
+  "S1_hypothesis": {
+    "status": "done",
+    "hypothesis": "重大宏观数据发布前，市场买入波动率保护 → VIX（从而 UVIX）在事件前窗口系统性上行；发布后不确定性下降 → 回落。",
+    "mechanism": "做市商与组合经理在政策/数据不确定性前对冲 → 推高近月 VIX 期货与相关 ETN 价格。",
+    "failure_modes": [
+      "政策路径高度可预期（近年降息路径）→ 事件前无额外溢价",
+      "Lucca & Moench (2015) 发表后套利磨损",
+      "VIX 30 日前瞻性使「非事件日」已定价下次事件 → 水平比较趋零",
+      "UVIX 期货衰减吞掉日线方向上的微弱边缘"
+    ]
+  },
+
+  "S2_preregister": {
+    "status": "done",
+    "primary_window": "T-5~T-1（H1 上涨）；T+1（H2 下跌）",
+    "sample_period": "主样本约 10y：2016-07 ~ 2026-07；历史复现另用 1994+ VIX max",
+    "baseline": "非事件日稀疏基准 stride=5，降低重叠窗口自相关",
+    "test": "单侧两比例 z 检验（方向命中率）；水平比较用 Welch t",
+    "alpha_rule": "主检验 6 tests Bonferroni α≈0.0083",
+    "exploratory_allowed": true,
+    "note": "窗口扫描、条件三档、SKEW 均为探索/扩展，不作主交易结论"
+  },
+
+  "S3_data": {
+    "status": "done",
+    "sources": [
+      "Yahoo Finance ^VIX",
+      "Yahoo Finance ^SKEW（扩展）",
+      "FOMC/CPI 日期：predict_model.get_event_dates + get_historical_fomc_dates",
+      "NFP：每月第一个周五规则生成"
+    ],
+    "script": "dashboard/experiment_event_uvix.py",
+    "output_json": "dashboard/data/event_vix_analysis.json",
+    "lookahead_checked": true,
+    "notes": [
+      "事件对齐到最近交易日；窗口用交易日偏移",
+      "未拉取 UVIX 历史做同一套检验 — S6 缺口",
+      "日线收盘代理，无 FOMC 声明时刻（14:00 ET）日内数据"
+    ]
+  },
+
+  "S4_explore": {
+    "status": "done",
+    "items": [
+      {
+        "name": "window_sweep",
+        "result": "FOMC T-3~T-1 命中率约 72% vs 基准 ~45%（探索性，多重检验）",
+        "exploratory": true,
+        "warning": "不得直接作为 UVIX 入场规则"
+      },
+      {
+        "name": "conditional_vix_tercile",
+        "result": "低 VIX（<p33）FOMC 前命中率 70.4%，p=0.015；中/高档不显著",
+        "exploratory": true,
+        "warning": "条件拆分来自同一主样本，需独立期外确认后才能服务 UVIX 策略"
+      },
+      {
+        "name": "skew_anxiety",
+        "result": "FOMC 前 SKEW 略降，不支持「尾部焦虑」故事",
+        "exploratory": true,
+        "warning": "与 UVIX 路径无直接映射"
+      }
+    ]
+  },
+
+  "S5_confirm": {
+    "status": "done",
+    "primary_result": "预注册 T-5~T-1：FOMC/CPI/NFP 经 Bonferroni 后均不显著（FOMC p≈0.08 仅边际）。H2 发布后下跌亦不显著。",
+    "sensitivity": [
+      "水平比较 Method A/B：事件前 VIX 水平几乎无超额",
+      "近 1y/2y：效应消失甚至反转",
+      "Pre-2015 vs Post-2015：发表前边际显著、发表后不显著 → 衰减",
+      "COVID 敏感性：不改变「主假设不成立」的定性判断"
+    ],
+    "verdict_research": "作为 ^VIX 事件日历因子：全样本主假设不成立；仅「低 VIX × FOMC」有探索性条件信号，尚未独立确认。"
+  },
+
+  "S6_tradability": {
+    "status": "in_progress",
+    "bridge_to_product": "本次工作几乎全部在 ^VIX 上完成。交易目标是 UVIX，因此当前不能声称「可交易 alpha」。即使未来低 VIX×FOMC 在 VIX 上确认，仍须用 UVIX 收益（含衰减与成本）重跑同一预注册协议。",
+    "costs_considered": false,
+    "product_test_done": false,
+    "verdict_trading": "以交易 UVIX 为目标：当前证据不足，倾向不部署。VIX 代理检验已偏弱；产品层还有杠杆衰减与成本，预期只会更差或更噪。唯一残留研究价值是：低波动 regime 下事件前做多波动率产品是否仍有边缘 — 必须用 UVIX 数据单独预注册验证。",
+    "blockers": [
+      "未对 UVIX 历史收益做事件窗口检验",
+      "未计入买卖价差 / 隔夜衰减 / 杠杆路径依赖",
+      "入场时刻未定义到可执行规则（T-5 收盘？开盘？）",
+      "条件信号未做样本外确认"
+    ]
+  },
+
+  "S7_archive": {
+    "status": "done",
+    "alpha_deck_id": "F001",
+    "dashboard_hash": "#factorlab",
+    "experiment_hash": "#ch2-2",
+    "key_findings": [
+      "目标回溯澄清：意图是交易 UVIX，实验测的是 ^VIX — 存在标的错位",
+      "VIX 预注册主检验不显著；不可作为 UVIX 入场依据",
+      "探索性：FOMC 短窗口与低 VIX 条件仍有研究线索，但未过可交易门禁",
+      "发表后衰减与近年效应消失，降低「日历因子长期可挖」的先验"
+    ],
+    "next_steps": [
+      {
+        "id": "F001b",
+        "title": "UVIX 产品层预注册检验",
+        "stage": "S2→S5→S6",
+        "protocol": "同一 T-5~T-1 / 稀疏基准 / Bonferroni；因变量改为 UVIX 收益；样本尽量长"
+      },
+      {
+        "id": "F001c",
+        "title": "低 VIX × FOMC 独立确认",
+        "stage": "S2→S5",
+        "protocol": "预注册阈值（如 VIX<p33 或固定 15）；确认样本与探索样本拆分"
+      }
+    ]
+  },
+
+  "stage_checklist": [
+    {
+      "id": "S0",
+      "name": "目标锚定",
+      "status": "done",
+      "notes": [
+        "2026-07-19 回溯写清：交易 UVIX，非纯学术 VIX 研究",
+        "标的错位记入 mapping_gap，影响整体 verdict"
+      ]
+    },
+    {
+      "id": "S1",
+      "name": "经济直觉",
+      "status": "done",
+      "notes": ["事件前买保护 → 波动率产品上行；机制合理但可被套利/可预期性破坏"]
+    },
+    {
+      "id": "S2",
+      "name": "预注册",
+      "status": "done",
+      "notes": ["审计后补齐固定窗口 + Bonferroni；早期版本存在扫窗当结论的风险，已纠正"]
+    },
+    {
+      "id": "S3",
+      "name": "数据实现",
+      "status": "done",
+      "notes": ["脚本与 JSON 可复现；缺 UVIX 序列"]
+    },
+    {
+      "id": "S4",
+      "name": "探索分析",
+      "status": "done",
+      "notes": ["窗口扫描 / 条件三档 / SKEW 均已标记探索性"]
+    },
+    {
+      "id": "S5",
+      "name": "确认检验",
+      "status": "done",
+      "notes": ["主假设不成立；条件信号待独立确认"]
+    },
+    {
+      "id": "S6",
+      "name": "可交易性",
+      "status": "in_progress",
+      "notes": [
+        "以 UVIX 为目标重审后：不得标 confirmed",
+        "阻塞：缺 UVIX 收益检验与成本"
+      ]
+    },
+    {
+      "id": "S7",
+      "name": "归档看板",
+      "status": "done",
+      "notes": ["写入 Alpha Deck + factor_pipeline/cases + Event×VIX 实验页"]
+    }
+  ],
+
+  "revised_verdict": {
+    "as_of": "2026-07-19",
+    "research_series": "weak / conditional（仅低 VIX×FOMC 探索线索）",
+    "trading_uvix": "weak — 不建议实盘；需完成 UVIX 层检验后才能升级",
+    "summary": "第一个因子走完了「从灵感到严格检验」的大半程，但因目标（UVIX）与检验标的（VIX）错位，加上主检验偏弱与产品层未做，当前归档为 weak。流水线价值保留：协议、否定记录、条件线索均可复用。"
+  }
+}

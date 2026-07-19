@@ -85,10 +85,10 @@ export const SITE_NAV: Record<PageId, NavItem> = {
     id: 'factorlab',
     hash: 'factorlab',
     title: 'Alpha Deck',
-    subtitle: '因子研究日志 · 假设 · 检验方法 · 发现与结论',
+    subtitle: '因子流水线 S0–S7 · 假设 · 检验 · 可交易性 · 归档',
     level: 1,
     badge: 'NEW',
-    metrics: 'F001 VIX Event Effect',
+    metrics: 'F001 UVIX · weak @ S6',
   },
 };
 

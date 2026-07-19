@@ -54,19 +54,14 @@ Fundamental factors are lagged 2 months to mitigate look-ahead bias (simulating 
 ## Project Structure
 
 ```
-agents/
-    base.py           # BaseAgent, MessageBus, AgentStatus
-    orchestrator.py   # Sequential pipeline with reject/failure handling
-    data_engineer.py  # Downloads prices/volume/fundamentals via yfinance
-    researcher.py     # Factor computation, PCA, industry neutralization
-    backtester.py     # Alphalens factor analysis (IC, quantile returns)
-    critic.py         # Autonomous validator (bias, overfit, correlation checks)
-    risk_manager.py   # VaR, CVaR, drawdown, stress tests
-    pm.py             # Rolling IC-weighted portfolio, transaction costs
-    universe.py       # SP500 core (~107) and Russell 1000 (~495) ticker lists
+agents/               # Multi-agent equity factor pipeline
+factor_pipeline/       # Manual factor research protocol (S0–S7) + case files
+    PIPELINE.md       # Shared checklist / pitfalls per stage
+    README.md         # How to open a new factor case
+    cases/            # e.g. F001 UVIX event calendar
+dashboard/            # Macro risk + Alpha Deck (#factorlab) research hub
 run.py                # Entry point (pipeline + optional Flask dashboard)
 qlib_migration/       # Walk-forward LightGBM experiments, Qlib cross-validation
-frontend/             # Flask dashboard for live pipeline monitoring
 ```
 
 ## Quick Start
