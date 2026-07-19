@@ -1,0 +1,320 @@
+{
+  "title": "Walk-Forward Validation \u2014 Expanding Window",
+  "design": {
+    "train_window": "expanding from data start",
+    "min_train_days": 378,
+    "test_days": 126,
+    "step_days": 126,
+    "embargo_days": 20,
+    "clip": "per-fold 1st-99th percentile on train only",
+    "models": [
+      "LR Slim+Events",
+      "LR Events+Interact"
+    ]
+  },
+  "data_range": "2022-09-26 ~ 2026-07-13",
+  "total_samples": 951,
+  "folds": [
+    {
+      "fold": 1,
+      "train_start": "2022-09-26",
+      "train_end": "2024-03-27",
+      "embargo_start": "2024-03-28",
+      "embargo_end": "2024-04-25",
+      "test_start": "2024-04-26",
+      "test_end": "2024-10-24",
+      "train_n": 378,
+      "test_n": 126,
+      "train_pos": 40,
+      "test_pos": 14
+    },
+    {
+      "fold": 2,
+      "train_start": "2022-09-26",
+      "train_end": "2024-09-26",
+      "embargo_start": "2024-09-27",
+      "embargo_end": "2024-10-24",
+      "test_start": "2024-10-25",
+      "test_end": "2025-04-29",
+      "train_n": 504,
+      "test_n": 126,
+      "train_pos": 56,
+      "test_pos": 41
+    },
+    {
+      "fold": 3,
+      "train_start": "2022-09-26",
+      "train_end": "2025-03-31",
+      "embargo_start": "2025-04-01",
+      "embargo_end": "2025-04-29",
+      "test_start": "2025-04-30",
+      "test_end": "2025-10-28",
+      "train_n": 630,
+      "test_n": 126,
+      "train_pos": 93,
+      "test_pos": 1
+    },
+    {
+      "fold": 4,
+      "train_start": "2022-09-26",
+      "train_end": "2025-09-30",
+      "embargo_start": "2025-10-01",
+      "embargo_end": "2025-10-28",
+      "test_start": "2025-10-29",
+      "test_end": "2026-04-30",
+      "train_n": 756,
+      "test_n": 126,
+      "train_pos": 97,
+      "test_pos": 16
+    },
+    {
+      "fold": 5,
+      "train_start": "2022-09-26",
+      "train_end": "2026-04-01",
+      "embargo_start": "2026-04-02",
+      "embargo_end": "2026-04-30",
+      "test_start": "2026-05-01",
+      "test_end": "2026-07-13",
+      "train_n": 882,
+      "test_n": 49,
+      "train_pos": 114,
+      "test_pos": 0
+    }
+  ],
+  "results": [
+    {
+      "model": "LR Slim+Events",
+      "fold": 1,
+      "train_period": "2022-09-26 ~ 2024-03-27",
+      "test_period": "2024-04-26 ~ 2024-10-24",
+      "train_n": 378,
+      "test_n": 126,
+      "train_pos": 40,
+      "test_pos": 14,
+      "auc": 0.157,
+      "practical_metrics": {
+        "brier_score": 0.1124,
+        "base_rate": 0.1111,
+        "best_f1": 0,
+        "best_f1_threshold": 0.5,
+        "p_at_80": 0,
+        "r_at_80": 0.0,
+        "lift_at_80": 0.0,
+        "mean_prob": 0.0953,
+        "median_prob": 0.0848,
+        "prob_gt50_pct": 0.0
+      }
+    },
+    {
+      "model": "LR Slim+Events",
+      "fold": 2,
+      "train_period": "2022-09-26 ~ 2024-09-26",
+      "test_period": "2024-10-25 ~ 2025-04-29",
+      "train_n": 504,
+      "test_n": 126,
+      "train_pos": 56,
+      "test_pos": 41,
+      "auc": 0.281,
+      "practical_metrics": {
+        "brier_score": 0.3065,
+        "base_rate": 0.3254,
+        "best_f1": 0.03,
+        "best_f1_threshold": 0.1,
+        "p_at_80": 0,
+        "r_at_80": 0.0,
+        "lift_at_80": 0.0,
+        "mean_prob": 0.0712,
+        "median_prob": 0.0512,
+        "prob_gt50_pct": 0.0
+      }
+    },
+    {
+      "model": "LR Slim+Events",
+      "fold": 3,
+      "train_period": "2022-09-26 ~ 2025-03-31",
+      "test_period": "2025-04-30 ~ 2025-10-28",
+      "train_n": 630,
+      "test_n": 126,
+      "train_pos": 93,
+      "test_pos": 1,
+      "auc": 0.568,
+      "practical_metrics": {
+        "brier_score": 0.0617,
+        "base_rate": 0.0079,
+        "best_f1": 0.032,
+        "best_f1_threshold": 0.2,
+        "p_at_80": 0,
+        "r_at_80": 0.0,
+        "lift_at_80": 0.0,
+        "mean_prob": 0.2162,
+        "median_prob": 0.1939,
+        "prob_gt50_pct": 0.0
+      }
+    },
+    {
+      "model": "LR Slim+Events",
+      "fold": 4,
+      "train_period": "2022-09-26 ~ 2025-09-30",
+      "test_period": "2025-10-29 ~ 2026-04-30",
+      "train_n": 756,
+      "test_n": 126,
+      "train_pos": 97,
+      "test_pos": 16,
+      "auc": 0.888,
+      "practical_metrics": {
+        "brier_score": 0.0884,
+        "base_rate": 0.127,
+        "best_f1": 0.71,
+        "best_f1_threshold": 0.3,
+        "p_at_80": 0,
+        "r_at_80": 0.0,
+        "lift_at_80": 0.0,
+        "mean_prob": 0.1827,
+        "median_prob": 0.1717,
+        "prob_gt50_pct": 0.0
+      }
+    },
+    {
+      "model": "LR Events+Interact",
+      "fold": 1,
+      "train_period": "2022-09-26 ~ 2024-03-27",
+      "test_period": "2024-04-26 ~ 2024-10-24",
+      "train_n": 378,
+      "test_n": 126,
+      "train_pos": 40,
+      "test_pos": 14,
+      "auc": 0.164,
+      "practical_metrics": {
+        "brier_score": 0.1117,
+        "base_rate": 0.1111,
+        "best_f1": 0,
+        "best_f1_threshold": 0.5,
+        "p_at_80": 0,
+        "r_at_80": 0.0,
+        "lift_at_80": 0.0,
+        "mean_prob": 0.0925,
+        "median_prob": 0.0806,
+        "prob_gt50_pct": 0.0
+      }
+    },
+    {
+      "model": "LR Events+Interact",
+      "fold": 2,
+      "train_period": "2022-09-26 ~ 2024-09-26",
+      "test_period": "2024-10-25 ~ 2025-04-29",
+      "train_n": 504,
+      "test_n": 126,
+      "train_pos": 56,
+      "test_pos": 41,
+      "auc": 0.294,
+      "practical_metrics": {
+        "brier_score": 0.3131,
+        "base_rate": 0.3254,
+        "best_f1": 0,
+        "best_f1_threshold": 0.5,
+        "p_at_80": 0,
+        "r_at_80": 0.0,
+        "lift_at_80": 0.0,
+        "mean_prob": 0.0363,
+        "median_prob": 0.0254,
+        "prob_gt50_pct": 0.0
+      }
+    },
+    {
+      "model": "LR Events+Interact",
+      "fold": 3,
+      "train_period": "2022-09-26 ~ 2025-03-31",
+      "test_period": "2025-04-30 ~ 2025-10-28",
+      "train_n": 630,
+      "test_n": 126,
+      "train_pos": 93,
+      "test_pos": 1,
+      "auc": 0.36,
+      "practical_metrics": {
+        "brier_score": 0.0451,
+        "base_rate": 0.0079,
+        "best_f1": 0,
+        "best_f1_threshold": 0.5,
+        "p_at_80": 0,
+        "r_at_80": 0.0,
+        "lift_at_80": 0.0,
+        "mean_prob": 0.1621,
+        "median_prob": 0.1394,
+        "prob_gt50_pct": 0.8
+      }
+    },
+    {
+      "model": "LR Events+Interact",
+      "fold": 4,
+      "train_period": "2022-09-26 ~ 2025-09-30",
+      "test_period": "2025-10-29 ~ 2026-04-30",
+      "train_n": 756,
+      "test_n": 126,
+      "train_pos": 97,
+      "test_pos": 16,
+      "auc": 0.877,
+      "practical_metrics": {
+        "brier_score": 0.0831,
+        "base_rate": 0.127,
+        "best_f1": 0.69,
+        "best_f1_threshold": 0.35,
+        "p_at_80": 0,
+        "r_at_80": 0.0,
+        "lift_at_80": 0.0,
+        "mean_prob": 0.1807,
+        "median_prob": 0.1397,
+        "prob_gt50_pct": 0.8
+      }
+    }
+  ],
+  "summary_by_model": {
+    "LR Slim+Events": {
+      "n_folds": 4,
+      "f1_mean": 0.193,
+      "f1_std": 0.299,
+      "f1_min": 0.0,
+      "f1_max": 0.71,
+      "brier_mean": 0.1422,
+      "brier_std": 0.0965,
+      "brier_min": 0.0617,
+      "brier_max": 0.3065,
+      "auc_mean": 0.474,
+      "auc_std": 0.282
+    },
+    "LR Events+Interact": {
+      "n_folds": 4,
+      "f1_mean": 0.172,
+      "f1_std": 0.299,
+      "f1_min": 0.0,
+      "f1_max": 0.69,
+      "brier_mean": 0.1382,
+      "brier_std": 0.1037,
+      "brier_min": 0.0451,
+      "brier_max": 0.3131,
+      "auc_mean": 0.424,
+      "auc_std": 0.271
+    }
+  },
+  "single_split_baseline": {
+    "LR Slim+Events": {
+      "method": "single 70/30 split + embargo 20d",
+      "train_end": "2025-04-22",
+      "test_start": "2025-06-20",
+      "best_f1": 0.69,
+      "brier_score": 0.0977,
+      "auc": 0.893
+    },
+    "LR Events+Interact": {
+      "method": "single 70/30 split + embargo 20d",
+      "train_end": "2025-04-22",
+      "test_start": "2025-06-20",
+      "best_f1": 0.688,
+      "brier_score": 0.0801,
+      "auc": 0.888
+    }
+  },
+  "verdict": [
+    "LR Slim+Events: WF mean F1=0.193\u00b10.299 (single-split 0.69); Brier=0.1422\u00b10.0965",
+    "LR Events+Interact: WF mean F1=0.172\u00b10.299 (single-split 0.688); Brier=0.1382\u00b10.1037"
+  ]
+}

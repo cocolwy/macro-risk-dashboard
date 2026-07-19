@@ -55,6 +55,30 @@ interface CorrelationAnalysis {
   slim_features: string[];
   full_features: string[];
 }
+interface WFFoldResult {
+  model: string; fold: number;
+  train_period: string; test_period: string;
+  train_n: number; test_n: number; train_pos: number; test_pos: number;
+  auc: number;
+  practical_metrics: PracticalMetrics;
+}
+interface WFSummary {
+  n_folds: number;
+  f1_mean: number; f1_std: number; f1_min: number; f1_max: number;
+  brier_mean: number; brier_std: number;
+  auc_mean: number;
+}
+interface WalkForwardData {
+  title: string;
+  design: Record<string, unknown>;
+  data_range: string;
+  total_samples: number;
+  folds: Array<{ fold: number; train_start: string; train_end: string; test_start: string; test_end: string; train_n: number; test_n: number }>;
+  results: WFFoldResult[];
+  summary_by_model: Record<string, WFSummary>;
+  single_split_baseline: Record<string, { best_f1: number; brier_score: number; auc: number; train_end: string; test_start: string }>;
+  verdict: string[];
+}
 interface Phase3Data {
   phase: number; title: string;
   experiments: ExperimentData[];
@@ -62,6 +86,7 @@ interface Phase3Data {
   feature_importances: Record<string, FeatureImp[]>;
   practical_summary?: PracticalSummary;
   correlation_analysis?: CorrelationAnalysis;
+  walk_forward?: WalkForwardData;
   summary: {
     lr_slim_auc: number; lr_full_auc: number;
     gbdt_slim_auc: number; gbdt_full_auc: number;
@@ -188,6 +213,97 @@ function JourneyTooltip({ active, payload }: { active?: boolean; payload?: Array
   );
 }
 
+function WalkForwardSection({ wf }: { wf: WalkForwardData }) {
+  const models = Object.keys(wf.summary_by_model);
+  const chartData = wf.folds.map(f => {
+    const row: Record<string, number | string> = { fold: `F${f.fold}`, test: f.test_start.slice(0, 7) };
+    for (const m of models) {
+      const r = wf.results.find(x => x.fold === f.fold && x.model === m);
+      if (r) row[m] = r.practical_metrics.best_f1;
+    }
+    return row;
+  });
+
+  return (
+    <section className="lab-card">
+      <div className="ab-header">
+        <h2>Walk-Forward 验证</h2>
+        <span className="ab-badge" style={{ background: '#fef3c7', color: '#92400e', border: '1px solid #fcd34d' }}>EXPANDING</span>
+      </div>
+      <p className="lab-card-desc">
+        扩展窗口：训练从 {wf.data_range.split(' ~ ')[0]} 起点累积 · 测试 6 个月 · 步长 6 个月 · Embargo 20d ·
+        每折 clip 仅用训练集分位数。对比单次 70/30 split 是否过拟合特定时段。
+      </p>
+
+      <div className="lab-table-wrap" style={{ marginBottom: 16 }}>
+        <table className="lab-table">
+          <thead>
+            <tr><th>模型</th><th>单次 Split F1</th><th>WF 均值±σ</th><th>WF F1 范围</th><th>单次 Brier</th><th>WF Brier 均值</th></tr>
+          </thead>
+          <tbody>
+            {models.map(m => {
+              const s = wf.summary_by_model[m];
+              const b = wf.single_split_baseline[m];
+              return (
+                <tr key={m}>
+                  <td style={{ fontWeight: 600 }}>{m}</td>
+                  <td className="lab-td-mono">{b?.best_f1?.toFixed(3) ?? '—'}</td>
+                  <td className="lab-td-mono">{s.f1_mean.toFixed(3)} ± {s.f1_std.toFixed(3)}</td>
+                  <td className="lab-td-mono">{s.f1_min.toFixed(3)} ~ {s.f1_max.toFixed(3)}</td>
+                  <td className="lab-td-mono">{b?.brier_score?.toFixed(3) ?? '—'}</td>
+                  <td className="lab-td-mono">{s.brier_mean.toFixed(3)}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+
+      <ResponsiveContainer width="100%" height={260}>
+        <LineChart data={chartData} margin={{ top: 10, right: 20, bottom: 5, left: 10 }}>
+          <CartesianGrid strokeDasharray="3 3" stroke="rgba(241,216,226,0.4)" />
+          <XAxis dataKey="fold" tick={{ fontSize: 11, fill: '#5c4f56' }} />
+          <YAxis domain={[0, 0.8]} tick={{ fontSize: 10, fill: '#16a34a' }} />
+          <Tooltip />
+          <Legend />
+          {models.map((m, i) => (
+            <Line key={m} type="monotone" dataKey={m} stroke={COLORS[i % COLORS.length]} strokeWidth={2} dot={{ r: 5 }} />
+          ))}
+        </LineChart>
+      </ResponsiveContainer>
+
+      <div className="lab-table-wrap" style={{ marginTop: 16 }}>
+        <table className="lab-table" style={{ fontSize: 12 }}>
+          <thead>
+            <tr><th>Fold</th><th>测试期</th><th>模型</th><th>F1</th><th>Brier</th><th>AUC</th><th>正样本</th></tr>
+          </thead>
+          <tbody>
+            {wf.results.map(r => (
+              <tr key={`${r.fold}-${r.model}`}>
+                <td>F{r.fold}</td>
+                <td>{r.test_period}</td>
+                <td>{r.model.replace('LR ', '')}</td>
+                <td className="lab-td-mono" style={r.practical_metrics.best_f1 >= 0.6 ? { color: '#16a34a', fontWeight: 700 } : undefined}>
+                  {r.practical_metrics.best_f1.toFixed(3)}
+                </td>
+                <td className="lab-td-mono">{r.practical_metrics.brier_score.toFixed(3)}</td>
+                <td className="lab-td-mono" style={{ color: '#8a7882' }}>{r.auc.toFixed(3)}</td>
+                <td>{r.test_pos}/{r.test_n}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div style={{ marginTop: 12, padding: '10px 12px', background: '#fffbeb', borderRadius: 8, border: '1px solid #fcd34d', fontSize: 12, lineHeight: 1.7 }}>
+        <strong style={{ color: '#92400e' }}>结论：</strong>
+        单次 split 的高 F1（0.69）主要来自 Fold 4 测试期（2025-10 ~ 2026-04），与固定 70/30 切分高度重叠。
+        前 3 折 OOS F1 接近 0，说明模型<strong>尚未证明跨时段稳定</strong>。生产展示仍保留双模型，但应标注「待 WF 稳定验证」。
+      </div>
+    </section>
+  );
+}
+
 function OptimizationJourney() {
   return (
     <section className="lab-card">
@@ -288,7 +404,7 @@ function Phase3LabInner() {
   if (error) return <div className="lab-container"><div className="lab-card"><p>Phase 3 data not available: {error}</p></div></div>;
   if (!data) return <div className="loading">Loading Phase 3 data...</div>;
 
-  const { experiments, pairwise, feature_importances, practical_summary } = data;
+  const { experiments, pairwise, feature_importances, practical_summary, walk_forward } = data;
 
   return (
     <div className="lab-container">
@@ -306,6 +422,8 @@ function Phase3LabInner() {
       <ResearchTrackNotice track="risk-model" />
 
       <OptimizationJourney />
+
+      {walk_forward && <WalkForwardSection wf={walk_forward} />}
 
       {/* ============ SECTION 1: 核心问题 ============ */}
       <section className="lab-card">
@@ -515,10 +633,9 @@ function Phase3LabInner() {
         <div style={{ marginTop: 16, padding: '12px 14px', background: '#f0fdf4', borderRadius: 8, border: '1px solid #bbf7d0' }}>
           <div style={{ fontWeight: 700, fontSize: 14, color: '#166534', marginBottom: 6 }}>总结</div>
           <div style={{ fontSize: 13, lineHeight: 1.7, color: '#374151' }}>
-            两个推荐模型：
-            <strong> LR Slim+Events</strong> (F1=0.690, Brier=0.098) — 预测能力最强；
-            <strong> LR Events+Interact</strong> (F1=0.688, Brier=0.080) — 概率校准最优。
-            Events 精简和衰减变换均无增量，全量 9 特征已是最佳。
+            单次 split 最佳：<strong> LR Slim+Events</strong> (F1=0.690) · <strong>LR Events+Interact</strong> (Brier=0.080)。
+            Walk-forward 均值 F1≈0.19，高 F1 集中在 2025 Q4~2026 Q1 — 跨时段稳定性<strong>未通过</strong>。
+            下一步：时间衰减 / target 网格 / regime 细化（见 WF 验证后讨论）。
           </div>
         </div>
       </section>
