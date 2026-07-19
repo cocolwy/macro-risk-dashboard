@@ -7,6 +7,7 @@ import {
 import { downsample, mergeExperimentTimeline, CHART_TOOLTIP_STYLE } from './utils/chart';
 import { StackedProbSPChart } from './components/StackedProbSPChart';
 import { fetchDataJson } from './api';
+import { ResearchTrackNotice } from './components/ResearchTrackNotice';
 
 interface ModelInfo {
   name: string;
@@ -599,6 +600,8 @@ export function PredictionLab() {
           <span className="lab-badge-auc">AUC: {model_info.roc_auc}</span>
         </div>
       </header>
+
+      <ResearchTrackNotice track="risk-model" />
 
       {/* ===== AB TEST COMPARISON ===== */}
       {metrics.experiments && metrics.experiments.length > 1 && (

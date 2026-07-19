@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { ResearchTrackNotice } from './components/ResearchTrackNotice';
 
 interface FactorMethod {
   name: string;
@@ -331,6 +332,7 @@ export function FactorLab() {
   if (selected) {
     return (
       <div className="lab-container">
+        <ResearchTrackNotice track="alpha" />
         <FactorDetail factor={selected} onBack={() => setSelected(null)} />
       </div>
     );
@@ -360,6 +362,8 @@ export function FactorLab() {
           </div>
         )}
       </header>
+
+      <ResearchTrackNotice track="alpha" />
 
       <div className="deck-stats">
         {Object.entries(STATUS_CONFIG).map(([status, cfg]) => (

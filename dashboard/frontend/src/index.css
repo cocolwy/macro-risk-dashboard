@@ -441,6 +441,13 @@ body {
   border-bottom: 1px solid var(--border);
 }
 
+.home-section-hint {
+  font-size: 12px;
+  color: var(--text-3);
+  margin: -8px 0 14px;
+  line-height: 1.5;
+}
+
 .home-parent-hint {
   font-size: 12px;
   color: var(--text-3);
@@ -587,6 +594,50 @@ body {
   color: var(--text-2);
   font-size: 13px;
   margin-top: 4px;
+}
+
+.lab-track-notice {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 8px;
+  margin-bottom: 24px;
+  padding: 10px 14px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-2);
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.lab-track-notice-risk {
+  background: linear-gradient(135deg, var(--bg-3) 0%, var(--bg-1) 100%);
+  border-color: var(--border-blue);
+}
+
+.lab-track-label {
+  font-weight: 700;
+  color: var(--text-1);
+}
+
+.lab-track-desc,
+.lab-track-hint {
+  color: var(--text-3);
+}
+
+.lab-track-sep {
+  color: var(--border);
+}
+
+.lab-track-link {
+  color: var(--pink-500);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.lab-track-link:hover {
+  text-decoration: underline;
 }
 
 .lab-model-badge {

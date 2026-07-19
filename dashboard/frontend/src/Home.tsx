@@ -10,13 +10,16 @@ export function Home({ onNavigate }: HomeProps) {
       <header className="home-header">
         <h1>{SITE_NAV.home.title}</h1>
         <p className="home-subtitle">
-          量化研究看板层级索引 — 从整体架构到项目、再到因子探索章节
+          两条独立研究线：<strong>Alpha Deck</strong>（单因子 S0–S7）与 <strong>风控模型 Ch.1→Ch.2</strong>（LR/GBDT 崩盘预测）
         </p>
       </header>
 
       {HOME_SECTIONS.map(section => (
         <section key={section.level} className="home-section">
           <div className="home-section-title">{section.label}</div>
+          {'hint' in section && section.hint && (
+            <p className="home-section-hint">{section.hint}</p>
+          )}
 
           {section.level === 3 && section.parent && (
             <div className="home-parent-hint">

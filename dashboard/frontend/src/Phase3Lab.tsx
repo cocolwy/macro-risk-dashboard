@@ -9,6 +9,7 @@ import { StackedProbSPChart } from './components/StackedProbSPChart';
 import { LazyMount } from './components/LazyMount';
 import { fetchDataJson } from './api';
 import { mergeExperimentTimeline, downsample } from './utils/chart';
+import { ResearchTrackNotice } from './components/ResearchTrackNotice';
 
 class ErrorBoundary extends Component<{ children: ReactNode }, { error: string | null }> {
   state = { error: null as string | null };
@@ -301,6 +302,8 @@ function Phase3LabInner() {
           {practical_summary && <span className="lab-badge-auc">Best F1: {practical_summary.best_f1.toFixed(3)}</span>}
         </div>
       </header>
+
+      <ResearchTrackNotice track="risk-model" />
 
       <OptimizationJourney />
 
