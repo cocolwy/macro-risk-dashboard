@@ -218,7 +218,7 @@ function FactorDetail({ factor, onBack }: { factor: Factor; onBack: () => void }
           <p className="deck-meta" style={{ marginTop: 10 }}>
             {factor.case_file && <>Case: <code>{factor.case_file}</code></>}
             {factor.experiment_hash && (
-              <a href={factor.experiment_hash} style={{ marginLeft: 12, color: 'var(--blue-500)' }}>
+              <a href={factor.experiment_hash} style={{ marginLeft: 12, color: 'var(--pink-500)' }}>
                 实验页 {factor.experiment_hash}
               </a>
             )}
