@@ -315,6 +315,225 @@
   },
   "verdict": [
     "LR Slim+Events: WF mean F1=0.193\u00b10.299 (single-split 0.69); Brier=0.1422\u00b10.0965",
-    "LR Events+Interact: WF mean F1=0.172\u00b10.299 (single-split 0.688); Brier=0.1382\u00b10.1037"
-  ]
+    "LR Events+Interact: WF mean F1=0.172\u00b10.299 (single-split 0.688); Brier=0.1382\u00b10.1037",
+    "LR Slim+Events +Decay: WF F1=0.182\u00b10.218 (vs no-decay \u0394=-0.011)",
+    "LR Events+Interact +Decay: WF F1=0.158\u00b10.198 (vs no-decay \u0394=-0.014)"
+  ],
+  "decay": {
+    "half_life_days": 252,
+    "results": [
+      {
+        "model": "LR Slim+Events +Decay",
+        "fold": 1,
+        "train_period": "2022-09-26 ~ 2024-03-27",
+        "test_period": "2024-04-26 ~ 2024-10-24",
+        "train_n": 378,
+        "test_n": 126,
+        "train_pos": 40,
+        "test_pos": 14,
+        "auc": 0.253,
+        "practical_metrics": {
+          "brier_score": 0.105,
+          "base_rate": 0.1111,
+          "best_f1": 0.128,
+          "best_f1_threshold": 0.1,
+          "p_at_80": 0,
+          "r_at_80": 0.0,
+          "lift_at_80": 0.0,
+          "mean_prob": 0.0849,
+          "median_prob": 0.0742,
+          "prob_gt50_pct": 0.0
+        }
+      },
+      {
+        "model": "LR Slim+Events +Decay",
+        "fold": 2,
+        "train_period": "2022-09-26 ~ 2024-09-26",
+        "test_period": "2024-10-25 ~ 2025-04-29",
+        "train_n": 504,
+        "test_n": 126,
+        "train_pos": 56,
+        "test_pos": 41,
+        "auc": 0.28,
+        "practical_metrics": {
+          "brier_score": 0.309,
+          "base_rate": 0.3254,
+          "best_f1": 0.025,
+          "best_f1_threshold": 0.1,
+          "p_at_80": 0,
+          "r_at_80": 0.0,
+          "lift_at_80": 0.0,
+          "mean_prob": 0.0777,
+          "median_prob": 0.0502,
+          "prob_gt50_pct": 0.0
+        }
+      },
+      {
+        "model": "LR Slim+Events +Decay",
+        "fold": 3,
+        "train_period": "2022-09-26 ~ 2025-03-31",
+        "test_period": "2025-04-30 ~ 2025-10-28",
+        "train_n": 630,
+        "test_n": 126,
+        "train_pos": 93,
+        "test_pos": 1,
+        "auc": 0.336,
+        "practical_metrics": {
+          "brier_score": 0.0715,
+          "base_rate": 0.0079,
+          "best_f1": 0.023,
+          "best_f1_threshold": 0.15,
+          "p_at_80": 0,
+          "r_at_80": 0.0,
+          "lift_at_80": 0.0,
+          "mean_prob": 0.2273,
+          "median_prob": 0.1958,
+          "prob_gt50_pct": 2.4
+        }
+      },
+      {
+        "model": "LR Slim+Events +Decay",
+        "fold": 4,
+        "train_period": "2022-09-26 ~ 2025-09-30",
+        "test_period": "2025-10-29 ~ 2026-04-30",
+        "train_n": 756,
+        "test_n": 126,
+        "train_pos": 97,
+        "test_pos": 16,
+        "auc": 0.848,
+        "practical_metrics": {
+          "brier_score": 0.0945,
+          "base_rate": 0.127,
+          "best_f1": 0.552,
+          "best_f1_threshold": 0.3,
+          "p_at_80": 0,
+          "r_at_80": 0.0,
+          "lift_at_80": 0.0,
+          "mean_prob": 0.1737,
+          "median_prob": 0.1501,
+          "prob_gt50_pct": 0.0
+        }
+      },
+      {
+        "model": "LR Events+Interact +Decay",
+        "fold": 1,
+        "train_period": "2022-09-26 ~ 2024-03-27",
+        "test_period": "2024-04-26 ~ 2024-10-24",
+        "train_n": 378,
+        "test_n": 126,
+        "train_pos": 40,
+        "test_pos": 14,
+        "auc": 0.233,
+        "practical_metrics": {
+          "brier_score": 0.1059,
+          "base_rate": 0.1111,
+          "best_f1": 0.12,
+          "best_f1_threshold": 0.1,
+          "p_at_80": 0,
+          "r_at_80": 0.0,
+          "lift_at_80": 0.0,
+          "mean_prob": 0.0878,
+          "median_prob": 0.0767,
+          "prob_gt50_pct": 0.0
+        }
+      },
+      {
+        "model": "LR Events+Interact +Decay",
+        "fold": 2,
+        "train_period": "2022-09-26 ~ 2024-09-26",
+        "test_period": "2024-10-25 ~ 2025-04-29",
+        "train_n": 504,
+        "test_n": 126,
+        "train_pos": 56,
+        "test_pos": 41,
+        "auc": 0.278,
+        "practical_metrics": {
+          "brier_score": 0.3128,
+          "base_rate": 0.3254,
+          "best_f1": 0,
+          "best_f1_threshold": 0.5,
+          "p_at_80": 0,
+          "r_at_80": 0.0,
+          "lift_at_80": 0.0,
+          "mean_prob": 0.0506,
+          "median_prob": 0.0327,
+          "prob_gt50_pct": 0.0
+        }
+      },
+      {
+        "model": "LR Events+Interact +Decay",
+        "fold": 3,
+        "train_period": "2022-09-26 ~ 2025-03-31",
+        "test_period": "2025-04-30 ~ 2025-10-28",
+        "train_n": 630,
+        "test_n": 126,
+        "train_pos": 93,
+        "test_pos": 1,
+        "auc": 0.272,
+        "practical_metrics": {
+          "brier_score": 0.06,
+          "base_rate": 0.0079,
+          "best_f1": 0.02,
+          "best_f1_threshold": 0.1,
+          "p_at_80": 0,
+          "r_at_80": 0.0,
+          "lift_at_80": 0.0,
+          "mean_prob": 0.2007,
+          "median_prob": 0.1662,
+          "prob_gt50_pct": 2.4
+        }
+      },
+      {
+        "model": "LR Events+Interact +Decay",
+        "fold": 4,
+        "train_period": "2022-09-26 ~ 2025-09-30",
+        "test_period": "2025-10-29 ~ 2026-04-30",
+        "train_n": 756,
+        "test_n": 126,
+        "train_pos": 97,
+        "test_pos": 16,
+        "auc": 0.841,
+        "practical_metrics": {
+          "brier_score": 0.0954,
+          "base_rate": 0.127,
+          "best_f1": 0.492,
+          "best_f1_threshold": 0.2,
+          "p_at_80": 0,
+          "r_at_80": 0.0,
+          "lift_at_80": 0.0,
+          "mean_prob": 0.1734,
+          "median_prob": 0.1508,
+          "prob_gt50_pct": 0.0
+        }
+      }
+    ],
+    "summary_by_model": {
+      "LR Slim+Events +Decay": {
+        "n_folds": 4,
+        "f1_mean": 0.182,
+        "f1_std": 0.218,
+        "f1_min": 0.023,
+        "f1_max": 0.552,
+        "brier_mean": 0.145,
+        "brier_std": 0.0955,
+        "brier_min": 0.0715,
+        "brier_max": 0.309,
+        "auc_mean": 0.429,
+        "auc_std": 0.244
+      },
+      "LR Events+Interact +Decay": {
+        "n_folds": 4,
+        "f1_mean": 0.158,
+        "f1_std": 0.198,
+        "f1_min": 0.0,
+        "f1_max": 0.492,
+        "brier_mean": 0.1435,
+        "brier_std": 0.0992,
+        "brier_min": 0.06,
+        "brier_max": 0.3128,
+        "auc_mean": 0.406,
+        "auc_std": 0.252
+      }
+    }
+  }
 }

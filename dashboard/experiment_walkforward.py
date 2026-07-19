@@ -30,6 +30,8 @@ from predict_model import (
     compute_target,
     fetch_regime_data,
 )
+from sklearn.linear_model import LogisticRegression
+from sklearn.preprocessing import StandardScaler
 from experiment_phase3 import (
     EMBARGO,
     detect_regime,
@@ -42,6 +44,20 @@ DATA_DIR = Path(__file__).parent / 'data'
 MIN_TRAIN_DAYS = 378   # ~1.5 years
 TEST_DAYS = 126        # ~6 months
 STEP_DAYS = 126        # ~6 months
+DECAY_HALF_LIFE = 252  # ~1 year half-life for sample weights
+
+
+def train_lr_decay(X_train, y_train, X_test, half_life=DECAY_HALF_LIFE):
+    """LR with exponential time decay — recent samples weighted higher."""
+    scaler = StandardScaler()
+    X_train_s = scaler.fit_transform(X_train)
+    X_test_s = scaler.transform(X_test)
+    ages = np.arange(len(X_train))[::-1].astype(float)
+    weights = np.exp(-ages / half_life)
+    model = LogisticRegression(C=0.1, max_iter=1000)
+    model.fit(X_train_s, y_train, sample_weight=weights)
+    probs = model.predict_proba(X_test_s)[:, 1]
+    return model, scaler, probs
 
 
 def build_events_interact_features(df: pd.DataFrame, regime_df: pd.DataFrame) -> pd.DataFrame:
@@ -110,7 +126,7 @@ def generate_folds(n: int, index: pd.DatetimeIndex):
     return folds
 
 
-def run_fold(model_name: str, X: pd.DataFrame, y: pd.Series, fold: dict):
+def run_fold(model_name: str, X: pd.DataFrame, y: pd.Series, fold: dict, train_fn=train_lr_no_balance):
     te = fold['train_n']
     ts = te + EMBARGO
     tt = ts + fold['test_n']
@@ -132,7 +148,7 @@ def run_fold(model_name: str, X: pd.DataFrame, y: pd.Series, fold: dict):
     if y_train.nunique() < 2 or y_test.nunique() < 2 or len(y_test) < 20:
         return None
 
-    _, _, probs_test = train_lr_no_balance(X_train, y_train, X_test)
+    _, _, probs_test = train_fn(X_train, y_train, X_test)
     probs_test = np.asarray(probs_test)
     practical = compute_practical_metrics(y_test, probs_test)
     try:
@@ -194,6 +210,28 @@ def load_single_split_baselines():
     return out
 
 
+def run_walkforward(models: dict, folds: list, train_fn=train_lr_no_balance, label_suffix=''):
+    all_results = []
+    model_summaries = {}
+    for model_name, (X, y) in models.items():
+        full_name = f"{model_name}{label_suffix}"
+        print(f"\n--- {full_name} ---")
+        results = []
+        for fold in folds:
+            row = run_fold(full_name, X, y, fold, train_fn=train_fn)
+            if row is None:
+                print(f"  Fold {fold['fold']}: skipped (insufficient classes/samples)")
+                continue
+            results.append(row)
+            pm = row['practical_metrics']
+            print(f"  Fold {row['fold']}: F1={pm['best_f1']:.3f} Brier={pm['brier_score']:.4f} "
+                  f"AUC={row['auc']:.3f} test_pos={row['test_pos']}/{row['test_n']}")
+        all_results.extend(results)
+        if results:
+            model_summaries[full_name] = summarize_model(results)
+    return all_results, model_summaries
+
+
 def main():
     print('=' * 60)
     print('WALK-FORWARD VALIDATION (Expanding Window)')
@@ -222,35 +260,31 @@ def main():
         'LR Events+Interact': (X_combo, y_combo),
     }
 
-    all_results = []
-    model_summaries = {}
-    for model_name, (X, y) in models.items():
-        print(f"\n--- {model_name} ---")
-        results = []
-        for fold in folds:
-            row = run_fold(model_name, X, y, fold)
-            if row is None:
-                print(f"  Fold {fold['fold']}: skipped (insufficient classes/samples)")
-                continue
-            results.append(row)
-            pm = row['practical_metrics']
-            print(f"  Fold {row['fold']}: F1={pm['best_f1']:.3f} Brier={pm['brier_score']:.4f} "
-                  f"AUC={row['auc']:.3f} test_pos={row['test_pos']}/{row['test_n']}")
-        all_results.extend(results)
-        if results:
-            model_summaries[model_name] = summarize_model(results)
+    all_results, model_summaries = run_walkforward(models, folds)
+
+    print(f"\n=== TIME DECAY (half-life={DECAY_HALF_LIFE}d) ===")
+    decay_results, decay_summaries = run_walkforward(
+        models, folds, train_fn=train_lr_decay, label_suffix=' +Decay',
+    )
 
     baselines = load_single_split_baselines()
 
     # Verdict heuristics
     verdict_lines = []
     for name, summary in model_summaries.items():
-        base = baselines.get(name, {})
-        f1_drop = base.get('best_f1', 0) - summary['f1_mean']
+        base = baselines.get(name.replace(' +Decay', ''), {})
         verdict_lines.append(
             f"{name}: WF mean F1={summary['f1_mean']}±{summary['f1_std']} "
             f"(single-split {base.get('best_f1', '—')}); "
             f"Brier={summary['brier_mean']}±{summary['brier_std']}"
+        )
+    for name, summary in decay_summaries.items():
+        base_name = name.replace(' +Decay', '')
+        base = model_summaries.get(base_name, {})
+        delta = summary['f1_mean'] - base.get('f1_mean', 0) if base else 0
+        verdict_lines.append(
+            f"{name}: WF F1={summary['f1_mean']}±{summary['f1_std']} "
+            f"(vs no-decay Δ={delta:+.3f})"
         )
 
     output = {
@@ -271,6 +305,11 @@ def main():
         'summary_by_model': model_summaries,
         'single_split_baseline': baselines,
         'verdict': verdict_lines,
+        'decay': {
+            'half_life_days': DECAY_HALF_LIFE,
+            'results': decay_results,
+            'summary_by_model': decay_summaries,
+        },
     }
 
     out_path = DATA_DIR / 'walkforward_metrics.json'

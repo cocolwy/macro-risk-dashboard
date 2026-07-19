@@ -78,6 +78,28 @@ interface WalkForwardData {
   summary_by_model: Record<string, WFSummary>;
   single_split_baseline: Record<string, { best_f1: number; brier_score: number; auc: number; train_end: string; test_start: string }>;
   verdict: string[];
+  decay?: {
+    half_life_days: number;
+    results: WFFoldResult[];
+    summary_by_model: Record<string, WFSummary>;
+  };
+}
+interface TargetGridRow {
+  id: string;
+  horizon_days: number;
+  drawdown_pct: number;
+  positive_rate: number;
+  wf_f1_mean: number | null;
+  wf_f1_std: number | null;
+  wf_brier_mean: number | null;
+  is_default: boolean;
+}
+interface TargetSensitivityData {
+  title: string;
+  grid: TargetGridRow[];
+  default_config: TargetGridRow | null;
+  best_wf_config: TargetGridRow | null;
+  verdict: string[];
 }
 interface Phase3Data {
   phase: number; title: string;
@@ -87,6 +109,7 @@ interface Phase3Data {
   practical_summary?: PracticalSummary;
   correlation_analysis?: CorrelationAnalysis;
   walk_forward?: WalkForwardData;
+  target_sensitivity?: TargetSensitivityData;
   summary: {
     lr_slim_auc: number; lr_full_auc: number;
     gbdt_slim_auc: number; gbdt_full_auc: number;
@@ -298,8 +321,82 @@ function WalkForwardSection({ wf }: { wf: WalkForwardData }) {
       <div style={{ marginTop: 12, padding: '10px 12px', background: '#fffbeb', borderRadius: 8, border: '1px solid #fcd34d', fontSize: 12, lineHeight: 1.7 }}>
         <strong style={{ color: '#92400e' }}>结论：</strong>
         单次 split 的高 F1（0.69）主要来自 Fold 4 测试期（2025-10 ~ 2026-04），与固定 70/30 切分高度重叠。
-        前 3 折 OOS F1 接近 0，说明模型<strong>尚未证明跨时段稳定</strong>。生产展示仍保留双模型，但应标注「待 WF 稳定验证」。
+        前 3 折 OOS F1 接近 0，说明模型<strong>尚未证明跨时段稳定</strong>。
       </div>
+
+      {wf.decay && (
+        <div style={{ marginTop: 16 }}>
+          <h4 className="lab-subsection-title">时间衰减训练（half-life {wf.decay.half_life_days}d）</h4>
+          <div className="lab-table-wrap">
+            <table className="lab-table" style={{ fontSize: 12 }}>
+              <thead>
+                <tr><th>模型</th><th>无衰减 WF F1</th><th>+Decay WF F1</th><th>Δ F1</th><th>Decay Brier</th></tr>
+              </thead>
+              <tbody>
+                {Object.keys(wf.summary_by_model).map(baseName => {
+                  const base = wf.summary_by_model[baseName];
+                  const decayName = `${baseName} +Decay`;
+                  const decay = wf.decay!.summary_by_model[decayName];
+                  if (!decay) return null;
+                  const delta = decay.f1_mean - base.f1_mean;
+                  return (
+                    <tr key={baseName}>
+                      <td>{baseName.replace('LR ', '')}</td>
+                      <td className="lab-td-mono">{base.f1_mean.toFixed(3)} ± {base.f1_std.toFixed(3)}</td>
+                      <td className="lab-td-mono">{decay.f1_mean.toFixed(3)} ± {decay.f1_std.toFixed(3)}</td>
+                      <td className="lab-td-mono" style={{ color: delta > 0.02 ? '#16a34a' : delta < -0.02 ? '#dc2626' : undefined }}>
+                        {delta >= 0 ? '+' : ''}{delta.toFixed(3)}
+                      </td>
+                      <td className="lab-td-mono">{decay.brier_mean.toFixed(3)}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+    </section>
+  );
+}
+
+function TargetSensitivitySection({ data }: { data: TargetSensitivityData }) {
+  return (
+    <section className="lab-card">
+      <div className="ab-header">
+        <h2>Target 敏感性网格</h2>
+        <span className="ab-badge" style={{ background: '#faf5ff', color: '#6d28d9', border: '1px solid #ddd6fe' }}>9 CONFIGS</span>
+      </div>
+      <p className="lab-card-desc">
+        固定 LR Slim+Events，扫描 horizon（10/20/40 天）× 回撤阈值（3%/5%/7%），每格跑 expanding WF。
+      </p>
+      <div className="lab-table-wrap">
+        <table className="lab-table" style={{ fontSize: 12 }}>
+          <thead>
+            <tr><th>配置</th><th>Horizon</th><th>阈值</th><th>正样本率</th><th>WF F1 均值±σ</th><th>WF Brier</th><th>备注</th></tr>
+          </thead>
+          <tbody>
+            {data.grid.map(r => (
+              <tr key={r.id}>
+                <td className="lab-td-mono">{r.id}</td>
+                <td>{r.horizon_days}d</td>
+                <td>{r.drawdown_pct}%</td>
+                <td>{(r.positive_rate * 100).toFixed(1)}%</td>
+                <td className="lab-td-mono" style={r.wf_f1_mean != null && r.wf_f1_mean >= 0.3 ? { color: '#16a34a', fontWeight: 600 } : undefined}>
+                  {r.wf_f1_mean != null ? `${r.wf_f1_mean.toFixed(3)} ± ${(r.wf_f1_std ?? 0).toFixed(3)}` : '—'}
+                </td>
+                <td className="lab-td-mono">{r.wf_brier_mean?.toFixed(3) ?? '—'}</td>
+                <td>{r.is_default ? '默认' : r.id === data.best_wf_config?.id ? 'WF最佳' : ''}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      {data.verdict.length > 0 && (
+        <div style={{ marginTop: 12, padding: '10px 12px', background: '#faf5ff', borderRadius: 8, border: '1px solid #ddd6fe', fontSize: 12, lineHeight: 1.7 }}>
+          {data.verdict.map((v, i) => <div key={i}>{v}</div>)}
+        </div>
+      )}
     </section>
   );
 }
@@ -404,7 +501,7 @@ function Phase3LabInner() {
   if (error) return <div className="lab-container"><div className="lab-card"><p>Phase 3 data not available: {error}</p></div></div>;
   if (!data) return <div className="loading">Loading Phase 3 data...</div>;
 
-  const { experiments, pairwise, feature_importances, practical_summary, walk_forward } = data;
+  const { experiments, pairwise, feature_importances, practical_summary, walk_forward, target_sensitivity } = data;
 
   return (
     <div className="lab-container">
@@ -424,6 +521,8 @@ function Phase3LabInner() {
       <OptimizationJourney />
 
       {walk_forward && <WalkForwardSection wf={walk_forward} />}
+
+      {target_sensitivity && <TargetSensitivitySection data={target_sensitivity} />}
 
       {/* ============ SECTION 1: 核心问题 ============ */}
       <section className="lab-card">

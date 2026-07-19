@@ -74,6 +74,38 @@ interface WeightComparison {
   agree: string;
 }
 
+interface ProductionModelEntry {
+  id: string;
+  name: string;
+  role: string;
+  description: string;
+  n_features: number;
+  train_period: string;
+  test_period: string;
+  current_probability: number;
+  current_signal: string;
+  auc: number;
+  practical_metrics: {
+    best_f1: number;
+    brier_score: number;
+    best_f1_threshold: number;
+    base_rate: number;
+  };
+  probability_timeline: ProbPoint[];
+  events_backtest: EventBacktest[];
+}
+
+interface ProductionModelsBlock {
+  models: ProductionModelEntry[];
+  walk_forward?: {
+    status: string;
+    message: string;
+    summary_by_model: Record<string, { f1_mean: number; f1_std: number; brier_mean: number }>;
+    single_split_baseline: Record<string, { best_f1: number; brier_score: number }>;
+  };
+  training_note: string;
+}
+
 interface ModelMetrics {
   model_info: ModelInfo;
   current_prediction: { date: string; probability: number; signal: string };
@@ -87,6 +119,7 @@ interface ModelMetrics {
   actual_drops: { date: string; max_drawdown: number }[];
   experiments?: ExperimentData[];
   weight_comparison?: WeightComparison[];
+  production_models?: ProductionModelsBlock;
 }
 
 const FEATURE_LABELS: Record<string, string> = {
@@ -140,6 +173,78 @@ function filterByRange<T extends { date: string }>(data: T[], range: DateRange):
   return data.filter(d => d.date >= cutoffStr);
 }
 
+function ProductionModelsSection({ block, sp500Timeline }: {
+  block: ProductionModelsBlock;
+  sp500Timeline: SP500Point[];
+}) {
+  const wf = block.walk_forward;
+  return (
+    <section className="lab-card">
+      <div className="ab-header">
+        <h2>Ch.2 推荐模型（双轨）</h2>
+        <span className="ab-badge" style={{ background: '#eff6ff', color: '#1e40af', border: '1px solid #bfdbfe' }}>PRODUCTION</span>
+      </div>
+      <p className="lab-card-desc">{block.training_note}</p>
+
+      {wf && (
+        <div style={{ marginBottom: 14, padding: '10px 12px', background: '#fffbeb', borderRadius: 8, border: '1px solid #fcd34d', fontSize: 12, lineHeight: 1.7 }}>
+          <strong style={{ color: '#92400e' }}>⚠ Walk-Forward 警告：</strong> {wf.message}
+        </div>
+      )}
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 12 }}>
+        {block.models.map((m, i) => {
+          const pm = m.practical_metrics;
+          const probPct = (m.current_probability * 100).toFixed(1);
+          const wfRow = wf?.summary_by_model?.[m.name];
+          return (
+            <div key={m.id} style={{
+              padding: 14, borderRadius: 10,
+              border: `2px solid ${i === 0 ? '#d6457a' : '#0d9488'}`,
+              background: i === 0 ? 'rgba(214,69,122,0.04)' : 'rgba(13,148,136,0.04)',
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 8 }}>
+                <span style={{ fontWeight: 700, fontSize: 14 }}>{m.name}</span>
+                <span style={{ fontSize: 11, fontWeight: 600, color: i === 0 ? '#d6457a' : '#0d9488' }}>{m.role}</span>
+              </div>
+              <div style={{ fontSize: 28, fontWeight: 700, color: signalColor(m.current_signal), marginBottom: 4 }}>
+                {probPct}%
+              </div>
+              <div style={{ fontSize: 11, color: '#6b5f63', marginBottom: 10 }}>{m.description}</div>
+              <div style={{ fontSize: 12, display: 'grid', gap: 4 }}>
+                <div>单次 Split F1: <strong>{pm.best_f1.toFixed(3)}</strong> · Brier: <strong>{pm.brier_score.toFixed(3)}</strong></div>
+                {wfRow && (
+                  <div style={{ color: '#92400e' }}>WF 均值 F1: {wfRow.f1_mean.toFixed(3)} ± {wfRow.f1_std.toFixed(3)}</div>
+                )}
+                <div style={{ color: '#8a7882' }}>AUC {m.auc.toFixed(3)} · {m.n_features} 特征</div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      <div style={{ marginTop: 16 }}>
+        <h4 className="lab-subsection-title">双模型概率时间线</h4>
+        <ExperimentGroup
+          title=""
+          desc=""
+          experiments={block.models.map(m => ({
+            name: m.name,
+            auc: m.auc,
+            current_probability: m.current_probability,
+            current_signal: m.current_signal,
+            threshold_analysis: [],
+            events_backtest: m.events_backtest,
+            probability_timeline: m.probability_timeline,
+          }))}
+          sp500Timeline={sp500Timeline}
+          colors={['#d6457a', '#0d9488']}
+        />
+      </div>
+    </section>
+  );
+}
+
 function ExperimentGroup({ title, desc, experiments, sp500Timeline, colors }: {
   title: string; desc: string; experiments: ExperimentData[]; sp500Timeline: SP500Point[]; colors: string[];
 }) {
@@ -170,8 +275,8 @@ function ExperimentGroup({ title, desc, experiments, sp500Timeline, colors }: {
 
   return (
     <div className="ab-group">
-      <h3 className="ab-group-title">{title}</h3>
-      <p className="lab-card-desc">{desc}</p>
+      {title ? <h3 className="ab-group-title">{title}</h3> : null}
+      {desc ? <p className="lab-card-desc">{desc}</p> : null}
 
       <div className="ab-summary-row">
         {experiments.map((exp, i) => (
@@ -603,6 +708,10 @@ export function PredictionLab() {
 
       <ResearchTrackNotice track="risk-model" />
 
+      {metrics.production_models && (
+        <ProductionModelsSection block={metrics.production_models} sp500Timeline={metrics.sp500_timeline} />
+      )}
+
       {/* ===== AB TEST COMPARISON ===== */}
       {metrics.experiments && metrics.experiments.length > 1 && (
         <ABComparisonSection experiments={metrics.experiments} sp500Timeline={metrics.sp500_timeline} />
@@ -902,14 +1011,16 @@ export function PredictionLab() {
           </div>
           <div className="best-config-card">
             <div className="best-config-header">
-              <span className="best-config-badge">CURRENT BEST</span>
+              <span className="best-config-badge">CH.2 RECOMMENDED</span>
               <div className="best-config-title">
-                <span className="best-config-name">D1 Slim+Embargo</span>
-                <span className="best-config-auc">AUC 0.861（线性模型天花板）</span>
+                <span className="best-config-name">LR Slim+Events + LR Events+Interact</span>
+                <span className="best-config-auc">F1=0.690 / Brier=0.080（单次 split）</span>
               </div>
             </div>
             <p className="best-config-desc">
-              综合 Phase 2 已确认的有益发现，此配置已上线运行。0.861 是 Logistic Regression 的天花板，突破需要 Phase 3。
+              Ch.2 双轨推荐：Events 模型 F1 最高，Events+Interact 概率校准最优。
+              Walk-forward 验证<strong>未通过跨时段稳定性</strong>（均值 F1≈0.19），生产展示带警告标签。
+              历史 D1 Slim+Embargo（AUC 0.861）为 Phase 2 线性天花板，见下方 AB 实验。
             </p>
             <div className="best-config-group">
               <span className="best-config-label">包含</span>

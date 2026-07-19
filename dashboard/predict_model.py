@@ -559,7 +559,12 @@ def build_metrics(model, scaler, X, y, X_train, X_test, y_test, y_prob, sp500):
         {"name": "2025.4 关税冲击", "start": "2025-03-15", "peak": "2025-04-08", "drop_pct": -12.1},
     ]
     for evt in key_events:
-        window = [(d, p) for d, p in zip(X.index, all_probs) if evt["start"] <= d <= evt["peak"]]
+        evt_start = pd.Timestamp(evt["start"])
+        evt_peak = pd.Timestamp(evt["peak"])
+        window = [
+            (d, p) for d, p in zip(X.index, all_probs)
+            if evt_start <= pd.Timestamp(d) <= evt_peak
+        ]
         if window:
             first_alert = next(((d, p) for d, p in window if p > 0.5), None)
             max_prob_item = max(window, key=lambda x: x[1])
@@ -626,19 +631,27 @@ def build_comparison_metrics(y_test, y_prob, all_probs, X, sp500, model_name, ke
 
     events_backtest = []
     for evt in key_events:
-        window = [(d, p) for d, p in zip(X.index, all_probs) if evt["start"] <= d <= evt["peak"]]
+        evt_start = pd.Timestamp(evt["start"])
+        evt_peak = pd.Timestamp(evt["peak"])
+        window = [
+            (d, p) for d, p in zip(X.index, all_probs)
+            if evt_start <= pd.Timestamp(d) <= evt_peak
+        ]
         if window:
             first_alert = next(((d, p) for d, p in window if p > 0.5), None)
             max_prob_item = max(window, key=lambda x: x[1])
             events_backtest.append({
                 "name": evt["name"], "event_date": evt["peak"], "drop_pct": evt["drop_pct"],
-                "first_alert_date": first_alert[0] if first_alert else None,
+                "first_alert_date": _json_date(first_alert[0]) if first_alert else None,
                 "lead_days": (pd.Timestamp(evt["peak"]) - pd.Timestamp(first_alert[0])).days if first_alert else None,
                 "max_probability": round(float(max_prob_item[1]), 3),
-                "max_prob_date": max_prob_item[0],
+                "max_prob_date": _json_date(max_prob_item[0]),
             })
 
-    prob_timeline = [{"date": d, "probability": round(float(p), 4)} for d, p in zip(X.index, all_probs)]
+    prob_timeline = [
+        {"date": _json_date(d), "probability": round(float(p), 4)}
+        for d, p in zip(X.index, all_probs)
+    ]
     sp500_timeline = [{"date": d, "sp500": round(float(v), 2)} for d, v in zip(sp500.index, sp500.values) if np.isfinite(v)]
     latest = float(all_probs[-1])
 
@@ -658,6 +671,121 @@ KEY_EVENTS = [
     {"name": "2024.8 日元套利平仓", "start": "2024-07-01", "peak": "2024-08-05", "drop_pct": -8.5},
     {"name": "2025.4 关税冲击", "start": "2025-03-01", "peak": "2025-04-08", "drop_pct": -12.1},
 ]
+
+
+def _json_date(d):
+    if d is None:
+        return None
+    return pd.Timestamp(d).strftime('%Y-%m-%d')
+
+
+def _load_walk_forward_summary():
+    """Load WF summary for production model warnings."""
+    for path in (DATA_DIR / 'walkforward_metrics.json', DATA_DIR / 'phase3_metrics.json'):
+        if not path.exists():
+            continue
+        try:
+            data = json.loads(path.read_text())
+            wf = data.get('walk_forward') or data
+            if wf.get('summary_by_model'):
+                return {
+                    'status': 'failed_stability',
+                    'message': (
+                        'Walk-forward 均值 F1≈0.19，高 F1 集中在 2025Q4–2026Q1；'
+                        '跨时段稳定性未通过，仅供研究跟踪。'
+                    ),
+                    'summary_by_model': wf['summary_by_model'],
+                    'single_split_baseline': wf.get('single_split_baseline', {}),
+                }
+        except (json.JSONDecodeError, KeyError):
+            continue
+    return None
+
+
+def build_ch2_production_models(df: pd.DataFrame) -> dict:
+    """Train Ch.2 recommended models (unbalanced LR + percentile clip + embargo)."""
+    from experiment_phase3 import (
+        EMBARGO,
+        detect_regime,
+        percentile_clip,
+        split_with_embargo,
+        train_lr_no_balance,
+        compute_practical_metrics,
+    )
+
+    sp500 = df['sp500']
+    target = compute_target(sp500)
+    regime_df = fetch_regime_data()
+
+    def prep(features):
+        combined = features.copy()
+        combined['target'] = target
+        combined = combined.dropna()
+        combined.index = pd.to_datetime(combined.index)
+        combined = percentile_clip(combined)
+        return combined.drop('target', axis=1), combined['target']
+
+    features_events = build_features_with_events(df)
+    X_ev, y_ev = prep(features_events)
+
+    features_combo = build_features_with_events(df)
+    regime_labels = detect_regime(df, regime_df)
+    regime_aligned = regime_labels.reindex(features_combo.index).fillna('normal')
+    regime_binary = (regime_aligned == 'tight').astype(float)
+    for f in ['vix_level', 'credit_spread_10d_chg', 'sp500_vs_50ma']:
+        if f in features_combo.columns:
+            features_combo[f'tight_x_{f}'] = regime_binary * features_combo[f]
+    X_combo, y_combo = prep(features_combo)
+
+    configs = [
+        {
+            'id': 'events_f1',
+            'name': 'LR Slim+Events',
+            'role': 'F1 优先',
+            'description': 'Slim 10 特征 + FOMC/CPI/NFP 事件日历（9 特征）',
+            'X': X_ev, 'y': y_ev,
+        },
+        {
+            'id': 'events_interact_brier',
+            'name': 'LR Events+Interact',
+            'role': 'Brier 优先',
+            'description': 'Events 9 特征 + regime 交互项（tight×VIX/利差/SP500）',
+            'X': X_combo, 'y': y_combo,
+        },
+    ]
+
+    models_out = []
+    for cfg in configs:
+        X, y = cfg['X'], cfg['y']
+        X_train, X_test, y_train, y_test, _, _ = split_with_embargo(X, y, embargo=EMBARGO)
+        model, scaler, probs_test = train_lr_no_balance(X_train, y_train, X_test)
+        probs_all = model.predict_proba(scaler.transform(X))[:, 1]
+        comparison = build_comparison_metrics(
+            y_test, probs_test, probs_all, X, sp500, cfg['name'], KEY_EVENTS,
+        )
+        pm = compute_practical_metrics(y_test, probs_test)
+        models_out.append({
+            'id': cfg['id'],
+            'name': cfg['name'],
+            'role': cfg['role'],
+            'description': cfg['description'],
+            'n_features': int(X.shape[1]),
+            'train_period': f"{X_train.index[0].date()} ~ {X_train.index[-1].date()}",
+            'test_period': f"{X_test.index[0].date()} ~ {X_test.index[-1].date()}",
+            'current_probability': comparison['current_probability'],
+            'current_signal': comparison['current_signal'],
+            'auc': comparison['auc'],
+            'practical_metrics': pm,
+            'probability_timeline': comparison['probability_timeline'],
+            'events_backtest': comparison['events_backtest'],
+        })
+
+    wf = _load_walk_forward_summary()
+    return {
+        'models': models_out,
+        'walk_forward': wf,
+        'training_note': 'Unbalanced LR · percentile clip · Embargo 20d · 详见 Ch.2',
+    }
 
 
 def main():
@@ -795,6 +923,17 @@ def main():
     )
     metrics["experiments"].append(and_comparison)
     print(f"  AND: {int(and_probs_all.sum())} alert days out of {len(and_probs_all)}")
+
+    # Ch.2 production models (dual display on Ch.1)
+    print("Building Ch.2 production models (Events + Events+Interact)...")
+    try:
+        metrics['production_models'] = build_ch2_production_models(df)
+        for m in metrics['production_models']['models']:
+            pm = m['practical_metrics']
+            print(f"  {m['name']}: prob={m['current_probability']*100:.1f}% "
+                  f"F1={pm['best_f1']:.3f} Brier={pm['brier_score']:.4f}")
+    except Exception as e:
+        print(f"  Production models FAILED: {e}")
 
     # Preserve extended experiments from previous runs
     metrics_path = DATA_DIR / 'model_metrics.json'
