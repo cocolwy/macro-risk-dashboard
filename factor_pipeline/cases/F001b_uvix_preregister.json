@@ -181,8 +181,8 @@
   "S4_explore": { "status": "skipped", "note": "F001b 无探索阶段；探索结果来自 F001 不得移植" },
   "S5_confirm": {
     "status": "done",
-    "primary_result": "H1 命中率：FOMC 20.6% vs 基准 34.4%（超额 -13.8pp，p=1.0）；CPI/NFP 亦无 Bonferroni 显著。H1 平均收益：FOMC 事件 -4.78% vs 基准 +13.77%（超额 -18.5pp，Welch p=1.0）。H2 发布后下跌均不显著。",
-    "fomc_h1_mean": { "event_mean_pct": -4.776, "baseline_mean_pct": 13.771, "excess_pct": -18.546, "p_one": 1.0, "significant_bonferroni": false },
+    "primary_result": "H1 命中率：FOMC 20.6% vs 基准 33.3%（p=1.0）。H1 平均收益：FOMC -4.78% vs 修正基准 -1.59%（超额 -3.19pp，p=1.0）。2026-07-20 审计：旧 +13.77% baseline 为拆股跨窗 bug。",
+    "fomc_h1_mean": { "event_mean_pct": -4.776, "baseline_mean_pct": -1.591, "excess_pct": -3.185, "p_one": 1.0, "significant_bonferroni": false },
     "cost_adjusted_fomc_excess_pct": -19.586,
     "verdict_research": "UVIX 产品层主假设不成立；事件前窗口平均表现劣于非事件基准，与 F001 VIX 弱结果一致且更差。"
   },

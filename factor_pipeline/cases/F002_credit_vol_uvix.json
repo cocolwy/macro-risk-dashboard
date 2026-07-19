@@ -159,7 +159,7 @@
   "S4_explore": { "status": "pending", "note": "阈值/持有期扫描预注册为探索；主检验已 fail，低优先级" },
   "S5_confirm": {
     "status": "done",
-    "primary_result": "H1 不显著：信号后 UVIX 5 日平均 -3.78% vs 基准 +14.50%（超额 -18.3pp，p=1.0）；命中率 24% vs 34%。n=25 信号。",
+    "primary_result": "H1 不显著：信号后 UVIX 5 日 -3.78% vs 修正基准 -1.62%（超额 -2.16pp，p=1.0）；命中率 24% vs 32%。2026-07-20 审计修正 baseline。",
     "insufficient_sample": false,
     "verdict_research": "信用利差走阔后做多 UVIX 主假设不成立；全样本表现劣于非信号基准。"
   },
@@ -168,7 +168,7 @@
     "costs_considered": true,
     "product_test_done": true,
     "s6_gate": { "verdict": "fail", "all_pass": false },
-    "verdict_trading": "dead — 门禁 fail；成本后超额 -19.3%"
+    "verdict_trading": "dead — 门禁 fail；成本后超额约 -3.2%"
   },
   "S7_archive": {
     "status": "pending",

@@ -107,7 +107,7 @@
     "product_test_done": true,
     "f001b_case": "factor_pipeline/cases/F001b_uvix_preregister.json",
     "f001b_gate": "fail",
-    "verdict_trading": "dead — T-5→T-1 做多 UVIX 日历策略未过 S6 门禁。FOMC 前 UVIX 平均 -4.8% vs 基准 +13.8%；VIX 同窗口命中率 50% 但 UVIX 仅 21%。",
+    "verdict_trading": "dead — T-5→T-1 做多 UVIX 日历策略未过 S6 门禁。FOMC 前 UVIX -4.8% vs 修正基准 -1.6%（超额 -3.2pp）。",
     "blockers_resolved": [
       "UVIX 历史收益检验 — F001b 完成",
       "成本假设 — $6k / 104bps base",

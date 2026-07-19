@@ -1,7 +1,7 @@
 {
   "version": "1.1",
   "description": "量化因子研究日志 · Alpha Deck",
-  "updated": "2026-07-19",
+  "updated": "2026-07-20",
   "pipeline": {
     "doc": "factor_pipeline/PIPELINE.md",
     "readme": "factor_pipeline/README.md",
@@ -25,7 +25,7 @@
       "hypothesis": "FOMC / CPI / NFP 发布前，市场买入波动率保护，VIX（进而 UVIX）应系统性上行；发布后不确定性下降应回落。",
       "motivation": "交易目标：事件前做多 UVIX。机制：政策/数据不确定性驱动对冲需求，推高近月波动率期货及相关 ETN。",
       "status": "dead",
-      "status_note": "2026-07-19：F001b UVIX 产品层 S6 门禁 fail → 交易层 dead。^VIX 主检验本就不显著；UVIX 上 FOMC 前平均 -4.8% vs 基准 +13.8%。低 VIX×FOMC 仍为未确认探索，不足以推翻 dead。",
+      "status_note": "2026-07-20 审计修正：F001b UVIX S6 fail → dead。FOMC 前 -4.8% vs 修正基准 -1.6%（超额 -3.2pp）；旧版 +13.8% baseline 为拆股跨窗 bug。",
       "current_stage": "S7",
       "case_file": "factor_pipeline/cases/F001_uvix_event_calendar.json",
       "child_cases": ["F001b"],
@@ -64,7 +64,7 @@
         {
           "name": "return_based_primary_uvix_f001b",
           "description": "F001b 同协议 · UVIX 收益",
-          "result": "FOMC 前 UVIX 平均 -4.8% vs 基准 +13.8%；命中率 21% vs 34%；门禁 fail"
+          "result": "FOMC 前 UVIX 平均 -4.8% vs 修正基准 -1.6%；超额 -3.2pp；命中率 21% vs 33%；门禁 fail"
         },
         {
           "name": "vix_uvix_mapping_s6_3",
@@ -80,7 +80,7 @@
       "key_findings": [
         "F001b：UVIX 日历做多策略 S6 门禁 fail → 交易层 dead",
         "VIX 预注册主检验（Bonferroni）不显著",
-        "UVIX 上事件前表现劣于非事件基准，非轻微无效而是方向性偏差",
+        "UVIX 随机 4 日 hold 修正基准均值约 -1.6%（median 更负）；旧版 +14% 为拆股跨窗 artifact",
         "VIX/UVIX 高相关但 UVIX 命中率低 29pp — 衰减吞噬弱 edge",
         "探索线索低 VIX×FOMC 未独立确认；F001b 预注册禁止在同线数据上直接加条件"
       ],
@@ -110,7 +110,7 @@
       "hypothesis": "高收益债利差短期走阔后，UVIX 在随后持有期收益高于无信号基准。",
       "motivation": "交易目标：信用市场发警报（利差走阔）时做多 UVIX，赚 risk-off 带来的 vol 上涨。信号来自债券，不是 FOMC 日历。",
       "status": "dead",
-      "status_note": "2026-07-19：S3–S5 完成。BAA Δ5≥10bps 后做多 UVIX 5d：均值 -3.8% vs 基准 +14.5%，命中率 24% vs 34%，门禁 fail。",
+      "status_note": "2026-07-20 审计修正：BAA Δ5≥10bps 后做多 UVIX 5d：-3.8% vs 修正基准 -1.6%（超额 -2.2pp），门禁 fail。",
       "current_stage": "S6",
       "case_file": "factor_pipeline/cases/F002_credit_vol_uvix.json",
       "experiment_hash": "#factorlab",
@@ -139,12 +139,12 @@
         {
           "name": "credit_widen_long_uvix",
           "description": "Δ5≥0.10 → long UVIX 5d vs sparse baseline",
-          "result": "mean -3.78% vs +14.50% baseline；hit 24% vs 34%；p=1.0"
+          "result": "mean -3.78% vs -1.62% baseline；超额 -2.16pp；hit 24% vs 32%；p=1.0"
         }
       ],
       "key_findings": [
         "利差走阔信号后 UVIX 5 日收益系统性低于非信号基准",
-        "与 F001 类似：UVIX 随机 5 日基准均值偏高（~14%），事件/信号窗口更难 beat",
+        "修正 baseline 后信号仍略劣于随机 hold；n=25 样本偏短",
         "近 2y 子样本 mean +7.9% 但未过全样本门禁",
         "n=25 信号，样本仍偏短"
       ],

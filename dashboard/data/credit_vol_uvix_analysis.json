@@ -2,7 +2,7 @@
   "title": "Credit Spread Shock \u00d7 UVIX (F002)",
   "subtitle": "BAA10Y \u03945\u226510bps \u2192 long UVIX 5d",
   "case_id": "F002",
-  "generated_at": "2026-07-19T09:42:41Z",
+  "generated_at": "2026-07-19T13:51:30Z",
   "summary": {
     "signal": "FRED BAA10Y",
     "trigger": "\u03945 >= +0.1 (10bps)",
@@ -16,9 +16,9 @@
     "method": "Bonferroni \u03b1=0.025 (2 tests) \u00b7 baseline stride=5",
     "h1_hit_rate": {
       "event_hit_rate": 0.24,
-      "baseline_hit_rate": 0.341,
-      "excess_hit_rate": -0.101,
-      "z_stat": -1.005,
+      "baseline_hit_rate": 0.324,
+      "excess_hit_rate": -0.084,
+      "z_stat": -0.852,
       "p_value": 1.0,
       "significant": false,
       "alpha_used": 0.025,
@@ -27,20 +27,20 @@
     },
     "h1_mean_return": {
       "event_mean_pct": -3.782,
-      "baseline_mean_pct": 14.503,
-      "excess_mean_pct": -18.285,
-      "t_stat": -1.461,
+      "baseline_mean_pct": -1.619,
+      "excess_mean_pct": -2.163,
+      "t_stat": -0.365,
       "p_value": 1.0,
       "significant": false,
       "alpha_used": 0.025,
       "event_n": 25,
       "baseline_n": 185,
       "cost_adjusted_excess_pct": {
-        "base": -19.325,
-        "stress": -20.886
+        "base": -3.203,
+        "stress": -4.764
       }
     },
-    "conclusion_summary": "\u4e3b\u68c0\u9a8c\u4e0d\u663e\u8457\uff1a\u4fe1\u53f7\u5747\u503c -3.782% vs \u57fa\u51c6 14.503%\uff08p=1.0\uff09\uff1bS6 \u95e8\u7981 preview: FAIL\u3002"
+    "conclusion_summary": "\u4e3b\u68c0\u9a8c\u4e0d\u663e\u8457\uff1a\u4fe1\u53f7\u5747\u503c -3.782% vs \u57fa\u51c6 -1.619%\uff08p=1.0\uff09\uff1bS6 \u95e8\u7981 preview: FAIL\u3002"
   },
   "signal_trades": [
     {
@@ -220,7 +220,7 @@
       },
       "cost_adjusted_excess_positive": {
         "pass": false,
-        "cost_adjusted_excess_pct": -19.325,
+        "cost_adjusted_excess_pct": -3.203,
         "base_total_bps": 104.02
       },
       "recent_2y_not_significantly_negative": {

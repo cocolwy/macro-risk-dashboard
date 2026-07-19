@@ -102,8 +102,26 @@ def trading_offset(idx: pd.DatetimeIndex, anchor, offset: int):
     return idx[target] if 0 <= target < len(idx) else None
 
 
-def pct_return(series: pd.Series, start, end) -> Optional[float]:
+def window_crosses_corporate_action(start, end, action_dates: Optional[list]) -> bool:
+    """True if (start, end] brackets a split/dividend date — return would mix price scales."""
+    if not action_dates or start is None or end is None:
+        return False
+    for sd in action_dates:
+        ts = pd.Timestamp(sd).normalize()
+        if start < ts <= end:
+            return True
+    return False
+
+
+def pct_return(
+    series: pd.Series,
+    start,
+    end,
+    skip_action_dates: Optional[list] = None,
+) -> Optional[float]:
     if start is None or end is None or start >= end:
+        return None
+    if window_crosses_corporate_action(start, end, skip_action_dates):
         return None
     p0, p1 = series.loc[start], series.loc[end]
     if p0 <= 0:
@@ -283,33 +301,56 @@ def build_level_analysis(vix: pd.Series, date_map: dict, all_event_days: set) ->
     }
 
 
-def event_pre_returns(vix: pd.Series, event_dates: list, start_off: int, end_off: int = 1) -> list:
+def event_pre_returns(
+    vix: pd.Series,
+    event_dates: list,
+    start_off: int,
+    end_off: int = 1,
+    skip_action_dates: Optional[list] = None,
+) -> list:
     idx = vix.index
     out = []
     for ed in event_dates:
         t0 = event_trading_day(idx, pd.Timestamp(ed))
         if t0 is None:
             continue
-        r = pct_return(vix, trading_offset(idx, t0, -start_off), trading_offset(idx, t0, -end_off))
+        r = pct_return(
+            vix,
+            trading_offset(idx, t0, -start_off),
+            trading_offset(idx, t0, -end_off),
+            skip_action_dates=skip_action_dates,
+        )
         if r is not None:
             out.append(r)
     return out
 
 
-def event_post_returns(vix: pd.Series, event_dates: list, post_off: int) -> list:
+def event_post_returns(
+    vix: pd.Series,
+    event_dates: list,
+    post_off: int,
+    skip_action_dates: Optional[list] = None,
+) -> list:
     idx = vix.index
     out = []
     for ed in event_dates:
         t0 = event_trading_day(idx, pd.Timestamp(ed))
         if t0 is None:
             continue
-        r = pct_return(vix, t0, trading_offset(idx, t0, post_off))
+        r = pct_return(vix, t0, trading_offset(idx, t0, post_off), skip_action_dates=skip_action_dates)
         if r is not None:
             out.append(r)
     return out
 
 
-def baseline_pre_returns(vix: pd.Series, exclude: set, start_off: int, end_off: int = 1, stride: int = 1) -> list:
+def baseline_pre_returns(
+    vix: pd.Series,
+    exclude: set,
+    start_off: int,
+    end_off: int = 1,
+    stride: int = 1,
+    skip_action_dates: Optional[list] = None,
+) -> list:
     idx = vix.index
     out = []
     for i, t0 in enumerate(idx):
@@ -317,13 +358,24 @@ def baseline_pre_returns(vix: pd.Series, exclude: set, start_off: int, end_off: 
             continue
         if stride > 1 and i % stride != 0:
             continue
-        r = pct_return(vix, trading_offset(idx, t0, -start_off), trading_offset(idx, t0, -end_off))
+        r = pct_return(
+            vix,
+            trading_offset(idx, t0, -start_off),
+            trading_offset(idx, t0, -end_off),
+            skip_action_dates=skip_action_dates,
+        )
         if r is not None:
             out.append(r)
     return out
 
 
-def baseline_post_returns(vix: pd.Series, exclude: set, post_off: int, stride: int = 1) -> list:
+def baseline_post_returns(
+    vix: pd.Series,
+    exclude: set,
+    post_off: int,
+    stride: int = 1,
+    skip_action_dates: Optional[list] = None,
+) -> list:
     idx = vix.index
     out = []
     for i, t0 in enumerate(idx):
@@ -331,7 +383,7 @@ def baseline_post_returns(vix: pd.Series, exclude: set, post_off: int, stride: i
             continue
         if stride > 1 and i % stride != 0:
             continue
-        r = pct_return(vix, t0, trading_offset(idx, t0, post_off))
+        r = pct_return(vix, t0, trading_offset(idx, t0, post_off), skip_action_dates=skip_action_dates)
         if r is not None:
             out.append(r)
     return out

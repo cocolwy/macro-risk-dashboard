@@ -1,7 +1,7 @@
 {
   "description": "\u540c\u7a97\u53e3 T-5\u2192T-1 \u9010\u4e8b\u4ef6\u914d\u5bf9\uff1a^VIX vs UVIX \u6536\u76ca\u4e0e\u547d\u4e2d\u7387",
   "period": "2022-03-30 ~ 2026-07-17",
-  "pooled_correlation": -0.0385,
+  "pooled_correlation": 0.9379,
   "by_event": [
     {
       "event": "FOMC",
@@ -192,14 +192,14 @@
       "event": "CPI",
       "event_type": "cpi",
       "window": "T-5~T-1",
-      "n_pairs": 50,
-      "correlation": -0.0217,
-      "regression_uvix_on_vix_slope": -0.182,
-      "hit_rate_up_uvix": 0.4,
-      "hit_rate_up_vix": 0.6,
-      "hit_rate_gap_uvix_minus_vix": -0.2,
-      "mean_return_uvix_pct": 13.173,
-      "mean_return_vix_pct": 1.472,
+      "n_pairs": 49,
+      "correlation": 0.9355,
+      "regression_uvix_on_vix_slope": 1.221,
+      "hit_rate_up_uvix": 0.388,
+      "hit_rate_up_vix": 0.612,
+      "hit_rate_gap_uvix_minus_vix": -0.224,
+      "mean_return_uvix_pct": -1.689,
+      "mean_return_vix_pct": 1.767,
       "pairs": [
         {
           "date": "2022-05-11",
@@ -285,11 +285,6 @@
           "date": "2023-09-13",
           "uvix_pct": -7.643,
           "vix_pct": -1.522
-        },
-        {
-          "date": "2023-10-12",
-          "uvix_pct": 741.417,
-          "vix_pct": -12.98
         },
         {
           "date": "2023-11-14",
@@ -457,14 +452,14 @@
       "event": "NFP",
       "event_type": "nfp",
       "window": "T-5~T-1",
-      "n_pairs": 51,
-      "correlation": -0.1157,
-      "regression_uvix_on_vix_slope": -1.981,
-      "hit_rate_up_uvix": 0.431,
-      "hit_rate_up_vix": 0.569,
-      "hit_rate_gap_uvix_minus_vix": -0.138,
-      "mean_return_uvix_pct": 33.375,
-      "mean_return_vix_pct": 4.396,
+      "n_pairs": 50,
+      "correlation": 0.9572,
+      "regression_uvix_on_vix_slope": 1.026,
+      "hit_rate_up_uvix": 0.42,
+      "hit_rate_up_vix": 0.58,
+      "hit_rate_gap_uvix_minus_vix": -0.16,
+      "mean_return_uvix_pct": 0.637,
+      "mean_return_vix_pct": 4.729,
       "pairs": [
         {
           "date": "2022-05-06",
@@ -715,11 +710,6 @@
           "date": "2026-06-05",
           "uvix_pct": -5.222,
           "vix_pct": 0.522
-        },
-        {
-          "date": "2026-07-03",
-          "uvix_pct": 1670.286,
-          "vix_pct": -12.276
         }
       ]
     }

@@ -61,7 +61,7 @@ RECENT_YEARS = 2
 
 
 def _apply_reverse_splits(df: pd.DataFrame, splits: dict) -> pd.DataFrame:
-    """Backward-adjust OHLC for reverse splits (Yahoo chart returns unadjusted)."""
+    """Deprecated: prefer Yahoo adjclose in fetch_uvix_history."""
     if not splits:
         return df
     out = df.copy()
@@ -80,8 +80,21 @@ def _apply_reverse_splits(df: pd.DataFrame, splits: dict) -> pd.DataFrame:
     return out
 
 
+def parse_uvix_split_dates(splits: dict) -> list[pd.Timestamp]:
+    if not splits:
+        return []
+    return sorted(
+        pd.Timestamp.utcfromtimestamp(s["date"]).tz_localize(None).normalize()
+        for s in splits.values()
+    )
+
+
+UVIX_SPLIT_DATES: list[pd.Timestamp] = []
+
+
 def fetch_uvix_history() -> pd.DataFrame:
-    """UVIX daily OHLC with reverse-split adjustment."""
+    """UVIX daily OHLC; Close uses Yahoo adjclose (consistent split-adjusted scale)."""
+    global UVIX_SPLIT_DATES
     url = (
         "https://query2.finance.yahoo.com/v8/finance/chart/UVIX"
         "?interval=1d&range=5y&events=split"
@@ -92,30 +105,34 @@ def fetch_uvix_history() -> pd.DataFrame:
     result = payload["chart"]["result"][0]
     ts = result["timestamp"]
     quote = result["indicators"]["quote"][0]
+    adj = (result["indicators"].get("adjclose") or [{}])[0].get("adjclose")
     splits = (result.get("events") or {}).get("splits") or {}
+    UVIX_SPLIT_DATES = parse_uvix_split_dates(splits)
     rows = []
     for i, t in enumerate(ts):
         close = quote["close"][i]
         if close is None:
             continue
+        adj_close = adj[i] if adj and adj[i] is not None else close
+        scale = adj_close / close if close else 1.0
         rows.append({
             "Date": pd.Timestamp.utcfromtimestamp(t).tz_localize(None).normalize(),
-            "Open": quote["open"][i],
-            "High": quote["high"][i],
-            "Low": quote["low"][i],
-            "Close": close,
+            "Open": quote["open"][i] * scale if quote["open"][i] is not None else None,
+            "High": quote["high"][i] * scale if quote["high"][i] is not None else None,
+            "Low": quote["low"][i] * scale if quote["low"][i] is not None else None,
+            "Close": adj_close,
             "Volume": quote["volume"][i],
         })
     if not rows:
         raise RuntimeError("UVIX chart API returned no rows")
     df = pd.DataFrame(rows).set_index("Date").sort_index()
-    df = df.dropna(subset=["Close"])
-    df = _apply_reverse_splits(df, splits)
-    return df
+    return df.dropna(subset=["Close"])
 
 
 def uvix_close_series(df: pd.DataFrame) -> pd.Series:
-    return df["Close"].astype(float)
+    s = df["Close"].astype(float)
+    s.name = "UVIX"
+    return s
 
 
 def broker_fee_usd(notional_usd: float, price: float) -> float:
@@ -193,15 +210,15 @@ def run_uvix_primary(
     pre_start, pre_end = PRIMARY_PRE_WINDOW
     post_off = PRIMARY_POST_WINDOW
 
-    ev_pre = event_pre_returns(uvix, event_dates, pre_start, pre_end)
-    ba_pre = baseline_pre_returns(uvix, all_event_days, pre_start, pre_end, stride=BASELINE_STRIDE)
+    ev_pre = event_pre_returns(uvix, event_dates, pre_start, pre_end, skip_action_dates=UVIX_SPLIT_DATES)
+    ba_pre = baseline_pre_returns(uvix, all_event_days, pre_start, pre_end, stride=BASELINE_STRIDE, skip_action_dates=UVIX_SPLIT_DATES)
     h1_hit = test_window(ev_pre, ba_pre, "up", one_sided=True, alpha=BONFERRONI_ALPHA)
     h1_hit["window"] = window_label_pre(pre_start, pre_end)
     h1_mean = welch_mean_test(ev_pre, ba_pre, alpha=H1_MEAN_ALPHA)
     h1_mean["window"] = h1_hit["window"]
 
-    ev_post = event_post_returns(uvix, event_dates, post_off)
-    ba_post = baseline_post_returns(uvix, all_event_days, post_off, stride=BASELINE_STRIDE)
+    ev_post = event_post_returns(uvix, event_dates, post_off, skip_action_dates=UVIX_SPLIT_DATES)
+    ba_post = baseline_post_returns(uvix, all_event_days, post_off, stride=BASELINE_STRIDE, skip_action_dates=UVIX_SPLIT_DATES)
     h2_hit = test_window(ev_post, ba_post, "down", one_sided=True, alpha=BONFERRONI_ALPHA)
     h2_hit["window"] = window_label_post(post_off)
 
@@ -224,7 +241,7 @@ def recent_fomc_subsample(uvix: pd.Series, fomc_dates: list, years: int = RECENT
         return {"error": "近 2y 无 FOMC 样本", "n_events": 0}
 
     pre_start, pre_end = PRIMARY_PRE_WINDOW
-    ev_pre = event_pre_returns(uvix, recent, pre_start, pre_end)
+    ev_pre = event_pre_returns(uvix, recent, pre_start, pre_end, skip_action_dates=UVIX_SPLIT_DATES)
     if len(ev_pre) < 3:
         return {"error": "近 2y FOMC 有效样本不足", "n_events": len(recent)}
 
@@ -311,7 +328,12 @@ def build_vix_uvix_mapping(uvix: pd.Series, date_map: dict) -> dict:
             t0 = event_trading_day(idx, pd.Timestamp(ed))
             if t0 is None:
                 continue
-            r = pct_return(series, trading_offset(idx, t0, -pre_start), trading_offset(idx, t0, -pre_end))
+            r = pct_return(
+                series,
+                trading_offset(idx, t0, -pre_start),
+                trading_offset(idx, t0, -pre_end),
+                skip_action_dates=UVIX_SPLIT_DATES if series.name == "UVIX" else None,
+            )
             if r is not None:
                 out.append({"date": pd.Timestamp(ed).strftime("%Y-%m-%d"), "return_pct": r})
         return out
@@ -441,7 +463,9 @@ def build_output() -> dict:
     ]
 
     pre_start, pre_end = PRIMARY_PRE_WINDOW
-    base_pre = baseline_pre_returns(uvix, all_event_days, pre_start, pre_end, stride=BASELINE_STRIDE)
+    base_pre = baseline_pre_returns(
+        uvix, all_event_days, pre_start, pre_end, stride=BASELINE_STRIDE, skip_action_dates=UVIX_SPLIT_DATES
+    )
 
     mapping = build_vix_uvix_mapping(uvix, date_map)
 

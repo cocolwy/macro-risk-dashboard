@@ -1,0 +1,30 @@
+{
+  "baseline_T5_T1": {
+    "n": 205,
+    "mean_pct": 12.277,
+    "median_pct": -3.722,
+    "mean_non_split_cross": -1.89,
+    "mean_split_cross_only": 966.174,
+    "split_cross_windows": [
+      {
+        "anchor": "2023-01-31",
+        "return_pct": 394.072
+      },
+      {
+        "anchor": "2025-01-22",
+        "return_pct": 675.0
+      },
+      {
+        "anchor": "2026-07-08",
+        "return_pct": 1829.45
+      }
+    ],
+    "top5_nonsplit_returns": [
+      203.48,
+      49.02,
+      37.41,
+      37.29,
+      35.66
+    ]
+  }
+}

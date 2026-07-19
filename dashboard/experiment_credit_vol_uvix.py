@@ -19,7 +19,7 @@ import pandas as pd
 from scipy import stats
 
 from experiment_event_uvix import pct_return, proportion_test, trading_offset
-from experiment_uvix_event import fetch_uvix_history, uvix_close_series
+from experiment_uvix_event import UVIX_SPLIT_DATES, fetch_uvix_history, uvix_close_series
 from fetch_macro_data import fetch_fred_series, sync_public_data
 
 DATA_DIR = Path(__file__).parent / "data"
@@ -55,7 +55,7 @@ def hold_return(uvix: pd.Series, entry_day: pd.Timestamp, hold_days: int = HOLD_
     if entry_day not in idx:
         return None
     exit_day = trading_offset(idx, entry_day, hold_days)
-    return pct_return(uvix, entry_day, exit_day)
+    return pct_return(uvix, entry_day, exit_day, skip_action_dates=UVIX_SPLIT_DATES)
 
 
 def collect_signal_trades(
