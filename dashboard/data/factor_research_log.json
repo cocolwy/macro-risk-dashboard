@@ -24,92 +24,72 @@
       "name_zh": "宏观事件日历 × VIX → 交易 UVIX",
       "hypothesis": "FOMC / CPI / NFP 发布前，市场买入波动率保护，VIX（进而 UVIX）应系统性上行；发布后不确定性下降应回落。",
       "motivation": "交易目标：事件前做多 UVIX。机制：政策/数据不确定性驱动对冲需求，推高近月波动率期货及相关 ETN。",
-      "status": "weak",
-      "status_note": "2026-07-19 重审：真实目标是交易 UVIX，但实验几乎全在 ^VIX 上完成（标的错位）。VIX 预注册主检验不显著；产品层（成本/衰减/UVIX 收益）未做。不建议实盘。残留探索线索：低 VIX×FOMC。",
-      "current_stage": "S6",
+      "status": "dead",
+      "status_note": "2026-07-19：F001b UVIX 产品层 S6 门禁 fail → 交易层 dead。^VIX 主检验本就不显著；UVIX 上 FOMC 前平均 -4.8% vs 基准 +13.8%。低 VIX×FOMC 仍为未确认探索，不足以推翻 dead。",
+      "current_stage": "S7",
       "case_file": "factor_pipeline/cases/F001_uvix_event_calendar.json",
+      "child_cases": ["F001b"],
       "experiment_hash": "#ch2-2",
       "tags": ["UVIX", "VIX", "events", "macro", "FOMC", "CPI", "NFP"],
       "goal": {
         "trading_objective": "事件前做多 UVIX，赚取隐含波动率上升；发布后视情况平仓",
         "research_instrument": "^VIX",
         "tradable_instrument": "UVIX",
-        "mapping_gap": "VIX 现货指数 ≠ UVIX（期货路径、杠杆衰减、价差）。VIX 命中率不能直接当 UVIX 可交易证据。",
+        "mapping_gap": "VIX 现货指数 ≠ UVIX（期货路径、杠杆衰减、价差）。S6-3：FOMC 前 VIX 命中率 50% vs UVIX 21%。",
         "horizon": "T-5~T-1 日线（主）；T+1 发布后（次）"
       },
       "pipeline_stages": [
         { "id": "S0", "name": "目标锚定", "status": "done", "summary": "回溯锚定交易 UVIX；记下与 ^VIX 检验的错位" },
         { "id": "S1", "name": "经济直觉", "status": "done", "summary": "事件前买保护 → 波动率产品上行" },
         { "id": "S2", "name": "预注册", "status": "done", "summary": "T-5~T-1 / T+1 · 稀疏基准 · Bonferroni α≈0.0083" },
-        { "id": "S3", "name": "数据实现", "status": "done", "summary": "experiment_event_uvix.py · 缺 UVIX 序列" },
+        { "id": "S3", "name": "数据实现", "status": "done", "summary": "experiment_event_uvix.py + experiment_uvix_event.py" },
         { "id": "S4", "name": "探索分析", "status": "done", "summary": "短窗口 / 低VIX条件 / SKEW（均探索性）" },
-        { "id": "S5", "name": "确认检验", "status": "done", "summary": "主假设不显著；发表后衰减；近1–2y 消失" },
-        { "id": "S6", "name": "可交易性", "status": "in_progress", "summary": "未测 UVIX 收益与成本 → 不可部署" },
-        { "id": "S7", "name": "归档看板", "status": "done", "summary": "Alpha Deck + factor_pipeline case" }
+        { "id": "S5", "name": "确认检验", "status": "done", "summary": "VIX 主假设不显著；发表后衰减" },
+        { "id": "S6", "name": "可交易性", "status": "done", "summary": "F001b UVIX 检验 + Strategy Spec；门禁 fail" },
+        { "id": "S7", "name": "归档看板", "status": "done", "summary": "Alpha Deck + case JSON 归档为 dead" }
       ],
       "data": {
-        "instrument": "^VIX (研究) / UVIX (交易目标，未检验)",
+        "instrument": "^VIX (研究) / UVIX (F001b 已检验)",
         "source": "Yahoo Finance",
-        "primary_period": "2016-07-15 ~ 2026-07-15",
+        "primary_period": "2016-07 ~ 2026-07 (^VIX) · 2022-03~今 (UVIX)",
         "n_trading_days": 2513,
         "events": { "fomc": 81, "cpi": 119, "nfp": 120 }
       },
       "methods": [
         {
-          "name": "return_based_primary",
+          "name": "return_based_primary_vix",
           "description": "预注册 T-5~T-1 上涨命中率 vs 稀疏基准，单侧 z，Bonferroni α=0.0083",
           "result": "FOMC p≈0.083 / CPI p≈0.087 / NFP p≈0.133 — 均不显著"
         },
         {
-          "name": "return_based_exploratory",
-          "description": "窗口扫描（探索性）",
-          "result": "FOMC T-3~T-1 命中率约 72% vs 基准 ~45%（多重检验，不作主结论）"
+          "name": "return_based_primary_uvix_f001b",
+          "description": "F001b 同协议 · UVIX 收益",
+          "result": "FOMC 前 UVIX 平均 -4.8% vs 基准 +13.8%；命中率 21% vs 34%；门禁 fail"
         },
         {
-          "name": "level_based_method_a_b",
-          "description": "窗口均值 / T-1 水平 vs 基准",
-          "result": "超额约 0 VIX 点 — 无差异"
-        },
-        {
-          "name": "subsample_1y_2y",
-          "description": "近 1y / 2y 子样本",
-          "result": "效应消失甚至反转"
-        },
-        {
-          "name": "historical_replication",
-          "description": "Pre-2015 vs Post-2015",
-          "result": "发表前边际显著，发表后不显著 → 衰减"
+          "name": "vix_uvix_mapping_s6_3",
+          "description": "同窗口 FOMC 逐事件配对",
+          "result": "相关 0.92；VIX 命中率 50% vs UVIX 21% — 同向但 UVIX 更差"
         },
         {
           "name": "conditional_vix_regime",
           "description": "VIX 三档条件（探索性）",
-          "result": "低 VIX：命中率 70.4%，p=0.015；中/高不显著 — 需独立确认"
-        },
-        {
-          "name": "skew_analysis",
-          "description": "^SKEW 事件前变化",
-          "result": "不支持期权尾部焦虑假设"
-        },
-        {
-          "name": "uvix_product_bridge",
-          "description": "S6 可交易性：用 UVIX 收益重跑同一协议",
-          "result": "未完成 — 当前交易结论的主要阻塞项"
+          "result": "低 VIX：命中率 70.4%，p=0.015 — 未样本外确认；F001b fail 后低优先级"
         }
       ],
       "key_findings": [
-        "目标澄清：意图交易 UVIX，实验测的是 ^VIX → 标的错位，结论不能直接实盘化",
-        "VIX 预注册主检验（Bonferroni）不显著；H2 发布后下跌亦不显著",
-        "水平比较趋零：VIX 前瞻性使非事件日已隐含事件定价",
-        "探索线索：低 VIX×FOMC 前命中率 70.4%（p=0.015），未做样本外确认",
-        "历史：Pre-2015 边际有、Post-2015 无 → 符合发表后衰减",
-        "近 1–2 年效应消失，与政策路径高度可预期一致",
-        "以 UVIX 为目标：在完成产品层检验前，不建议部署"
+        "F001b：UVIX 日历做多策略 S6 门禁 fail → 交易层 dead",
+        "VIX 预注册主检验（Bonferroni）不显著",
+        "UVIX 上事件前表现劣于非事件基准，非轻微无效而是方向性偏差",
+        "VIX/UVIX 高相关但 UVIX 命中率低 29pp — 衰减吞噬弱 edge",
+        "探索线索低 VIX×FOMC 未独立确认；F001b 预注册禁止在同线数据上直接加条件"
       ],
-      "verdict": "研究层（^VIX）：weak，仅保留低 VIX×FOMC 探索线索。交易层（UVIX）：weak / 不可部署 — 主检验偏弱 + 标的未测 + 成本衰减未计入。流水线本身跑通，作为第一个完整案例归档。",
+      "verdict": "交易层（UVIX 日历做多）：dead。研究层（^VIX 无成本日历）：weak，低 VIX×FOMC 仅探索。第一个完整 S0–S7 案例 — 否定结果归档。",
+      "strategy_spec_ref": "factor_pipeline/cases/F001b_uvix_preregister.json → S6_tradability.strategy_spec",
       "next_steps": [
-        "F001b：对 UVIX 历史收益预注册 T-5~T-1 / 稀疏基准 / Bonferroni，完成 S6",
-        "F001c：低 VIX×FOMC 独立样本外确认（阈值预注册，与探索样本拆分）",
-        "若 F001b 仍不显著 → 状态改为 dead，停止在日历×波动率 ETN 上加杠杆"
+        "换全新因子假设（F002），勿在 F001 日历母策略上加杠杆",
+        "若仍好奇 FOMC：F001c 须新建 case + 样本拆分预注册，且 primary 标的从第一天定为 UVIX",
+        "可选：低 VIX×FOMC 仅作 ^VIX 机制论文式研究，不作交易结论"
       ],
       "references": [
         {
@@ -117,10 +97,120 @@
           "authors": "Lucca, D. O. & Moench, E.",
           "journal": "Journal of Finance",
           "year": 2015,
-          "note": "股指 FOMC 前漂移经典文献；本案例在 VIX/UVIX 维度看到发表后衰减迹象"
+          "note": "股指 FOMC 前漂移；本案例在 VIX/UVIX 维度未见可交易复现"
         }
       ],
       "created": "2026-07-15",
+      "last_updated": "2026-07-19"
+    },
+    {
+      "id": "F002",
+      "name": "Credit Spread Shock → UVIX",
+      "name_zh": "信用利差走阔 × 做多 UVIX",
+      "hypothesis": "高收益债利差短期走阔后，UVIX 在随后持有期收益高于无信号基准。",
+      "motivation": "交易目标：信用市场发警报（利差走阔）时做多 UVIX，赚 risk-off 带来的 vol 上涨。信号来自债券，不是 FOMC 日历。",
+      "status": "dead",
+      "status_note": "2026-07-19：S3–S5 完成。BAA Δ5≥10bps 后做多 UVIX 5d：均值 -3.8% vs 基准 +14.5%，命中率 24% vs 34%，门禁 fail。",
+      "current_stage": "S6",
+      "case_file": "factor_pipeline/cases/F002_credit_vol_uvix.json",
+      "experiment_hash": "#factorlab",
+      "tags": ["credit", "HY spread", "UVIX", "risk-off"],
+      "goal": {
+        "trading_objective_plain": "利差走阔 → 做多 UVIX → 赌波动率随避险上升",
+        "tradable_instrument": "UVIX",
+        "signal": "BAA10Y Δ5 ≥ 10bps"
+      },
+      "pipeline_stages": [
+        { "id": "S0", "name": "目标锚定", "status": "done", "summary": "债券信号 × UVIX" },
+        { "id": "S1", "name": "经济直觉", "status": "done", "summary": "risk-off → vol" },
+        { "id": "S2", "name": "预注册", "status": "done", "summary": "Δ5≥10bps · hold 5d" },
+        { "id": "S3", "name": "数据实现", "status": "done", "summary": "experiment_credit_vol_uvix.py · n=25" },
+        { "id": "S4", "name": "探索分析", "status": "skipped", "summary": "主检验 fail" },
+        { "id": "S5", "name": "确认检验", "status": "done", "summary": "不显著；信号劣于基准" },
+        { "id": "S6", "name": "可交易性", "status": "done", "summary": "门禁 fail → dead" }
+      ],
+      "data": {
+        "instrument": "UVIX + FRED BAA10Y",
+        "source": "Yahoo + FRED",
+        "primary_period": "2022-03-30 ~ 2026-07-17",
+        "n_trading_days": 1078
+      },
+      "methods": [
+        {
+          "name": "credit_widen_long_uvix",
+          "description": "Δ5≥0.10 → long UVIX 5d vs sparse baseline",
+          "result": "mean -3.78% vs +14.50% baseline；hit 24% vs 34%；p=1.0"
+        }
+      ],
+      "key_findings": [
+        "利差走阔信号后 UVIX 5 日收益系统性低于非信号基准",
+        "与 F001 类似：UVIX 随机 5 日基准均值偏高（~14%），事件/信号窗口更难 beat",
+        "近 2y 子样本 mean +7.9% 但未过全样本门禁",
+        "n=25 信号，样本仍偏短"
+      ],
+      "next_steps": [],
+      "references": [],
+      "verdict": "dead — 信用利差走阔后做多 UVIX 不可部署",
+      "created": "2026-07-19",
+      "last_updated": "2026-07-19"
+    },
+    {
+      "id": "F003",
+      "name": "Pre-FOMC SPX Drift",
+      "name_zh": "FOMC 前标普漂移 → 做多 SPY",
+      "hypothesis": "FOMC 声明前，SPY 在预注册窗口收益高于非 FOMC 同窗口基准。",
+      "motivation": "交易目标：FOMC 前买入 SPY 赚股指漂移（Lucca & Moench 2015）。不是做多波动率。",
+      "status": "dead",
+      "status_note": "2026-07-19：S3–S6 完成。FOMC T-5~T-1 做多 SPY：均值 +0.13% vs 基准 +0.24%，超额 -0.11pp，p=1.0；门禁 fail。",
+      "current_stage": "S6",
+      "case_file": "factor_pipeline/cases/F003_spx_fomc_drift.json",
+      "experiment_hash": "#factorlab",
+      "tags": ["SPY", "FOMC", "equity", "calendar"],
+      "goal": {
+        "trading_objective_plain": "FOMC 前若干天买 SPY，发布前卖，赚指数涨",
+        "tradable_instrument": "SPY",
+        "signal": "FOMC 日历"
+      },
+      "pipeline_stages": [
+        { "id": "S0", "name": "目标锚定", "status": "done", "summary": "SPY 股指 drift" },
+        { "id": "S1", "name": "经济直觉", "status": "done", "summary": "政策不确定性消解" },
+        { "id": "S2", "name": "预注册", "status": "done", "summary": "FOMC T-5~T-1 · Bonferroni α=0.025" },
+        { "id": "S3", "name": "数据实现", "status": "done", "summary": "experiment_spy_fomc_drift.py · n=268 FOMC" },
+        { "id": "S4", "name": "探索分析", "status": "done", "summary": "pre/post 2015 未衰减" },
+        { "id": "S5", "name": "确认检验", "status": "done", "summary": "不显著；劣于基准" },
+        { "id": "S6", "name": "可交易性", "status": "done", "summary": "门禁 fail → dead" }
+      ],
+      "data": {
+        "instrument": "SPY",
+        "source": "Yahoo chart API (daily period1/period2)",
+        "primary_period": "1993-01-29 ~ 2026-07-17",
+        "n_trading_days": 8423
+      },
+      "methods": [
+        {
+          "name": "fomc_pre_long_spy",
+          "description": "FOMC T-5→T-1 long SPY vs sparse non-FOMC baseline",
+          "result": "mean +0.13% vs +0.236% baseline；hit 58.2% vs 59.7%；p=1.0"
+        }
+      ],
+      "key_findings": [
+        "268 个 FOMC 事件（1993+），样本充足",
+        "FOMC 前 T-5~T-1 SPY 不显著优于稀疏基准",
+        "Post-2015 子样本 mean +0.21% 通过「非显著负」门禁，但全样本主检验 fail",
+        "与 F001 对照：同 FOMC 窗口 UVIX 无 alpha，SPY 亦无预注册 alpha"
+      ],
+      "next_steps": [],
+      "references": [
+        {
+          "title": "Pre-FOMC Announcement Drift",
+          "authors": "Lucca, D. O. & Moench, E.",
+          "journal": "Journal of Finance",
+          "year": 2015,
+          "note": "F003 复现目标 — 预注册窗口未复现"
+        }
+      ],
+      "verdict": "dead — FOMC 前做多 SPY 不可部署",
+      "created": "2026-07-19",
       "last_updated": "2026-07-19"
     }
   ]

@@ -16,10 +16,10 @@ interface FactorReference {
 }
 
 interface FactorData {
-  instrument: string;
-  source: string;
-  primary_period: string;
-  n_trading_days: number;
+  instrument?: string;
+  source?: string;
+  primary_period?: string;
+  n_trading_days?: number;
   events?: Record<string, number>;
 }
 
@@ -31,11 +31,13 @@ interface PipelineStage {
 }
 
 interface FactorGoal {
-  trading_objective: string;
-  research_instrument: string;
-  tradable_instrument: string;
-  mapping_gap: string;
-  horizon: string;
+  trading_objective?: string;
+  trading_objective_plain?: string;
+  research_instrument?: string;
+  tradable_instrument?: string;
+  mapping_gap?: string;
+  horizon?: string;
+  signal?: string;
 }
 
 interface Factor {
@@ -52,12 +54,12 @@ interface Factor {
   tags: string[];
   goal?: FactorGoal;
   pipeline_stages?: PipelineStage[];
-  data: FactorData;
-  methods: FactorMethod[];
-  key_findings: string[];
+  data?: FactorData;
+  methods?: FactorMethod[];
+  key_findings?: string[];
   verdict: string;
-  next_steps: string[];
-  references: FactorReference[];
+  next_steps?: string[];
+  references?: FactorReference[];
   created: string;
   last_updated: string;
 }
@@ -170,7 +172,9 @@ function FactorCard({ factor, onSelect }: { factor: Factor; onSelect: () => void
       </div>
       {factor.goal && (
         <div className="deck-goal-snippet">
-          Goal: {factor.goal.tradable_instrument} · {factor.goal.trading_objective}
+          Goal: {factor.goal.tradable_instrument ?? '—'}
+          {' · '}
+          {factor.goal.trading_objective ?? factor.goal.trading_objective_plain ?? '—'}
         </div>
       )}
       <p className="deck-hypothesis">{factor.hypothesis}</p>
@@ -180,7 +184,10 @@ function FactorCard({ factor, onSelect }: { factor: Factor; onSelect: () => void
       </div>
       <div className="deck-meta">
         {factor.current_stage ? `Stage ${factor.current_stage} · ` : ''}
-        {factor.data.primary_period} · {factor.data.n_trading_days.toLocaleString()} trading days
+        {factor.data?.primary_period ?? '—'}
+        {factor.data?.n_trading_days != null && (
+          <> · {factor.data.n_trading_days.toLocaleString()} trading days</>
+        )}
       </div>
     </div>
   );
@@ -207,8 +214,10 @@ function FactorDetail({ factor, onBack }: { factor: Factor; onBack: () => void }
           <strong style={{ color: 'var(--text-3)' }}>Motivation: </strong>{factor.motivation}
         </p>
         <p className="deck-meta" style={{ marginTop: 12 }}>
-          {factor.data.instrument} · {factor.data.source} · {factor.data.primary_period} · {factor.data.n_trading_days.toLocaleString()} days
-          {factor.data.events && (
+          {factor.data?.instrument ?? '—'} · {factor.data?.source ?? '—'}
+          {factor.data?.primary_period && <> · {factor.data.primary_period}</>}
+          {factor.data?.n_trading_days != null && <> · {factor.data.n_trading_days.toLocaleString()} days</>}
+          {factor.data?.events && (
             <span> · FOMC×{factor.data.events.fomc} / CPI×{factor.data.events.cpi} / NFP×{factor.data.events.nfp}</span>
           )}
         </p>
@@ -231,16 +240,25 @@ function FactorDetail({ factor, onBack }: { factor: Factor; onBack: () => void }
         <section className="lab-card deck-goal-card">
           <h2>S0 · Trading Goal</h2>
           <p style={{ fontSize: 13, color: 'var(--text-1)', lineHeight: 1.7, marginBottom: 8 }}>
-            {factor.goal.trading_objective}
+            {factor.goal.trading_objective ?? factor.goal.trading_objective_plain ?? '—'}
           </p>
           <div className="lab-info-grid">
-            <div><span className="lab-info-key">Research</span><span>{factor.goal.research_instrument}</span></div>
-            <div><span className="lab-info-key">Tradable</span><span>{factor.goal.tradable_instrument}</span></div>
+            {factor.goal.research_instrument && (
+              <div><span className="lab-info-key">Research</span><span>{factor.goal.research_instrument}</span></div>
+            )}
+            {factor.goal.tradable_instrument && (
+              <div><span className="lab-info-key">Tradable</span><span>{factor.goal.tradable_instrument}</span></div>
+            )}
+            {factor.goal.signal && (
+              <div><span className="lab-info-key">Signal</span><span>{factor.goal.signal}</span></div>
+            )}
           </div>
-          <p style={{ fontSize: 12, color: 'var(--accent-yellow)', marginTop: 10, lineHeight: 1.6 }}>
-            Mapping gap: {factor.goal.mapping_gap}
-          </p>
-          <p className="deck-meta">Horizon: {factor.goal.horizon}</p>
+          {factor.goal.mapping_gap && (
+            <p style={{ fontSize: 12, color: 'var(--accent-yellow)', marginTop: 10, lineHeight: 1.6 }}>
+              Mapping gap: {factor.goal.mapping_gap}
+            </p>
+          )}
+          {factor.goal.horizon && <p className="deck-meta">Horizon: {factor.goal.horizon}</p>}
         </section>
       )}
 
@@ -271,35 +289,43 @@ function FactorDetail({ factor, onBack }: { factor: Factor; onBack: () => void }
       )}
 
       <div className="deck-two-col">
-        <section className="lab-card" style={{ marginBottom: 0 }}>
-          <h2>Key Findings</h2>
-          <ul className="deck-findings" style={{ margin: 0, paddingLeft: 16 }}>
-            {factor.key_findings.map((f, i) => <li key={i}>{f}</li>)}
-          </ul>
-        </section>
+        {(factor.key_findings?.length ?? 0) > 0 && (
+          <section className="lab-card" style={{ marginBottom: 0 }}>
+            <h2>Key Findings</h2>
+            <ul className="deck-findings" style={{ margin: 0, paddingLeft: 16 }}>
+              {factor.key_findings!.map((f, i) => <li key={i}>{f}</li>)}
+            </ul>
+          </section>
+        )}
         <section className="lab-card" style={{ marginBottom: 0 }}>
           <h2>Verdict</h2>
           <div className="deck-verdict-box">{factor.verdict}</div>
-          <h2 style={{ fontSize: 15, marginBottom: 8 }}>Next Steps</h2>
-          <ul className="deck-next-steps" style={{ margin: 0, paddingLeft: 16 }}>
-            {factor.next_steps.map((s, i) => <li key={i}>{s}</li>)}
-          </ul>
+          {(factor.next_steps?.length ?? 0) > 0 && (
+            <>
+              <h2 style={{ fontSize: 15, marginBottom: 8 }}>Next Steps</h2>
+              <ul className="deck-next-steps" style={{ margin: 0, paddingLeft: 16 }}>
+                {factor.next_steps!.map((s, i) => <li key={i}>{s}</li>)}
+              </ul>
+            </>
+          )}
         </section>
       </div>
 
-      <section className="lab-card">
-        <h2>Methods Tried <span style={{ color: 'var(--text-3)', fontWeight: 400, fontSize: 13 }}>({factor.methods.length})</span></h2>
-        {factor.methods.map((m, i) => <MethodRow key={m.name} m={m} idx={i} />)}
-      </section>
+      {(factor.methods?.length ?? 0) > 0 && (
+        <section className="lab-card">
+          <h2>Methods Tried <span style={{ color: 'var(--text-3)', fontWeight: 400, fontSize: 13 }}>({factor.methods!.length})</span></h2>
+          {factor.methods!.map((m, i) => <MethodRow key={m.name} m={m} idx={i} />)}
+        </section>
+      )}
 
       <div className="deck-note-box">
         <strong>Status Note: </strong>{factor.status_note}
       </div>
 
-      {factor.references.length > 0 && (
+      {(factor.references?.length ?? 0) > 0 && (
         <section className="lab-card">
           <h2>References</h2>
-          {factor.references.map((r, i) => (
+          {factor.references!.map((r, i) => (
             <div key={i} className="deck-ref-item">
               <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-1)' }}>{r.title} ({r.year})</div>
               <div style={{ fontSize: 12, color: 'var(--text-3)', marginBottom: 4 }}>{r.authors} · {r.journal}</div>

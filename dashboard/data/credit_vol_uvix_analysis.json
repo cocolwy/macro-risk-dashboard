@@ -1,0 +1,244 @@
+{
+  "title": "Credit Spread Shock \u00d7 UVIX (F002)",
+  "subtitle": "BAA10Y \u03945\u226510bps \u2192 long UVIX 5d",
+  "case_id": "F002",
+  "generated_at": "2026-07-19T09:42:41Z",
+  "summary": {
+    "signal": "FRED BAA10Y",
+    "trigger": "\u03945 >= +0.1 (10bps)",
+    "hold": "T+0 close \u2192 T+5 close",
+    "data_range": "2022-03-30 ~ 2026-07-17",
+    "n_signals": 25,
+    "n_baseline": 185,
+    "insufficient_sample": false
+  },
+  "primary_analysis": {
+    "method": "Bonferroni \u03b1=0.025 (2 tests) \u00b7 baseline stride=5",
+    "h1_hit_rate": {
+      "event_hit_rate": 0.24,
+      "baseline_hit_rate": 0.341,
+      "excess_hit_rate": -0.101,
+      "z_stat": -1.005,
+      "p_value": 1.0,
+      "significant": false,
+      "alpha_used": 0.025,
+      "event_n": 25,
+      "baseline_n": 185
+    },
+    "h1_mean_return": {
+      "event_mean_pct": -3.782,
+      "baseline_mean_pct": 14.503,
+      "excess_mean_pct": -18.285,
+      "t_stat": -1.461,
+      "p_value": 1.0,
+      "significant": false,
+      "alpha_used": 0.025,
+      "event_n": 25,
+      "baseline_n": 185,
+      "cost_adjusted_excess_pct": {
+        "base": -19.325,
+        "stress": -20.886
+      }
+    },
+    "conclusion_summary": "\u4e3b\u68c0\u9a8c\u4e0d\u663e\u8457\uff1a\u4fe1\u53f7\u5747\u503c -3.782% vs \u57fa\u51c6 14.503%\uff08p=1.0\uff09\uff1bS6 \u95e8\u7981 preview: FAIL\u3002"
+  },
+  "signal_trades": [
+    {
+      "entry_date": "2022-04-12",
+      "exit_date": "2022-04-20",
+      "delta5": 0.15,
+      "return_pct": -22.479
+    },
+    {
+      "entry_date": "2022-04-26",
+      "exit_date": "2022-05-03",
+      "delta5": 0.15,
+      "return_pct": -9.087
+    },
+    {
+      "entry_date": "2022-05-10",
+      "exit_date": "2022-05-17",
+      "delta5": 0.11,
+      "return_pct": -27.639
+    },
+    {
+      "entry_date": "2022-05-18",
+      "exit_date": "2022-05-25",
+      "delta5": 0.14,
+      "return_pct": -17.309
+    },
+    {
+      "entry_date": "2022-06-21",
+      "exit_date": "2022-06-28",
+      "delta5": 0.15,
+      "return_pct": -12.086
+    },
+    {
+      "entry_date": "2022-06-30",
+      "exit_date": "2022-07-08",
+      "delta5": 0.11,
+      "return_pct": -14.169
+    },
+    {
+      "entry_date": "2022-07-28",
+      "exit_date": "2022-08-04",
+      "delta5": 0.19,
+      "return_pct": -3.811
+    },
+    {
+      "entry_date": "2022-09-28",
+      "exit_date": "2022-10-05",
+      "delta5": 0.13,
+      "return_pct": -5.687
+    },
+    {
+      "entry_date": "2022-10-13",
+      "exit_date": "2022-10-20",
+      "delta5": 0.12,
+      "return_pct": -5.93
+    },
+    {
+      "entry_date": "2022-11-09",
+      "exit_date": "2022-11-16",
+      "delta5": 0.15,
+      "return_pct": -16.059
+    },
+    {
+      "entry_date": "2022-12-19",
+      "exit_date": "2022-12-27",
+      "delta5": 0.1,
+      "return_pct": -5.055
+    },
+    {
+      "entry_date": "2023-03-10",
+      "exit_date": "2023-03-17",
+      "delta5": 0.17,
+      "return_pct": 9.433
+    },
+    {
+      "entry_date": "2023-04-26",
+      "exit_date": "2023-05-03",
+      "delta5": 0.1,
+      "return_pct": -6.021
+    },
+    {
+      "entry_date": "2023-05-04",
+      "exit_date": "2023-05-11",
+      "delta5": 0.17,
+      "return_pct": -21.333
+    },
+    {
+      "entry_date": "2023-07-13",
+      "exit_date": "2023-07-20",
+      "delta5": 0.11,
+      "return_pct": -1.208
+    },
+    {
+      "entry_date": "2023-08-07",
+      "exit_date": "2023-08-14",
+      "delta5": 0.13,
+      "return_pct": -8.252
+    },
+    {
+      "entry_date": "2023-09-28",
+      "exit_date": "2023-10-05",
+      "delta5": 0.14,
+      "return_pct": 8.902
+    },
+    {
+      "entry_date": "2024-08-02",
+      "exit_date": "2024-08-09",
+      "delta5": 0.15,
+      "return_pct": -37.981
+    },
+    {
+      "entry_date": "2025-03-03",
+      "exit_date": "2025-03-10",
+      "delta5": 0.13,
+      "return_pct": 28.111
+    },
+    {
+      "entry_date": "2025-03-13",
+      "exit_date": "2025-03-20",
+      "delta5": 0.11,
+      "return_pct": -27.73
+    },
+    {
+      "entry_date": "2025-03-31",
+      "exit_date": "2025-04-07",
+      "delta5": 0.12,
+      "return_pct": 97.368
+    },
+    {
+      "entry_date": "2025-04-08",
+      "exit_date": "2025-04-15",
+      "delta5": 0.27,
+      "return_pct": -45.004
+    },
+    {
+      "entry_date": "2025-09-02",
+      "exit_date": "2025-09-09",
+      "delta5": 0.11,
+      "return_pct": -14.717
+    },
+    {
+      "entry_date": "2026-02-27",
+      "exit_date": "2026-03-06",
+      "delta5": 0.11,
+      "return_pct": 49.363
+    },
+    {
+      "entry_date": "2026-03-11",
+      "exit_date": "2026-03-18",
+      "delta5": 0.1,
+      "return_pct": 13.83
+    }
+  ],
+  "signal_trades_total": 25,
+  "recent_subsample": {
+    "years": 2,
+    "cutoff": "2024-07-17",
+    "n_signals": 8,
+    "mean_return_pct": 7.905,
+    "hit_rate_up": 0.5,
+    "p_one_sided_negative": 1.0,
+    "gate_pass": true
+  },
+  "s6_gate_preview": {
+    "all_pass": false,
+    "verdict": "fail \u2014 dead per F002 preregister",
+    "checks": {
+      "h1_mean_bonferroni": {
+        "pass": false,
+        "p_value": 1.0,
+        "alpha": 0.025
+      },
+      "h1_hit_rate_bonferroni": {
+        "pass": false,
+        "p_value": 1.0,
+        "alpha": 0.025
+      },
+      "cost_adjusted_excess_positive": {
+        "pass": false,
+        "cost_adjusted_excess_pct": -19.325,
+        "base_total_bps": 104.02
+      },
+      "recent_2y_not_significantly_negative": {
+        "pass": true,
+        "detail": {
+          "years": 2,
+          "cutoff": "2024-07-17",
+          "n_signals": 8,
+          "mean_return_pct": 7.905,
+          "hit_rate_up": 0.5,
+          "p_one_sided_negative": 1.0,
+          "gate_pass": true
+        }
+      }
+    }
+  },
+  "costs": {
+    "base_total_bps": 104.02,
+    "stress_total_bps": 260.05
+  }
+}

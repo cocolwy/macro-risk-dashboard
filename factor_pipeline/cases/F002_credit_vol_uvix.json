@@ -1,0 +1,189 @@
+{
+  "id": "F002",
+  "name": "Credit Spread Shock → UVIX",
+  "name_zh": "信用利差走阔 × 做多 UVIX",
+  "created": "2026-07-19",
+  "last_updated": "2026-07-19",
+  "pipeline_version": "1.0",
+  "status": "dead",
+  "current_stage": "S5",
+  "tags": ["credit", "HY spread", "UVIX", "VIX", "risk-off", "macro", "BAA10Y"],
+  "orthogonal_to": ["F001 日历×事件", "F003 SPX FOMC drift"],
+  "purpose": "信号来自债券市场（信用利差变化），非宏观发布日历；与 F001 正交。Primary 因变量锁定 UVIX。",
+
+  "S0_goal": {
+    "status": "done",
+    "trading_objective_plain": "当公司债变「更危险」（高收益债利差走阔）时，市场往往一起避险 → 波动率上升。若在利差刚走阔后做多 UVIX，能否赚到这波 vol 上涨？",
+    "trading_objective": "信用利差 5 日走阔超过 10bps 时，收盘做多 UVIX、持有 5 个交易日，赚 risk-off 带来的波动率上升。",
+    "instrument": {
+      "signal": "FRED BAA10Y（high_yield_spread，单位：百分点，如 1.56 = 156bps 量级）",
+      "research": "^VIX（仅 S4 探索 / 2022 前 UVIX 不可用时的对照，不作主门禁）",
+      "tradable": "UVIX — primary 因变量",
+      "mapping_gap": "利差走阔 ≠ UVIX 必涨；UVIX 有衰减、split 复权与跟踪误差"
+    },
+    "action": "long UVIX on credit spread widening signal",
+    "horizon": "信号日 T+0 close 买入 → T+5 close 卖出（5 个交易日）",
+    "success_metric": "信号日 UVIX 持有收益 > 稀疏非信号基准；Bonferroni 后显著；成本后超额 > 0"
+  },
+
+  "S1_hypothesis": {
+    "status": "done",
+    "hypothesis": "BAA 信用利差 5 日走阔 ≥10bps 后，UVIX 随后 5 日持有收益系统性高于无信号同持有期基准。",
+    "mechanism": "信用利差走阔 = 风险偏好下降 → 股票跌、VIX 涨 → UVIX 应同向（扣除衰减后仍可能有边缘）。",
+    "failure_modes": [
+      "利差走阔但 VIX 已高位 → 利好出尽",
+      "利差变动滞后于 vol，信号慢半拍",
+      "UVIX 衰减在 5 日持有仍吞掉 edge",
+      "2020/2022 危机周极端值主导样本",
+      "FRED 利差日频 vs UVIX 交易日对齐误差"
+    ]
+  },
+
+  "S2_preregister": {
+    "status": "done",
+    "locked_at": "2026-07-19",
+    "rule": "以下 primary 字段在首次跑主检验前锁定；探索项不得回填修改 primary",
+
+    "signal": {
+      "series": "FRED BAA10Y → high_yield_spread（同 fetch_macro_data.py）",
+      "delta_window_trading_days": 5,
+      "delta_formula": "Δ5(t) = spread(t) - spread(t-5)，spread 按 UVIX 交易日 ffil 对齐",
+      "trigger": "Δ5(t) >= +0.10（即走阔 ≥10bps，单位与 FRED 序列一致）",
+      "direction": "widening only（走阔做多 UVIX；收窄不做空，留探索）",
+      "observation_time": "t 日收盘后可得（FRED 日频当日值）",
+      "cooldown": "若上一笔信号持有未结束（t 在 [entry, exit] 内），跳过新信号，避免重叠仓位"
+    },
+
+    "execution_spec": {
+      "entry": "信号日 t 的 UVIX 收盘价（close）买入",
+      "exit": "t+5 交易日的 UVIX 收盘价（close）卖出",
+      "direction": "long only",
+      "position": "每笔信号固定 1 单位名义（百分比收益；不加杠杆叠加）",
+      "order_type_live": "MOC（同 F001b）",
+      "calendar": "UVIX 美股交易日"
+    },
+
+    "hold_window": {
+      "primary": { "days": 5, "label": "T+0 close → T+5 close" }
+    },
+
+    "sample": {
+      "instrument_ticker": "UVIX",
+      "effective_start": "UVIX 首个有效交易日（约 2022-03-30）",
+      "effective_end": "分析日",
+      "spread_history_note": "BAA10Y 可回溯 2005+，但 primary 样本仅 UVIX 可用区间",
+      "min_signals": 20,
+      "insufficient_rule": "若有效信号 n < 20，主检验标 insufficient，不事后改阈值/窗口"
+    },
+
+    "baseline": {
+      "method": "非信号日 anchor",
+      "definition": "Δ5(t) < +0.10 且 t 非 cooldown 跳过日",
+      "stride": 5,
+      "return": "每个 anchor 日 t：UVIX close(t) → close(t+5)，与信号持有期相同",
+      "exclude": "所有信号 entry 日及其持有窗口覆盖的交易日（anchor 不得在持有期内开新窗）"
+    },
+
+    "primary_tests": [
+      {
+        "id": "H1_hit_rate",
+        "label": "H1 · 信号后 UVIX 5 日收益 > 0 的比例 > 基准",
+        "test": "单侧两比例 z-test",
+        "alpha_family": "primary"
+      },
+      {
+        "id": "H1_mean_return",
+        "label": "H1 · 信号后 UVIX 平均 5 日收益 > 基准",
+        "test": "单侧 Welch t-test（signal mean > baseline mean）",
+        "alpha_family": "primary"
+      }
+    ],
+
+    "multiple_testing": {
+      "family": "primary",
+      "n_tests": 2,
+      "bonferroni_alpha": 0.025,
+      "note": "仅 hit rate + mean 两检验；探索性阈值/持有期扫描不入 family"
+    },
+
+    "cost_assumptions": {
+      "inherit_from": "F001b",
+      "typical_notional_usd": 6000,
+      "base_total_round_trip_bps": 104.02,
+      "stress_total_round_trip_bps": 260.05,
+      "application": "cost_adjusted_excess = (signal_mean - baseline_mean) - bps/10000"
+    },
+
+    "gate_criteria_s6": {
+      "must_pass_all": [
+        "H1 mean return Bonferroni 显著为正（p < 0.025）",
+        "成本后超额（base 104bps）> 0",
+        "近 2y 子样本信号持有 mean 不为显著负（p_one > 0.05 或 mean > 0）"
+      ],
+      "if_fail": "F002 标 dead；不在本数据上扫阈值/持有期作主结论"
+    },
+
+    "exploratory_s4_only": [
+      { "name": "threshold_sweep", "values_bps": [5, 15, 20], "note": "不作主门禁" },
+      { "name": "hold_sweep", "days": [3, 10], "note": "不作主门禁" },
+      { "name": "delta_window_sweep", "days": [3, 10], "note": "不作主门禁" },
+      { "name": "vix_bridge_pre_uvix", "period": "2022-03 前 ^VIX 对照", "note": "UVIX 不可用，仅探索" },
+      { "name": "exclude_crisis", "periods": ["2020-03~2020-06", "2022 H1"], "note": "敏感性" }
+    ],
+
+    "explicitly_out_of_scope": [
+      "FOMC/CPI/NFP 日历作为主信号",
+      "利差收窄做空 UVIX（primary）",
+      "低 VIX 条件（F001c 线）",
+      "事后选最优阈值/持有期作主结论"
+    ],
+
+    "deliverables_s3_s5": {
+      "script": "dashboard/experiment_credit_vol_uvix.py",
+      "output_json": "dashboard/data/credit_vol_uvix_analysis.json"
+    }
+  },
+
+  "S3_data": {
+    "status": "done",
+    "sources": [
+      "FRED BAA10Y via fetch_macro_data.fetch_fred_series",
+      "UVIX daily via Yahoo chart API + split adjust"
+    ],
+    "script": "dashboard/experiment_credit_vol_uvix.py",
+    "output_json": "dashboard/data/credit_vol_uvix_analysis.json",
+    "data_range": "2022-03-30 ~ 2026-07-17",
+    "n_signals": 25,
+    "n_baseline_anchors": 185
+  },
+  "S4_explore": { "status": "pending", "note": "阈值/持有期扫描预注册为探索；主检验已 fail，低优先级" },
+  "S5_confirm": {
+    "status": "done",
+    "primary_result": "H1 不显著：信号后 UVIX 5 日平均 -3.78% vs 基准 +14.50%（超额 -18.3pp，p=1.0）；命中率 24% vs 34%。n=25 信号。",
+    "insufficient_sample": false,
+    "verdict_research": "信用利差走阔后做多 UVIX 主假设不成立；全样本表现劣于非信号基准。"
+  },
+  "S6_tradability": {
+    "status": "done",
+    "costs_considered": true,
+    "product_test_done": true,
+    "s6_gate": { "verdict": "fail", "all_pass": false },
+    "verdict_trading": "dead — 门禁 fail；成本后超额 -19.3%"
+  },
+  "S7_archive": {
+    "status": "pending",
+    "alpha_deck_id": "F002",
+    "dashboard_hash": "#factorlab"
+  },
+
+  "stage_checklist": [
+    { "id": "S0", "name": "目标锚定", "status": "done", "notes": [] },
+    { "id": "S1", "name": "经济直觉", "status": "done", "notes": [] },
+    { "id": "S2", "name": "预注册", "status": "done", "notes": ["2026-07-19 锁定 Δ5≥10bps · hold 5d · Bonferroni 2-test"] },
+    { "id": "S3", "name": "数据实现", "status": "done", "notes": ["25 信号 · 185 基准"] },
+    { "id": "S4", "name": "探索分析", "status": "skipped", "notes": ["主检验 fail"] },
+    { "id": "S5", "name": "确认检验", "status": "done", "notes": ["不显著；信号均值 -3.8%"] },
+    { "id": "S6", "name": "可交易性", "status": "done", "notes": ["门禁 fail → dead"] },
+    { "id": "S7", "name": "归档看板", "status": "pending", "notes": [] }
+  ]
+}

@@ -5,8 +5,8 @@
   "created": "2026-07-15",
   "last_updated": "2026-07-19",
   "pipeline_version": "1.0",
-  "status": "weak",
-  "current_stage": "S6",
+  "status": "dead",
+  "current_stage": "S7",
   "tags": ["UVIX", "VIX", "events", "macro", "FOMC", "CPI", "NFP"],
 
   "S0_goal": {
@@ -101,17 +101,20 @@
   },
 
   "S6_tradability": {
-    "status": "in_progress",
-    "bridge_to_product": "本次工作几乎全部在 ^VIX 上完成。交易目标是 UVIX，因此当前不能声称「可交易 alpha」。即使未来低 VIX×FOMC 在 VIX 上确认，仍须用 UVIX 收益（含衰减与成本）重跑同一预注册协议。",
-    "costs_considered": false,
-    "product_test_done": false,
-    "verdict_trading": "以交易 UVIX 为目标：当前证据不足，倾向不部署。VIX 代理检验已偏弱；产品层还有杠杆衰减与成本，预期只会更差或更噪。唯一残留研究价值是：低波动 regime 下事件前做多波动率产品是否仍有边缘 — 必须用 UVIX 数据单独预注册验证。",
-    "blockers": [
-      "未对 UVIX 历史收益做事件窗口检验",
-      "未计入买卖价差 / 隔夜衰减 / 杠杆路径依赖",
-      "入场时刻未定义到可执行规则（T-5 收盘？开盘？）",
-      "条件信号未做样本外确认"
-    ]
+    "status": "done",
+    "bridge_to_product": "F001b 已在 UVIX 上重跑预注册协议（2022-03~今，n_FOMC=34）。",
+    "costs_considered": true,
+    "product_test_done": true,
+    "f001b_case": "factor_pipeline/cases/F001b_uvix_preregister.json",
+    "f001b_gate": "fail",
+    "verdict_trading": "dead — T-5→T-1 做多 UVIX 日历策略未过 S6 门禁。FOMC 前 UVIX 平均 -4.8% vs 基准 +13.8%；VIX 同窗口命中率 50% 但 UVIX 仅 21%。",
+    "blockers_resolved": [
+      "UVIX 历史收益检验 — F001b 完成",
+      "成本假设 — $6k / 104bps base",
+      "入场规则 — MOC @ T-5/T-1 close"
+    ],
+    "f001b_preregister": "factor_pipeline/cases/F001b_uvix_preregister.json",
+    "execution_locked": "T-5 close → T-1 close long UVIX（见 F001b strategy_spec）"
   },
 
   "S7_archive": {
@@ -129,14 +132,16 @@
       {
         "id": "F001b",
         "title": "UVIX 产品层预注册检验",
-        "stage": "S2→S5→S6",
-        "protocol": "同一 T-5~T-1 / 稀疏基准 / Bonferroni；因变量改为 UVIX 收益；样本尽量长"
+        "stage": "S6 done — dead",
+        "case_file": "factor_pipeline/cases/F001b_uvix_preregister.json",
+        "result": "门禁 fail；FOMC 前 UVIX 平均 -4.8%"
       },
       {
         "id": "F001c",
-        "title": "低 VIX × FOMC 独立确认",
-        "stage": "S2→S5",
-        "protocol": "预注册阈值（如 VIX<p33 或固定 15）；确认样本与探索样本拆分"
+        "title": "低 VIX × FOMC 独立确认（可选 · 低优先级）",
+        "stage": "未启动",
+        "protocol": "须新建 case、样本拆分预注册；且 F001b 失败后默认不在同线日历策略上继续加条件",
+        "recommendation": "仅作机制研究；若目标是 UVIX 交易，先证伪简单日历再考虑条件版"
       }
     ]
   },
@@ -184,11 +189,8 @@
     {
       "id": "S6",
       "name": "可交易性",
-      "status": "in_progress",
-      "notes": [
-        "以 UVIX 为目标重审后：不得标 confirmed",
-        "阻塞：缺 UVIX 收益检验与成本"
-      ]
+      "status": "done",
+      "notes": ["F001b UVIX 检验 + Strategy Spec；门禁 fail → dead"]
     },
     {
       "id": "S7",
@@ -201,7 +203,8 @@
   "revised_verdict": {
     "as_of": "2026-07-19",
     "research_series": "weak / conditional（仅低 VIX×FOMC 探索线索）",
-    "trading_uvix": "weak — 不建议实盘；需完成 UVIX 层检验后才能升级",
-    "summary": "第一个因子走完了「从灵感到严格检验」的大半程，但因目标（UVIX）与检验标的（VIX）错位，加上主检验偏弱与产品层未做，当前归档为 weak。流水线价值保留：协议、否定记录、条件线索均可复用。"
+    "trading_uvix": "dead — F001b S6 门禁 fail；不部署日历做多 UVIX",
+    "research_vix": "weak — 全样本主检验不显著；低 VIX×FOMC 仅为未确认探索",
+    "summary": "第一个因子完整走完 S0–S7。结论：无日历×UVIX 可交易 edge。否定结果本身有价值；避免在已 fail 的母策略上加条件继续挖。"
   }
 }

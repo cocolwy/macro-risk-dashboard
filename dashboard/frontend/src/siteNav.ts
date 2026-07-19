@@ -88,7 +88,7 @@ export const SITE_NAV: Record<PageId, NavItem> = {
     subtitle: '因子线 · S0–S7 单因子挖掘 · 与 Risk Ch.1/Ch.2 模型实验独立',
     level: 1,
     badge: 'NEW',
-    metrics: 'F001 UVIX · weak @ S6',
+    metrics: 'F001/F002/F003 dead',
   },
 };
 
@@ -152,3 +152,21 @@ export const HOME_SECTIONS = [
     items: ['ch1', 'ch2', 'ch2_1'] as PageId[],
   },
 ];
+
+/** Home 页待办 — 预注册完成、尚未开工的因子实验 */
+export interface HomeTodo {
+  id: string;
+  factorId: string;
+  title: string;
+  stage: string;
+  status: 'registered' | 'in_progress' | 'done';
+  summary: string;
+  caseFile: string;
+}
+
+export const HOME_TODOS = {
+  updated: '2026-07-19',
+  title: 'Alpha Deck · 已预注册 · 待开工',
+  hint: '当前无待开工因子；F001–F003 均已 dead。',
+  items: [] as HomeTodo[],
+};

@@ -1,0 +1,180 @@
+{
+  "id": "F003",
+  "name": "Pre-FOMC SPX Drift",
+  "name_zh": "FOMC 前标普漂移 → 做多 SPY",
+  "created": "2026-07-19",
+  "last_updated": "2026-07-19",
+  "pipeline_version": "1.0",
+  "status": "dead",
+  "current_stage": "S6",
+  "tags": ["SPY", "SPX", "FOMC", "equity", "calendar", "Lucca-Moench"],
+  "orthogonal_to": ["F001 日历×UVIX", "F002 credit×vol"],
+  "purpose": "检验 Lucca & Moench (2015) 在 SPY 上的 FOMC 前漂移；primary 因变量锁定 SPY。",
+
+  "S0_goal": {
+    "status": "done",
+    "trading_objective_plain": "FOMC 公布政策前，标普 500 历史上有时会出现「默默上涨」。若在 FOMC 前若干天买入 SPY、发布前卖出，能否赚到这段股指漂移？",
+    "trading_objective": "FOMC 前 T-5 收盘做多 SPY、T-1 收盘平仓，赚 FOMC 前 equity drift。",
+    "instrument": {
+      "signal": "FOMC 日历（predict_model.get_event_dates + get_historical_fomc_dates）",
+      "research": "^GSPC（对照，非 primary）",
+      "tradable": "SPY",
+      "mapping_gap": "SPY 跟踪标普500，流动性高；与 UVIX 完全无关"
+    },
+    "action": "long SPY before FOMC",
+    "horizon": "T-5 close → T-1 close",
+    "success_metric": "FOMC 前 SPY 窗口收益 > 稀疏非 FOMC 基准；Bonferroni 后显著；成本后为正"
+  },
+
+  "S1_hypothesis": {
+    "status": "done",
+    "hypothesis": "FOMC 声明前 T-5~T-1，SPY 收益率系统性高于非 FOMC 日同窗口基准。",
+    "mechanism": "政策不确定性在公布前逐步消解 → 股指偏涨（Lucca & Moench 2015）。",
+    "failure_modes": [
+      "2015 年后效应被套利消失",
+      "近年 FOMC 路径高度可预期",
+      "危机周 FOMC 方向反转",
+      "与 F001 同窗口但资产不同 — SPY 可能有 drift 而 UVIX 无"
+    ]
+  },
+
+  "S2_preregister": {
+    "status": "done",
+    "locked_at": "2026-07-19",
+    "rule": "以下 primary 在首次跑 SPY 主检验前锁定",
+
+    "events": ["FOMC"],
+    "event_date_source": "get_event_dates().fomc + get_historical_fomc_dates()，对齐 SPY 交易日",
+
+    "execution_spec": {
+      "entry": "FOMC 日 T-5 的 SPY 收盘价买入",
+      "exit": "FOMC 日 T-1 的 SPY 收盘价卖出",
+      "direction": "long only",
+      "position": "每笔 FOMC 固定 1 单位名义（百分比收益）",
+      "overlap": "各 FOMC 独立计一笔",
+      "order_type_live": "MOC",
+      "calendar": "SPY 美股交易日"
+    },
+
+    "windows": {
+      "h1_pre": { "start": "T-5", "end": "T-1", "return": "close(T-5) → close(T-1) pct on SPY" }
+    },
+
+    "sample": {
+      "instrument_ticker": "SPY",
+      "period": "SPY 可用全历史（Yahoo 5y+ / max）；FOMC 日期尽量长（1994+）",
+      "min_fomc_events": 40,
+      "insufficient_rule": "有效 FOMC n < 40 标 insufficient，不改窗口"
+    },
+
+    "baseline": {
+      "method": "非 FOMC 日 anchor",
+      "stride": 5,
+      "exclude": "所有 FOMC 事件日及其交易对齐日",
+      "return": "T-5→T-1 SPY 收益，与事件窗口相同"
+    },
+
+    "primary_tests": [
+      {
+        "id": "H1_hit_rate",
+        "label": "H1 · FOMC 前 SPY 上涨命中率 > 基准",
+        "test": "单侧两比例 z-test（return > 0）",
+        "alpha_family": "primary"
+      },
+      {
+        "id": "H1_mean_return",
+        "label": "H1 · FOMC 前 SPY 平均收益 > 基准",
+        "test": "单侧 Welch t-test",
+        "alpha_family": "primary"
+      }
+    ],
+
+    "multiple_testing": {
+      "family": "primary",
+      "n_tests": 2,
+      "bonferroni_alpha": 0.025
+    },
+
+    "cost_assumptions": {
+      "typical_notional_usd": 6000,
+      "broker_round_trip_bps": 10,
+      "spread_round_trip_bps": 2,
+      "base_total_round_trip_bps": 12,
+      "stress_total_round_trip_bps": 30,
+      "note": "SPY 高流动性占位；S3 可按实际 broker 校准"
+    },
+
+    "gate_criteria_s6": {
+      "must_pass_all": [
+        "H1 mean return Bonferroni 显著为正（p < 0.025）",
+        "成本后超额（base 12bps）> 0",
+        "Post-2015 子样本 FOMC 前 mean 不为显著负（p_one > 0.05 或 mean > 0）"
+      ],
+      "if_fail": "F003 标 dead；不在本数据上扫 T-3/T-2 窗口作主结论"
+    },
+
+    "exploratory_s4_only": [
+      { "name": "pre_post_2015_split", "split": "2015-01-01", "note": "发表后衰减（Lucca 2015）" },
+      { "name": "window_sweep", "windows": ["T-3~T-1", "T-2~T-1"], "note": "不作主门禁" },
+      { "name": "covid_exclude", "period": "2020-03~2020-06" }
+    ],
+
+    "explicitly_out_of_scope": [
+      "CPI/NFP 日历（仅 FOMC）",
+      "UVIX/VIX 作为主因变量",
+      "credit 利差信号（F002）"
+    ],
+
+    "deliverables_s3_s5": {
+      "script": "dashboard/experiment_spy_fomc_drift.py",
+      "output_json": "dashboard/data/spy_fomc_drift_analysis.json"
+    }
+  },
+
+  "S3_data": {
+    "status": "done",
+    "sources": [
+      "SPY daily adjusted close via Yahoo chart API period1/period2 (1993+)",
+      "FOMC dates: get_event_dates + get_historical_fomc_dates"
+    ],
+    "script": "dashboard/experiment_spy_fomc_drift.py",
+    "output_json": "dashboard/data/spy_fomc_drift_analysis.json",
+    "data_range": "1993-01-29 ~ 2026-07-17",
+    "n_fomc_events": 268,
+    "n_baseline_anchors": 1622,
+    "note": "Yahoo range=max 返回周线；已改用 period1/period2 拉日线"
+  },
+  "S4_explore": {
+    "status": "done",
+    "pre_post_2015": {
+      "pre_2015": { "n": 174, "mean_pct": 0.087, "hit_rate_up": 0.563 },
+      "post_2015": { "n": 94, "mean_pct": 0.21, "hit_rate_up": 0.617 },
+      "note": "探索性；2015 后未衰减反而略高，但全样本主检验不显著"
+    }
+  },
+  "S5_confirm": {
+    "status": "done",
+    "primary_result": "H1 不显著：FOMC 前 T-5~T-1 SPY 平均 +0.13% vs 基准 +0.236%（超额 -0.105pp，p=1.0）；命中率 58.2% vs 59.7%。n=268 FOMC。",
+    "insufficient_sample": false,
+    "verdict_research": "Lucca & Moench 效应在 SPY T-5~T-1 预注册窗口上未复现；FOMC 前窗口不优于稀疏基准。"
+  },
+  "S6_tradability": {
+    "status": "done",
+    "costs_considered": true,
+    "product_test_done": true,
+    "s6_gate": { "verdict": "fail", "all_pass": false },
+    "verdict_trading": "dead — 均值 Bonferroni 不显著；成本后超额 -0.225%"
+  },
+  "S7_archive": { "status": "done", "alpha_deck_id": "F003", "dashboard_hash": "#factorlab" },
+
+  "stage_checklist": [
+    { "id": "S0", "name": "目标锚定", "status": "done", "notes": [] },
+    { "id": "S1", "name": "经济直觉", "status": "done", "notes": [] },
+    { "id": "S2", "name": "预注册", "status": "done", "notes": ["2026-07-19 锁定 FOMC T-5~T-1 · SPY"] },
+    { "id": "S3", "name": "数据实现", "status": "done", "notes": ["268 FOMC · 1622 基准 · SPY 8423 日"] },
+    { "id": "S4", "name": "探索分析", "status": "done", "notes": ["pre/post 2015 探索"] },
+    { "id": "S5", "name": "确认检验", "status": "done", "notes": ["不显著；超额 -0.105pp"] },
+    { "id": "S6", "name": "可交易性", "status": "done", "notes": ["门禁 fail → dead"] },
+    { "id": "S7", "name": "归档看板", "status": "done", "notes": ["Alpha Deck + spy_fomc_drift_analysis.json"] }
+  ]
+}

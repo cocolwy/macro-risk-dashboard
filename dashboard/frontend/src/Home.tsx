@@ -1,4 +1,4 @@
-import { SITE_NAV, HOME_SECTIONS, PageId } from './siteNav';
+import { SITE_NAV, HOME_SECTIONS, HOME_TODOS, PageId } from './siteNav';
 
 interface HomeProps {
   onNavigate: (page: PageId) => void;
@@ -13,6 +13,29 @@ export function Home({ onNavigate }: HomeProps) {
           两条独立研究线：<strong>Alpha Deck</strong>（单因子 S0–S7）与 <strong>风控模型 Ch.1→Ch.2</strong>（LR/GBDT 崩盘预测）
         </p>
       </header>
+
+      <section className="home-section home-todos-section">
+        <div className="home-section-title">{HOME_TODOS.title}</div>
+        <p className="home-section-hint">{HOME_TODOS.hint}</p>
+        <ul className="home-todo-list">
+          {HOME_TODOS.items.map(item => (
+            <li key={item.id} className="home-todo-item">
+              <span className="home-todo-id">{item.factorId}</span>
+              <div className="home-todo-body">
+                <div className="home-todo-title">{item.title}</div>
+                <div className="home-todo-summary">{item.summary}</div>
+                <div className="home-todo-meta">
+                  <span className="home-todo-stage">{item.stage}</span>
+                  <code className="home-todo-case">{item.caseFile}</code>
+                </div>
+              </div>
+              <button type="button" className="home-todo-link" onClick={() => onNavigate('factorlab')}>
+                Alpha Deck →
+              </button>
+            </li>
+          ))}
+        </ul>
+      </section>
 
       {HOME_SECTIONS.map(section => (
         <section key={section.level} className="home-section">

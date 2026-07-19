@@ -1,0 +1,108 @@
+{
+  "title": "Pre-FOMC SPX Drift \u00d7 SPY (F003)",
+  "subtitle": "FOMC T-5~T-1 \u00b7 long SPY",
+  "case_id": "F003",
+  "reference": "Lucca & Moench (2015) Journal of Finance",
+  "generated_at": "2026-07-19T09:45:54Z",
+  "summary": {
+    "instrument": "SPY",
+    "window": "T-5~T-1",
+    "data_range": "1993-01-29 ~ 2026-07-17",
+    "n_fomc_events": 268,
+    "n_baseline": 1622,
+    "insufficient_sample": false
+  },
+  "primary_analysis": {
+    "method": "Bonferroni \u03b1=0.025 (2 tests) \u00b7 baseline stride=5",
+    "h1_pre_rise_hit_rate": {
+      "event_hit_rate": 0.582,
+      "baseline_hit_rate": 0.597,
+      "excess_hit_rate": -0.015,
+      "event_mean_pct": 0.13,
+      "baseline_mean_pct": 0.236,
+      "event_n": 268,
+      "baseline_n": 1622,
+      "z_stat": -0.454,
+      "p_value": 1.0,
+      "phi": -0.0104,
+      "significant": false,
+      "alpha_used": 0.025,
+      "one_sided": true,
+      "verdict": "\u65e0\u663e\u8457\u76f8\u5173"
+    },
+    "h1_pre_rise_mean_return": {
+      "event_mean_pct": 0.13,
+      "baseline_mean_pct": 0.236,
+      "excess_mean_pct": -0.105,
+      "t_stat": -0.695,
+      "p_value": 1.0,
+      "significant": false,
+      "alpha_used": 0.025,
+      "event_n": 268,
+      "baseline_n": 1622,
+      "cost_adjusted_excess_pct": {
+        "base": -0.225,
+        "stress": -0.405
+      }
+    },
+    "conclusion_summary": "FOMC \u524d T-5~T-1 \u4e3b\u68c0\u9a8c\u4e0d\u663e\u8457\uff1aSPY 0.13% vs \u57fa\u51c6 0.236%\uff08p=1.0\uff09\uff1bS6 \u95e8\u7981: FAIL\u3002"
+  },
+  "exploratory_pre_post_2015": {
+    "description": "Lucca & Moench (2015) \u53d1\u8868\u540e\u8870\u51cf \u00b7 \u63a2\u7d22\u6027\uff08\u975e\u4e3b\u95e8\u7981 family\uff09",
+    "split_date": "2015-01-01",
+    "pre_2015": {
+      "n": 174,
+      "mean_pct": 0.087,
+      "hit_rate_up": 0.563
+    },
+    "post_2015": {
+      "n": 94,
+      "mean_pct": 0.21,
+      "hit_rate_up": 0.617
+    }
+  },
+  "post_2015_gate": {
+    "split_date": "2015-01-01",
+    "n_events": 94,
+    "mean_return_pct": 0.21,
+    "hit_rate_up": 0.617,
+    "p_one_sided_negative": 1.0,
+    "gate_pass": true
+  },
+  "s6_gate_preview": {
+    "all_pass": false,
+    "verdict": "fail \u2014 dead per F003 preregister",
+    "checks": {
+      "h1_mean_bonferroni": {
+        "pass": false,
+        "p_value": 1.0,
+        "alpha": 0.025
+      },
+      "h1_hit_rate_bonferroni": {
+        "pass": false,
+        "p_value": 1.0,
+        "alpha": 0.025
+      },
+      "cost_adjusted_excess_positive": {
+        "pass": false,
+        "cost_adjusted_excess_pct": -0.225,
+        "base_total_bps": 12.0
+      },
+      "post_2015_not_significantly_negative": {
+        "pass": true,
+        "detail": {
+          "split_date": "2015-01-01",
+          "n_events": 94,
+          "mean_return_pct": 0.21,
+          "hit_rate_up": 0.617,
+          "p_one_sided_negative": 1.0,
+          "gate_pass": true
+        }
+      }
+    }
+  },
+  "costs": {
+    "base_total_bps": 12.0,
+    "stress_total_bps": 30.0
+  }
+}

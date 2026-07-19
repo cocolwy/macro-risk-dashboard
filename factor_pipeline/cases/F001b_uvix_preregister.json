@@ -1,0 +1,262 @@
+{
+  "id": "F001b",
+  "parent_factor": "F001",
+  "name": "UVIX Product Layer Test (Preregistered)",
+  "name_zh": "F001b · UVIX 产品层预注册检验",
+  "created": "2026-07-19",
+  "last_updated": "2026-07-19",
+  "pipeline_version": "1.0",
+  "status": "dead",
+  "current_stage": "S6",
+  "tags": ["UVIX", "F001", "S6", "preregister", "FOMC", "CPI", "NFP"],
+  "purpose": "F001 在 ^VIX 上完成 S5 后，按同一预注册协议在可交易标的 UVIX 上重做主检验。本文件锁定 S2 协议；S3–S5 在跑数据前不得修改下方 primary 字段。",
+
+  "S0_goal": {
+    "status": "done",
+    "trading_objective": "验证：在 FOMC/CPI/NFP 前 T-5 收盘做多 UVIX、T-1 收盘平仓，扣成本后期望收益是否为正。",
+    "instrument": {
+      "research": "F001 已测 ^VIX（仅作对照，本 case 不作主因变量）",
+      "tradable": "UVIX (2x Long VIX Futures ETN) — Yahoo Finance ^UVIX",
+      "mapping_gap": "本 case 直接检验 UVIX，不再用 VIX 代理推断可交易性"
+    },
+    "action": "long UVIX",
+    "horizon": "T-5 close → T-1 close（每个事件独立一笔）",
+    "success_metric": "Bonferroni 校正后 H1 显著 + 成本后平均超额收益 > 0 + 近 2y 子样本不反向"
+  },
+
+  "S1_hypothesis": {
+    "status": "done",
+    "hypothesis": "宏观事件发布前，做多 UVIX 在 T-5~T-1 窗口的收益率系统性高于非事件日同窗口基准。",
+    "mechanism": "同 F001：事件前对冲需求推高 VIX 期货 → UVIX 作为 2x 长期期货 ETN 应同向（扣除衰减后仍可能有边缘）。",
+    "failure_modes": [
+      "VIX 微弱边缘不足以覆盖 UVIX 杠杆衰减与 contango",
+      "UVIX 跟踪误差 / 反向拆分历史导致样本失真",
+      "近年政策可预期 → 事件前 UVIX 无超额",
+      "F001 低 VIX 条件信号不在本 case 主检验内（留 F001c）"
+    ]
+  },
+
+  "S2_preregister": {
+    "status": "done",
+    "locked_at": "2026-07-19",
+    "rule": "以下字段在首次跑 UVIX 主检验前锁定；探索性分析不得回填修改 primary",
+
+    "events": ["FOMC", "CPI", "NFP"],
+    "event_date_source": "同 F001：predict_model.get_event_dates + NFP 规则生成",
+
+    "execution_spec": {
+      "entry": "事件日 T-5 的收盘价（close）买入 UVIX",
+      "exit": "事件日 T-1 的收盘价（close）卖出 UVIX",
+      "direction": "long only",
+      "position": "每笔事件固定 1 单位名义（回测用百分比收益，不加杠杆叠加）",
+      "overlap": "若同一周多事件重叠，各事件独立计一笔（不合并仓位）",
+      "calendar": "美股交易日；事件对齐规则同 experiment_event_uvix.py"
+    },
+
+    "windows": {
+      "h1_pre": { "start": "T-5", "end": "T-1", "return": "close(T-5) → close(T-1) pct change on UVIX" },
+      "h2_post": { "start": "T+0", "end": "T+1", "return": "close(T0) → close(T+1) pct change on UVIX", "note": "次要假设，同 F001 结构" }
+    },
+
+    "sample": {
+      "instrument_ticker": "^UVIX",
+      "period": "UVIX 可用全历史（Yahoo max）；有效样本从 UVIX 首个有效交易日至分析日",
+      "min_events_per_type": 15,
+      "note": "若某事件类型有效 n < 15，该类型主检验标为 insufficient，不事后改窗口"
+    },
+
+    "baseline": {
+      "method": "非事件日 anchor，同 F001",
+      "stride": 5,
+      "exclude": "所有 FOMC/CPI/NFP 事件日及其交易对齐日",
+      "return": "每个 anchor 日计算 T-5→T-1 UVIX 收益，与事件窗口定义相同"
+    },
+
+    "primary_tests": [
+      {
+        "id": "H1_mean_return",
+        "label": "H1 · 事件前 UVIX 平均收益 > 基准",
+        "test": "单侧 Welch t-test（event mean > baseline mean）",
+        "per_event": true,
+        "events": ["FOMC", "CPI", "NFP"]
+      },
+      {
+        "id": "H1_hit_rate",
+        "label": "H1 · 事件前 UVIX 上涨命中率 > 基准",
+        "test": "单侧两比例 z-test（return > 0）",
+        "per_event": true,
+        "events": ["FOMC", "CPI", "NFP"]
+      },
+      {
+        "id": "H2_post_fall",
+        "label": "H2 · 事件后 UVIX 下跌率 > 基准",
+        "test": "单侧两比例 z-test（return < 0）",
+        "per_event": true,
+        "events": ["FOMC", "CPI", "NFP"]
+      }
+    ],
+
+    "multiple_testing": {
+      "family": "primary",
+      "n_tests": 6,
+      "description": "3 events × H1 hit rate（与 F001 主 family 对齐）；H1 mean 与 H2 报告但 Bonferroni 以 6-test family 为保守上界",
+      "bonferroni_alpha": 0.008333,
+      "note": "H1 mean return 若 3 事件均检验，另列 sensitivity alpha=0.05/3=0.0167，不作主门禁"
+    },
+
+    "cost_assumptions": {
+      "status": "partial_calibration",
+      "typical_notional_usd": 6000,
+      "broker": {
+        "package": "普通账户-常规-万3佣金套餐1002",
+        "commission_pct": 0,
+        "platform_fee_per_share": 0.009,
+        "platform_fee_min_usd": 1.88,
+        "settlement_fee_per_share": 0.003,
+        "settlement_fee_min_usd": 0.01,
+        "channel": "手机委托"
+      },
+      "broker_fee_round_trip_bps": {
+        "note": "仅平台费+交收费；不含 spread。$6k 仓位下 UVIX≈$10 时约 24bps，随 UVIX 价格反比变化（公式 round_trip_bps ≈ 240/UVIX_price）",
+        "example_uvix_10usd": 24
+      },
+      "spread_bps": {
+        "status": "calibrated_s6_2",
+        "spread_round_trip_bps": 80,
+        "note": "日 range 代理上限 80bps；待 broker Bid/Ask 截图可替换"
+      },
+      "provisional_scenarios": {
+        "base_broker_bps": 24.02,
+        "base_total_bps": 104.02,
+        "stress_total_bps": 260.05,
+        "typical_notional_usd": 6000,
+        "median_uvix_price_usd": 9.99
+      },
+      "application": "cost_adjusted_excess = (event_mean - baseline_mean) - round_trip_pct；round_trip_pct = calibrated_bps/10000",
+      "not_included": "contango / 杠杆再平衡衰减 — 已体现在 UVIX 实际收益中，不另扣 bps"
+    },
+
+    "execution_live": {
+      "recommended": "MOC（收盘市价）",
+      "alternatives": ["LOC 限价在 last±小 buffer", "不推荐盘中纯市价"],
+      "aligns_with_backtest": "close(T-5) / close(T-1) 用 adjusted close，MOC 最接近回测假设"
+    },
+
+    "gate_criteria_s6": {
+      "description": "S6-5 门禁（预注册，不得事后放宽）",
+      "must_pass_all": [
+        "至少 FOMC 的 H1 mean return 经 Bonferroni 后显著为正（p < 0.008333）",
+        "FOMC 成本后超额（S6-2 锁定的 base round-trip bps）> 0",
+        "近 2y 子样本 FOMC H1 mean return 不为显著负（p_one > 0.05 或 mean > 0）"
+      ],
+      "if_fail": "F001 交易层标 dead；不在本数据上启动 F001c 条件或扫窗",
+      "if_pass_fomc_only": "CPI/NFP 可 weak/conditional；整体最高 conditional，非 confirmed 除非三类均过门禁"
+    },
+
+    "explicitly_out_of_scope": [
+      "窗口扫描（F001 已探索，不得用于 UVIX 主结论）",
+      "低 VIX 条件过滤（→ F001c 独立预注册）",
+      "VIX 与 UVIX 混用为主因变量",
+      "日内 FOMC 14:00 ET 精确入场"
+    ],
+
+    "deliverables_s3_s5": {
+      "script": "dashboard/experiment_uvix_event.py",
+      "output_json": "dashboard/data/event_uvix_analysis.json",
+      "mapping_diagnostic": "dashboard/data/event_uvix_vix_mapping.json",
+      "mapping_done": true
+    }
+  },
+
+  "S3_data": {
+    "status": "done",
+    "sources": ["Yahoo chart API UVIX daily (5y range) + reverse-split adjustment"],
+    "script": "dashboard/experiment_uvix_event.py",
+    "output_json": "dashboard/data/event_uvix_analysis.json",
+    "data_range": "2022-03-30 ~ 2026-07-17",
+    "trading_days": 1078,
+    "sample_limitation": "UVIX 上市约 4y，FOMC n=34；短样本，结论偏保守",
+    "lookahead_checked": true
+  },
+  "S4_explore": { "status": "skipped", "note": "F001b 无探索阶段；探索结果来自 F001 不得移植" },
+  "S5_confirm": {
+    "status": "done",
+    "primary_result": "H1 命中率：FOMC 20.6% vs 基准 34.4%（超额 -13.8pp，p=1.0）；CPI/NFP 亦无 Bonferroni 显著。H1 平均收益：FOMC 事件 -4.78% vs 基准 +13.77%（超额 -18.5pp，Welch p=1.0）。H2 发布后下跌均不显著。",
+    "fomc_h1_mean": { "event_mean_pct": -4.776, "baseline_mean_pct": 13.771, "excess_pct": -18.546, "p_one": 1.0, "significant_bonferroni": false },
+    "cost_adjusted_fomc_excess_pct": -19.586,
+    "verdict_research": "UVIX 产品层主假设不成立；事件前窗口平均表现劣于非事件基准，与 F001 VIX 弱结果一致且更差。"
+  },
+  "S6_tradability": {
+    "status": "done",
+    "costs_considered": true,
+    "product_test_done": true,
+    "s6_gate": {
+      "verdict": "fail",
+      "all_pass": false,
+      "as_of": "2026-07-19",
+      "checks_passed": ["recent_2y_fomc_not_significantly_negative"],
+      "checks_failed": ["fomc_h1_mean_bonferroni", "fomc_cost_adjusted_excess_positive"]
+    },
+    "verdict_trading": "dead — 预注册门禁未过；不可部署 T-5→T-1 做多 UVIX 日历策略",
+    "strategy_spec": {
+      "status": "evaluated_not_deployed",
+      "name": "UVIX Event Calendar Long (F001b)",
+      "instrument": "UVIX",
+      "direction": "long",
+      "entry": {
+        "timing": "FOMC/CPI/NFP 前第 5 个交易日收盘",
+        "order_type": "MOC（收盘市价）",
+        "aligns_with_backtest": "close(T-5)"
+      },
+      "exit": {
+        "timing": "事件前第 1 个交易日收盘",
+        "order_type": "MOC",
+        "aligns_with_backtest": "close(T-1)"
+      },
+      "position_sizing": {
+        "notional_per_event_usd": 6000,
+        "leverage_overlay": "无（单笔固定名义，回测用百分比收益）",
+        "overlap_rule": "多事件重叠各算独立一笔，不合并仓位"
+      },
+      "costs": {
+        "broker_package": "万3套餐1002 · 佣金 0%",
+        "broker_round_trip_bps": 24.02,
+        "spread_round_trip_bps": 80,
+        "base_total_round_trip_bps": 104.02,
+        "stress_total_round_trip_bps": 260.05,
+        "note": "spread 为 range 代理上限；Bid/Ask 截图可替换"
+      },
+      "risk_controls": {
+        "stop_loss": "无（预注册持有至 T-1；不加 intraday 止损以免偏离协议）",
+        "take_profit": "无（固定 T-1 出场）",
+        "max_drawdown_limit": "未设（门禁未过，未进入实盘配置）",
+        "tail_risk_note": "FOMC 声明前后 UVIX 可剧烈波动；无止损意味着 gap 风险全敞口"
+      },
+      "events_in_scope": ["FOMC", "CPI", "NFP"],
+      "out_of_scope": ["低 VIX 条件过滤", "窗口扫描", "日内精确入场", "发布后持有/做空"]
+    },
+    "mapping_summary": {
+      "fomc_correlation_vix_uvix": 0.922,
+      "fomc_hit_rate_vix": 0.5,
+      "fomc_hit_rate_uvix": 0.206,
+      "note": "方向同向但 UVIX 命中率远低于 VIX — 衰减吞噬弱 edge"
+    }
+  },
+  "S7_archive": {
+    "status": "done",
+    "alpha_deck_id": "F001",
+    "parent_case": "factor_pipeline/cases/F001_uvix_event_calendar.json",
+    "verdict": "F001b dead @ S6 gate；F001 交易层同步标 dead"
+  },
+
+  "stage_checklist": [
+    { "id": "S0", "name": "目标锚定", "status": "done", "notes": ["继承 F001 交易 UVIX 目标"] },
+    { "id": "S1", "name": "经济直觉", "status": "done", "notes": ["同 F001，因变量改为 UVIX"] },
+    { "id": "S2", "name": "预注册", "status": "done", "notes": ["2026-07-19 锁定；跑 UVIX 前不得改 primary"] },
+    { "id": "S3", "name": "数据实现", "status": "done", "notes": ["日线 + 反向拆分复权；2022-03~今"] },
+    { "id": "S4", "name": "探索分析", "status": "skipped", "notes": ["F001 已探索"] },
+    { "id": "S5", "name": "确认检验", "status": "done", "notes": ["主假设不成立；FOMC 事件前 UVIX 平均 -4.8%"] },
+    { "id": "S6", "name": "可交易性", "status": "done", "notes": ["Strategy Spec 已写；门禁 fail → dead"] },
+    { "id": "S7", "name": "归档看板", "status": "done", "notes": ["F001 交易层同步 dead"] }
+  ]
+}
