@@ -673,36 +673,34 @@ function EventVolLabInner() {
       {data.historical_replication && !data.historical_replication.error && (
         <section className="lab-card">
           <h2 style={{ fontSize: 16, marginBottom: 4 }}>历史复现 · Lucca & Moench (2015)</h2>
-          <p style={{ fontSize: 12, color: '#6b7280', marginBottom: 12 }}>
+          <p className="lab-card-desc">
             {data.historical_replication.description}
-            <br /><span style={{ color: '#4b5563' }}>VIX 数据范围：{data.historical_replication.vix_data_range} · 总 FOMC 次数：{data.historical_replication.total_fomc_events}</span>
+            <br />VIX 数据范围：{data.historical_replication.vix_data_range} · 总 FOMC 次数：{data.historical_replication.total_fomc_events}
           </p>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 14 }}>
             {data.historical_replication.periods.map(p => (
-              <div key={p.label} style={{
-                background: '#0f172a', border: '1px solid #1e293b', borderRadius: 10, padding: '16px 18px',
-              }}>
-                <div style={{ fontSize: 13, fontWeight: 600, color: '#e2e8f0', marginBottom: 4 }}>{p.label}</div>
-                <div style={{ fontSize: 11, color: '#6b7280', marginBottom: 8 }}>{p.date_range} · n={p.n_events}</div>
+              <div key={p.label} className="lab-stat-panel">
+                <div className="lab-stat-panel-title">{p.label}</div>
+                <div style={{ fontSize: 11, color: 'var(--text-3)', marginBottom: 8 }}>{p.date_range} · n={p.n_events}</div>
                 {p.error ? (
-                  <div style={{ color: '#ef4444', fontSize: 12 }}>{p.error}</div>
+                  <div style={{ color: 'var(--accent-red)', fontSize: 12 }}>{p.error}</div>
                 ) : (
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-                    <div style={{ background: '#1e293b', borderRadius: 6, padding: '8px 10px' }}>
-                      <div style={{ fontSize: 10, color: '#6b7280', marginBottom: 2 }}>涨跌方向命中率</div>
-                      <div style={{ fontSize: 18, fontWeight: 700, color: (p.return_based?.event_hit_rate ?? 0) > 0.5 ? '#f97316' : '#9ca3af' }}>
+                    <div className="lab-stat-inner">
+                      <div style={{ fontSize: 10, color: 'var(--text-3)', marginBottom: 2 }}>涨跌方向命中率</div>
+                      <div style={{ fontSize: 18, fontWeight: 700, color: (p.return_based?.event_hit_rate ?? 0) > 0.5 ? '#ea580c' : 'var(--text-3)' }}>
                         {p.return_based?.event_hit_rate != null ? `${(p.return_based.event_hit_rate * 100).toFixed(0)}%` : '—'}
                       </div>
-                      <div style={{ fontSize: 11, color: '#4b5563' }}>基准 {p.return_based?.baseline_hit_rate != null ? `${(p.return_based.baseline_hit_rate * 100).toFixed(0)}%` : '—'}</div>
+                      <div style={{ fontSize: 11, color: 'var(--text-3)' }}>基准 {p.return_based?.baseline_hit_rate != null ? `${(p.return_based.baseline_hit_rate * 100).toFixed(0)}%` : '—'}</div>
                       <div style={{ marginTop: 4 }}>{sigBadge(p.return_based?.p_value ?? null)}</div>
-                      <div style={{ fontSize: 10, color: '#4b5563', marginTop: 2 }}>p={p.return_based?.p_value?.toFixed(3) ?? '—'}</div>
+                      <div style={{ fontSize: 10, color: 'var(--text-3)', marginTop: 2 }}>p={p.return_based?.p_value?.toFixed(3) ?? '—'}</div>
                     </div>
-                    <div style={{ background: '#1e293b', borderRadius: 6, padding: '8px 10px' }}>
-                      <div style={{ fontSize: 10, color: '#6b7280', marginBottom: 2 }}>VIX 水平 (Method A)</div>
-                      <div style={{ fontSize: 18, fontWeight: 700, color: (p.level_based?.excess_vix ?? 0) > 0 ? '#f97316' : '#9ca3af' }}>
+                    <div className="lab-stat-inner">
+                      <div style={{ fontSize: 10, color: 'var(--text-3)', marginBottom: 2 }}>VIX 水平 (Method A)</div>
+                      <div style={{ fontSize: 18, fontWeight: 700, color: (p.level_based?.excess_vix ?? 0) > 0 ? '#ea580c' : 'var(--text-3)' }}>
                         {p.level_based?.excess_vix != null ? `${p.level_based.excess_vix > 0 ? '+' : ''}${p.level_based.excess_vix.toFixed(1)}` : '—'}
                       </div>
-                      <div style={{ fontSize: 11, color: '#4b5563' }}>事件均值 vs 基准差异</div>
+                      <div style={{ fontSize: 11, color: 'var(--text-3)' }}>事件均值 vs 基准差异</div>
                       <div style={{ marginTop: 4 }}>{sigBadge(p.level_based?.p_value ?? null)}</div>
                     </div>
                   </div>
@@ -710,10 +708,7 @@ function EventVolLabInner() {
               </div>
             ))}
           </div>
-          <div style={{
-            background: '#0c1a2e', border: '1px solid #1e3a5f', borderRadius: 8, padding: '10px 14px',
-            fontSize: 12, color: '#93c5fd',
-          }}>
+          <div className="lab-insight-box">
             💡 {data.historical_replication.interpretation}
           </div>
         </section>
@@ -723,35 +718,30 @@ function EventVolLabInner() {
       {data.conditional_analysis && !data.conditional_analysis.error && (
         <section className="lab-card">
           <h2 style={{ fontSize: 16, marginBottom: 4 }}>条件因子分析 · VIX 三档分组</h2>
-          <p style={{ fontSize: 12, color: '#6b7280', marginBottom: 12 }}>
-            {data.conditional_analysis.description}
-          </p>
+          <p className="lab-card-desc">{data.conditional_analysis.description}</p>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginBottom: 14 }}>
             {data.conditional_analysis.by_regime.map((r, i) => {
-              const colors = ['#22c55e', '#f59e0b', '#ef4444'];
-              const color = colors[i] ?? '#6b7280';
+              const colors = ['#16a34a', '#b45309', '#dc2626'];
+              const color = colors[i] ?? 'var(--text-3)';
               return (
-                <div key={r.regime} style={{
-                  background: '#0f172a', border: `1px solid ${color}30`,
-                  borderRadius: 10, padding: '16px 18px',
-                }}>
+                <div key={r.regime} className="lab-regime-card" style={{ borderLeftColor: color }}>
                   <div style={{ fontSize: 11, color, fontWeight: 600, marginBottom: 6 }}>
                     {['低波动', '中波动', '高波动'][i]}
                   </div>
-                  <div style={{ fontSize: 10, color: '#4b5563', marginBottom: 8 }}>
+                  <div style={{ fontSize: 10, color: 'var(--text-3)', marginBottom: 8 }}>
                     {r.vix_range ? `VIX ${r.vix_range[0]}~${r.vix_range[1]}` : ''} · n={r.n}
                   </div>
                   {r.error ? (
-                    <div style={{ color: '#6b7280', fontSize: 12 }}>{r.error}</div>
+                    <div style={{ color: 'var(--text-3)', fontSize: 12 }}>{r.error}</div>
                   ) : (
                     <>
                       <div style={{ fontSize: 28, fontWeight: 800, color }}>
                         {r.hit_rate_up != null ? `${(r.hit_rate_up * 100).toFixed(0)}%` : '—'}
                       </div>
-                      <div style={{ fontSize: 11, color: '#6b7280', marginBottom: 4 }}>T-5~T-1 上涨率</div>
+                      <div style={{ fontSize: 11, color: 'var(--text-3)', marginBottom: 4 }}>T-5~T-1 上涨率</div>
                       <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
                         {sigBadge(r.p_value)}
-                        <span style={{ fontSize: 10, color: '#4b5563' }}>p={r.p_value?.toFixed(3) ?? '—'}</span>
+                        <span style={{ fontSize: 10, color: 'var(--text-3)' }}>p={r.p_value?.toFixed(3) ?? '—'}</span>
                       </div>
                     </>
                   )}
@@ -759,10 +749,7 @@ function EventVolLabInner() {
               );
             })}
           </div>
-          <div style={{
-            background: '#0c1a2e', border: '1px solid #1e3a5f', borderRadius: 8, padding: '10px 14px',
-            fontSize: 12, color: '#93c5fd',
-          }}>
+          <div className="lab-insight-box">
             💡 {data.conditional_analysis.interpretation}
           </div>
         </section>
@@ -772,18 +759,16 @@ function EventVolLabInner() {
       {data.skew_analysis && !data.skew_analysis.error && (
         <section className="lab-card">
           <h2 style={{ fontSize: 16, marginBottom: 4 }}>隐含波动率偏斜 · CBOE SKEW 指数</h2>
-          <p style={{ fontSize: 12, color: '#6b7280', marginBottom: 12 }}>
-            {data.skew_analysis.description}
-          </p>
+          <p className="lab-card-desc">{data.skew_analysis.description}</p>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10, marginBottom: 14 }}>
             {[
-              { label: 'FOMC 前 SKEW 变化', value: data.skew_analysis.skew_stats.event_mean_change, suffix: 'pts', color: (data.skew_analysis.skew_stats.event_mean_change ?? 0) > 0 ? '#f97316' : '#9ca3af' },
-              { label: '非事件日基准变化', value: data.skew_analysis.skew_stats.baseline_mean_change, suffix: 'pts', color: '#9ca3af' },
-              { label: '超额偏斜变化', value: data.skew_analysis.skew_stats.excess_change, suffix: 'pts', color: (data.skew_analysis.skew_stats.excess_change ?? 0) > 0 ? '#f97316' : '#6b7280' },
-              { label: 'SKEW 上升命中率', value: data.skew_analysis.skew_stats.hit_rate_up != null ? data.skew_analysis.skew_stats.hit_rate_up * 100 : null, suffix: '%', color: '#6b7280' },
+              { label: 'FOMC 前 SKEW 变化', value: data.skew_analysis.skew_stats.event_mean_change, suffix: 'pts', color: (data.skew_analysis.skew_stats.event_mean_change ?? 0) > 0 ? '#ea580c' : 'var(--text-3)' },
+              { label: '非事件日基准变化', value: data.skew_analysis.skew_stats.baseline_mean_change, suffix: 'pts', color: 'var(--text-3)' },
+              { label: '超额偏斜变化', value: data.skew_analysis.skew_stats.excess_change, suffix: 'pts', color: (data.skew_analysis.skew_stats.excess_change ?? 0) > 0 ? '#ea580c' : 'var(--text-3)' },
+              { label: 'SKEW 上升命中率', value: data.skew_analysis.skew_stats.hit_rate_up != null ? data.skew_analysis.skew_stats.hit_rate_up * 100 : null, suffix: '%', color: 'var(--text-2)' },
             ].map(m => (
-              <div key={m.label} style={{ background: '#111827', border: '1px solid #1f2937', borderRadius: 8, padding: '12px 14px' }}>
-                <div style={{ fontSize: 10, color: '#6b7280', marginBottom: 4 }}>{m.label}</div>
+              <div key={m.label} className="lab-metric-tile">
+                <div style={{ fontSize: 10, color: 'var(--text-3)', marginBottom: 4 }}>{m.label}</div>
                 <div style={{ fontSize: 20, fontWeight: 700, color: m.color }}>
                   {m.value != null ? `${m.value > 0 ? '+' : ''}${m.value.toFixed(2)}${m.suffix}` : '—'}
                 </div>
@@ -791,18 +776,15 @@ function EventVolLabInner() {
             ))}
           </div>
           <div style={{ marginBottom: 10 }}>
-            <div style={{ fontSize: 12, color: '#6b7280', marginBottom: 6 }}>
+            <div style={{ fontSize: 12, color: 'var(--text-3)', marginBottom: 6 }}>
               p值：{data.skew_analysis.skew_stats.p_value?.toFixed(3) ?? '—'} ·
               {data.skew_analysis.skew_stats.significant
-                ? <span style={{ color: '#f97316' }}> SKEW 显著上升</span>
-                : <span style={{ color: '#6b7280' }}> SKEW 无显著差异</span>}
+                ? <span style={{ color: '#ea580c' }}> SKEW 显著上升</span>
+                : <span> SKEW 无显著差异</span>}
               {' '}· n={data.skew_analysis.n_fomc_events} · {data.skew_analysis.data_range}
             </div>
           </div>
-          <div style={{
-            background: '#0c1a2e', border: '1px solid #1e3a5f', borderRadius: 8, padding: '10px 14px',
-            fontSize: 12, color: '#93c5fd',
-          }}>
+          <div className="lab-insight-box">
             💡 {data.skew_analysis.interpretation}
           </div>
         </section>

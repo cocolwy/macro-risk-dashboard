@@ -2595,9 +2595,9 @@ a.agent-headline-title:hover {
 }
 
 .deck-filter-btn.active {
-  background: var(--blue-500);
-  color: #fff;
-  border-color: var(--blue-500);
+  background: var(--blue-100);
+  color: var(--blue-500);
+  border-color: var(--blue-300);
 }
 
 .deck-factor-list {
@@ -2911,4 +2911,53 @@ a.agent-headline-title:hover {
   .deck-two-col {
     grid-template-columns: 1fr;
   }
+}
+
+/* Shared light stat panels (Event Lab, etc.) */
+.lab-stat-panel {
+  background: var(--bg-1);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px 18px;
+  box-shadow: 0 2px 8px rgba(255, 168, 196, 0.06);
+}
+
+.lab-stat-panel-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-1);
+  margin-bottom: 4px;
+}
+
+.lab-stat-inner {
+  background: var(--bg-3);
+  border: 1px solid var(--border-blue);
+  border-radius: 6px;
+  padding: 8px 10px;
+}
+
+.lab-insight-box {
+  background: var(--bg-3);
+  border: 1px solid var(--border-blue);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 12px;
+  color: var(--text-2);
+  line-height: 1.6;
+}
+
+.lab-metric-tile {
+  background: var(--bg-1);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 14px;
+  box-shadow: 0 2px 8px rgba(255, 168, 196, 0.06);
+}
+
+.lab-regime-card {
+  background: var(--bg-1);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px 18px;
+  border-left-width: 4px;
 }
