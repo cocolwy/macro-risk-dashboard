@@ -1,138 +1,124 @@
 {
-  "fetched_at": "2026-07-15T13:46:03.000602+00:00",
+  "fetched_at": "2026-07-18T03:42:31.546511+00:00",
   "headlines": [
     {
-      "title": "BlackRock assets hit record $15 trillion on boost from buoyant markets, ETF inflows",
+      "title": "Chip stock pullback sparks worries about AI rally strength, leveraged trades",
       "source": "Reuters",
-      "published": "2026-07-15T10:48:09+00:00",
-      "url": "https://news.google.com/rss/articles/CBMinAFBVV95cUxQNGtraFlFOWdCLWZ5TkpheTdhUkEwMW1oMEVxa3NzOTk3RGxLOEhacDBTQnRYc0ZaNVdzTWtmWkptZEl5MTNKVm05QVZFb3ZBSWJRelpiT3QzdG5LdEZsVDZmWkNoUXFad2xOZ1hNQklNeWtTOEJVYWpuYVoyeGM2OXNQVE1uRWdzZWdEZnF6amJhMzZtNTZSTHZOVTA?oc=5",
-      "description": "BlackRock assets hit record $15 trillion on boost from buoyant markets, ETF inflows &nbsp;&nbsp; Reuters"
+      "published": "2026-07-17T20:55:29+00:00",
+      "url": "https://news.google.com/rss/articles/CBMiswFBVV95cUxONEpraWR3MkhKa1R0dDlkLTJsYXVWU0NsQjIySnpzcTA1dkFyVGNKcGk0RFNjbmF2dnRQZ2ZnR0lGb2thTEdwb3RLRVQyRWdxYmtFV2QxOVVQcHBocEsxVUoyYnJBa0JlZlBZRkRfY0trdGJnRkFOWEljYXowWWNrLXlVQm1sYkJoT2NzMVlMcDV1cWdDSHRjQUpZalFpdHN5cjZyWkxkOXVDMllxR2RiekFTYw?oc=5",
+      "description": "Chip stock pullback sparks worries about AI rally strength, leveraged trades &nbsp;&nbsp; Reuters"
     },
     {
-      "title": "China’s economy grows at one of lowest rates in decades",
+      "title": "Fed rate-hike voices swell before July decision, rates still seen on hold",
+      "source": "Reuters",
+      "published": "2026-07-17T18:59:42+00:00",
+      "url": "https://news.google.com/rss/articles/CBMitAFBVV95cUxOc1g1bEw4cTg3OFRTdGhlT3N3eF9NVklLM204aVQwbkowQ0hvcU1yOHhsZXZlcXZBTXY3Zl9xRTdjSHRCY1NtNnV0TndVRkI4anNtSzVyeEhOT2Vnd0NLaWNvNnlzRkdkMFlLTENvY0pNQTFVTE9JaUlvaXpkeFhmZ0VMQXBVdVpFZ1JPdjNubGVOelFUVUlCdmVKLUFDU25CR2U0MDJOU2QxVXJOSndOOW4td0U?oc=5",
+      "description": "Fed rate-hike voices swell before July decision, rates still seen on hold &nbsp;&nbsp; Reuters"
+    },
+    {
+      "title": "How long can oil markets absorb the Hormuz shock?",
       "source": "FT",
-      "published": "2026-07-15T08:15:01+00:00",
-      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxQMXlEeTFQUjVUWVVJLUY5ZXRCNW1nUnFiWkR2bThYR2RyTVExaHk0cWI2eEcxVHd4UjBwRmlXaGxQaXRKU2FHaHhORUZuU0RZQ2FpdWZpNnNZdHNlcmhnZDhWOTJKXzNVN1hPNExGZW8wWjJqNUt6al96YTFySGZjZi1namM?oc=5",
-      "description": "China’s economy grows at one of lowest rates in decades &nbsp;&nbsp; Financial Times"
+      "published": "2026-07-17T17:52:37+00:00",
+      "url": "https://news.google.com/rss/articles/CBMicEFVX3lxTFB1cjhNMk84dFZPN1daeFFERDlpRkk4akFTN2lnMnFLTGdEZFhmQWZ1V2VhWHRYaGI0bXVMMGRyRV90aWJodUNHVmZyUkxuakpBaVZCa3RodVQ1UEF2WjJQNEl5Tktrc0tIVm1Dc0V1XzE?oc=5",
+      "description": "How long can oil markets absorb the Hormuz shock? &nbsp;&nbsp; Financial Times"
     },
     {
-      "title": "Stocks steady as oil surge offsets ASML lift to tech",
+      "title": "US equity funds suffer outflows as chip stocks slide",
       "source": "Reuters",
-      "published": "2026-07-15T01:48:00+00:00",
-      "url": "https://news.google.com/rss/articles/CBMigwFBVV95cUxQcEtOY19xRkd1VVhIYWg3cmFaU1BOUXRpRDhzaXN6UzFSa2Z2c3cwOE5YYjV5bXRwQVhiX2VhTGE1d1dvR2dQS3FnQm56VkZwOE00WER6bWoyM3U5aWtjd0xjUENON1dXcWVlLW85TGhZazVKY3BZbmRQT19IaE9TMm43Yw?oc=5",
-      "description": "Stocks steady as oil surge offsets ASML lift to tech &nbsp;&nbsp; Reuters"
+      "published": "2026-07-17T12:59:43+00:00",
+      "url": "https://news.google.com/rss/articles/CBMimgFBVV95cUxPbFQyLVZDdkI4c2o2TGhEX1JlMW85YTdCMmZTQlY2Wkg5QzFreFNCMFRfeUlyQUtmemF5c1doUnI4dnlnbVRMWlVmZmxDN1ZubGhiVld2eEVjT0gtZS1EM3lCQmduMDVkamJ5ZHhjY3VHWnlyc29Na0hGazRrR2V2U0VhSF9KVTRjSmdYSzI3Z1ZpOEI5V3dVdl9R?oc=5",
+      "description": "US equity funds suffer outflows as chip stocks slide &nbsp;&nbsp; Reuters"
     },
     {
-      "title": "SK Hynix shares surge 13% on AI hopes as US tech stocks resume their climb",
-      "source": "Reuters",
-      "published": "2026-07-15T00:55:00+00:00",
-      "url": "https://news.google.com/rss/articles/CBMirgFBVV95cUxOUGIxNS16MnpFT1RUSHlscHBBVnNOLTF3cmxLckNrUFotYUR2dzVFazM4aHpzb1QyX0UwaDZmUWxBT0wtelVpS1prcjVkcE9fSDAyRjFWb0gyX0tOM0JzU1RTR1B5dlJoQ3BGaTdvNnllX2htR3luNE83ZDdaOGg1UmdzT0kwSUp0ZW9udWhGSWl1SzRGMDl6R3pucGNhZnhBclFHU2F4YkZITkR1UEE?oc=5",
-      "description": "SK Hynix shares surge 13% on AI hopes as US tech stocks resume their climb &nbsp;&nbsp; Reuters"
-    },
-    {
-      "title": "Manic markets show no mercy to IBM",
+      "title": "The ‘go big or stay home’ economy reshaping live music",
       "source": "FT",
-      "published": "2026-07-14T22:07:17+00:00",
-      "url": "https://news.google.com/rss/articles/CBMicEFVX3lxTE5lSUNiVk1FbE1QaWNIRkF2UGQ1VWtucDJSRThxekxnOHlZbXB5OVpQSGlZYm5iNHJEWVd6OTg0YlJpbmVTQnhtcW9YQWhoUUUtQUV5NXRGMDJZRGhGckhmYVI5SEw1X0VCUWxxTFluYWw?oc=5",
-      "description": "Manic markets show no mercy to IBM &nbsp;&nbsp; Financial Times"
+      "published": "2026-07-17T10:00:05+00:00",
+      "url": "https://news.google.com/rss/articles/CBMicEFVX3lxTE1tYVYwODY4MmdocUdja21FNU1TcTBtNERaRXJESUVUd3ctTDhmbVN6bko1aHQ0S19IOVMzaGduNjVfTVN1eW0tbDZXTGZBNHlLZjBmSFJHSlZLNnZWdVVsT0NmcUIzWmsxMlJYdVFkUHo?oc=5",
+      "description": "The ‘go big or stay home’ economy reshaping live music &nbsp;&nbsp; Financial Times"
     },
     {
-      "title": "FirstFT: Payments group Stripe swoops for Silicon Valley stalwart PayPal",
-      "source": "FT",
-      "published": "2026-07-14T21:57:17+00:00",
-      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxNN3dPbWQ2OG5NOEx1Y3AtaERXd2NxNndfVVE4WGFLLUVDSTFybVZGRFoyS25uOTFqR1ZCd25VYk9waUVFaWswWjg4NFVobDh2MF9WSTZKZTUwMGZfN2RiZ0pBWXJydzVwZWNWSU5LMEpDbU5GNjAwd3NVSUFBYjVjTFU0S1I?oc=5",
-      "description": "FirstFT: Payments group Stripe swoops for Silicon Valley stalwart PayPal &nbsp;&nbsp; Financial Times"
-    },
-    {
-      "title": "Top Fed officials embrace cooler inflation reading, clamor for more",
+      "title": "How Korean stocks turned from trusty bellwether to AI frenzy",
       "source": "Reuters",
-      "published": "2026-07-14T21:29:15+00:00",
-      "url": "https://news.google.com/rss/articles/CBMipwFBVV95cUxPSVR6eXNrZlZoeDB1UHU5aEJRZnFTYnR4R21wLVRweVJWUXZPMHlrcDBZbjhNd2pUU05la3pDTFY4WjZPLVdfelExZkJrcUg5a1hLOGpRLXk1aWowTzVPME93R1VPV1Azc0U0RjBGZlRZc0FMMEZXTXBScDFWNXZpNEZWVHljRTNMeVQ1eXoyVlR1dWlmVi1STVR0RGdubWRhbHZtc2szNA?oc=5",
-      "description": "Top Fed officials embrace cooler inflation reading, clamor for more &nbsp;&nbsp; Reuters"
+      "published": "2026-07-17T08:22:05+00:00",
+      "url": "https://news.google.com/rss/articles/CBMiqwFBVV95cUxPTkY4alFGc0NnTVM3UktMYkxjal9HOHVnRFd1bXlyOWdlWnpMU1RlOVYxcXNQZWw1ZU43LTJvdDlrYzlJVGJvSzFPa25qOGFPRUVsbHZhTWZUMGtYZlJ0R0xxRHJ3czFvcVM2NGUzSUwyanlkenNVZHBRVjNITk03MkRIS2I3YUtSNlYtd095MmhaSlRCLVVCTzUyNmRkOGNiOWV2T1RnU1Y2TTg?oc=5",
+      "description": "How Korean stocks turned from trusty bellwether to AI frenzy &nbsp;&nbsp; Reuters"
     },
     {
-      "title": "Bowman, Responsible Innovation and Financial Inclusion",
+      "title": "'Bloodbath': Analysts react to Asian shares sinking on tech selloff",
+      "source": "Reuters",
+      "published": "2026-07-17T07:27:43+00:00",
+      "url": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxNSVJOZngtYmRxdXlreVFWNDhPaFpsZ254UkJxT0ZhMk9jSlR0RkhWeEtMNHgwZlk1TWk0dG8yaTQ3TVJfaXdoY2lpQ2lLTV9TX0djRVRwUkp1cDFjSzBIOXRIeHozeHZBcl9neWV1T0RQVms2Z2xrV3pHelRjQTVaUDdiWVdLQnFB?oc=5",
+      "description": "'Bloodbath': Analysts react to Asian shares sinking on tech selloff &nbsp;&nbsp; Reuters"
+    },
+    {
+      "title": "US chip stocks notch up worst week in more than a year",
+      "source": "FT",
+      "published": "2026-07-17T06:22:27+00:00",
+      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxPeXRLaFRlQTh3SUQzbXRMRmpmZ1FOaTdNMG9WSDFlRHQ5TVgxZGJ6cUJhZ25uSXd1T2JUc0VwZUx6MzIzR2xmb3hFOERjYmh3VExwdGFRdHJTZGdsamRjOTJmZUxjQ3pJdEtJV1piVGNsdVY1S2JOLW1KcWR4R0JOMXNOZUU?oc=5",
+      "description": "US chip stocks notch up worst week in more than a year &nbsp;&nbsp; Financial Times"
+    },
+    {
+      "title": "UK mortgage rates rise again after resumption of Middle East hostilities",
+      "source": "FT",
+      "published": "2026-07-17T04:00:33+00:00",
+      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxPS216SFB6NTlkRjR3RkZCalRqejZCQ2V6MEN0UlVCQlNOa0pnZjl6TldnUkhGNkxTbEYydFJBM1dIYlMyYjJ4LUtvVjNOM1JjZlRqWlJjeS1QSjFrTWowRGhRLUtDdUpPUWpsTWJVT1NlQU02YXJRZVZNUHIxaGtjTVJ1M0M?oc=5",
+      "description": "UK mortgage rates rise again after resumption of Middle East hostilities &nbsp;&nbsp; Financial Times"
+    },
+    {
+      "title": "The dangers of investor fatalism",
+      "source": "FT",
+      "published": "2026-07-17T04:00:23+00:00",
+      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxQZjA0WXFVY1VoR1dleGxRUXFzb2FsTFFKNG9PVHJkRVhJdk8zeWtCbVZkTlRUR3FrWFFqU1dzZVZzOURGdURxNmtXUHFtQXJ5SEdraHlLVzc4NEtWOXV3c2pmb0lCSDBVMzB0RXVmYWVpN2wwMDBtMmxrOEhobXZoRXZQaWY?oc=5",
+      "description": "The dangers of investor fatalism &nbsp;&nbsp; Financial Times"
+    },
+    {
+      "title": "The lessons Burnham must heed on the economy",
+      "source": "FT",
+      "published": "2026-07-17T04:00:23+00:00",
+      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxNRGJuUFViSFgwNWVKVFJFWDlydTJldFU4TDRDRHJMUUtiVEt2MWUzYjZqWFZjTlFPU212Wk43Q0trek1rN0M1cUZrc1NRSXItbTRqRTAxNVMyUzFqRDdYNjNReEVlTmxGdmtLRzhBRldvYkJIOFc5N1h0MVdIMDdRU3lUMUY?oc=5",
+      "description": "The lessons Burnham must heed on the economy &nbsp;&nbsp; Financial Times"
+    },
+    {
+      "title": "World stocks fall in semiconductor rout; oil rises on Middle East escalation",
+      "source": "Reuters",
+      "published": "2026-07-17T01:16:00+00:00",
+      "url": "https://news.google.com/rss/articles/CBMigwFBVV95cUxNVTBUX2ZaNk9EY2M2SU5BaEw4VkRFXzF6OE1MeENrcVRwT1hnd2gtbzVDODJ3VUh2ZXdOYi03b2ZobHhhdlMzSE1fOWM0b3lWTlh1Q2VENEFFdHlKWmNuOVltd0R4X254aFM0SmNjZ3RIWVNqREU3OXlHSFNsUGtBUXYyUQ?oc=5",
+      "description": "World stocks fall in semiconductor rout; oil rises on Middle East escalation &nbsp;&nbsp; Reuters"
+    },
+    {
+      "title": "Jefferson, Navigating Economic Shocks: A Monetary Policymaker’s Perspective",
       "source": "Fed Speech",
-      "published": "2026-07-14T18:55:00+00:00",
-      "url": "https://www.federalreserve.gov/newsevents/speech/bowman20260714a.htm",
-      "description": "Speech At “Next-Gen Financial Inclusion,” the third annual Financial Inclusion Conference hosted by the Federal Reserve Board, Washington, D.C. (via pre-recorded video)"
+      "published": "2026-07-16T23:00:00+00:00",
+      "url": "https://www.federalreserve.gov/newsevents/speech/jefferson20260716a.htm",
+      "description": "Speech At the Stanford Institute for Economic Policy Research, Stanford University, Stanford, California"
     },
     {
-      "title": "Minutes of the Board's discount rate meetings on June 8 and June 17, 2026",
-      "source": "Fed FOMC",
-      "published": "2026-07-14T18:00:00+00:00",
-      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260714a.htm",
-      "description": "Minutes of the Board's discount rate meetings on June 8 and June 17, 2026"
+      "title": "Chip and memory stocks slide in fresh bout of Wall Street tumult",
+      "source": "FT",
+      "published": "2026-07-16T21:14:12+00:00",
+      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxPblZGRUIyV3luNzRCLURrSUFVT2NBQVMtY1hmSWQtS2gtMlNIZHV2a09KRXZ5MVUxbk1uMEt0cmtfMDZxRXdiZUpMVHhpaFR0SUNDTE45UF8zWDZLbGVPeFdrX0p3ekVlS1dKZ0otWUZWdzhHeDgyVTFVM2N3Wk5jUjFwQ2c?oc=5",
+      "description": "Chip and memory stocks slide in fresh bout of Wall Street tumult &nbsp;&nbsp; Financial Times"
     },
     {
-      "title": "Barr, Will Artificial Intelligence Broadly Raise Living Standards or Drive Income and Wealth Inequality?",
-      "source": "Fed Speech",
-      "published": "2026-07-14T16:40:00+00:00",
-      "url": "https://www.federalreserve.gov/newsevents/speech/barr20260714a.htm",
-      "description": "Speech At “Next-Gen Financial Inclusion,” the third annual Financial Inclusion Conference hosted by the Federal Reserve Board"
-    },
-    {
-      "title": "Instant View: CPI comes in cool, soothing markets",
+      "title": "Wall Street ends lower as chip weakness offsets solid earnings, economic data",
       "source": "Reuters",
-      "published": "2026-07-14T16:18:46+00:00",
-      "url": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxOa1pCUXk1VjhhOGRPZXEtTW5FZHBSSEY5ZEJubERmZ2hwVTNPdlgxdUFlZERfZU9jMXd5d3VLcHlqTFhIN0JBSS1iVlk3WnNzenhrRTZ6Z210YVBXamdUWVA1UWlkSmJUMHlPeFl6TWFFU1d6UWdGRXE0VzRfWjBHWmxpZW5idWJX?oc=5",
-      "description": "Instant View: CPI comes in cool, soothing markets &nbsp;&nbsp; Reuters"
+      "published": "2026-07-16T20:18:28+00:00",
+      "url": "https://news.google.com/rss/articles/CBMitwFBVV95cUxPWGU5QUxvUmRMUXgzYmxBbXIxRnM5aTE2Q014TV9HeVlIdVQ0RGV4aWx3a0RMQ2djdUdvSEwtX2diaDZ2QkhfaWE4WmFpb1pWTzlsajhWaTdqYWp4N0hnSjRRWGVIQU93VnA1czVqOGZYekhOMDNWMmZFSnVxTmxybHhxR2NLTVJDR3NxWVE5ZDFEUC11N2NvU0NXSTJrbTJXbXNsQjZsZklUb19vVy1wMi1mU1YxSGc?oc=5",
+      "description": "Wall Street ends lower as chip weakness offsets solid earnings, economic data &nbsp;&nbsp; Reuters"
     },
     {
-      "title": "Kevin Warsh vows Federal Reserve will be ‘resolute’ in inflation fight",
-      "source": "FT",
-      "published": "2026-07-14T15:13:34+00:00",
-      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxOZ0taREhMWE53em1EU0NqWkxaYVI1Nk9qaVZaVWVjMkdXMUxnRU5kN1BnU2pWN3E4ZzBUeDF2MnFsZ0o1SjZNQklleUdvRjlCSloxdl9UVUMzdTQxMnNNVndNN3lBSVhKWEt2SDBJeUtQRVE2NF9BWU1NYmlCMUp3dVNQSEs?oc=5",
-      "description": "Kevin Warsh vows Federal Reserve will be ‘resolute’ in inflation fight &nbsp;&nbsp; Financial Times"
-    },
-    {
-      "title": "Traders expect Fed to skip July rate hike as inflation cools",
+      "title": "Fed's Logan calls for 'modestly higher' interest rates",
       "source": "Reuters",
-      "published": "2026-07-14T13:49:07+00:00",
-      "url": "https://news.google.com/rss/articles/CBMiowFBVV95cUxPejVocHU3MHFoUThMM0FoSk5ILWllYXdVa09OYmEtTjFoelpoVFl3T2kyYUR3UE85SnVLb01CbjV4TkJhMC0zajNCUHhza3c5RnJJaElFbnUyMV9YSmJ6VDUtWHFBUEdwSHd4eWUxMjNONzd2SS1zaENIdVJfWFFmX200YnV3Ym5YekpxVXBjVm91OWRXUy1xVTJHbkE4cHFOTDJF?oc=5",
-      "description": "Traders expect Fed to skip July rate hike as inflation cools &nbsp;&nbsp; Reuters"
+      "published": "2026-07-16T17:19:46+00:00",
+      "url": "https://news.google.com/rss/articles/CBMilwFBVV95cUxNQjd1T3g0MW1NTU5Uei1LUlRXeG1OMlhtdm1sN1VZMHozdk5nZ1ktNXRBRGN1czJwUmlTZUZWbjFoNEhmeXg4YVlJWDJFRkVxYTJKTHYxcm5uT2lSa1BhSE9RSmRrVE9Vbk1WX1NMajZoOExsNHZLdUU1X1Q0VkNKU0JWN3kzNnUwaDA0bEpGaFltSjV0Mmo0?oc=5",
+      "description": "Fed's Logan calls for 'modestly higher' interest rates &nbsp;&nbsp; Reuters"
     },
     {
-      "title": "US inflation fell more than expected to 3.5% in June as petrol prices tumbled",
+      "title": "Chevron and Iraq seek to bypass Strait of Hormuz with Syria pipeline",
       "source": "FT",
-      "published": "2026-07-14T12:31:06+00:00",
-      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxQMmFLWHRoUE9ORGZ2eHNRSWlWSU5fejViWlBjT1NWcndmX2ZRUXQxd1lQNWU5WGlLbjI5WmpYVnJUQk1icWJUdXV1NEUtck15cDgtWk5sZDVic01NRzRNbWpzbDBxWndhRDlENnphU3ZuOXlWUWgydEc1WVlzLVlVR1BEMVA?oc=5",
-      "description": "US inflation fell more than expected to 3.5% in June as petrol prices tumbled &nbsp;&nbsp; Financial Times"
-    },
-    {
-      "title": "Oil touches $87 as battle for Strait of Hormuz alarms energy markets",
-      "source": "FT",
-      "published": "2026-07-14T10:28:34+00:00",
-      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxNbGFESFlWMnNUb0E1V2JOSTFCU2VWb1lkS1V2R28yWEdFQS1pUkxxaTUyUkQ5WWs4d0hZazF1bXpsc0lnUmpYemZVUUdsMGhCMGgyMGpiN2NSMGc0TDliQjl4bl9DM3BEQTlnWkUwbjBPZXJCZmxzLThrVXFjcE1pQktiT3k?oc=5",
-      "description": "Oil touches $87 as battle for Strait of Hormuz alarms energy markets &nbsp;&nbsp; Financial Times"
-    },
-    {
-      "title": "Fed chief Warsh vows to 'do my job' if challenged by Trump",
-      "source": "Reuters",
-      "published": "2026-07-14T10:07:00+00:00",
-      "url": "https://news.google.com/rss/articles/CBMipgFBVV95cUxPY2lZbFpmejAtNW91RmFHRWZqT0NkdzF5M3NOQWF6UUZxVXZHYW0xTnlZX1FQZ1lvcTE0UlBqV3l1MnY3WHVoVl92OWJYUW44Sjl5Zk1oMzFSQ0s2NjlYQ1hpUVRIc1RzVEZVY1ZuTE9nVVpwUXhRRmJnU0s4emhnbXh4ellpV01qc3VOeVo5eEJ6VHVMUnhmSXR5c1dCS2dXREhsdmtB?oc=5",
-      "description": "Fed chief Warsh vows to 'do my job' if challenged by Trump &nbsp;&nbsp; Reuters"
-    },
-    {
-      "title": "BP cuts net debt after Iran war drives oil price surge",
-      "source": "FT",
-      "published": "2026-07-14T07:23:27+00:00",
-      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxPWV9VeU1FSklvenI2N25SMHlIYy1MdFNuSkRUZXREUk5hcG9JNVg5UUVsQXJFWm5ITDBpQ2NydGlXUURPQzZPaWFSS0JmSEgxQjZodVNkNG1nSlQ0eENoeXo2aTNMakh2VjVpUmkyRk43SEhPOWtzdTUyVjFmNVlKTU5VSFQ?oc=5",
-      "description": "BP cuts net debt after Iran war drives oil price surge &nbsp;&nbsp; Financial Times"
-    },
-    {
-      "title": "India presses banks to court diaspora for deposits to support rupee",
-      "source": "FT",
-      "published": "2026-07-14T06:40:29+00:00",
-      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxNWjZVZzFtTm9hVzJpUzlpS0JQVTZxVVdxOGlnMHpwYkt6ZV9EMkw0NEdVbWpKSjVGdW5JWGFwZWRYd3A3dFRUYjE0ODVOQXQ5UnBoR3pZWHZVX0NiLWZ6YWZmaFd0V1VjekZoeUJBNnNMdmM3eGlSR29tY1ZSSk0tNV9pbjI?oc=5",
-      "description": "India presses banks to court diaspora for deposits to support rupee &nbsp;&nbsp; Financial Times"
-    },
-    {
-      "title": "China's exports ride AI boom as domestic economy struggles",
-      "source": "Reuters",
-      "published": "2026-07-14T02:57:00+00:00",
-      "url": "https://news.google.com/rss/articles/CBMinwFBVV95cUxNRGpqNHVtR2tXdDB5RnBUeHF0U2oyRDRMNnduQVM0eHBWOTVxalVjSGdOMXlFZGxNRUc2dW9fcUttclVoVTdKbk5rRUlVOEdqWHFQRzd5WllrZGI2dnhOVEJXRDU1eFhSVlAtZDk2UEFCRExBdEQxMEdhTENzdzVRVWpaVUhJU2l2RU1KT0xobmNyeGtPcEY1S3Exb3doaG8?oc=5",
-      "description": "China's exports ride AI boom as domestic economy struggles &nbsp;&nbsp; Reuters"
+      "published": "2026-07-16T16:14:17+00:00",
+      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxPSW1PQk53QzVRbW4xa29CNWRsbGtCSmpCS2pRR3N6dmJoMnNXbjdBRDhwMFN6UVZpM2MxSm5zakZaVkxRQjhIWWMxaDBIOWxjM0w5Y3BRUHBLWFJSNUp3elFoMWRTdXBvaElxamdwQlJVTS1BVzJUYjN3ek5DUjNFTmYtalc?oc=5",
+      "description": "Chevron and Iraq seek to bypass Strait of Hormuz with Syria pipeline &nbsp;&nbsp; Financial Times"
     }
   ]
 }
