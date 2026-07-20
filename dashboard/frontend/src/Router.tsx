@@ -11,6 +11,8 @@ const EventVolLab = lazy(() => import('./EventVolLab').then(m => ({ default: m.E
 const AgentLab = lazy(() => import('./AgentLab').then(m => ({ default: m.AgentLab })));
 const ProjectBoard = lazy(() => import('./ProjectBoard').then(m => ({ default: m.ProjectBoard })));
 const FactorLab = lazy(() => import('./FactorLab').then(m => ({ default: m.FactorLab })));
+const ValuationLab = lazy(() => import('./ValuationLab').then(m => ({ default: m.ValuationLab })));
+const FundamentalsLab = lazy(() => import('./FundamentalsLab').then(m => ({ default: m.FundamentalsLab })));
 
 const RISK_CHILDREN: PageId[] = ['ch1', 'ch2', 'ch2_1'];
 
@@ -101,6 +103,24 @@ export function Router() {
           Event × VIX
           {SITE_NAV.ch2_2.badge && <span className="nav-badge-dev">{SITE_NAV.ch2_2.badge}</span>}
         </button>
+
+        <button
+          className={`nav-btn ${page === 'valuation' ? 'nav-active' : ''}`}
+          onClick={() => navigate('valuation')}
+        >
+          <span className="nav-level">L2</span>
+          Valuation
+          {SITE_NAV.valuation.badge && <span className="nav-badge-dev">{SITE_NAV.valuation.badge}</span>}
+        </button>
+
+        <button
+          className={`nav-btn ${page === 'fundamentals' ? 'nav-active' : ''}`}
+          onClick={() => navigate('fundamentals')}
+        >
+          <span className="nav-level">L2</span>
+          Fundamentals
+          {SITE_NAV.fundamentals.badge && <span className="nav-badge-dev">{SITE_NAV.fundamentals.badge}</span>}
+        </button>
       </nav>
 
       {page !== 'home' && (
@@ -124,6 +144,8 @@ export function Router() {
         {page === 'ch2_2' && <EventVolLab />}
         {page === 'ch3' && <AgentLab />}
         {page === 'factorlab' && <FactorLab />}
+        {page === 'valuation' && <ValuationLab />}
+        {page === 'fundamentals' && <FundamentalsLab />}
       </Suspense>
     </>
   );

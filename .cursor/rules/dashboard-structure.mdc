@@ -16,11 +16,13 @@ L1  News Agent              RSS 新闻 + ML · Claude 宏观风险研报
 L1  Alpha Deck              因子研究日志（假设 · 检验 · 结论 · 状态跟踪）
 L2  Macro Risk Dashboard    风控项目（宏观指标监控）
 L2  Event × VIX             宏观数据发布前后 VIX 事件研究
+L2  Company Valuation       DCF + 相对估值三角（当前 NVDA 案例）
+L2  Company Fundamentals    利润表 / 现金流 / 资产负债表（财报页）
 L3  Ch.1 / Ch.2 / …          风控模型实验（LR→GBDT，独立于 Alpha Deck）
 ```
 
 - **L1** 一级项目入口，彼此并列：`ProjectBoard.tsx`（Pipeline）、`AgentLab.tsx`（News Agent）、`FactorLab.tsx`（Alpha Deck · **因子线**）
-- **L2** 独立项目入口，彼此并列：`App.tsx`（宏观风控看板）、`EventVolLab.tsx`（Event × VIX）
+- **L2** 独立项目入口，彼此并列：`App.tsx`（宏观风控看板）、`EventVolLab.tsx`（Event × VIX）、`ValuationLab.tsx`（估值）、`FundamentalsLab.tsx`（财报）
 - **L3** 是 Macro Risk Dashboard 下的**模型实验**章节（Ch.1 线性 → Ch.2 非线性），与 L1 Alpha Deck **因子流水线**是两条独立研究线
 
 ## Hash 路由
@@ -36,8 +38,15 @@ L3  Ch.1 / Ch.2 / …          风控模型实验（LR→GBDT，独立于 Alpha 
 | `ch2_1`  | `#ch2-1`   | `MetricLab.tsx` | `#metrics`           |
 | `ch2_2`  | `#ch2-2`   | `EventVolLab.tsx` | `#eventvol`        |
 | `factorlab` | `#factorlab` | `FactorLab.tsx` | `#alphadeck`     |
+| `valuation` | `#valuation` | `ValuationLab.tsx` | `#dcf`         |
+| `fundamentals` | `#fundamentals` | `FundamentalsLab.tsx` | `#earnings` `#financials` |
 
 默认入口为 Home（`#`）。路由逻辑在 `Router.tsx`，结构定义在 `siteNav.ts`。
+
+估值 / 财报数据由 `dashboard/build_company_valuation.py` 写入：
+- `dashboard/data/nvda_valuation.json`
+- `dashboard/data/nvda_fundamentals.json`
+- 同步到 `dashboard/frontend/public/data/`
 
 ## 新增 L3 章节 checklist
 

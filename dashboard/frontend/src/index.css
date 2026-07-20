@@ -3099,3 +3099,202 @@ a.agent-headline-title:hover {
   padding: 16px 18px;
   border-left-width: 4px;
 }
+
+/* Valuation / Fundamentals labs */
+.val-lab .lab-card {
+  background: var(--bg-1);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px 22px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 10px rgba(255, 168, 196, 0.06);
+}
+
+.val-verdict-main {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 12px 20px;
+  margin-bottom: 10px;
+}
+
+.val-verdict-label {
+  font-size: 13px;
+  color: var(--text-3);
+  font-weight: 600;
+}
+
+.val-verdict-price {
+  font-size: 40px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, var(--pink-500), var(--blue-500));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.val-verdict-upside {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.val-verdict-upside.val-up { color: var(--accent-green); }
+.val-verdict-upside.val-down { color: var(--accent-red); }
+
+.val-verdict-headline {
+  font-size: 14px;
+  color: var(--text-2);
+  line-height: 1.55;
+  margin-bottom: 16px;
+}
+
+.val-kpi-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 10px;
+}
+
+.val-kpi {
+  background: var(--bg-3);
+  border: 1px solid var(--border-blue);
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+.val-kpi span {
+  display: block;
+  font-size: 11px;
+  color: var(--text-3);
+  margin-bottom: 4px;
+}
+
+.val-kpi strong {
+  font-size: 15px;
+  color: var(--text-1);
+}
+
+.val-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.val-table th,
+.val-table td {
+  text-align: left;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+
+.val-table th {
+  color: var(--text-3);
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.val-muted { color: var(--text-3); font-size: 12px; line-height: 1.45; }
+.val-self-row { background: var(--pink-50); }
+.val-base-cell {
+  background: var(--accent-yellow-bg);
+  font-weight: 700;
+  color: var(--accent-yellow);
+}
+
+.val-bridge {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 8px;
+  margin-top: 14px;
+  font-size: 12px;
+  color: var(--text-2);
+}
+
+.val-bridge strong {
+  display: block;
+  margin-top: 2px;
+  color: var(--text-1);
+  font-size: 14px;
+}
+
+.val-explain-what {
+  font-size: 14px;
+  color: var(--text-1);
+  line-height: 1.65;
+  margin-bottom: 8px;
+}
+
+.val-explain-intuition {
+  font-size: 13px;
+  color: var(--text-2);
+  margin-bottom: 12px;
+}
+
+.val-explain-steps {
+  margin-left: 1.2em;
+  font-size: 13px;
+  color: var(--text-2);
+  line-height: 1.7;
+}
+
+.val-risks {
+  margin-left: 1.2em;
+  font-size: 13px;
+  color: var(--text-2);
+  line-height: 1.7;
+}
+
+.val-glossary {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px;
+}
+
+.val-glossary-item {
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 14px;
+}
+
+.val-glossary-term {
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--text-1);
+  margin-bottom: 6px;
+}
+
+.val-glossary-term span {
+  font-weight: 500;
+  color: var(--pink-500);
+  margin-left: 6px;
+}
+
+.val-glossary-item p {
+  font-size: 12px;
+  color: var(--text-2);
+  line-height: 1.55;
+}
+
+.val-mode-toggle {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.val-table-scroll {
+  overflow-x: auto;
+}
+
+.val-mini-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-1);
+  margin: 12px 0 8px;
+}
+
+.lab-section-hint {
+  font-size: 12px;
+  color: var(--text-3);
+  margin: -4px 0 12px;
+}

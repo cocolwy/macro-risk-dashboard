@@ -1,4 +1,15 @@
-export type PageId = 'home' | 'pipeline' | 'risk' | 'ch1' | 'ch2' | 'ch2_1' | 'ch2_2' | 'ch3' | 'factorlab';
+export type PageId =
+  | 'home'
+  | 'pipeline'
+  | 'risk'
+  | 'ch1'
+  | 'ch2'
+  | 'ch2_1'
+  | 'ch2_2'
+  | 'ch3'
+  | 'factorlab'
+  | 'valuation'
+  | 'fundamentals';
 
 export interface NavItem {
   id: PageId;
@@ -90,6 +101,24 @@ export const SITE_NAV: Record<PageId, NavItem> = {
     badge: 'NEW',
     metrics: 'F001/F002/F003 dead',
   },
+  valuation: {
+    id: 'valuation',
+    hash: 'valuation',
+    title: 'Company Valuation',
+    subtitle: 'DCF + 相对估值三角 · NVDA 案例 · 名词表',
+    level: 2,
+    badge: 'NEW',
+    metrics: 'DCF · peers · sensitivity',
+  },
+  fundamentals: {
+    id: 'fundamentals',
+    hash: 'fundamentals',
+    title: 'Company Fundamentals',
+    subtitle: '利润表 · 现金流 · 资产负债表 · 分析师预期',
+    level: 2,
+    badge: 'NEW',
+    metrics: 'annual · quarterly · estimates',
+  },
 };
 
 const HASH_ALIASES: Record<string, PageId> = {
@@ -111,6 +140,11 @@ const HASH_ALIASES: Record<string, PageId> = {
   agent: 'ch3',
   factorlab: 'factorlab',
   alphadeck: 'factorlab',
+  valuation: 'valuation',
+  dcf: 'valuation',
+  fundamentals: 'fundamentals',
+  earnings: 'fundamentals',
+  financials: 'fundamentals',
 };
 
 export function pageFromHash(hash: string): PageId {
@@ -142,7 +176,7 @@ export const HOME_SECTIONS = [
   {
     level: 2,
     label: '二级 · 项目',
-    items: ['risk', 'ch2_2'] as PageId[],
+    items: ['risk', 'ch2_2', 'valuation', 'fundamentals'] as PageId[],
   },
   {
     level: 3,
