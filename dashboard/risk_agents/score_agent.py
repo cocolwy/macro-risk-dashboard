@@ -72,6 +72,12 @@ class ScoreAgent(BaseAgent):
             if weight_comparison:
                 metrics["weight_comparison"] = weight_comparison
 
+            try:
+                from predict_model import load_indicators, build_ch2_production_models
+                metrics["production_models"] = build_ch2_production_models(load_indicators())
+            except Exception as e:
+                self.log("Ch.2 生产模型", f"跳过: {e}", status="warning")
+
             metrics_path = data_dir / "model_metrics.json"
             if metrics_path.exists():
                 try:
@@ -83,6 +89,8 @@ class ScoreAgent(BaseAgent):
                         self.log("保留", f"{len(ext)} 个扩展实验")
                     if "experiment_a_info" in old:
                         metrics["experiment_a_info"] = old["experiment_a_info"]
+                    if "production_models" in old and "production_models" not in metrics:
+                        metrics["production_models"] = old["production_models"]
                 except (json.JSONDecodeError, KeyError):
                     pass
 

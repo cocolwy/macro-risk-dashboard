@@ -959,6 +959,12 @@ def main():
         json.dump(prob_timeline, f)
     print(f"  Saved crash_prediction.json ({len(prob_timeline)} points)")
 
+    try:
+        from fetch_macro_data import sync_public_data
+        sync_public_data()
+    except Exception as e:
+        print(f"  Warning: sync_public_data failed: {e}")
+
     print(f"\n  ML prediction:    {metrics['current_prediction']['probability']*100:.1f}% ({metrics['current_prediction']['signal']})")
     print(f"  Human prediction: {human_comparison['current_probability']*100:.1f}% ({human_comparison['current_signal']})")
     print(f"  ML AUC: {metrics['model_info']['roc_auc']}  Human AUC: {human_comparison['auc']}  Slim AUC: {slim_comparison['auc']}")

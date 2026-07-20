@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { fetchAllData, resolveCompositeScore, DataPoint, Summary, MomentumData } from './api';
+import { fetchAllData, fetchDataJson, resolveCompositeScore, DataPoint, Summary, MomentumData } from './api';
 import { ChartCard } from './components/ChartCard';
 import { MultiLineChart } from './components/MultiLineChart';
 import { AlertsPanel } from './components/AlertsPanel';
@@ -21,6 +21,95 @@ interface DashboardData {
   momentum: MomentumData;
 }
 
+interface ProductionModel {
+  id: string;
+  name: string;
+  role: string;
+  current_probability: number;
+  current_signal: string;
+  auc: number;
+  n_features: number;
+  practical_metrics: {
+    best_f1: number;
+    brier_score: number;
+  };
+}
+interface ProductionModelsBlock {
+  models: ProductionModel[];
+  walk_forward?: {
+    status: string;
+    message: string;
+    summary_by_model: Record<string, { f1_mean: number; f1_std: number }>;
+  };
+}
+interface ModelMetricsData {
+  production_models?: ProductionModelsBlock;
+}
+
+function signalColor(signal: string) {
+  return signal === 'elevated' ? '#dc2626' : signal === 'watch' ? '#b45309' : '#16a34a';
+}
+
+function CrashModelSummary({ block }: { block: ProductionModelsBlock }) {
+  const wf = block.walk_forward;
+  return (
+    <div className="crash-model-summary" style={{
+      background: '#fff', borderRadius: 12, padding: '16px 18px',
+      border: '1px solid #e2e8f0', marginBottom: 20,
+    }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 10 }}>
+        <h3 style={{ margin: 0, fontSize: 15, fontWeight: 700 }}>ML Crash Risk（Ch.2）</h3>
+        <span style={{
+          fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 4,
+          background: '#fef3c7', color: '#92400e', border: '1px solid #fcd34d',
+        }}>RESEARCH</span>
+      </div>
+      {wf && (
+        <div style={{
+          fontSize: 11, padding: '6px 10px', marginBottom: 12, borderRadius: 6,
+          background: '#fffbeb', border: '1px solid #fcd34d', color: '#92400e', lineHeight: 1.6,
+        }}>
+          {wf.message}
+        </div>
+      )}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+        {block.models.map((m, i) => {
+          const probPct = (m.current_probability * 100).toFixed(1);
+          const wfRow = wf?.summary_by_model?.[m.name];
+          return (
+            <div key={m.id} style={{
+              padding: '10px 12px', borderRadius: 8,
+              border: `2px solid ${i === 0 ? '#d6457a' : '#0d9488'}`,
+              background: i === 0 ? 'rgba(214,69,122,0.03)' : 'rgba(13,148,136,0.03)',
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 4 }}>
+                <span style={{ fontSize: 12, fontWeight: 700 }}>{m.name.replace('LR ', '')}</span>
+                <span style={{ fontSize: 10, fontWeight: 600, color: i === 0 ? '#d6457a' : '#0d9488' }}>{m.role}</span>
+              </div>
+              <div style={{ fontSize: 24, fontWeight: 700, color: signalColor(m.current_signal), marginBottom: 2 }}>
+                {probPct}%
+              </div>
+              <div style={{ fontSize: 11, color: '#6b7280' }}>
+                F1 {m.practical_metrics.best_f1.toFixed(3)} · Brier {m.practical_metrics.brier_score.toFixed(3)}
+              </div>
+              {wfRow && (
+                <div style={{ fontSize: 10, color: '#92400e', marginTop: 2 }}>
+                  WF F1: {wfRow.f1_mean.toFixed(3)} ± {wfRow.f1_std.toFixed(3)}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+      <div style={{ fontSize: 11, color: '#6b7280', marginTop: 10 }}>
+        Target: 20d &gt;5% 回撤 · 详见{' '}
+        <a href="#ch1" style={{ color: '#3a82d6' }}>Ch.1 双轨模型</a> ·{' '}
+        <a href="#ch2" style={{ color: '#3a82d6' }}>Ch.2 Walk-forward</a>
+      </div>
+    </div>
+  );
+}
+
 function getLatestValue(data: DataPoint[], key: string): string {
   if (data.length === 0) return '--';
   const latest = data[data.length - 1];
@@ -33,12 +122,16 @@ export default function App() {
   const [data, setData] = useState<DashboardData | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [modelBlock, setModelBlock] = useState<ProductionModelsBlock | null>(null);
 
   useEffect(() => {
     fetchAllData()
       .then(setData)
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
+    fetchDataJson<ModelMetricsData>('model_metrics.json')
+      .then(d => setModelBlock(d.production_models ?? null))
+      .catch(() => {});
   }, []);
 
   if (loading) {
@@ -94,6 +187,8 @@ export default function App() {
           momentum={data.momentum}
         />
       )}
+
+      {modelBlock && <CrashModelSummary block={modelBlock} />}
 
       {data.compositeScore.length > 0 && (
         <div className="charts-grid" style={{ marginBottom: '20px' }}>

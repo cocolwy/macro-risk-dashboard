@@ -101,6 +101,23 @@ interface TargetSensitivityData {
   best_wf_config: TargetGridRow | null;
   verdict: string[];
 }
+interface EpisodeEvalSummary {
+  hit_at_10: number | null;
+  hit_at_15: number | null;
+  hit_at_20: number | null;
+  mean_lead_days: number | null;
+  total_episodes: number;
+  false_alarms_per_year_mean: number | null;
+  n_folds: number;
+}
+interface EpisodeEvalData {
+  title: string;
+  role: string;
+  primary_metrics_unchanged: string;
+  design: Record<string, unknown>;
+  summary_by_model: Record<string, EpisodeEvalSummary>;
+  verdict: string[];
+}
 interface Phase3Data {
   phase: number; title: string;
   experiments: ExperimentData[];
@@ -110,6 +127,7 @@ interface Phase3Data {
   correlation_analysis?: CorrelationAnalysis;
   walk_forward?: WalkForwardData;
   target_sensitivity?: TargetSensitivityData;
+  episode_eval?: EpisodeEvalData;
   summary: {
     lr_slim_auc: number; lr_full_auc: number;
     gbdt_slim_auc: number; gbdt_full_auc: number;
@@ -401,6 +419,61 @@ function TargetSensitivitySection({ data }: { data: TargetSensitivityData }) {
   );
 }
 
+function EpisodeEvalSection({ data }: { data: EpisodeEvalData }) {
+  const models = Object.keys(data.summary_by_model);
+  return (
+    <section className="lab-card">
+      <div className="ab-header">
+        <h2>Episode 评估（辅指标）</h2>
+        <span className="ab-badge" style={{ background: '#f0f9ff', color: '#0369a1', border: '1px solid #bae6fd' }}>SUPPLEMENTARY</span>
+      </div>
+      <p className="lab-card-desc">
+        按 crash 事件统计 Hit/Miss（非逐日 F1）。阈值 = train 上 best_f1_threshold；默认解读 Hit@20。
+        Primary 仍为 Best F1 + Brier。
+      </p>
+      <div className="lab-table-wrap">
+        <table className="lab-table" style={{ fontSize: 12 }}>
+          <thead>
+            <tr>
+              <th>模型</th>
+              <th>Hit@10</th>
+              <th>Hit@15</th>
+              <th>Hit@20</th>
+              <th>Mean Lead</th>
+              <th>Episodes</th>
+              <th>FA / yr</th>
+            </tr>
+          </thead>
+          <tbody>
+            {models.map(name => {
+              const s = data.summary_by_model[name];
+              const fmt = (v: number | null) => v != null ? v.toFixed(3) : '—';
+              return (
+                <tr key={name}>
+                  <td>{name.replace('LR ', '')}</td>
+                  <td className="lab-td-mono">{fmt(s.hit_at_10)}</td>
+                  <td className="lab-td-mono">{fmt(s.hit_at_15)}</td>
+                  <td className="lab-td-mono" style={s.hit_at_20 != null && s.hit_at_20 >= 0.5 ? { color: '#16a34a', fontWeight: 600 } : undefined}>
+                    {fmt(s.hit_at_20)}
+                  </td>
+                  <td className="lab-td-mono">{s.mean_lead_days != null ? `${s.mean_lead_days}d` : '—'}</td>
+                  <td>{s.total_episodes}</td>
+                  <td className="lab-td-mono">{s.false_alarms_per_year_mean?.toFixed(1) ?? '—'}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+      {data.verdict.length > 0 && (
+        <div style={{ marginTop: 12, padding: '10px 12px', background: '#f0f9ff', borderRadius: 8, border: '1px solid #bae6fd', fontSize: 12, lineHeight: 1.7 }}>
+          {data.verdict.map((v, i) => <div key={i}>{v}</div>)}
+        </div>
+      )}
+    </section>
+  );
+}
+
 function OptimizationJourney() {
   return (
     <section className="lab-card">
@@ -501,7 +574,7 @@ function Phase3LabInner() {
   if (error) return <div className="lab-container"><div className="lab-card"><p>Phase 3 data not available: {error}</p></div></div>;
   if (!data) return <div className="loading">Loading Phase 3 data...</div>;
 
-  const { experiments, pairwise, feature_importances, practical_summary, walk_forward, target_sensitivity } = data;
+  const { experiments, pairwise, feature_importances, practical_summary, walk_forward, target_sensitivity, episode_eval } = data;
 
   return (
     <div className="lab-container">
@@ -523,6 +596,8 @@ function Phase3LabInner() {
       {walk_forward && <WalkForwardSection wf={walk_forward} />}
 
       {target_sensitivity && <TargetSensitivitySection data={target_sensitivity} />}
+
+      {episode_eval && <EpisodeEvalSection data={episode_eval} />}
 
       {/* ============ SECTION 1: 核心问题 ============ */}
       <section className="lab-card">
