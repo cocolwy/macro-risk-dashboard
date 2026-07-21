@@ -6,6 +6,7 @@ import { pageFromHash, hashForPage, SITE_NAV, PageId } from './siteNav';
 const App = lazy(() => import('./App'));
 const PredictionLab = lazy(() => import('./PredictionLab').then(m => ({ default: m.PredictionLab })));
 const Phase3Lab = lazy(() => import('./Phase3Lab').then(m => ({ default: m.Phase3Lab })));
+const FragilityLab = lazy(() => import('./FragilityLab').then(m => ({ default: m.FragilityLab })));
 const MetricLab = lazy(() => import('./MetricLab').then(m => ({ default: m.MetricLab })));
 const EventVolLab = lazy(() => import('./EventVolLab').then(m => ({ default: m.EventVolLab })));
 const AgentLab = lazy(() => import('./AgentLab').then(m => ({ default: m.AgentLab })));
@@ -14,7 +15,7 @@ const FactorLab = lazy(() => import('./FactorLab').then(m => ({ default: m.Facto
 const ValuationLab = lazy(() => import('./ValuationLab').then(m => ({ default: m.ValuationLab })));
 const FundamentalsLab = lazy(() => import('./FundamentalsLab').then(m => ({ default: m.FundamentalsLab })));
 
-const RISK_CHILDREN: PageId[] = ['ch1', 'ch2', 'ch2_1'];
+const RISK_CHILDREN: PageId[] = ['ch1', 'ch2', 'ch2_1', 'ch3_risk'];
 
 function getInitialPage(): PageId {
   return pageFromHash(window.location.hash);
@@ -140,6 +141,7 @@ export function Router() {
         {page === 'risk' && <App />}
         {page === 'ch1' && <PredictionLab />}
         {page === 'ch2' && <Phase3Lab />}
+        {page === 'ch3_risk' && <FragilityLab />}
         {page === 'ch2_1' && <MetricLab />}
         {page === 'ch2_2' && <EventVolLab />}
         {page === 'ch3' && <AgentLab />}

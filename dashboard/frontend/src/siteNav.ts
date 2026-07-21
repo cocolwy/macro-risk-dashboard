@@ -7,6 +7,7 @@ export type PageId =
   | 'ch2_1'
   | 'ch2_2'
   | 'ch3'
+  | 'ch3_risk'
   | 'factorlab'
   | 'valuation'
   | 'fundamentals';
@@ -74,6 +75,16 @@ export const SITE_NAV: Record<PageId, NavItem> = {
     parent: 'risk',
     metrics: 'GBDT vs LR walk-forward',
   },
+  ch3_risk: {
+    id: 'ch3_risk',
+    hash: 'ch3-risk',
+    title: 'Ch.3 Fragility & Anomaly',
+    subtitle: '风控模型线 · 脆弱性目标 · 异常检测 · 非 Alpha Deck',
+    level: 3,
+    parent: 'risk',
+    badge: 'NEW',
+    metrics: 'fragility target · anomaly detection',
+  },
   ch2_1: {
     id: 'ch2_1',
     hash: 'ch2-1',
@@ -138,6 +149,8 @@ const HASH_ALIASES: Record<string, PageId> = {
   eventvol: 'ch2_2',
   ch3: 'ch3',
   agent: 'ch3',
+  'ch3-risk': 'ch3_risk',
+  fragility: 'ch3_risk',
   factorlab: 'factorlab',
   alphadeck: 'factorlab',
   valuation: 'valuation',
@@ -183,7 +196,7 @@ export const HOME_SECTIONS = [
     label: '三级 · 风控模型实验（Ch.1 → Ch.2，独立于 Alpha Deck）',
     hint: 'LR / GBDT 模型演进，服务 #risk 看板；不是因子流水线',
     parent: 'risk' as PageId,
-    items: ['ch1', 'ch2', 'ch2_1'] as PageId[],
+    items: ['ch1', 'ch2', 'ch2_1', 'ch3_risk'] as PageId[],
   },
 ];
 

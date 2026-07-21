@@ -110,6 +110,80 @@ function CrashModelSummary({ block }: { block: ProductionModelsBlock }) {
   );
 }
 
+function computeFragilityPosition(vixData: DataPoint[], arData: DataPoint[]) {
+  if (vixData.length < 60 || arData.length < 60) return null;
+
+  const window = Math.min(240, vixData.length);
+  const smoothing = 5;
+
+  const vixVals = vixData.slice(-window).map(d => d.vix as number).filter(v => v != null);
+  const arVals = arData.slice(-window).map(d => d.absorption_ratio as number).filter(v => v != null);
+
+  if (vixVals.length < 60 || arVals.length < 60) return null;
+
+  const latestVix = vixVals[vixVals.length - 1];
+  const latestAr = arVals[arVals.length - 1];
+  const vixPctile = vixVals.filter(v => v <= latestVix).length / vixVals.length;
+  const arPctile = arVals.filter(v => v <= latestAr).length / arVals.length;
+  const fragility = vixPctile * arPctile;
+
+  const recentFragilities: number[] = [];
+  for (let i = Math.max(0, vixVals.length - smoothing); i < vixVals.length; i++) {
+    const v = vixVals[i];
+    const a = arVals[Math.min(i, arVals.length - 1)];
+    const vp = vixVals.filter(x => x <= v).length / vixVals.length;
+    const ap = arVals.filter(x => x <= a).length / arVals.length;
+    recentFragilities.push(vp * ap);
+  }
+  const smoothedFragility = recentFragilities.reduce((s, x) => s + x, 0) / recentFragilities.length;
+  const position = Math.max(0.2, Math.min(1.0, 1 - smoothedFragility));
+
+  return { fragility: smoothedFragility, position, vixPctile, arPctile, rawFragility: fragility };
+}
+
+function PositionCard({ vixData, arData }: { vixData: DataPoint[]; arData: DataPoint[] }) {
+  const result = computeFragilityPosition(vixData, arData);
+  if (!result) return null;
+
+  const posPct = (result.position * 100).toFixed(0);
+  const posColor = result.position >= 0.7 ? '#16a34a' : result.position >= 0.5 ? '#b45309' : '#dc2626';
+
+  return (
+    <div style={{
+      background: '#fff', borderRadius: 12, padding: '16px 18px',
+      border: '1px solid #e2e8f0', marginBottom: 20,
+    }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 8 }}>
+        <h3 style={{ margin: 0, fontSize: 15, fontWeight: 700 }}>Position Sizing（脆弱性仓位）</h3>
+        <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, background: '#fef3c7', color: '#92400e', border: '1px solid #fcd34d', fontWeight: 600 }}>
+          EXPERIMENTAL
+        </span>
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12, marginBottom: 10 }}>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ fontSize: 28, fontWeight: 700, color: posColor }}>{posPct}%</div>
+          <div style={{ fontSize: 11, color: '#6b7280' }}>建议仓位</div>
+        </div>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ fontSize: 20, fontWeight: 600, color: '#6b7280' }}>{(result.fragility * 100).toFixed(0)}%</div>
+          <div style={{ fontSize: 11, color: '#6b7280' }}>脆弱度</div>
+        </div>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ fontSize: 12, color: '#6b7280', lineHeight: 1.6 }}>
+            VIX pctile: {(result.vixPctile * 100).toFixed(0)}%<br/>
+            AR pctile: {(result.arPctile * 100).toFixed(0)}%
+          </div>
+        </div>
+      </div>
+      <div style={{ fontSize: 11, color: '#9ca3af', borderTop: '1px solid #f1f5f9', paddingTop: 8 }}>
+        公式: position = 1 - smooth(VIX_pctile × AR_pctile, 5d) · 下限 20%<br/>
+        ⚠️ 无提前效应（VIX 是同步指标），仅参考 · 详见{' '}
+        <a href="#ch3-risk" style={{ color: '#7c3aed' }}>Ch.3</a>
+      </div>
+    </div>
+  );
+}
+
 function getLatestValue(data: DataPoint[], key: string): string {
   if (data.length === 0) return '--';
   const latest = data[data.length - 1];
@@ -189,6 +263,10 @@ export default function App() {
       )}
 
       {modelBlock && <CrashModelSummary block={modelBlock} />}
+
+      {data.vix.length > 0 && data.absorptionRatio.length > 0 && (
+        <PositionCard vixData={data.vix} arData={data.absorptionRatio} />
+      )}
 
       {data.compositeScore.length > 0 && (
         <div className="charts-grid" style={{ marginBottom: '20px' }}>

@@ -659,6 +659,47 @@ function Phase3LabInner() {
 
       <ResearchTrackNotice track="risk-model" />
 
+      <section className="lab-card" style={{ borderLeft: '4px solid #8b5cf6', background: '#faf5ff' }}>
+        <div className="ab-header">
+          <h2 style={{ color: '#6b21a8' }}>研究结论：为什么换算法没用</h2>
+          <span className="ab-badge" style={{ background: '#f3e8ff', color: '#7c3aed', border: '1px solid #c4b5fd' }}>INSIGHT</span>
+        </div>
+        <div style={{ fontSize: 13, lineHeight: 1.9, color: '#374151' }}>
+          <p style={{ margin: '0 0 10px', fontWeight: 600 }}>
+            核心矛盾：每次崩盘/回撤的触发源不同（关税、疫情、杠杆爆仓），且同一宏观事件在不同市场环境下的影响也不同。
+          </p>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, margin: '12px 0' }}>
+            <div style={{ padding: '10px 12px', background: '#fff', borderRadius: 8, border: '1px solid #e9d5ff' }}>
+              <div style={{ fontWeight: 700, color: '#dc2626', fontSize: 12 }}>换算法 → 几乎无效</div>
+              <div style={{ fontSize: 12, marginTop: 4, color: '#6b7280' }}>
+                LR F1=0.306 vs GBDT F1=0.312<br/>
+                模型复杂度不是瓶颈，因为映射 f(features)→crash 本身不稳定
+              </div>
+            </div>
+            <div style={{ padding: '10px 12px', background: '#fff', borderRadius: 8, border: '1px solid #bbf7d0' }}>
+              <div style={{ fontWeight: 700, color: '#16a34a', fontSize: 12 }}>加数据 → 有效但有天花板</div>
+              <div style={{ fontSize: 12, marginTop: 4, color: '#6b7280' }}>
+                1000天 → 9000天，WF F1: 0.19→0.31 (+63%)<br/>
+                见过的 pattern 越多，匹配概率越高，但新型崩盘仍会失败
+              </div>
+            </div>
+          </div>
+          <p style={{ margin: '10px 0 6px', fontWeight: 600 }}>验证：Fold 4 为何独占 F1=0.71？</p>
+          <p style={{ margin: 0, fontSize: 12, color: '#6b7280' }}>
+            因为训练集包含了 2025.4 关税冲击（41天正样本），而测试期的 2026.2 回撤特征指纹几乎相同
+            （VIX~22、跌破50MA、利差走阔）。Fold 1-3 的训练集没见过类似 pattern → F1≈0。
+          </p>
+          <div style={{ marginTop: 12, padding: '10px 14px', background: '#f0fdf4', borderRadius: 8, border: '1px solid #86efac' }}>
+            <div style={{ fontWeight: 700, fontSize: 12, color: '#166534' }}>下一步方向</div>
+            <div style={{ fontSize: 12, color: '#374151', marginTop: 4, lineHeight: 1.8 }}>
+              ① 换目标：不预测「是否崩盘」，改为度量「市场脆弱性」— 绕开触发源不可预测的问题<br/>
+              ② 异常检测：检测微观因子是否偏离正常状态，不依赖崩盘类型<br/>
+              ③ 增量信号：期权 skew、资金流等结构性数据，可能在 price 之前反应
+            </div>
+          </div>
+        </div>
+      </section>
+
       <OptimizationJourney />
 
       {walk_forward && <WalkForwardSection wf={walk_forward} />}
