@@ -128,12 +128,29 @@ interface Phase3Data {
   walk_forward?: WalkForwardData;
   target_sensitivity?: TargetSensitivityData;
   episode_eval?: EpisodeEvalData;
+  regime_models?: RegimeModelsData;
   summary: {
     lr_slim_auc: number; lr_full_auc: number;
     gbdt_slim_auc: number; gbdt_full_auc: number;
     rf_slim_auc: number; rf_full_auc?: number;
     best_model: string; data_range: string; total_samples: number;
   };
+}
+
+interface RegimeModelWFSummary {
+  auc_mean: number; auc_std: number;
+  f1_mean: number; f1_std: number;
+  brier_mean: number;
+}
+interface RegimeModelsData {
+  title: string;
+  data_range: string;
+  n_samples: number;
+  positive_rate: number;
+  tight_regime_pct: number;
+  walk_forward_config: { min_train_years: number; step_years: number; embargo_days: number; n_folds: number };
+  walk_forward_summary: Record<string, RegimeModelWFSummary>;
+  verdict: string[];
 }
 
 const COLORS = ['#d6457a', '#3a82d6', '#16a34a', '#ea580c', '#8b5cf6', '#0d9488'];
@@ -419,6 +436,57 @@ function TargetSensitivitySection({ data }: { data: TargetSensitivityData }) {
   );
 }
 
+function RegimeModelsSection({ data }: { data: RegimeModelsData }) {
+  const sorted = Object.entries(data.walk_forward_summary)
+    .sort(([, a], [, b]) => b.f1_mean - a.f1_mean);
+  const bestF1 = sorted[0]?.[1]?.f1_mean ?? 0;
+
+  return (
+    <section className="lab-card">
+      <div className="ab-header">
+        <h2>Regime-Conditional & Non-Linear (1990+)</h2>
+        <span className="ab-badge" style={{ background: '#fef3c7', color: '#92400e', border: '1px solid #fcd34d' }}>
+          {data.walk_forward_config.n_folds} folds · {data.n_samples} samples
+        </span>
+      </div>
+      <p className="lab-card-desc">
+        延长历史至 1990+（{data.n_samples} 交易日，正样本率 {(data.positive_rate * 100).toFixed(1)}%，
+        tight regime {data.tight_regime_pct}%）。比较 LR vs GBDT × Slim vs Regime+Interact。
+      </p>
+      <div className="lab-table-wrap">
+        <table className="lab-table">
+          <thead>
+            <tr><th>Model</th><th>WF F1</th><th>WF AUC</th><th>Brier ↓</th></tr>
+          </thead>
+          <tbody>
+            {sorted.map(([name, s]) => (
+              <tr key={name}>
+                <td style={{ fontWeight: 600 }}>
+                  {Math.abs(s.f1_mean - bestF1) < 0.001 && <span className="ab-best-tag">BEST</span>}
+                  {name}
+                </td>
+                <td className="lab-td-mono" style={Math.abs(s.f1_mean - bestF1) < 0.001 ? { color: '#16a34a', fontWeight: 700 } : undefined}>
+                  {s.f1_mean.toFixed(4)} ± {s.f1_std.toFixed(4)}
+                </td>
+                <td className="lab-td-mono">{s.auc_mean.toFixed(4)} ± {s.auc_std.toFixed(4)}</td>
+                <td className="lab-td-mono">{s.brier_mean.toFixed(4)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      {data.verdict.length > 0 && (
+        <div style={{ marginTop: 12, padding: '10px 14px', background: '#f8fafc', borderRadius: 8, borderLeft: '3px solid #8b5cf6' }}>
+          <div style={{ fontWeight: 700, fontSize: 12, color: '#8b5cf6', marginBottom: 4 }}>Verdict</div>
+          {data.verdict.map((v, i) => (
+            <div key={i} style={{ fontSize: 12, color: '#374151', lineHeight: 1.7 }}>• {v}</div>
+          ))}
+        </div>
+      )}
+    </section>
+  );
+}
+
 function EpisodeEvalSection({ data }: { data: EpisodeEvalData }) {
   const models = Object.keys(data.summary_by_model);
   return (
@@ -574,7 +642,7 @@ function Phase3LabInner() {
   if (error) return <div className="lab-container"><div className="lab-card"><p>Phase 3 data not available: {error}</p></div></div>;
   if (!data) return <div className="loading">Loading Phase 3 data...</div>;
 
-  const { experiments, pairwise, feature_importances, practical_summary, walk_forward, target_sensitivity, episode_eval } = data;
+  const { experiments, pairwise, feature_importances, practical_summary, walk_forward, target_sensitivity, episode_eval, regime_models } = data;
 
   return (
     <div className="lab-container">
@@ -598,6 +666,8 @@ function Phase3LabInner() {
       {target_sensitivity && <TargetSensitivitySection data={target_sensitivity} />}
 
       {episode_eval && <EpisodeEvalSection data={episode_eval} />}
+
+      {regime_models && <RegimeModelsSection data={regime_models} />}
 
       {/* ============ SECTION 1: 核心问题 ============ */}
       <section className="lab-card">

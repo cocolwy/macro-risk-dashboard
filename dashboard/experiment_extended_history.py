@@ -1,9 +1,12 @@
 """
-Experiment A: Extended History (2005-present)
-Fetches 20 years of data (vs default 4 years) and re-runs ML + Human Logic models
-to test if more training data improves prediction quality.
+Experiment A: Extended History (1990-present)
+Fetches 35+ years of data to cover multiple crash episodes for better walk-forward.
 
-Outputs experiment results into model_metrics.json as a third experiment.
+Key crash episodes: 1990 S&L, 1994 bond, 1997 Asia, 1998 LTCM, 2000-02 dot-com,
+  2007-09 GFC, 2010 flash crash, 2011 EU debt, 2015 China, 2018 Q4,
+  2020 COVID, 2022 rate hikes, 2024 yen carry, 2025 tariffs
+
+Outputs experiment results into model_metrics.json.
 """
 
 import json
@@ -31,20 +34,22 @@ from predict_model import (
 
 DATA_DIR = Path(__file__).parent / 'data'
 
-START_DATE = '2005-01-01'
+START_DATE = '1990-01-01'
 
 FRED_SERIES = {
     'term_spread': 'T10Y2Y',
     'credit_spread': 'BAA10Y',
+    'vix': 'VIXCLS',
 }
 
 SECTOR_ETFS = ['XLB', 'XLC', 'XLE', 'XLF', 'XLI', 'XLK', 'XLP', 'XLRE', 'XLU', 'XLV', 'XLY']
 
 
-def fetch_fred_series(series_id: str) -> pd.Series:
+def fetch_fred_series(series_id: str, start: str = None) -> pd.Series:
+    _start = start or START_DATE
     url = (
         f"https://fred.stlouisfed.org/graph/fredgraph.csv"
-        f"?id={series_id}&cosd={START_DATE}&fq=Daily"
+        f"?id={series_id}&cosd={_start}&fq=Daily"
     )
     df = pd.read_csv(url)
     date_col = [c for c in df.columns if "date" in c.lower()][0]
@@ -56,10 +61,11 @@ def fetch_fred_series(series_id: str) -> pd.Series:
     return s
 
 
-def fetch_yf_series(ticker: str) -> pd.Series:
+def fetch_yf_series(ticker: str, start: str = None) -> pd.Series:
     if yf is None:
         raise ImportError("yfinance not installed")
-    data = yf.download(ticker, start=START_DATE, progress=False)
+    _start = start or START_DATE
+    data = yf.download(ticker, start=_start, progress=False)
     if data.empty:
         return pd.Series(dtype=float)
     close = data['Close']
@@ -113,25 +119,31 @@ def compute_breadth(sector_closes: dict[str, pd.Series]) -> pd.Series:
 
 
 def load_extended_data() -> pd.DataFrame:
-    print("  Fetching FRED data...")
+    print("  Fetching FRED data (T10Y2Y, BAA10Y, VIXCLS)...")
     fred_data = {}
     for name, sid in FRED_SERIES.items():
         try:
             fred_data[name] = fetch_fred_series(sid)
-            print(f"    {name}: {len(fred_data[name])} points")
+            print(f"    {name} ({sid}): {len(fred_data[name])} points "
+                  f"({fred_data[name].index[0]} ~ {fred_data[name].index[-1]})")
         except Exception as e:
             print(f"    {name}: FAILED ({e})")
 
-    print("  Fetching VIX & S&P 500...")
-    vix = fetch_yf_series('^VIX')
+    print("  Fetching S&P 500 from yfinance...")
     sp500 = fetch_yf_series('^GSPC')
-    print(f"    VIX: {len(vix)}, S&P500: {len(sp500)}")
+    print(f"    S&P500: {len(sp500)} points ({sp500.index[0]} ~ {sp500.index[-1]})")
 
-    print("  Fetching sector ETFs...")
+    vix = fred_data.pop('vix', pd.Series(dtype=float))
+    if vix.empty:
+        print("    VIXCLS from FRED failed, falling back to yfinance ^VIX...")
+        vix = fetch_yf_series('^VIX')
+    print(f"    VIX: {len(vix)} points ({vix.index[0]} ~ {vix.index[-1]})")
+
+    print("  Fetching sector ETFs (1998+)...")
     sector_closes = {}
     for sym in SECTOR_ETFS:
         try:
-            s = fetch_yf_series(sym)
+            s = fetch_yf_series(sym, start='1998-01-01')
             if len(s) > 0:
                 sector_closes[sym] = s
         except Exception as e:
@@ -139,16 +151,13 @@ def load_extended_data() -> pd.DataFrame:
     print(f"    Got {len(sector_closes)} sectors")
 
     sector_df = pd.DataFrame(sector_closes)
-    sector_returns = sector_df.pct_change().iloc[1:]  # drop first NaN row only
+    sector_returns = sector_df.pct_change().iloc[1:]
 
-    avail_per_date = sector_returns.notna().sum(axis=1)
-    print(f"    Sector coverage: {int(avail_per_date.min())}~{int(avail_per_date.max())} ETFs across {len(sector_returns)} days")
-
-    print("  Computing Absorption Ratio (dynamic ETF subset)...")
+    print("  Computing Absorption Ratio...")
     abs_ratio = compute_absorption_ratio(sector_returns)
     print(f"    {len(abs_ratio)} points ({abs_ratio.index[0]} ~ {abs_ratio.index[-1]})")
 
-    print("  Computing Turbulence Index (dynamic ETF subset)...")
+    print("  Computing Turbulence Index...")
     turbulence = compute_turbulence(sector_returns)
     print(f"    {len(turbulence)} points ({turbulence.index[0]} ~ {turbulence.index[-1]})")
 
@@ -168,11 +177,20 @@ def load_extended_data() -> pd.DataFrame:
 
     df = df.apply(pd.to_numeric, errors='coerce')
     df = df.ffill().dropna(subset=['sp500', 'vix'])
+    print(f"  Final: {len(df)} trading days ({df.index[0]} ~ {df.index[-1]})")
     return df
 
 
 EXTENDED_KEY_EVENTS = [
+    {"name": "1990 S&L 衰退", "start": "1990-07-01", "peak": "1990-10-11", "drop_pct": -19.9},
+    {"name": "1994 债市大屠杀", "start": "1994-01-15", "peak": "1994-04-04", "drop_pct": -8.9},
+    {"name": "1997 亚洲金融危机", "start": "1997-07-01", "peak": "1997-10-27", "drop_pct": -10.8},
+    {"name": "1998 LTCM/俄罗斯危机", "start": "1998-07-01", "peak": "1998-08-31", "drop_pct": -19.3},
+    {"name": "2000 互联网泡沫破裂", "start": "2000-03-01", "peak": "2000-04-14", "drop_pct": -11.1},
+    {"name": "2001 911 + 衰退", "start": "2001-08-01", "peak": "2001-09-21", "drop_pct": -11.6},
+    {"name": "2002 财报丑闻", "start": "2002-05-01", "peak": "2002-07-23", "drop_pct": -28.8},
     {"name": "2008 金融危机", "start": "2008-06-01", "peak": "2008-10-10", "drop_pct": -56.8},
+    {"name": "2010 闪电崩盘", "start": "2010-04-15", "peak": "2010-05-06", "drop_pct": -9.2},
     {"name": "2011 欧债危机", "start": "2011-07-01", "peak": "2011-10-03", "drop_pct": -19.4},
     {"name": "2015.8 中国股灾", "start": "2015-08-01", "peak": "2015-08-25", "drop_pct": -12.4},
     {"name": "2018.Q4 加息恐慌", "start": "2018-09-01", "peak": "2018-12-24", "drop_pct": -19.8},
@@ -185,10 +203,10 @@ EXTENDED_KEY_EVENTS = [
 
 def main():
     print("=" * 60)
-    print("EXPERIMENT A: Extended History (2005-present)")
+    print("EXPERIMENT A: Extended History (1990-present)")
     print("=" * 60)
 
-    print("\n[1/4] Loading extended data from 2005...")
+    print("\n[1/4] Loading extended data from 1990...")
     df = load_extended_data()
     print(f"  Total: {len(df)} trading days ({df.index[0]} ~ {df.index[-1]})")
 
@@ -287,11 +305,11 @@ def main():
     print("\n[4/4] Building comparison data (all with embargo)...")
     ml_result = build_comparison_metrics(
         y_test, ml_probs_test, ml_probs_all, X, df['sp500'],
-        "ML Extended (2005+)", EXTENDED_KEY_EVENTS,
+        "ML Extended (1990+)", EXTENDED_KEY_EVENTS,
     )
     human_result = build_comparison_metrics(
         y_test, human_probs_test, human_probs_all, X, df['sp500'],
-        "Human Extended (2005+)", EXTENDED_KEY_EVENTS,
+        "Human Extended (1990+)", EXTENDED_KEY_EVENTS,
     )
     slim_result = build_comparison_metrics(
         y_test_slim, slim_probs_test, slim_probs_all, X_slim, df['sp500'],
