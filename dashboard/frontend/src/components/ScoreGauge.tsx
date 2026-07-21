@@ -51,14 +51,14 @@ export function ScoreGauge({ score, label, action, components, momentum }: Score
       <h3>Composite Risk Score</h3>
       <div className="subtitle">Weighted aggregate of all indicators with acceleration & persistence filters</div>
 
-      {/* Big score number */}
       <div style={{
         fontSize: '72px',
         fontWeight: 800,
         color,
         marginTop: '16px',
         lineHeight: 1,
-        textShadow: `0 0 30px ${color}40`,
+        letterSpacing: '-0.04em',
+        textShadow: `0 0 40px ${color}30`,
       }}>
         {Math.round(score)}
       </div>
@@ -67,6 +67,7 @@ export function ScoreGauge({ score, label, action, components, momentum }: Score
         fontWeight: 600,
         color,
         marginTop: '8px',
+        letterSpacing: '-0.01em',
       }}>
         {label}
       </div>
@@ -78,13 +79,12 @@ export function ScoreGauge({ score, label, action, components, momentum }: Score
         {action}
       </div>
 
-      {/* Score bar */}
       <div style={{
         margin: '20px auto',
         maxWidth: '400px',
-        height: '8px',
-        background: 'rgba(241, 216, 226, 0.4)',
-        borderRadius: '4px',
+        height: '6px',
+        background: 'rgba(241, 216, 226, 0.3)',
+        borderRadius: '3px',
         position: 'relative',
         overflow: 'hidden',
       }}>
@@ -92,10 +92,9 @@ export function ScoreGauge({ score, label, action, components, momentum }: Score
           width: `${score}%`,
           height: '100%',
           background: `linear-gradient(90deg, #16a34a, #f59e0b, #dc2626)`,
-          borderRadius: '4px',
-          transition: 'width 0.5s ease',
+          borderRadius: '3px',
+          transition: 'width 0.6s cubic-bezier(0.2, 0, 0, 1)',
         }} />
-        {/* Threshold markers */}
         {[20, 40, 60, 80].map((t) => (
           <div key={t} style={{
             position: 'absolute',
@@ -103,7 +102,7 @@ export function ScoreGauge({ score, label, action, components, momentum }: Score
             top: 0,
             bottom: 0,
             width: '1px',
-            background: 'rgba(255,255,255,0.2)',
+            background: 'rgba(255,255,255,0.25)',
           }} />
         ))}
       </div>

@@ -54,11 +54,14 @@ function CrashModelSummary({ block }: { block: ProductionModelsBlock }) {
   const wf = block.walk_forward;
   return (
     <div className="crash-model-summary" style={{
-      background: '#fff', borderRadius: 12, padding: '16px 18px',
-      border: '1px solid #e2e8f0', marginBottom: 20,
+      background: 'rgba(255, 255, 255, 0.72)', backdropFilter: 'blur(16px) saturate(180%)',
+      WebkitBackdropFilter: 'blur(16px) saturate(180%)',
+      borderRadius: 16, padding: '16px 18px',
+      border: '1px solid rgba(226, 232, 240, 0.65)', marginBottom: 20,
+      boxShadow: '0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.02)',
     }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 10 }}>
-        <h3 style={{ margin: 0, fontSize: 15, fontWeight: 700 }}>ML Crash Risk（Ch.2）</h3>
+        <h3 style={{ margin: 0, fontSize: 15, fontWeight: 700, letterSpacing: '-0.01em' }}>ML Crash Risk（Ch.2）</h3>
         <span style={{
           fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 4,
           background: '#fef3c7', color: '#92400e', border: '1px solid #fcd34d',
@@ -86,7 +89,7 @@ function CrashModelSummary({ block }: { block: ProductionModelsBlock }) {
                 <span style={{ fontSize: 12, fontWeight: 700 }}>{m.name.replace('LR ', '')}</span>
                 <span style={{ fontSize: 10, fontWeight: 600, color: i === 0 ? '#d6457a' : '#0d9488' }}>{m.role}</span>
               </div>
-              <div style={{ fontSize: 24, fontWeight: 700, color: signalColor(m.current_signal), marginBottom: 2 }}>
+              <div style={{ fontSize: 24, fontWeight: 700, letterSpacing: '-0.02em', color: signalColor(m.current_signal), marginBottom: 2 }}>
                 {probPct}%
               </div>
               <div style={{ fontSize: 11, color: '#6b7280' }}>
@@ -150,18 +153,21 @@ function PositionCard({ vixData, arData }: { vixData: DataPoint[]; arData: DataP
 
   return (
     <div style={{
-      background: '#fff', borderRadius: 12, padding: '16px 18px',
-      border: '1px solid #e2e8f0', marginBottom: 20,
+      background: 'rgba(255, 255, 255, 0.72)', backdropFilter: 'blur(16px) saturate(180%)',
+      WebkitBackdropFilter: 'blur(16px) saturate(180%)',
+      borderRadius: 16, padding: '16px 18px',
+      border: '1px solid rgba(226, 232, 240, 0.65)', marginBottom: 20,
+      boxShadow: '0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.02)',
     }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 8 }}>
-        <h3 style={{ margin: 0, fontSize: 15, fontWeight: 700 }}>Position Sizing（脆弱性仓位）</h3>
+        <h3 style={{ margin: 0, fontSize: 15, fontWeight: 700, letterSpacing: '-0.01em' }}>Position Sizing（脆弱性仓位）</h3>
         <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, background: '#fef3c7', color: '#92400e', border: '1px solid #fcd34d', fontWeight: 600 }}>
           EXPERIMENTAL
         </span>
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12, marginBottom: 10 }}>
         <div style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: 28, fontWeight: 700, color: posColor }}>{posPct}%</div>
+          <div style={{ fontSize: 28, fontWeight: 700, letterSpacing: '-0.02em', color: posColor }}>{posPct}%</div>
           <div style={{ fontSize: 11, color: '#6b7280' }}>建议仓位</div>
         </div>
         <div style={{ textAlign: 'center' }}>
