@@ -1,32 +1,7 @@
-import { useEffect, useState } from 'react';
-import { fetchDataJson } from './api';
+import { motion } from 'framer-motion';
+import { staggerItem } from './motionPresets';
 
-interface MethodRow {
-  name: string;
-  price: number | null;
-  weight: number;
-  note: string;
-}
-
-interface ProjectionRow {
-  year: number;
-  growth: number;
-  revenue: number;
-  ebit: number;
-  nopat: number;
-  da: number;
-  capex: number;
-  nwc: number;
-  fcff: number;
-}
-
-interface GlossaryItem {
-  term: string;
-  zh: string;
-  def: string;
-}
-
-interface ValuationData {
+export interface ValuationData {
   title: string;
   subtitle: string;
   ticker: string;
@@ -57,10 +32,20 @@ interface ValuationData {
     upside: number;
     headline: string;
   };
-  methods: MethodRow[];
+  methods: { name: string; price: number | null; weight: number; note: string }[];
   dcf: {
     assumptions: Record<string, number | string | number[]>;
-    projection: ProjectionRow[];
+    projection: {
+      year: number;
+      growth: number;
+      revenue: number;
+      ebit: number;
+      nopat: number;
+      da: number;
+      capex: number;
+      nwc: number;
+      fcff: number;
+    }[];
     bridge: Record<string, number>;
     sensitivity: {
       wacc_grid: number[];
@@ -85,7 +70,7 @@ interface ValuationData {
     self_multiples: Record<string, number | null | undefined>;
   };
   risks: string[];
-  glossary: GlossaryItem[];
+  glossary: { term: string; zh: string; def: string }[];
   dcf_explain: { what: string; steps: string[]; intuition: string };
 }
 
@@ -127,52 +112,14 @@ const ASSUMPTION_ROWS: { key: string; label: string; hint: string; format: (a: R
   { key: 'exit_ebitda_multiple', label: '退出倍数', hint: 'Y5 EBITDA × EV/EBITDA', format: a => fmtMult(a.exit_ebitda_multiple as number) },
 ];
 
-export function ValuationLab() {
-  const [data, setData] = useState<ValuationData | null>(null);
-  const [err, setErr] = useState<string | null>(null);
-
-  useEffect(() => {
-    fetchDataJson<ValuationData>('nvda_valuation.json')
-      .then(setData)
-      .catch(e => setErr(String(e)));
-  }, []);
-
-  if (err) {
-    return (
-      <div className="lab-container">
-        <div className="lab-card"><h2>加载失败</h2><pre>{err}</pre></div>
-      </div>
-    );
-  }
-  if (!data) {
-    return <div className="lab-container"><div className="loading">Loading valuation…</div></div>;
-  }
-
+export function ValuationPanel({ data }: { data: ValuationData }) {
   const s = data.snapshot;
   const a = data.dcf.assumptions as Record<string, unknown>;
   const upsideCls = data.verdict.upside >= 0 ? 'val-up' : 'val-down';
 
   return (
-    <div className="lab-container val-lab">
-      <header className="lab-header">
-        <div>
-          <h1>{data.title}</h1>
-          <p className="lab-subtitle">{data.subtitle} · 更新 {data.as_of}</p>
-        </div>
-        <div className="lab-model-badge">
-          <span className="lab-badge-version">{data.ticker}</span>
-          <a className="lab-track-link" href="#fundamentals">财报 Fundamentals →</a>
-        </div>
-      </header>
-
-      <div className="lab-track-notice">
-        <span className="lab-track-label">研究线</span>
-        <span className="lab-track-desc">基本面估值（DCF / 相对估值），独立于 Alpha Deck 因子线与 Risk 崩盘模型</span>
-        <span className="lab-track-sep">·</span>
-        <span className="lab-track-hint">{data.disclaimer}</span>
-      </div>
-
-      <section className="lab-card val-verdict">
+    <>
+      <motion.section className="lab-card val-verdict" variants={staggerItem}>
         <div className="val-verdict-main">
           <div className="val-verdict-label">混合公允价值</div>
           <div className="val-verdict-price">{fmtUsd(data.verdict.blended, 0)}</div>
@@ -181,17 +128,9 @@ export function ValuationLab() {
           </div>
         </div>
         <p className="val-verdict-headline">{data.verdict.headline}</p>
-        <div className="val-kpi-row">
-          <div className="val-kpi"><span>市值</span><strong>{fmtB(s.market_cap)}</strong></div>
-          <div className="val-kpi"><span>LTM 收入</span><strong>{fmtB(s.ltm_revenue)}</strong></div>
-          <div className="val-kpi"><span>LTM 增速</span><strong>{fmtPct(s.ltm_revenue_growth)}</strong></div>
-          <div className="val-kpi"><span>毛利率</span><strong>{fmtPct(s.gross_margin)}</strong></div>
-          <div className="val-kpi"><span>Fwd P/E</span><strong>{fmtMult(s.forward_pe)}</strong></div>
-          <div className="val-kpi"><span>Beta</span><strong>{s.beta.toFixed(2)}</strong></div>
-        </div>
-      </section>
+      </motion.section>
 
-      <section className="lab-card">
+      <motion.section className="lab-card" variants={staggerItem}>
         <h2 className="lab-subsection-title">三方法汇总</h2>
         <table className="val-table">
           <thead>
@@ -208,9 +147,9 @@ export function ValuationLab() {
             ))}
           </tbody>
         </table>
-      </section>
+      </motion.section>
 
-      <section className="lab-card val-explain">
+      <motion.section className="lab-card val-explain" variants={staggerItem}>
         <h2 className="lab-subsection-title">DCF 是什么？</h2>
         <p className="val-explain-what">{data.dcf_explain.what}</p>
         <p className="val-explain-intuition"><em>{data.dcf_explain.intuition}</em></p>
@@ -219,9 +158,9 @@ export function ValuationLab() {
             <li key={i}>{step}</li>
           ))}
         </ol>
-      </section>
+      </motion.section>
 
-      <section className="lab-card">
+      <motion.section className="lab-card" variants={staggerItem}>
         <h2 className="lab-subsection-title">DCF 假设（Base）</h2>
         <p className="lab-section-hint">点开术语可对照下方完整名词表。</p>
         <table className="val-table">
@@ -238,9 +177,9 @@ export function ValuationLab() {
             ))}
           </tbody>
         </table>
-      </section>
+      </motion.section>
 
-      <section className="lab-card">
+      <motion.section className="lab-card" variants={staggerItem}>
         <h2 className="lab-subsection-title">5 年 FCFF 投影</h2>
         <table className="val-table">
           <thead>
@@ -269,9 +208,9 @@ export function ValuationLab() {
           <div>隐含股价 <strong>{fmtUsd(data.dcf.bridge.implied_price, 0)}</strong></div>
           <div>终值占 EV <strong>{fmtPct(data.dcf.bridge.tv_share_of_ev)}</strong></div>
         </div>
-      </section>
+      </motion.section>
 
-      <section className="lab-card">
+      <motion.section className="lab-card" variants={staggerItem}>
         <h2 className="lab-subsection-title">敏感性 · WACC × g（$/股）</h2>
         <table className="val-table val-sens">
           <thead>
@@ -296,9 +235,9 @@ export function ValuationLab() {
             ))}
           </tbody>
         </table>
-      </section>
+      </motion.section>
 
-      <section className="lab-card">
+      <motion.section className="lab-card" variants={staggerItem}>
         <h2 className="lab-subsection-title">情景</h2>
         <table className="val-table">
           <thead>
@@ -314,9 +253,9 @@ export function ValuationLab() {
             ))}
           </tbody>
         </table>
-      </section>
+      </motion.section>
 
-      <section className="lab-card">
+      <motion.section className="lab-card" variants={staggerItem}>
         <h2 className="lab-subsection-title">同业相对估值</h2>
         <table className="val-table">
           <thead>
@@ -352,16 +291,16 @@ export function ValuationLab() {
             </tr>
           </tbody>
         </table>
-      </section>
+      </motion.section>
 
-      <section className="lab-card">
+      <motion.section className="lab-card" variants={staggerItem}>
         <h2 className="lab-subsection-title">关键风险</h2>
         <ul className="val-risks">
           {data.risks.map((r, i) => <li key={i}>{r}</li>)}
         </ul>
-      </section>
+      </motion.section>
 
-      <section className="lab-card" id="glossary">
+      <motion.section className="lab-card" id="glossary" variants={staggerItem}>
         <h2 className="lab-subsection-title">名词表 · Base 假设术语</h2>
         <div className="val-glossary">
           {data.glossary.map(g => (
@@ -371,9 +310,7 @@ export function ValuationLab() {
             </div>
           ))}
         </div>
-      </section>
-    </div>
+      </motion.section>
+    </>
   );
 }
-
-export default ValuationLab;

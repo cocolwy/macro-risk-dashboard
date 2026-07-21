@@ -9,8 +9,7 @@ export type PageId =
   | 'ch3'
   | 'ch3_risk'
   | 'factorlab'
-  | 'valuation'
-  | 'fundamentals';
+  | 'company';
 
 export interface NavItem {
   id: PageId;
@@ -112,25 +111,20 @@ export const SITE_NAV: Record<PageId, NavItem> = {
     badge: 'NEW',
     metrics: 'F001/F002/F003 dead',
   },
-  valuation: {
-    id: 'valuation',
+  company: {
+    id: 'company',
     hash: 'valuation',
-    title: 'Company Valuation',
-    subtitle: 'DCF + 相对估值三角 · NVDA 案例 · 名词表',
+    title: 'Company Research',
+    subtitle: 'NVDA · DCF / 相对估值 / 三表财报 · 分析师预期',
     level: 2,
     badge: 'NEW',
-    metrics: 'DCF · peers · sensitivity',
-  },
-  fundamentals: {
-    id: 'fundamentals',
-    hash: 'fundamentals',
-    title: 'Company Fundamentals',
-    subtitle: '利润表 · 现金流 · 资产负债表 · 分析师预期',
-    level: 2,
-    badge: 'NEW',
-    metrics: 'annual · quarterly · estimates',
+    metrics: 'valuation · fundamentals',
   },
 };
+
+export type CompanyTab = 'valuation' | 'fundamentals';
+
+const FUNDAMENTALS_HASHES = new Set(['fundamentals', 'earnings', 'financials']);
 
 const HASH_ALIASES: Record<string, PageId> = {
   '': 'home',
@@ -153,11 +147,12 @@ const HASH_ALIASES: Record<string, PageId> = {
   fragility: 'ch3_risk',
   factorlab: 'factorlab',
   alphadeck: 'factorlab',
-  valuation: 'valuation',
-  dcf: 'valuation',
-  fundamentals: 'fundamentals',
-  earnings: 'fundamentals',
-  financials: 'fundamentals',
+  valuation: 'company',
+  dcf: 'company',
+  fundamentals: 'company',
+  earnings: 'company',
+  financials: 'company',
+  company: 'company',
 };
 
 export function pageFromHash(hash: string): PageId {
@@ -168,6 +163,15 @@ export function pageFromHash(hash: string): PageId {
 export function hashForPage(page: PageId): string {
   const item = SITE_NAV[page];
   return item.hash ? `#${item.hash}` : '';
+}
+
+export function companyTabFromHash(hash: string): CompanyTab {
+  const key = hash.replace('#', '').trim();
+  return FUNDAMENTALS_HASHES.has(key) ? 'fundamentals' : 'valuation';
+}
+
+export function hashForCompanyTab(tab: CompanyTab): string {
+  return tab === 'fundamentals' ? '#fundamentals' : '#valuation';
 }
 
 export function breadcrumbTrail(page: PageId): NavItem[] {
@@ -189,7 +193,7 @@ export const HOME_SECTIONS = [
   {
     level: 2,
     label: '二级 · 项目',
-    items: ['risk', 'ch2_2', 'valuation', 'fundamentals'] as PageId[],
+    items: ['risk', 'ch2_2', 'company'] as PageId[],
   },
   {
     level: 3,

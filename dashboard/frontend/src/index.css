@@ -3197,6 +3197,13 @@ a.agent-headline-title:hover {
   padding: 20px 22px;
   margin-bottom: 20px;
   box-shadow: 0 2px 10px rgba(255, 168, 196, 0.06);
+  transition: transform 0.4s var(--spring-ease), box-shadow 0.4s var(--spring-ease), border-color 0.3s ease;
+}
+
+.val-lab .lab-card:hover {
+  border-color: rgba(90, 166, 255, 0.18);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
 }
 
 .val-verdict-main {
@@ -3372,6 +3379,16 @@ a.agent-headline-title:hover {
   margin-bottom: 16px;
 }
 
+.company-tab-bar {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  padding: 8px 0;
+  margin-bottom: 20px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+}
+
 .val-table-scroll {
   overflow-x: auto;
 }
@@ -3424,7 +3441,8 @@ a.agent-headline-title:hover {
   .deck-factor-card:hover,
   .alert-badge:hover,
   .tech-tag:hover,
-  .phase-card:hover {
+  .phase-card:hover,
+  .val-lab .lab-card:hover {
     transform: none;
   }
 

@@ -1,12 +1,13 @@
-import { useEffect, useState } from 'react';
-import { fetchDataJson } from './api';
+import { useState } from 'react';
+import { motion } from 'framer-motion';
+import { staggerItem } from './motionPresets';
 
 interface StatementTable {
   periods: string[];
   rows: { label: string; values: (number | null)[] }[];
 }
 
-interface FundamentalsData {
+export interface FundamentalsData {
   title: string;
   subtitle: string;
   ticker: string;
@@ -42,38 +43,29 @@ interface FundamentalsData {
   };
 }
 
-function fmtUsd(n?: number | null, digits = 2) {
-  if (n == null || Number.isNaN(n)) return '—';
-  return `$${n.toLocaleString(undefined, { maximumFractionDigits: digits })}`;
-}
-
-function fmtCell(v: number | null, label: string) {
-  if (v == null || Number.isNaN(v)) return '—';
-  if (label.includes('EPS') || Math.abs(v) < 1000) {
-    return v.toLocaleString(undefined, { maximumFractionDigits: 2 });
-  }
-  const abs = Math.abs(v);
-  if (abs >= 1e9) return `${(v / 1e9).toFixed(1)}B`;
-  if (abs >= 1e6) return `${(v / 1e6).toFixed(1)}M`;
-  return v.toLocaleString(undefined, { maximumFractionDigits: 0 });
-}
-
-function fmtPct(n?: number | null) {
-  if (n == null || Number.isNaN(n)) return '—';
-  return `${(n * 100).toFixed(1)}%`;
-}
-
 function StatementBlock({ title, table }: { title: string; table: StatementTable }) {
   if (!table?.periods?.length) {
     return (
-      <section className="lab-card">
+      <motion.section className="lab-card" variants={staggerItem}>
         <h2 className="lab-subsection-title">{title}</h2>
         <p className="val-muted">暂无数据</p>
-      </section>
+      </motion.section>
     );
   }
+
+  function fmtCell(v: number | null, label: string) {
+    if (v == null || Number.isNaN(v)) return '—';
+    if (label.includes('EPS') || Math.abs(v) < 1000) {
+      return v.toLocaleString(undefined, { maximumFractionDigits: 2 });
+    }
+    const abs = Math.abs(v);
+    if (abs >= 1e9) return `${(v / 1e9).toFixed(1)}B`;
+    if (abs >= 1e6) return `${(v / 1e6).toFixed(1)}M`;
+    return v.toLocaleString(undefined, { maximumFractionDigits: 0 });
+  }
+
   return (
-    <section className="lab-card">
+    <motion.section className="lab-card" variants={staggerItem}>
       <h2 className="lab-subsection-title">{title}</h2>
       <div className="val-table-scroll">
         <table className="val-table">
@@ -95,67 +87,15 @@ function StatementBlock({ title, table }: { title: string; table: StatementTable
           </tbody>
         </table>
       </div>
-    </section>
+    </motion.section>
   );
 }
 
-export function FundamentalsLab() {
-  const [data, setData] = useState<FundamentalsData | null>(null);
-  const [err, setErr] = useState<string | null>(null);
+export function FundamentalsPanel({ data }: { data: FundamentalsData }) {
   const [mode, setMode] = useState<'annual' | 'quarterly'>('annual');
 
-  useEffect(() => {
-    fetchDataJson<FundamentalsData>('nvda_fundamentals.json')
-      .then(setData)
-      .catch(e => setErr(String(e)));
-  }, []);
-
-  if (err) {
-    return (
-      <div className="lab-container">
-        <div className="lab-card"><h2>加载失败</h2><pre>{err}</pre></div>
-      </div>
-    );
-  }
-  if (!data) {
-    return <div className="lab-container"><div className="loading">Loading fundamentals…</div></div>;
-  }
-
-  const s = data.snapshot;
-
   return (
-    <div className="lab-container val-lab">
-      <header className="lab-header">
-        <div>
-          <h1>{data.title}</h1>
-          <p className="lab-subtitle">{data.subtitle} · 更新 {data.as_of}</p>
-        </div>
-        <div className="lab-model-badge">
-          <span className="lab-badge-version">{data.ticker}</span>
-          <a className="lab-track-link" href="#valuation">估值 Valuation →</a>
-        </div>
-      </header>
-
-      <div className="lab-track-notice">
-        <span className="lab-track-label">财报页</span>
-        <span className="lab-track-desc">{data.name} · 利润表 / 现金流 / 资产负债表</span>
-        <span className="lab-track-sep">·</span>
-        <span className="lab-track-hint">{data.disclaimer}</span>
-      </div>
-
-      <section className="lab-card val-verdict">
-        <div className="val-kpi-row">
-          <div className="val-kpi"><span>现价</span><strong>{fmtUsd(s.price)}</strong></div>
-          <div className="val-kpi"><span>市值</span><strong>{fmtCell(s.market_cap, '')}</strong></div>
-          <div className="val-kpi"><span>LTM 收入</span><strong>{fmtCell(s.ltm_revenue, '')}</strong></div>
-          <div className="val-kpi"><span>LTM 增速</span><strong>{fmtPct(s.ltm_revenue_growth)}</strong></div>
-          <div className="val-kpi"><span>毛利率</span><strong>{fmtPct(s.gross_margin)}</strong></div>
-          <div className="val-kpi"><span>经营利润率</span><strong>{fmtPct(s.operating_margin)}</strong></div>
-          <div className="val-kpi"><span>TTM EPS</span><strong>{fmtUsd(s.trailing_eps)}</strong></div>
-          <div className="val-kpi"><span>Fwd EPS</span><strong>{fmtUsd(s.forward_eps)}</strong></div>
-        </div>
-      </section>
-
+    <>
       <div className="val-mode-toggle">
         <button
           type="button"
@@ -187,7 +127,7 @@ export function FundamentalsLab() {
       )}
 
       {(data.estimates?.earnings?.length || data.estimates?.revenue?.length) ? (
-        <section className="lab-card">
+        <motion.section className="lab-card" variants={staggerItem}>
           <h2 className="lab-subsection-title">分析师预期（原始表）</h2>
           {data.estimates.earnings?.length ? (
             <>
@@ -231,10 +171,8 @@ export function FundamentalsLab() {
               </div>
             </>
           ) : null}
-        </section>
+        </motion.section>
       ) : null}
-    </div>
+    </>
   );
 }
-
-export default FundamentalsLab;
