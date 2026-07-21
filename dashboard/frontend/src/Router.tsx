@@ -79,6 +79,15 @@ export function Router() {
           {SITE_NAV.factorlab.badge && <span className="nav-badge-dev">{SITE_NAV.factorlab.badge}</span>}
         </button>
 
+        <button
+          className={`nav-btn ${page === 'company' ? 'nav-active' : ''}`}
+          onClick={() => navigate('company')}
+        >
+          <span className="nav-level">L1</span>
+          Company
+          {SITE_NAV.company.badge && <span className="nav-badge-dev">{SITE_NAV.company.badge}</span>}
+        </button>
+
         <div className="nav-group">
           <button
             className={`nav-btn ${page === 'risk' ? 'nav-active' : ''}`}
@@ -109,15 +118,6 @@ export function Router() {
           <span className="nav-level">L2</span>
           Event × VIX
           {SITE_NAV.ch2_2.badge && <span className="nav-badge-dev">{SITE_NAV.ch2_2.badge}</span>}
-        </button>
-
-        <button
-          className={`nav-btn ${page === 'company' ? 'nav-active' : ''}`}
-          onClick={() => navigate('company')}
-        >
-          <span className="nav-level">L2</span>
-          Company
-          {SITE_NAV.company.badge && <span className="nav-badge-dev">{SITE_NAV.company.badge}</span>}
         </button>
       </nav>
 

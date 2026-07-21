@@ -116,7 +116,7 @@ export const SITE_NAV: Record<PageId, NavItem> = {
     hash: 'valuation',
     title: 'Company Research',
     subtitle: 'NVDA · DCF / 相对估值 / 三表财报 · 分析师预期',
-    level: 2,
+    level: 1,
     badge: 'NEW',
     metrics: 'valuation · fundamentals',
   },
@@ -187,13 +187,13 @@ export const HOME_SECTIONS = [
   {
     level: 1,
     label: '一级 · 量化整体架构',
-    hint: 'Alpha Deck = 单因子线；Pipeline / News Agent = 其他架构项目',
-    items: ['pipeline', 'ch3', 'factorlab'] as PageId[],
+    hint: 'Pipeline / News Agent / Alpha Deck / Company Research — 彼此并列的独立研究线',
+    items: ['pipeline', 'ch3', 'factorlab', 'company'] as PageId[],
   },
   {
     level: 2,
     label: '二级 · 项目',
-    items: ['risk', 'ch2_2', 'company'] as PageId[],
+    items: ['risk', 'ch2_2'] as PageId[],
   },
   {
     level: 3,

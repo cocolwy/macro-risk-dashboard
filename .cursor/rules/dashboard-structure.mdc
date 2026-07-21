@@ -14,14 +14,14 @@ L0  Home                    Quant Research Hub（索引页）
 L1  Multi-Agent Pipeline    量化整体架构（6-Agent 因子研究平台）
 L1  News Agent              RSS 新闻 + ML · Claude 宏观风险研报
 L1  Alpha Deck              因子研究日志（假设 · 检验 · 结论 · 状态跟踪）
+L1  Company Research        NVDA · DCF / 相对估值 / 三表财报（Tab 切换）
 L2  Macro Risk Dashboard    风控项目（宏观指标监控）
 L2  Event × VIX             宏观数据发布前后 VIX 事件研究
-L2  Company Research         NVDA · DCF / 相对估值 / 三表财报（Tab 切换）
 L3  Ch.1 / Ch.2 / …          风控模型实验（LR→GBDT，独立于 Alpha Deck）
 ```
 
-- **L1** 一级项目入口，彼此并列：`ProjectBoard.tsx`（Pipeline）、`AgentLab.tsx`（News Agent）、`FactorLab.tsx`（Alpha Deck · **因子线**）
-- **L2** 独立项目入口，彼此并列：`App.tsx`（宏观风控看板）、`EventVolLab.tsx`（Event × VIX）、`CompanyLab.tsx`（公司研究 · 估值 + 财报 Tab）
+- **L1** 一级项目入口，彼此并列：`ProjectBoard.tsx`（Pipeline）、`AgentLab.tsx`（News Agent）、`FactorLab.tsx`（Alpha Deck · **因子线**）、`CompanyLab.tsx`（公司研究 · 估值 + 财报 Tab）
+- **L2** 独立项目入口，彼此并列：`App.tsx`（宏观风控看板）、`EventVolLab.tsx`（Event × VIX）
 - **L3** 是 Macro Risk Dashboard 下的**模型实验**章节（Ch.1 线性 → Ch.2 非线性），与 L1 Alpha Deck **因子流水线**是两条独立研究线
 
 ## Hash 路由
