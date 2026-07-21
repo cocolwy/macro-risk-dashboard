@@ -1,4 +1,13 @@
+import { motion } from 'framer-motion';
 import { SITE_NAV, HOME_SECTIONS, HOME_TODOS, PageId } from './siteNav';
+
+const staggerGrid = {
+  animate: { transition: { staggerChildren: 0.04 } },
+};
+const cardPop = {
+  initial: { opacity: 0, y: 10 },
+  animate: { opacity: 1, y: 0, transition: { duration: 0.28, ease: [0.25, 0.1, 0.25, 1] } },
+};
 
 interface HomeProps {
   onNavigate: (page: PageId) => void;
@@ -52,21 +61,26 @@ export function Home({ onNavigate }: HomeProps) {
             </div>
           )}
 
-          <div className={`home-grid ${section.level === 3 ? 'home-grid-nested' : ''}`}>
+          <motion.div
+            className={`home-grid ${section.level === 3 ? 'home-grid-nested' : ''}`}
+            variants={staggerGrid}
+            initial="initial"
+            animate="animate"
+          >
             {section.items.map(id => {
               const item = SITE_NAV[id];
               return (
-                <button key={id} className="home-card" onClick={() => onNavigate(id)}>
+                <motion.button key={id} className="home-card" onClick={() => onNavigate(id)} variants={cardPop}>
                   <span className="home-card-accent" />
                   <span className={`home-card-level l${item.level}`}>L{item.level}</span>
                   {item.badge && <span className="home-card-badge">{item.badge}</span>}
                   <h3>{item.title}</h3>
                   <p className="home-card-desc">{item.subtitle}</p>
                   {item.metrics && <div className="home-card-meta">{item.metrics}</div>}
-                </button>
+                </motion.button>
               );
             })}
-          </div>
+          </motion.div>
         </section>
       ))}
 

@@ -1,7 +1,14 @@
 import { useState, useEffect, lazy, Suspense } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import { Home } from './Home';
 import { Breadcrumb } from './components/Breadcrumb';
 import { pageFromHash, hashForPage, SITE_NAV, PageId } from './siteNav';
+
+const pageTransition = {
+  initial: { opacity: 0, y: 6 },
+  animate: { opacity: 1, y: 0, transition: { duration: 0.25, ease: [0.25, 0.1, 0.25, 1] } },
+  exit: { opacity: 0, transition: { duration: 0.12 } },
+};
 
 const App = lazy(() => import('./App'));
 const PredictionLab = lazy(() => import('./PredictionLab').then(m => ({ default: m.PredictionLab })));
@@ -135,20 +142,24 @@ export function Router() {
         </div>
       )}
 
-      <Suspense fallback={<div className="loading">Loading...</div>}>
-        {page === 'home' && <Home onNavigate={navigate} />}
-        {page === 'pipeline' && <ProjectBoard />}
-        {page === 'risk' && <App />}
-        {page === 'ch1' && <PredictionLab />}
-        {page === 'ch2' && <Phase3Lab />}
-        {page === 'ch3_risk' && <FragilityLab />}
-        {page === 'ch2_1' && <MetricLab />}
-        {page === 'ch2_2' && <EventVolLab />}
-        {page === 'ch3' && <AgentLab />}
-        {page === 'factorlab' && <FactorLab />}
-        {page === 'valuation' && <ValuationLab />}
-        {page === 'fundamentals' && <FundamentalsLab />}
-      </Suspense>
+      <AnimatePresence mode="wait">
+        <motion.div key={page} {...pageTransition}>
+          <Suspense fallback={<div className="loading">Loading...</div>}>
+            {page === 'home' && <Home onNavigate={navigate} />}
+            {page === 'pipeline' && <ProjectBoard />}
+            {page === 'risk' && <App />}
+            {page === 'ch1' && <PredictionLab />}
+            {page === 'ch2' && <Phase3Lab />}
+            {page === 'ch3_risk' && <FragilityLab />}
+            {page === 'ch2_1' && <MetricLab />}
+            {page === 'ch2_2' && <EventVolLab />}
+            {page === 'ch3' && <AgentLab />}
+            {page === 'factorlab' && <FactorLab />}
+            {page === 'valuation' && <ValuationLab />}
+            {page === 'fundamentals' && <FundamentalsLab />}
+          </Suspense>
+        </motion.div>
+      </AnimatePresence>
     </>
   );
 }

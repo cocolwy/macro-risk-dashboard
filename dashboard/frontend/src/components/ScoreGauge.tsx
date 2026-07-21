@@ -1,3 +1,31 @@
+import { useEffect, useState } from 'react';
+import { useSpring } from 'framer-motion';
+
+function AnimatedNumber({ value, color }: { value: number; color: string }) {
+  const spring = useSpring(0, { damping: 30, stiffness: 100 });
+  const [display, setDisplay] = useState(0);
+
+  useEffect(() => {
+    spring.set(value);
+    const unsub = spring.on('change', (v: number) => setDisplay(Math.round(v)));
+    return unsub;
+  }, [value, spring]);
+
+  return (
+    <div style={{
+      fontSize: '72px',
+      fontWeight: 800,
+      color,
+      marginTop: '16px',
+      lineHeight: 1,
+      letterSpacing: '-0.04em',
+      textShadow: `0 0 40px ${color}30`,
+    }}>
+      {display}
+    </div>
+  );
+}
+
 interface ScoreGaugeProps {
   score: number;
   label: string;
@@ -51,17 +79,7 @@ export function ScoreGauge({ score, label, action, components, momentum }: Score
       <h3>Composite Risk Score</h3>
       <div className="subtitle">Weighted aggregate of all indicators with acceleration & persistence filters</div>
 
-      <div style={{
-        fontSize: '72px',
-        fontWeight: 800,
-        color,
-        marginTop: '16px',
-        lineHeight: 1,
-        letterSpacing: '-0.04em',
-        textShadow: `0 0 40px ${color}30`,
-      }}>
-        {Math.round(score)}
-      </div>
+      <AnimatedNumber value={Math.round(score)} color={color} />
       <div style={{
         fontSize: '16px',
         fontWeight: 600,

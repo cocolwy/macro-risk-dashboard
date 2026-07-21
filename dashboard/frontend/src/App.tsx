@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { fetchAllData, fetchDataJson, resolveCompositeScore, DataPoint, Summary, MomentumData } from './api';
 import { ChartCard } from './components/ChartCard';
 import { MultiLineChart } from './components/MultiLineChart';
@@ -6,6 +7,14 @@ import { AlertsPanel } from './components/AlertsPanel';
 import { CausalFlow } from './components/CausalFlow';
 import { SectorTable } from './components/SectorTable';
 import { ScoreGauge } from './components/ScoreGauge';
+
+const staggerContainer = {
+  animate: { transition: { staggerChildren: 0.04 } },
+};
+const staggerItem = {
+  initial: { opacity: 0, y: 10 },
+  animate: { opacity: 1, y: 0, transition: { duration: 0.3, ease: [0.25, 0.1, 0.25, 1] } },
+};
 
 interface DashboardData {
   summary: Summary;
@@ -293,8 +302,8 @@ export default function App() {
 
       <CausalFlow alerts={summary.alerts} />
 
-      <div className="charts-grid">
-        <ChartCard
+      <motion.div className="charts-grid" variants={staggerContainer} initial="initial" animate="animate">
+        <motion.div variants={staggerItem}><ChartCard
           title="US Treasury Term Spread (10Y - 2Y)"
           subtitle="Negative = yield curve inverted, recession warning"
           data={data.termSpread}
@@ -306,9 +315,9 @@ export default function App() {
           gradientId="termSpreadGrad"
           alertLevel={summary.alerts.term_spread?.level}
           explanation={"期限利差 = 10年期国债收益率 - 2年期国债收益率。正常情况下为正值（长期利率高于短期）。当它变为负值（倒挂），意味着债券市场在说「未来经济会很差」，历史上每次美国衰退前12-18个月都出现过倒挂。红线以下 = 危险区域。"}
-        />
+        /></motion.div>
 
-        <ChartCard
+        <motion.div variants={staggerItem}><ChartCard
           title="VIX (Fear Index)"
           subtitle="CBOE Volatility Index — >20 elevated, >30 extreme"
           data={data.vix}
@@ -320,9 +329,9 @@ export default function App() {
           gradientId="vixGrad"
           alertLevel={summary.alerts.vix?.level}
           explanation={"VIX是通过标普500期权价格计算出的「恐慌指数」，反映市场对未来30天波动率的预期。低于20=平静，20-30=紧张，高于30=恐慌（2020年3月曾飙到82）。它是同步指标——不能提前预警，但能告诉你「市场现在有多害怕」。"}
-        />
+        /></motion.div>
 
-        <MultiLineChart
+        <motion.div variants={staggerItem}><MultiLineChart
           title="Credit Spreads"
           subtitle="ICE BofA High Yield & Investment Grade OAS (percentage points)"
           data={data.creditSpread}
@@ -331,9 +340,9 @@ export default function App() {
             { key: 'investment_grade_spread', color: '#3a82d6', name: 'Investment Grade' },
           ]}
           explanation={"信用利差 = 企业债收益率 - 同期限国债收益率。它衡量「市场觉得企业多大概率还不起钱」。High Yield（垃圾债）利差超过6% = 极度恐慌，3-4% = 正常。利差急剧走阔说明资金在逃离风险资产，往往比股市下跌更早反应。"}
-        />
+        /></motion.div>
 
-        <ChartCard
+        <motion.div variants={staggerItem}><ChartCard
           title="S&P 500"
           subtitle="US large cap benchmark"
           data={data.sp500}
@@ -343,9 +352,9 @@ export default function App() {
           type="area"
           gradientId="sp500Grad"
           explanation={"标普500指数，美国大盘股基准。放在这里作为参照——当上面的风险指标恶化时，观察S&P 500是否开始下跌。如果风险指标已经亮黄/红灯但S&P还在涨，说明市场还在「最后的疯狂」，反而更危险。"}
-        />
+        /></motion.div>
 
-        <ChartCard
+        <motion.div variants={staggerItem}><ChartCard
           title="Absorption Ratio"
           subtitle="Market coupling (PCA on sector ETFs) — high = fragile, systemic risk"
           data={data.absorptionRatio}
@@ -354,9 +363,9 @@ export default function App() {
           currentValue={getLatestValue(data.absorptionRatio, 'absorption_ratio')}
           alertLevel={summary.alerts.absorption_ratio?.level}
           explanation={"吸收比率：用PCA分析11个行业ETF，看前几个主成分能解释多少总波动。值越高说明所有行业被同一个力量驱动（高度耦合），分散化失效。类比：多米诺骨牌排得越紧，倒一个全部倒。当AR突然升高1个标准差以上时 = 系统脆弱。"}
-        />
+        /></motion.div>
 
-        <ChartCard
+        <motion.div variants={staggerItem}><ChartCard
           title="Turbulence Index"
           subtitle="Mahalanobis distance — spikes = market regime breakdown"
           data={data.turbulence}
@@ -367,9 +376,9 @@ export default function App() {
           gradientId="turbGrad"
           alertLevel={summary.alerts.turbulence?.level}
           explanation={"湍流指数：用马氏距离衡量「今天多资产的表现有多异常」。它不仅看涨跌幅度，更看资产间相关性是否崩塌（比如股债同跌，而历史上它们负相关）。飙升 = 市场在「失序」，正常的避险逻辑不再有效，通常发生在大跌的开始阶段。"}
-        />
+        /></motion.div>
 
-        <ChartCard
+        <motion.div variants={staggerItem} className="full-width"><ChartCard
           title="Market Breadth"
           subtitle="% of 11 sector ETFs above their 200-day moving average"
           data={data.breadth}
@@ -378,10 +387,10 @@ export default function App() {
           currentValue={`${getLatestValue(data.breadth, 'pct_above_200ma')}%`}
           className="full-width"
           explanation={"市场宽度：11个标普行业ETF中，有多少比例当前价格在各自的200日均线之上。100%=所有行业都在上升趋势中，0%=全部跌破趋势线。关键信号：如果S&P 500还在涨但这个比例在下降 =「顶部背离」，说明上涨只靠少数行业撑着，多数行业已经走弱。"}
-        />
+        /></motion.div>
 
-        <SectorTable data={data.sectors} />
-      </div>
+        <motion.div variants={staggerItem} className="full-width"><SectorTable data={data.sectors} /></motion.div>
+      </motion.div>
 
       <footer className="footer">
         <div>Data sources: FRED (US Treasury, Credit Spreads), Yahoo Finance (VIX, S&P 500, Sector ETFs). Updated daily via GitHub Actions.</div>
