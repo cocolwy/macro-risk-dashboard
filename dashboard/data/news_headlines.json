@@ -1,12 +1,82 @@
 {
-  "fetched_at": "2026-07-21T03:57:30.633776+00:00",
+  "fetched_at": "2026-07-22T03:58:32.958028+00:00",
   "headlines": [
     {
-      "title": "Asian stocks rise as Mideast mediation takes oil lower",
+      "title": "Asian stocks extend gains as US rebounds, chipmakers lead",
+      "source": "Reuters",
+      "published": "2026-07-22T01:11:30+00:00",
+      "url": "https://news.google.com/rss/articles/CBMie0FVX3lxTE15bndqdmhfTjlVQXVscXkwMHFjU3hXNFR5RTdLSnY3a0trdmEzYlNGbm5LeUhxbVJSd21PR1FmQnJpeWxSdHN1aTEwalByRGZFcGtiRUhXeUZSeVdFMHFBekU3bzRvblRKMms0OW5vZkJPekhNSThGOERjRQ?oc=5",
+      "description": "Asian stocks extend gains as US rebounds, chipmakers lead &nbsp;&nbsp; Reuters"
+    },
+    {
+      "title": "Wall St ends higher on chip stocks recovery; earnings in focus",
+      "source": "Reuters",
+      "published": "2026-07-21T23:24:18+00:00",
+      "url": "https://news.google.com/rss/articles/CBMiowFBVV95cUxOUDZOb0lyeDNtSHo4bVQ4MlJ3RnhPUUR2WmxYT2xqaWRVNFFVNkNUdHBNUUIxWm5kZGpVaVc0SFZicnBmN1F0RWI3RXpqNUpCbjQ3RHhPZEJkTmlaeGI3YXp3MUlSSXN2RGdBZ3dfekVaQzQxbFJzeHhuNU9veGtKMzdidFZ1N2QwbFE3Z3B1VmxoY1VuTUFtU3Rfa09XMlRMWl9B?oc=5",
+      "description": "Wall St ends higher on chip stocks recovery; earnings in focus &nbsp;&nbsp; Reuters"
+    },
+    {
+      "title": "US Treasury sends warning to hedge funds over ‘tax alpha’ strategies",
+      "source": "FT",
+      "published": "2026-07-21T20:42:19+00:00",
+      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxOVDBvaXhDOTJFOFFnR0l5RlhNQ3RFZlZQdFBvYUdmQTk4dEszWTI2TDd1dGJleURMbS1CWXFESGxhUUtlUmZhM0NpMGRLek1SUXA5VmFONmtmUFNIMlBnbW5Bc2NUR05NY0pkS1NWa0t1RlJDd0F0TDdKdUlwbWFxY1IydUQ?oc=5",
+      "description": "US Treasury sends warning to hedge funds over ‘tax alpha’ strategies &nbsp;&nbsp; Financial Times"
+    },
+    {
+      "title": "Fed to hold rates this year despite high inflation, but economists cite high chances of a hike: Reuters poll",
+      "source": "Reuters",
+      "published": "2026-07-21T12:42:39+00:00",
+      "url": "https://news.google.com/rss/articles/CBMiugFBVV95cUxNbV84YkM0QzhTaXRsOEtPMjNQX3RvVnBaNmZtQ1dTalN2bkRmczlkOTViLVAzRTJRYjVuSi1RNlNXQ2M4dW0tN3FPNk9BRGQxeGtLc3dteklTblBWN3VPemVEQWtOaTVkOVpBRDdNenZBQWtzX1FiQ2lZdkRodWtqamxXTks2eFQzZkMwcW5CejdVem9ESU9HNFQ1YkZrUXBGa2dpX1lKcGx0WXN2STJVanMyUFRvVFNsZWc?oc=5",
+      "description": "Fed to hold rates this year despite high inflation, but economists cite high chances of a hike: Reuters poll &nbsp;&nbsp; Reuters"
+    },
+    {
+      "title": "AI could lift Sub-Saharan Africa economy 4% if power, internet improve, IMF says",
+      "source": "Reuters",
+      "published": "2026-07-21T12:12:09+00:00",
+      "url": "https://news.google.com/rss/articles/CBMixAFBVV95cUxOUzd0Umk1OW1RQU1HR0pWVnZCMy1PeTRnRHBSM3ZlZ09YZnU1NnFBWmE1bm5BcFVXZC1mNFA5UHNTcFJzMmktcVFNYzRuWnhhNHZ2bHhYMEgxdjhIcWdMakFIOVNZUHNWNVJPaTgtR25qMTA3b013UG44aEI3VTI5c1BwVXdka2dlZUcxT1B2M3dzLXR1VWhyTGpZT3NFandWWDdZTHh3ZTUtbXdiWXNUTTFIdXhYNXVRNlpXbE5aQXdOeTY2?oc=5",
+      "description": "AI could lift Sub-Saharan Africa economy 4% if power, internet improve, IMF says &nbsp;&nbsp; Reuters"
+    },
+    {
+      "title": "IEA says substantial emergency oil stocks remain after record release",
+      "source": "Reuters",
+      "published": "2026-07-21T11:47:12+00:00",
+      "url": "https://news.google.com/rss/articles/CBMivgFBVV95cUxPc0VFbTUzNkFDSXZDLXRFM2J2R2ZvRmt1a1haaktTdnlweHloa3Y5WkN4b2ZjMHg2b3o2a1QzMDE3OTBNc2FRY3NzcW9FNEp1UEZFejMyNzRsdkk1SmpabERDTng0RzdXZWV2ajg1clQwQjBkRWV5WW5peDFBczV1dHVieWRQckJpUXFwRkZWSHBoQ1dfTnZDTy1zTW5JR3lZbFB4TEVobEJrRENFSGkzcEZscTdlYnpRVUpBeV9n?oc=5",
+      "description": "IEA says substantial emergency oil stocks remain after record release &nbsp;&nbsp; Reuters"
+    },
+    {
+      "title": "Brazil faces unforgiving economics after election",
+      "source": "FT",
+      "published": "2026-07-21T06:08:20+00:00",
+      "url": "https://news.google.com/rss/articles/CBMicEFVX3lxTE9uUlI3eE9sVkJKdWRlVm8wV1Q1UWFhXzVLc1Fac3cyNHVSZjZqTTN0bVFhOUJTVGtzNDhyUVRHNWM3MVFsSWlXa0ZnczFZdUwzREM4S2hIVy05Z2d6QkQ4Qk5WQnJCRTdHQ1dSZ3UxM3Q?oc=5",
+      "description": "Brazil faces unforgiving economics after election &nbsp;&nbsp; Financial Times"
+    },
+    {
+      "title": "Tom Hayes says UBS’s ‘Project Chocolate’ probe shows he was targeted from outset",
+      "source": "FT",
+      "published": "2026-07-21T04:00:30+00:00",
+      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxPZlhIOEdRWHd0OUhGMmN4SjRYekh5c2s1M0JjZVE3MjJGM3lWZGtockFScGlZaHE4bWIySFpuUXhPTWlCV1kzV2dkb2F3OWVPazNManZ5NUJtZlJPUEtxbVhiRnhIZ2RIb2RhUDFIbHBnS1N0Q2hzNENaSFIwa3Y3N09HR1M?oc=5",
+      "description": "Tom Hayes says UBS’s ‘Project Chocolate’ probe shows he was targeted from outset &nbsp;&nbsp; Financial Times"
+    },
+    {
+      "title": "The fall of America’s farm superpower",
+      "source": "FT",
+      "published": "2026-07-21T04:00:20+00:00",
+      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxPbFE4Ukg4UUlKSzNhY0dPQlVqd2RndUs5UGV4NlVONG9EQVJjRGlvUUZpbG1fYmstczB0Z08tNkxRbWRkd2w3SGs0ZEV2aW1kc3FtbWNEUUh5VDBsRVllTXJWRy11T3h1WGFSWGVPYXNYSjFJWnR0UDFTUGFoU1FvZXlyNVk?oc=5",
+      "description": "The fall of America’s farm superpower &nbsp;&nbsp; Financial Times"
+    },
+    {
+      "title": "Czech central bank chief warns against joining Eurozone too early",
+      "source": "FT",
+      "published": "2026-07-21T04:00:10+00:00",
+      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxORDVwQXN0TWdTNnEzRWJ5SFJzaDB3cW1RelJTSDE5SGZmV3BrNnJLUHlOTHoxUzFhN0cxM1QyMlVtaEFQQWZYaERpTEpmcER4QmtiMFdVWjAxSUpZXzhtS3JFVXFOODNKeUxLR0hjSkRvUDlFb3FBV2FZWjQ2b2ljYTBXR1U?oc=5",
+      "description": "Czech central bank chief warns against joining Eurozone too early &nbsp;&nbsp; Financial Times"
+    },
+    {
+      "title": "Stocks jump with chipmakers; oil rises to 5-week high",
       "source": "Reuters",
       "published": "2026-07-21T02:02:00+00:00",
       "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxQNlZ6UW5NX1ZjZ3BJZXota1l4Qnc0SjdPWnZGTmsybzNSTXM4cWl1YzlhQ3BnbGREVWVvdjdGNU1nY2c4aFIyMFBkR1J2VkFreGt4d2RQLUgySFd4VjlGLWhKT1hSNzRoa3dmdks2RHJYOGRxamQzTTk0U3g2NWtzZGhobXA?oc=5",
-      "description": "Asian stocks rise as Mideast mediation takes oil lower &nbsp;&nbsp; Reuters"
+      "description": "Stocks jump with chipmakers; oil rises to 5-week high &nbsp;&nbsp; Reuters"
     },
     {
       "title": "Beaten-down Indonesian stocks feel the love as AI rally cools",
@@ -30,13 +100,6 @@
       "description": "US to hit Canada with 50% tariffs on wide range of goods &nbsp;&nbsp; Financial Times"
     },
     {
-      "title": "NY Fed survey finds highest credit application rate in nearly five years",
-      "source": "Reuters",
-      "published": "2026-07-20T19:30:57+00:00",
-      "url": "https://news.google.com/rss/articles/CBMitAFBVV95cUxOdWJsdWdGempBZ1RLeHFwUmFBRVlvOGw5ZDJMTTQ0TnRYdEMzLXNaNWdIckItcENleGJKcXJycGFteEwySHpvVDRLNzRUM1pWdFdweldzdUVsUDFQNGR6OG55Z1dHNGJnQmh4QUpVM280UUZ0UjVtc0JKaFRBTWtlNkZBVGVNU3dHMk9UaHllZjhyamNlNmxXeUpOaTFkdWJDcFdHOVg3YkJRZUNlbm9OWXBkTlc?oc=5",
-      "description": "NY Fed survey finds highest credit application rate in nearly five years &nbsp;&nbsp; Reuters"
-    },
-    {
       "title": "Gilts under pressure as investors brace for higher spending under new PM",
       "source": "FT",
       "published": "2026-07-20T17:16:08+00:00",
@@ -49,69 +112,6 @@
       "published": "2026-07-20T16:37:45+00:00",
       "url": "https://news.google.com/rss/articles/CBMixgFBVV95cUxOclJieFd5XzJsZU5oSjQ1WUZ2dEdjSTNLSUV2MFRycnp6dzRWMUF0cXBjV3ZkakdmRTg4elB2bUo3VXgxM2x4cmw2emppanpSWDdOcFpTcl9HZFZneEliaG1Nb2NsbUZsVExXdVZ6NjkyemZIaGJVSVhxMXYwakpaUDF5VlJHVHZndDBZZlgyV3pDRWdoQlJINlR1TmRmY011WGlEbmZ2cjdNZDA4cDdWZENobUtDc1RoV3FCYVNLX0MzQWFmeVE?oc=5",
       "description": "Oil stocks in US Strategic Petroleum Reserve fall by 5.1 million barrels to lowest level since 1983 &nbsp;&nbsp; Reuters"
-    },
-    {
-      "title": "US petrol prices climb back above $4 as Iran war intensifies",
-      "source": "FT",
-      "published": "2026-07-20T15:22:10+00:00",
-      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxNWVZQb0s3WTJsU1c1WTYwdXJRYUpycTRzSmdiUU9sa2lWUXZPWldBYktyak1VSDlwT0U0dVQ0Ylg5SjFCdGh6S3RUVVNqalJUZ19pQXhIVXFsMUY5R3RzRE5pWXIxbW1ndDI4YS1HWFJtcElLdnVEWEZQNzJlbUZpOHk0bEY?oc=5",
-      "description": "US petrol prices climb back above $4 as Iran war intensifies &nbsp;&nbsp; Financial Times"
-    },
-    {
-      "title": "Archer, Anduril unveil autonomous aircraft platform for defense, commercial markets",
-      "source": "Reuters",
-      "published": "2026-07-20T14:31:10+00:00",
-      "url": "https://news.google.com/rss/articles/CBMi1wFBVV95cUxPVUp1THdZWmhoVzlGQUNxX3c0emJSTDdZZjFnVktKTThZZk5ZUWhPWmY3WmxyMGZhQzlhaS0zVXE2V3pEa1pqRjFFSG4zSjhDUlpwVm42R2dPTGpnZjgwczhiZmFFekJkVjFWUnJpX1V2R21TQV9WSXZTMHYxa1M1OUQyN3BKMk5vN3dJUl9YTDNFZ1NMTW1USHYwY1FKYmdRVXNSMENoQ1NsZUw0VWxZMHFoY09OLU8zMGUtMWtiOTJVZzhSUGMyQW9pRXFGNVFnTWhTNFdRWQ?oc=5",
-      "description": "Archer, Anduril unveil autonomous aircraft platform for defense, commercial markets &nbsp;&nbsp; Reuters"
-    },
-    {
-      "title": "Mexico economy to grow less than previously expected on trade concerns",
-      "source": "Reuters",
-      "published": "2026-07-20T14:05:44+00:00",
-      "url": "https://news.google.com/rss/articles/CBMitgFBVV95cUxNSnMwVU04TFhaaTU3YjRjLUhFNXBuRmc4TlJzcnlrZGVYY3NGTldnR3lnb3hXS1ZqSUV0TjI3QXFlekNUOGl4T0FvdGNUNktKaVRYWUIxbVlaWnJ1dDQ5U05ZT0ZkVWhnOGZCM2dYNG5fb0N0VlZGdTZHVHhRdGpxUEJESTVfU1dONDBaSjBOMkctWGktMUtJNGVublZTblRvY0liU1hZbDNuVUp6aWJrUmhBZE1wZw?oc=5",
-      "description": "Mexico economy to grow less than previously expected on trade concerns &nbsp;&nbsp; Reuters"
-    },
-    {
-      "title": "The Federal Reserve’s independence is still under threat, warns Rebecca Slaughter",
-      "source": "FT",
-      "published": "2026-07-20T11:00:01+00:00",
-      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxOejE2a1c3VmxUa1JnenRGVHQ0OG1XRlAtZjBjWjRVZ1JhSVNiYWtRVXB0c0VTbWdlLUszbjdhQzZDY0VMWU1FWWRLblpWdHJsVGxkaUxiX01KcmRDcjdnVS05UjRVS2hFRDhTSTkxd19tbHRiZ1pCS2NEUkk1cDhVbWhSOWU?oc=5",
-      "description": "The Federal Reserve’s independence is still under threat, warns Rebecca Slaughter &nbsp;&nbsp; Financial Times"
-    },
-    {
-      "title": "China’s ‘national team’ buys shares worth $9bn to prop up market",
-      "source": "FT",
-      "published": "2026-07-20T06:54:09+00:00",
-      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxOaDlseWprMHFZazlCN2dpbHlRaXZoYU8wRHhwZWgtRndMbXJqQXBMakxGTFpiV2tJLUozcmNMVUI1WkZYWTM4X19uRW8tNXRsNHloeTFnT3hhVEtXWUpOWFg0Wi1uaks2cTFVektxSWVrdTRMRERWT0VjOG1aQUdwX0JXbHo?oc=5",
-      "description": "China’s ‘national team’ buys shares worth $9bn to prop up market &nbsp;&nbsp; Financial Times"
-    },
-    {
-      "title": "Iran’s currency tumbles on renewed conflict",
-      "source": "FT",
-      "published": "2026-07-20T04:00:28+00:00",
-      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxQTlZGalJvZXVNWGhJelQ0RjZlQVY3Nm9EazBtSkRZMkhJUmhVTjk2ZUViSnFTUzlXZzVPQ2Nmdk1hMHloRGlCZGZZeDVfU183RG92a0tKUFdEVmJTOUlsZVA0SjFhVk1EOVp5QjlzQ1p4aWQzVE01enlNZkxfQ2NBR2pFb3g?oc=5",
-      "description": "Iran’s currency tumbles on renewed conflict &nbsp;&nbsp; Financial Times"
-    },
-    {
-      "title": "The new Fed boss is tight-lipped. That might upset the markets",
-      "source": "FT",
-      "published": "2026-07-20T04:00:19+00:00",
-      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxQaHBjZGNTSkh3eUU5eHlSZ1hKZnRPSzJ3cU9YZnItZHNkUGwybU5Vc2taNVBYY0JkTUxUcHZRMldybXZWc3U1VXlXWTB6d1hHOUhtUmp3RXpJYWM5cU5tdEI4amQ1SFVjS1JOUGVaTlJOdHB0RjMxRHhqZl9oemZBNmFkY3g?oc=5",
-      "description": "The new Fed boss is tight-lipped. That might upset the markets &nbsp;&nbsp; Financial Times"
-    },
-    {
-      "title": "Gold edges down as US-Iran escalation lifts oil prices, rate hike bets",
-      "source": "Reuters",
-      "published": "2026-07-20T01:40:00+00:00",
-      "url": "https://news.google.com/rss/articles/CBMipgFBVV95cUxQTFhCVlU1TTFYN2VLU1RZSk5va0EtOGxSclUtc2xMM2ZfSTVoSU9LOGVBZzg5NjdfakJNWFUzYUktd3FKX0ptZk5YU2dGWF9BR0xiSm9iS2NMN3pBTkx5RkRHc1BpbUlmQ21WQnVXamd3aFVmZVV3cnVJTjd3MHBmbFhSTmZid3ZZQUx3VWlBODB5TGliVnBma1dJZDl4dGxydTlyWjZB?oc=5",
-      "description": "Gold edges down as US-Iran escalation lifts oil prices, rate hike bets &nbsp;&nbsp; Reuters"
-    },
-    {
-      "title": "Stocks fall as oil gains; Iran tensions, earnings in focus",
-      "source": "Reuters",
-      "published": "2026-07-20T00:35:00+00:00",
-      "url": "https://news.google.com/rss/articles/CBMigwFBVV95cUxNLXNOVkRxS1o3Q3pZUnR2TzZIVmRBbUs5MGZRYV9xRXJmVl8wUklWb0RfRjNETm5HR3Q3OEd1R3NZS0Nrc3Q0OGdQMDlVX041OGMybkpoZ0VWTFZ0Mlp4bGJmeXFUMzQ2NEpTdEFXbWh6eUNUQ1BXbkRRcHFUWnhLa3Fhdw?oc=5",
-      "description": "Stocks fall as oil gains; Iran tensions, earnings in focus &nbsp;&nbsp; Reuters"
     }
   ]
 }
