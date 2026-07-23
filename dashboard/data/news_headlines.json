@@ -1,12 +1,110 @@
 {
-  "fetched_at": "2026-07-22T03:58:32.958028+00:00",
+  "fetched_at": "2026-07-23T03:56:03.419827+00:00",
   "headlines": [
     {
-      "title": "Asian stocks extend gains as US rebounds, chipmakers lead",
+      "title": "Asian stocks rise after US tech earnings, oil at six-week highs",
       "source": "Reuters",
-      "published": "2026-07-22T01:11:30+00:00",
+      "published": "2026-07-23T01:43:00+00:00",
+      "url": "https://news.google.com/rss/articles/CBMie0FVX3lxTE01ZXA2WXo2VDZMLUZycUVJVDJ3bTlRSnpyUFg0VnRDUkU1OGVtNGVwQTlSYWgwbjlRRE1NS3RJWE0xTlJrekNsZnJEeHAyZlpGSkJCM2R5LU5uMmFTY2gtS3dmVHBhMGRnZ083S3pycEl0OS1jd2g5SngxQQ?oc=5",
+      "description": "Asian stocks rise after US tech earnings, oil at six-week highs &nbsp;&nbsp; Reuters"
+    },
+    {
+      "title": "How long can China defy history and logic with its imbalances?",
+      "source": "FT",
+      "published": "2026-07-22T23:01:08+00:00",
+      "url": "https://news.google.com/rss/articles/CBMicEFVX3lxTE9xZUVfZ1VDZjVzeUY0OTUyM1plMUhqSWhMa2lQOW41OTZSTjlxb0RrYXg1ckhHRldkVU5BcC1QejhaejVDTEtEVXZaZGtyc1o0a21zODBueGdEZUkxN0hHQVc3NkE4S3FzajVlLVhaUVk?oc=5",
+      "description": "How long can China defy history and logic with its imbalances? &nbsp;&nbsp; Financial Times"
+    },
+    {
+      "title": "Treasury's Bessent welcomes Pakistan's reforms, push to return to capital markets",
+      "source": "Reuters",
+      "published": "2026-07-22T21:18:18+00:00",
+      "url": "https://news.google.com/rss/articles/CBMixgFBVV95cUxNUmotV1o0c19pVUZXODdpTzljcDZmTzZHYi01WGk5MUcwRlZKaEtYOG53SDlTaWNMSnRfV2NrMGZJdG5zall1b2dxMnpOWUY5di1SaktaNFZSdjVxZ0cwaU5TWTAxSkhtbXNqY2JzMkV6c1A3OFU1NkN0RFJXbTA2eXJmUHF5N0JCdWY2OXJLcm5talZPeHhwc25aVXFTVXRZNjRNNmwwWDA1TXFUMU5qZGV1TEZoU3BZQ05RLTZLZWVFOFFUWlE?oc=5",
+      "description": "Treasury's Bessent welcomes Pakistan's reforms, push to return to capital markets &nbsp;&nbsp; Reuters"
+    },
+    {
+      "title": "Wellington, Vanguard, Blackstone launch funds targeting wealthy investors",
+      "source": "Reuters",
+      "published": "2026-07-22T19:26:09+00:00",
+      "url": "https://news.google.com/rss/articles/CBMixgFBVV95cUxPYncyc0xRZmlFNFFBN0ZySkhtNVF2ZWRMQ0ctOTYwWDFITFlzN3M0VkUtUElvdmFKTW5GenUwQ2ZJX3FtQVhkTDE0VDdEemRTUjRJWHA1TmttcUpmcC1UN0picHBPU1FER1dWbTBXM1RTakQzYUctRUVDOTJLbnRVYnJNdXE4MEN2bFNCcm9oTXBITUU3bXp0Wnk0akJoN09HTk1hdWVXVXZDRG5tVmZtSFFEeE9hQlVSWFNISnpRcUdVdzRLREE?oc=5",
+      "description": "Wellington, Vanguard, Blackstone launch funds targeting wealthy investors &nbsp;&nbsp; Reuters"
+    },
+    {
+      "title": "UK's FTSE 100 up over 1% as commodity stocks rally; BoE rate path, Mideast tensions in focus",
+      "source": "Reuters",
+      "published": "2026-07-22T16:21:27+00:00",
+      "url": "https://news.google.com/rss/articles/CBMiqwFBVV95cUxQeDRkbHlPUk9FUHM3TXJpZ25hcEtaSHo1MzZuR2FWc0RfempUTHItX0ozRVNoVVNGS0lVeTJ1cTFyUFhvLW5HMmlBUkRwbEYwV2dDY0JkNEN6Y0g4VTc2azFjcTdiTEtOaEpmdmJsRGFCNUY1NEtXX1pVRExhcmFFTU1tWGdsYnJwZVU5a0tYNG5lamx0dG5pMHVjWlFFS21xSTlFR0lmNE1IS1k?oc=5",
+      "description": "UK's FTSE 100 up over 1% as commodity stocks rally; BoE rate path, Mideast tensions in focus &nbsp;&nbsp; Reuters"
+    },
+    {
+      "title": "Germany to buy stakes in defence start-ups",
+      "source": "FT",
+      "published": "2026-07-22T11:21:16+00:00",
+      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxNMldTdHBIQU13aDJWYjllNmIxSncxY2doRHFkY0ZkN0x1TUwyWm5zNVpNUnlxUTI5bnhVdDdlc0JhbmZROC1aQjlTVWNhR1BpS0JyRkI3TW5rd2VQMTlYb2xKTmVyMXhkeE94b1RXR3dBTnUtUHd2ajlhM0o5cFVjeGE5bGk?oc=5",
+      "description": "Germany to buy stakes in defence start-ups &nbsp;&nbsp; Financial Times"
+    },
+    {
+      "title": "UK inflation falls more than expected to 2.6% in June",
+      "source": "FT",
+      "published": "2026-07-22T06:01:35+00:00",
+      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxOdUJpMjduSkZzQXhlcXdnN01NeFE5aHBvbjk2OVdvRktTcGFwdUh5U1Yxb005c1F0N2wzNHdPX0VuNUIwU2R5UFFYWEJCaHNMQkdmeUxtTWt6ajZFSXhjWnFBMzNiWm0yT2E2V0d2ZVJXT1VKMG9Ram4xSHBtdlpXbXJJalU?oc=5",
+      "description": "UK inflation falls more than expected to 2.6% in June &nbsp;&nbsp; Financial Times"
+    },
+    {
+      "title": "Three midweek thoughts - jobs, Fed targets and volatility",
+      "source": "Reuters",
+      "published": "2026-07-22T06:00:00+00:00",
+      "url": "https://news.google.com/rss/articles/CBMiuwFBVV95cUxPaWQ3TnlwS1hrZU4zYWFtTkdjMU1SU1paLThsSVVEejI5cnlwSk1jdWZLMndyaXQzWU4xa1NCNG8xYzFUaEhFbVdtaDNfRDRXWVhTNFN1dS1aMmVxeTRmUkc2ZFRQR0VOMDJCZFlTYm5TQ2xVaFgxRkdHV3c2SDZRU0g0Wkg2cXMzOFlHWU5Ka3NsZlp6Wms2aU1qR0s4S2ZuOWdESDZsUFlDNU5EZW9pWWczWjJYQlk4emVJ?oc=5",
+      "description": "Three midweek thoughts - jobs, Fed targets and volatility &nbsp;&nbsp; Reuters"
+    },
+    {
+      "title": "Warsh’s balance sheet consultants",
+      "source": "FT",
+      "published": "2026-07-22T05:30:06+00:00",
+      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxOaXVBcVRHYjNYUzlKTTFQZ1dGMl83N2RYMnlJbk8xdUhQUldsVWZJSFA5eHFqTk5RWnVqUmdRUmlsNENmVlo2LUlvTDl0ZDI5SEtFZ0lyc09ZbjRKZW56Y2hhZ2ZvTFN0UlRVS21ObElPOGxqT0g5OVRNZFM2eDljeVRCYno?oc=5",
+      "description": "Warsh’s balance sheet consultants &nbsp;&nbsp; Financial Times"
+    },
+    {
+      "title": "Tokyo vows to take ‘bold’ action as yen keeps sliding",
+      "source": "FT",
+      "published": "2026-07-22T04:04:59+00:00",
+      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxPdUVqQXRma3lCM3IzTkNNVmFVR3Y1QTZNdDFzYV9YazV2eE9IYkJIUFBfdlNfajI1UFdqc3Aya2hvUDB2OGF5bmI3bHlZSXRiY09nRGQ3WXJkeEZINjhKVmZMenJlcy1lai11VkZaUkFqVjJ5UzNtZmZPbFhfY21ZQ2RVMHc?oc=5",
+      "description": "Tokyo vows to take ‘bold’ action as yen keeps sliding &nbsp;&nbsp; Financial Times"
+    },
+    {
+      "title": "Who will win the war of neo-mercantilists?",
+      "source": "FT",
+      "published": "2026-07-22T04:00:26+00:00",
+      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxOM29CTFpMdmpSbThIOVpva0ZycXdCTGlBRVl6T1k0N1V5RjEyYzZrbWxUTTRWQXFLalZIVDlTN2tiNW5PMnRBbVRtYkJJY0p4MUJNTnZWaFpTUnRmTENmUG1SWkgzZzZlQmp5d0djVUU4TkZJclRsVER4dFlZQm5GSWh2TjU?oc=5",
+      "description": "Who will win the war of neo-mercantilists? &nbsp;&nbsp; Financial Times"
+    },
+    {
+      "title": "Private capital misses out as IPO and deal boom lifts Wall Street banks",
+      "source": "FT",
+      "published": "2026-07-22T04:00:26+00:00",
+      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxQTzBZb1BnRkJYSGx3elNpSnhsejRxSl9OZHIwUy0yZTExaXpaZ095WVFiUE9OSm1rd3F0WW5ZRVVmYTJ3VmZRRWw2bGtsTnRtZUc1Qk9wa1hheGtQT2pCM2tVTTBkQVIybkdvdEJQemdSQjg4Q0UzOWxFVnExY2JKN0JxY18?oc=5",
+      "description": "Private capital misses out as IPO and deal boom lifts Wall Street banks &nbsp;&nbsp; Financial Times"
+    },
+    {
+      "title": "Insurers cut prices in hunt for new oil and gas business",
+      "source": "FT",
+      "published": "2026-07-22T04:00:17+00:00",
+      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxPSnd1cExMb1pkS0ZKSnRSSXFjOUVoYzhJeGpJV1Y5ZTRaS1dKQlg1bVhrLVRtbVlDbDFxa1Z1aU9YZzJCVXBsREkzQ1ZBLXBRcmhVeHhiMnV0RTNZcUJxYTNTNEt2X1d1RWl2dmp5bG1nbktZT3pWeFk0OU8zQzFJSHE2cTY?oc=5",
+      "description": "Insurers cut prices in hunt for new oil and gas business &nbsp;&nbsp; Financial Times"
+    },
+    {
+      "title": "Gold firms to two-week peak on softer dollar, Fed outlook in focus",
+      "source": "Reuters",
+      "published": "2026-07-22T01:51:00+00:00",
+      "url": "https://news.google.com/rss/articles/CBMitwFBVV95cUxQSEhsalF5aHFJNWhKX1N0MFJGc2tUSkUtZnN2Qk43cW5leGhtZkFaenZuWWJ0SDRiZ2xuVDNhMG0teU5JeDZhRGRMV0xNSDFoQlF2akZ5OWlYbmRGRDNIa3VtNElkZlJLVXczWEdLR2ZfRFJCd0kzaDhYU3pMWEhGMnp4S0N5THd0YUZvVkhuNUJJbzgxaTJfRzdSamd3a0gxc2pjUTEyVUZIWGFEdUc4S012RzVaS0U?oc=5",
+      "description": "Gold firms to two-week peak on softer dollar, Fed outlook in focus &nbsp;&nbsp; Reuters"
+    },
+    {
+      "title": "Oil prices jump on US-Iran strikes, stocks flat ahead of Big Tech results",
+      "source": "Reuters",
+      "published": "2026-07-22T01:08:00+00:00",
       "url": "https://news.google.com/rss/articles/CBMie0FVX3lxTE15bndqdmhfTjlVQXVscXkwMHFjU3hXNFR5RTdLSnY3a0trdmEzYlNGbm5LeUhxbVJSd21PR1FmQnJpeWxSdHN1aTEwalByRGZFcGtiRUhXeUZSeVdFMHFBekU3bzRvblRKMms0OW5vZkJPekhNSThGOERjRQ?oc=5",
-      "description": "Asian stocks extend gains as US rebounds, chipmakers lead &nbsp;&nbsp; Reuters"
+      "description": "Oil prices jump on US-Iran strikes, stocks flat ahead of Big Tech results &nbsp;&nbsp; Reuters"
     },
     {
       "title": "Wall St ends higher on chip stocks recovery; earnings in focus",
@@ -14,104 +112,6 @@
       "published": "2026-07-21T23:24:18+00:00",
       "url": "https://news.google.com/rss/articles/CBMiowFBVV95cUxOUDZOb0lyeDNtSHo4bVQ4MlJ3RnhPUUR2WmxYT2xqaWRVNFFVNkNUdHBNUUIxWm5kZGpVaVc0SFZicnBmN1F0RWI3RXpqNUpCbjQ3RHhPZEJkTmlaeGI3YXp3MUlSSXN2RGdBZ3dfekVaQzQxbFJzeHhuNU9veGtKMzdidFZ1N2QwbFE3Z3B1VmxoY1VuTUFtU3Rfa09XMlRMWl9B?oc=5",
       "description": "Wall St ends higher on chip stocks recovery; earnings in focus &nbsp;&nbsp; Reuters"
-    },
-    {
-      "title": "US Treasury sends warning to hedge funds over ‘tax alpha’ strategies",
-      "source": "FT",
-      "published": "2026-07-21T20:42:19+00:00",
-      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxOVDBvaXhDOTJFOFFnR0l5RlhNQ3RFZlZQdFBvYUdmQTk4dEszWTI2TDd1dGJleURMbS1CWXFESGxhUUtlUmZhM0NpMGRLek1SUXA5VmFONmtmUFNIMlBnbW5Bc2NUR05NY0pkS1NWa0t1RlJDd0F0TDdKdUlwbWFxY1IydUQ?oc=5",
-      "description": "US Treasury sends warning to hedge funds over ‘tax alpha’ strategies &nbsp;&nbsp; Financial Times"
-    },
-    {
-      "title": "Fed to hold rates this year despite high inflation, but economists cite high chances of a hike: Reuters poll",
-      "source": "Reuters",
-      "published": "2026-07-21T12:42:39+00:00",
-      "url": "https://news.google.com/rss/articles/CBMiugFBVV95cUxNbV84YkM0QzhTaXRsOEtPMjNQX3RvVnBaNmZtQ1dTalN2bkRmczlkOTViLVAzRTJRYjVuSi1RNlNXQ2M4dW0tN3FPNk9BRGQxeGtLc3dteklTblBWN3VPemVEQWtOaTVkOVpBRDdNenZBQWtzX1FiQ2lZdkRodWtqamxXTks2eFQzZkMwcW5CejdVem9ESU9HNFQ1YkZrUXBGa2dpX1lKcGx0WXN2STJVanMyUFRvVFNsZWc?oc=5",
-      "description": "Fed to hold rates this year despite high inflation, but economists cite high chances of a hike: Reuters poll &nbsp;&nbsp; Reuters"
-    },
-    {
-      "title": "AI could lift Sub-Saharan Africa economy 4% if power, internet improve, IMF says",
-      "source": "Reuters",
-      "published": "2026-07-21T12:12:09+00:00",
-      "url": "https://news.google.com/rss/articles/CBMixAFBVV95cUxOUzd0Umk1OW1RQU1HR0pWVnZCMy1PeTRnRHBSM3ZlZ09YZnU1NnFBWmE1bm5BcFVXZC1mNFA5UHNTcFJzMmktcVFNYzRuWnhhNHZ2bHhYMEgxdjhIcWdMakFIOVNZUHNWNVJPaTgtR25qMTA3b013UG44aEI3VTI5c1BwVXdka2dlZUcxT1B2M3dzLXR1VWhyTGpZT3NFandWWDdZTHh3ZTUtbXdiWXNUTTFIdXhYNXVRNlpXbE5aQXdOeTY2?oc=5",
-      "description": "AI could lift Sub-Saharan Africa economy 4% if power, internet improve, IMF says &nbsp;&nbsp; Reuters"
-    },
-    {
-      "title": "IEA says substantial emergency oil stocks remain after record release",
-      "source": "Reuters",
-      "published": "2026-07-21T11:47:12+00:00",
-      "url": "https://news.google.com/rss/articles/CBMivgFBVV95cUxPc0VFbTUzNkFDSXZDLXRFM2J2R2ZvRmt1a1haaktTdnlweHloa3Y5WkN4b2ZjMHg2b3o2a1QzMDE3OTBNc2FRY3NzcW9FNEp1UEZFejMyNzRsdkk1SmpabERDTng0RzdXZWV2ajg1clQwQjBkRWV5WW5peDFBczV1dHVieWRQckJpUXFwRkZWSHBoQ1dfTnZDTy1zTW5JR3lZbFB4TEVobEJrRENFSGkzcEZscTdlYnpRVUpBeV9n?oc=5",
-      "description": "IEA says substantial emergency oil stocks remain after record release &nbsp;&nbsp; Reuters"
-    },
-    {
-      "title": "Brazil faces unforgiving economics after election",
-      "source": "FT",
-      "published": "2026-07-21T06:08:20+00:00",
-      "url": "https://news.google.com/rss/articles/CBMicEFVX3lxTE9uUlI3eE9sVkJKdWRlVm8wV1Q1UWFhXzVLc1Fac3cyNHVSZjZqTTN0bVFhOUJTVGtzNDhyUVRHNWM3MVFsSWlXa0ZnczFZdUwzREM4S2hIVy05Z2d6QkQ4Qk5WQnJCRTdHQ1dSZ3UxM3Q?oc=5",
-      "description": "Brazil faces unforgiving economics after election &nbsp;&nbsp; Financial Times"
-    },
-    {
-      "title": "Tom Hayes says UBS’s ‘Project Chocolate’ probe shows he was targeted from outset",
-      "source": "FT",
-      "published": "2026-07-21T04:00:30+00:00",
-      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxPZlhIOEdRWHd0OUhGMmN4SjRYekh5c2s1M0JjZVE3MjJGM3lWZGtockFScGlZaHE4bWIySFpuUXhPTWlCV1kzV2dkb2F3OWVPazNManZ5NUJtZlJPUEtxbVhiRnhIZ2RIb2RhUDFIbHBnS1N0Q2hzNENaSFIwa3Y3N09HR1M?oc=5",
-      "description": "Tom Hayes says UBS’s ‘Project Chocolate’ probe shows he was targeted from outset &nbsp;&nbsp; Financial Times"
-    },
-    {
-      "title": "The fall of America’s farm superpower",
-      "source": "FT",
-      "published": "2026-07-21T04:00:20+00:00",
-      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxPbFE4Ukg4UUlKSzNhY0dPQlVqd2RndUs5UGV4NlVONG9EQVJjRGlvUUZpbG1fYmstczB0Z08tNkxRbWRkd2w3SGs0ZEV2aW1kc3FtbWNEUUh5VDBsRVllTXJWRy11T3h1WGFSWGVPYXNYSjFJWnR0UDFTUGFoU1FvZXlyNVk?oc=5",
-      "description": "The fall of America’s farm superpower &nbsp;&nbsp; Financial Times"
-    },
-    {
-      "title": "Czech central bank chief warns against joining Eurozone too early",
-      "source": "FT",
-      "published": "2026-07-21T04:00:10+00:00",
-      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxORDVwQXN0TWdTNnEzRWJ5SFJzaDB3cW1RelJTSDE5SGZmV3BrNnJLUHlOTHoxUzFhN0cxM1QyMlVtaEFQQWZYaERpTEpmcER4QmtiMFdVWjAxSUpZXzhtS3JFVXFOODNKeUxLR0hjSkRvUDlFb3FBV2FZWjQ2b2ljYTBXR1U?oc=5",
-      "description": "Czech central bank chief warns against joining Eurozone too early &nbsp;&nbsp; Financial Times"
-    },
-    {
-      "title": "Stocks jump with chipmakers; oil rises to 5-week high",
-      "source": "Reuters",
-      "published": "2026-07-21T02:02:00+00:00",
-      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxQNlZ6UW5NX1ZjZ3BJZXota1l4Qnc0SjdPWnZGTmsybzNSTXM4cWl1YzlhQ3BnbGREVWVvdjdGNU1nY2c4aFIyMFBkR1J2VkFreGt4d2RQLUgySFd4VjlGLWhKT1hSNzRoa3dmdks2RHJYOGRxamQzTTk0U3g2NWtzZGhobXA?oc=5",
-      "description": "Stocks jump with chipmakers; oil rises to 5-week high &nbsp;&nbsp; Reuters"
-    },
-    {
-      "title": "Beaten-down Indonesian stocks feel the love as AI rally cools",
-      "source": "Reuters",
-      "published": "2026-07-20T23:12:19+00:00",
-      "url": "https://news.google.com/rss/articles/CBMirgFBVV95cUxPNmY2U0FUNUFSWXhmdjgyTl9mcERSaU41SHl4Uzl5UzEtMFlZelpnbV9oeVliWWlZT2hTOTJzanpEZDlxa2FMWktBUGRLNWZ2ZG1UNVIxZUd3NlFFdVlJMzNKWVdEZXVMNDI2RHZvTEpTWF9iZ21JdGpaREpKVFZHQVhCM0h1bEszd2dkR1lMaHplRGUzRGl1WThPY1FIaEozQk9Kei1IZHJRSHZWbkE?oc=5",
-      "description": "Beaten-down Indonesian stocks feel the love as AI rally cools &nbsp;&nbsp; Reuters"
-    },
-    {
-      "title": "London Stock Exchange plans to launch round-the-clock trading next year",
-      "source": "FT",
-      "published": "2026-07-20T23:01:05+00:00",
-      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxNU3A4SWFlU0pYbGxoWldOd05IcUJ3dmY2OGtYRDZHLTBjb0twV2tURFRoNmRvdVIxRU5rM0F3aEM4WFdsUXRyY01ieHNIeDl3NFNNWURncE90MDc3R0N3TXVxRlpwc2h6UlZwa21QVWxEQUh2ejlpTkpkM2FrbVdqV1I5aFU?oc=5",
-      "description": "London Stock Exchange plans to launch round-the-clock trading next year &nbsp;&nbsp; Financial Times"
-    },
-    {
-      "title": "US to hit Canada with 50% tariffs on wide range of goods",
-      "source": "FT",
-      "published": "2026-07-20T21:01:54+00:00",
-      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxPRERDeEYtRHdaU0NYZVBlWHc3NGZ3a29SWFQ2S0dnOXFSRlJVdE1kTlR3U2tWSTZiUmxVcnNncndDTFRQQVJGMmZENnVGT1BsM0EwMnNPa0VkSFhkMEctX0N2Y3Z1Z0p2RUJlb2VPaS05ZVdtaU90Y2VZRkctRUhZV1ZVbTE?oc=5",
-      "description": "US to hit Canada with 50% tariffs on wide range of goods &nbsp;&nbsp; Financial Times"
-    },
-    {
-      "title": "Gilts under pressure as investors brace for higher spending under new PM",
-      "source": "FT",
-      "published": "2026-07-20T17:16:08+00:00",
-      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxQM3YwWk9sVHYyeWxocVIwU2hNRzlZSFFGRG5PRE0wY1FIWXJLTllzMDg1UF9GWXpwcTVQMlRRd2NDakoyQnBuVUEwYk9sUS1lNlluWG1fVVZERzJONDBXUEtPMFlNXzdyWkFuY2RGZ2JIbVJNdG90VmhfU1B1WndnTHhiX2s?oc=5",
-      "description": "Gilts under pressure as investors brace for higher spending under new PM &nbsp;&nbsp; Financial Times"
-    },
-    {
-      "title": "Oil stocks in US Strategic Petroleum Reserve fall by 5.1 million barrels to lowest level since 1983",
-      "source": "Reuters",
-      "published": "2026-07-20T16:37:45+00:00",
-      "url": "https://news.google.com/rss/articles/CBMixgFBVV95cUxOclJieFd5XzJsZU5oSjQ1WUZ2dEdjSTNLSUV2MFRycnp6dzRWMUF0cXBjV3ZkakdmRTg4elB2bUo3VXgxM2x4cmw2emppanpSWDdOcFpTcl9HZFZneEliaG1Nb2NsbUZsVExXdVZ6NjkyemZIaGJVSVhxMXYwakpaUDF5VlJHVHZndDBZZlgyV3pDRWdoQlJINlR1TmRmY011WGlEbmZ2cjdNZDA4cDdWZENobUtDc1RoV3FCYVNLX0MzQWFmeVE?oc=5",
-      "description": "Oil stocks in US Strategic Petroleum Reserve fall by 5.1 million barrels to lowest level since 1983 &nbsp;&nbsp; Reuters"
     }
   ]
 }
