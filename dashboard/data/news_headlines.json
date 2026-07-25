@@ -1,12 +1,103 @@
 {
-  "fetched_at": "2026-07-24T03:55:35.205460+00:00",
+  "fetched_at": "2026-07-25T03:50:14.327459+00:00",
   "headlines": [
     {
-      "title": "Asian stocks skid as oil spike revives inflation fears, bonds take a hit",
+      "title": "Wall St Week Ahead US stocks face tests from Fed decision, tech-led earnings deluge",
+      "source": "Reuters",
+      "published": "2026-07-24T20:16:10+00:00",
+      "url": "https://news.google.com/rss/articles/CBMivwFBVV95cUxQajIyMHNIZTNQeFlkNHB6ekVuZjNtbFhOcXgtRFhXR095VXRnaUJHSDhwRjFaX19BVTY2RlBoY0d2bEk0cEdxSXlxZ2otVHcwUDNjbGtMWi12U182MkhIR1FrS2dWY1p3NEdSZHAxSmFDZ1BWT2sxSU8tYWxDd255TmpTUGFBeWY3M3VUWlBJb3ZybDdnWm8tM2tGT25XbUZQZmkwX1NlU3BjZl9pcUVHWTBQWDBpTEZrQmFTSVNXaw?oc=5",
+      "description": "Wall St Week Ahead US stocks face tests from Fed decision, tech-led earnings deluge &nbsp;&nbsp; Reuters"
+    },
+    {
+      "title": "Canada, UAE conclude trade talks as Ottawa seeks new markets",
+      "source": "Reuters",
+      "published": "2026-07-24T19:25:00+00:00",
+      "url": "https://news.google.com/rss/articles/CBMiswFBVV95cUxPdHVyR2JKTldYRE9ieDRsTEtqQ2JBbEFsTUtJYU4zS2tMd253T1BYa3NOTkJWN3pURldoaFFDZGp5YlhwR3B6RWM5T0RwTFItVXp4VjJBZ1F5Rmt6Mjd0VmZZc2xnaHVld2JHSHN1SUdvV1lzRE01ODJXWlZJTk1sZHYya0JGS1JDZExGcEFqMkpJMk5mY3BrMTBueVhrSFhlREQ2YmZ1STk0eU55WW9kd2swTQ?oc=5",
+      "description": "Canada, UAE conclude trade talks as Ottawa seeks new markets &nbsp;&nbsp; Reuters"
+    },
+    {
+      "title": "Fed Chairman Warsh faces cruel summer as bond yields spike",
+      "source": "Reuters",
+      "published": "2026-07-24T18:04:48+00:00",
+      "url": "https://news.google.com/rss/articles/CBMiogFBVV95cUxPYVRCMXNDaHJWRk9ET3BLVEJzU0loSnRRM3hNcTAxQ1pXT1VoWlA1MUJxelBHYlFyRVVGQkZUZkFNc0NfMFNYbE1KN3pXYzRWYnIwN0JTeDVXaEdfOEpaN0pJSU91aEppRURTR1JSSld2cVl5b3Bval8wb3N0MWI4ZlBBcXlUbDA0Q0MtdFcxa3dRMzFXWkZzdC1WTGJRbW02NkE?oc=5",
+      "description": "Fed Chairman Warsh faces cruel summer as bond yields spike &nbsp;&nbsp; Reuters"
+    },
+    {
+      "title": "The return of monetarism",
+      "source": "FT",
+      "published": "2026-07-24T17:00:05+00:00",
+      "url": "https://news.google.com/rss/articles/CBMicEFVX3lxTE1BVWRhMU1iRU9rbjFEbzF5OHdZRThZSHZTMEItNHdodVp5MG80Q3R6TDVKdUlzNGdyeFRzTGc4c3Y2U0hHSEllZ3NPWXhoaFVsci1ZdHE0R3dfdUJ0cDhjN2tMQ19NamtWS1dQQ0ExZTk?oc=5",
+      "description": "The return of monetarism &nbsp;&nbsp; Financial Times"
+    },
+    {
+      "title": "Meta faces higher borrowing costs in latest $12bn data centre financing",
+      "source": "FT",
+      "published": "2026-07-24T15:08:12+00:00",
+      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxOWmZmMF9WOVhoeXZUSl9ZWHA5Mndld1hOOEFabUFhd1drY3dzYjl6a3NoSEVKVU8xS09DY2xXRTNJS2FhakZEN0pwQklUOE9menVBWWxvWFVVMkRTUU5Uc29QYUgwaHpXTENaQWxXMjRtWjJLWVZaUGU1N1daZHloSU9uTXI?oc=5",
+      "description": "Meta faces higher borrowing costs in latest $12bn data centre financing &nbsp;&nbsp; Financial Times"
+    },
+    {
+      "title": "Europe wins and Brazil loses in Trump tariff overhaul",
+      "source": "FT",
+      "published": "2026-07-24T12:38:43+00:00",
+      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxNZ2lPcXNQLWZUZ1hacDRQSHQyVTFFRG5Zem5zc2pUZmd1RDBLWTlpTVQtSVJ6a1VxZ3NGdUdjbjNpaUpyeGhnTGRzSnc2WUxoYlRwWDJIeHJZTTEwRWsyZGl5TEtsSUVsWDI2czhjWFhYZDNMVnE5MlRoZ3cwSTFNemlGUDg?oc=5",
+      "description": "Europe wins and Brazil loses in Trump tariff overhaul &nbsp;&nbsp; Financial Times"
+    },
+    {
+      "title": "US hits 60 trading partners with new duties as Donald Trump rebuilds tariff wall",
+      "source": "FT",
+      "published": "2026-07-24T12:30:37+00:00",
+      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxOdWNmbDJNOWZrbG9kNGFlai16cHpQSjJ6RHhWSDdjWVdZNjFsb0hMVUxtNTZURUNqcGFQSVNkQWFxSzNPQ3VOZ09qYTdoUFdfRU1NQ0NYamtHaFdRRkVBM2RGUTZsUTBNNlRqVGZfSUhOQWlBSlZxYU9tRElNSkJzOGZGVG8?oc=5",
+      "description": "US hits 60 trading partners with new duties as Donald Trump rebuilds tariff wall &nbsp;&nbsp; Financial Times"
+    },
+    {
+      "title": "Stagflation talk returns to rattle markets as oil rebounds to $100",
+      "source": "Reuters",
+      "published": "2026-07-24T08:05:02+00:00",
+      "url": "https://news.google.com/rss/articles/CBMilgFBVV95cUxPWGV3WEFzTUlYVHd1OGNRbDBDZEtVWmRKb0p6NEVjOUFPQTZacThBczNFemNrVWxfclViZHdOOGw3cU4tLVdxSkRBM3RVLUZ3Z212Qm96a1JBUHNkLWN3V1dHNnd2eDJNUms1d3R1ZTN5dGItcmtWWjc1cGtTcTRvaVlfWGpoODJuQ3Y3MFc1ZGhpa2FyVlE?oc=5",
+      "description": "Stagflation talk returns to rattle markets as oil rebounds to $100 &nbsp;&nbsp; Reuters"
+    },
+    {
+      "title": "In the rates drama, oil is a minor character",
+      "source": "FT",
+      "published": "2026-07-24T05:30:01+00:00",
+      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxQODJlT19ibmhKR0w4eWQ1a0oxMV9mSlg4V28wZFVFcUUyX3g1X2wxV21aUzB0c2p1RzR2aVpIMURnWVZ1d1ptYlc2RFpfcjBTb0pEYl9BV2xVeC1zd2JwcV9fU05Lb1d0MjJRTzVnME9yQWRHckh3ci1kcHdnZk9UY2MzUkU?oc=5",
+      "description": "In the rates drama, oil is a minor character &nbsp;&nbsp; Financial Times"
+    },
+    {
+      "title": "Ireland pushes for breakthrough on EU capital markets reform",
+      "source": "FT",
+      "published": "2026-07-24T05:04:28+00:00",
+      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxPaU1UMThsT3ZJTnRDd09zZXJLM3NnRndoa2I0YlRMMC1ad1Yta2p0N0Zqam1IX0pfNFZuUEEtNVhFNzZQeHZnaTNHQjlReEh2bS1vODNlWWNJTS15Tkdic0dSTEctRlQ4dW5aMEw3UlNRV1ZDU2NWbG9RMnhVV25icWR5Y0s?oc=5",
+      "description": "Ireland pushes for breakthrough on EU capital markets reform &nbsp;&nbsp; Financial Times"
+    },
+    {
+      "title": "Welcome to the era of financial candyfloss",
+      "source": "FT",
+      "published": "2026-07-24T04:00:14+00:00",
+      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxON0FDdFIyMnNWcG9HNmNNYnVONTdaVUhEZ1U4Q1RXQ1R4cWVtSXhSQ052OGhuNlYwVmVPTmNmTzJ6NmNLcHltelA3WGhuME8xLXJWZGxtbE1hX3oxQTZMS0lzUHdkY2VlUkJoeXg1RmdxWDJDNDRhV1pwVE9Qck5mWE5ibF8?oc=5",
+      "description": "Welcome to the era of financial candyfloss &nbsp;&nbsp; Financial Times"
+    },
+    {
+      "title": "Gold edges up as Brent eases, Mideast developments in focus ahead of Fed meet",
+      "source": "Reuters",
+      "published": "2026-07-24T03:48:00+00:00",
+      "url": "https://news.google.com/rss/articles/CBMingFBVV95cUxPTkFxM3hTSjdVaTVBREZMazRNOUhabGlBTUdxdk9fSklYbzliUC1Lc0FLX1dOWmlhM1NsQkhoZVowTVE3ZHNJLWQxbVNoMXVvVFc1VG5NTEQwYThjMnhUMVI3TTRUNmJhMGhrTm95WFM1LTY0VEp4c1ZDcXdqaVhZQnVMYkM0SWliSFF3bHJBWXFFUTJLVVRxLTNfdnA5QQ?oc=5",
+      "description": "Gold edges up as Brent eases, Mideast developments in focus ahead of Fed meet &nbsp;&nbsp; Reuters"
+    },
+    {
+      "title": "Stocks edge back up as oil prices pause climb but yields hover near highs",
       "source": "Reuters",
       "published": "2026-07-24T01:20:00+00:00",
       "url": "https://news.google.com/rss/articles/CBMigwFBVV95cUxORzVSb2tZRUVrYzhLQ0hCcVk1clVDQ1hjaGFPVElvd0JKZ0RVeGFTQ2JBVlVwRFNLbUxHOGZKTnl3WGEyeU5PQzEtTnBmVjBRdVVVUHBaSzJXY1pRT2ZFenczR0d2emszLWpGZDItNEcxd29RSGdWSDhVOEM5RjZRRXc0VQ?oc=5",
-      "description": "Asian stocks skid as oil spike revives inflation fears, bonds take a hit &nbsp;&nbsp; Reuters"
+      "description": "Stocks edge back up as oil prices pause climb but yields hover near highs &nbsp;&nbsp; Reuters"
+    },
+    {
+      "title": "Stocks sink on Big Tech cash burn; oil hits $100 for first time since May",
+      "source": "Reuters",
+      "published": "2026-07-24T00:13:40+00:00",
+      "url": "https://news.google.com/rss/articles/CBMie0FVX3lxTE01ZXA2WXo2VDZMLUZycUVJVDJ3bTlRSnpyUFg0VnRDUkU1OGVtNGVwQTlSYWgwbjlRRE1NS3RJWE0xTlJrekNsZnJEeHAyZlpGSkJCM2R5LU5uMmFTY2gtS3dmVHBhMGRnZ083S3pycEl0OS1jd2g5SngxQQ?oc=5",
+      "description": "Stocks sink on Big Tech cash burn; oil hits $100 for first time since May &nbsp;&nbsp; Reuters"
     },
     {
       "title": "Wall St falls as tech earnings spark AI spending worries and oil hits $100",
@@ -16,102 +107,11 @@
       "description": "Wall St falls as tech earnings spark AI spending worries and oil hits $100 &nbsp;&nbsp; Reuters"
     },
     {
-      "title": "Mexico to see no change from new US tariffs, economy minister says",
-      "source": "Reuters",
-      "published": "2026-07-23T22:53:44+00:00",
-      "url": "https://news.google.com/rss/articles/CBMirAFBVV95cUxOSHpUT2V6Q3Y5R1JZQmlvUW5hbVZWM0NCV1ZDbjFZbFF1ZjlzR3otTUtVUG1TcC11TFM4Q1o3X2FoMTNrV0hPTWdDZ3dTcW1kbmZyd1JiYzJWY1NrZndKcFhpYUN1ZTJySnkyVHNwWjFsM25lcFhtS0hsQllKZjkzS1gzczR4Vmk2X2NiN2dPRTdzdDlKWUw3Nk1lMmZ2TEFqWS1vM0Q4ZmR2b2Ew?oc=5",
-      "description": "Mexico to see no change from new US tariffs, economy minister says &nbsp;&nbsp; Reuters"
-    },
-    {
-      "title": "US hits 60 countries with new duties as Donald Trump rebuilds tariff wall",
+      "title": "Dangote secures record $2.5bn investment to expand Lagos refinery",
       "source": "FT",
-      "published": "2026-07-23T21:01:41+00:00",
-      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxOdWNmbDJNOWZrbG9kNGFlai16cHpQSjJ6RHhWSDdjWVdZNjFsb0hMVUxtNTZURUNqcGFQSVNkQWFxSzNPQ3VOZ09qYTdoUFdfRU1NQ0NYamtHaFdRRkVBM2RGUTZsUTBNNlRqVGZfSUhOQWlBSlZxYU9tRElNSkJzOGZGVG8?oc=5",
-      "description": "US hits 60 countries with new duties as Donald Trump rebuilds tariff wall &nbsp;&nbsp; Financial Times"
-    },
-    {
-      "title": "Hedge funds grow at fastest rate in history as AI boom lifts markets",
-      "source": "FT",
-      "published": "2026-07-23T15:44:44+00:00",
-      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxNb2NOWGx4dVZTYUNheHF3a1hWSU4wZVRLR0VKUXNieHo4RkxkZDEyaXZoSk9DcnREVkdVdmNldWFCNVdEVl9TbXhkTzJaSHpRakV6RmVfaTNiOWlkX3V4LThnU1J3enFNdHY4WnliT1ZTQmpLY1Z5Z1lpMTM3OUV6Wk5OR0I?oc=5",
-      "description": "Hedge funds grow at fastest rate in history as AI boom lifts markets &nbsp;&nbsp; Financial Times"
-    },
-    {
-      "title": "Palestinian economy on ‘cliff edge’ as Israeli banks cut ties",
-      "source": "FT",
-      "published": "2026-07-23T14:41:51+00:00",
-      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxPZHF3M0hfbEZfTUJqQmI5YnFYS0NUZU9hVHJSYWN3TlROd2x5cW5RN1pCSnZ4QWVrVnh6UmtlVlkxaEh5Yi1GcU9sT1VmaE9ZZXZBRTlIamV3TjJNdnVzcUNsVzFpNF9MeE9rNXpKaGVLLXhNRnJTbDJyQlBydW05ZVNlTTA?oc=5",
-      "description": "Palestinian economy on ‘cliff edge’ as Israeli banks cut ties &nbsp;&nbsp; Financial Times"
-    },
-    {
-      "title": "Trump administration’s dealing in companies is on shaky ground",
-      "source": "FT",
-      "published": "2026-07-23T14:36:00+00:00",
-      "url": "https://news.google.com/rss/articles/CBMicEFVX3lxTE56dUp0cE5CZ20yMWF5aXFXVkwtdEVOMHd1anpOcnc3YjYtZE1aUVFIUkJvYWpFNUpHclZNQ2owYVY4ek9yWjh3M2x6bW1DRXRmRWRjd3ZfZUZwNDUwWXk5YjdxVFVIU2ktQ25hWVAzeGY?oc=5",
-      "description": "Trump administration’s dealing in companies is on shaky ground &nbsp;&nbsp; Financial Times"
-    },
-    {
-      "title": "European Central Bank holds interest rates at 2.25% after debating rise",
-      "source": "FT",
-      "published": "2026-07-23T12:15:21+00:00",
-      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxPbk1XMkNINy1zT1Byb0t4M1pDUW5lcy1ndW9zUlF4aFRCbVlxLVdWSGZ4ZmtPalhnT3JuWFkzTFJBVXRLdVRiaW9DdGlzbWtFVGlYR0ZpZGtkYUZoSkRwLVFIZjJKREpDbFBxZWdnWHo0bFhuaXdSb3VfMG1RSzhXOFNiZ24?oc=5",
-      "description": "European Central Bank holds interest rates at 2.25% after debating rise &nbsp;&nbsp; Financial Times"
-    },
-    {
-      "title": "Blackstone says pace of withdrawals slowing at flagship private credit fund",
-      "source": "FT",
-      "published": "2026-07-23T10:59:23+00:00",
-      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxQRENSNnZjcWlYTm9TdHJEMHB1bkhKZDNvMW1JYjFfR1h6ajBpX0hJcHAxNUVrUlgwaHg3X0wzSVVRZzM3dG4tM2x6OUVCeVZqcklZc09zV01oTE80ZnJnX2tKam5YU2J3OVh1eXNiNzV1X01UVHFPc3BXWjRNWEhtX1RTU28?oc=5",
-      "description": "Blackstone says pace of withdrawals slowing at flagship private credit fund &nbsp;&nbsp; Financial Times"
-    },
-    {
-      "title": "European semiconductor stocks diverge as investors weigh AI demand, growth expectations",
-      "source": "Reuters",
-      "published": "2026-07-23T10:36:20+00:00",
-      "url": "https://news.google.com/rss/articles/CBMitgFBVV95cUxPN0hIaVBuNTVLVFdaVUpMRVR1bVpBTG5nZ19TNVhHVU00YXRZTWw4a04tSHVsT0ZfVE5SWkFadjYxSkl0OUxOWGhza3pNRm4wU09BZjk4cnJXWFUyLXZKV29DMDE1TTJFWnNSVTN1SWZqYWFvQ241djBlOHd1QkhuWDJLLTkwZ0JFMFljc3RndEUwcnhySUlOeUYxZWRXTkhPU25NM1ZHSk14d0h1aXY4VzI4MGc5QQ?oc=5",
-      "description": "European semiconductor stocks diverge as investors weigh AI demand, growth expectations &nbsp;&nbsp; Reuters"
-    },
-    {
-      "title": "Andy Burnham to cut business rates for pubs and clubs",
-      "source": "FT",
-      "published": "2026-07-23T07:12:42+00:00",
-      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxPZ09ZQnNEVGEwaW5Wb3JjLVM4X0JBbHFJazRZbjM4TUxoVzhtQW80TzYwQm1SRzUtX08zQXFyLTRrUGJzTk1rNE9SUWRqVTBFUmxtUGhJUF9vWXJNdkFvWV9XOHRJTjl4c1hNRUFLdFZ6Rno0U01fenZLWlJPRmc2YV9CS1E?oc=5",
-      "description": "Andy Burnham to cut business rates for pubs and clubs &nbsp;&nbsp; Financial Times"
-    },
-    {
-      "title": "Morning Bid: Can markets handle more strait talk?",
-      "source": "Reuters",
-      "published": "2026-07-23T04:32:00+00:00",
-      "url": "https://news.google.com/rss/articles/CBMif0FVX3lxTFBIM0RMcy1oWG5LLXp2NHQ1MEpGX0xqWU5peGxCekhzQ1dXUjN3WU5PSXBweXFybDE2RkxlY21VbDBWZUtSbzAteVVsZkR0aUNyS3Y2SW5JZUxBTjV4WG5IdWk4eVpuRVZOdVF3UWRDeXMwQW95ME1YX3VHckpFZVE?oc=5",
-      "description": "Morning Bid: Can markets handle more strait talk? &nbsp;&nbsp; Reuters"
-    },
-    {
-      "title": "The reawakening of Japan’s economy",
-      "source": "FT",
-      "published": "2026-07-23T04:00:21+00:00",
-      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxORDk1ZDBPT2xVTWQwd2VKbXFfamhZcVREdXY0cV8wNkFIYWxwTWR4b2dQOWtMMlNTcUtsYXJVMWFzVXVQWlhJcUFpajJIR28yYXpVeDJzaWdBc0tJWnZDWXpBVG9fUEpTbk9USzRpWVhhUmktVUlqVkpFX21SNXAta2Zoa2s?oc=5",
-      "description": "The reawakening of Japan’s economy &nbsp;&nbsp; Financial Times"
-    },
-    {
-      "title": "Stocks sink on Big Tech cash burn; oil hits $100 for first time since May",
-      "source": "Reuters",
-      "published": "2026-07-23T01:43:00+00:00",
-      "url": "https://news.google.com/rss/articles/CBMie0FVX3lxTE01ZXA2WXo2VDZMLUZycUVJVDJ3bTlRSnpyUFg0VnRDUkU1OGVtNGVwQTlSYWgwbjlRRE1NS3RJWE0xTlJrekNsZnJEeHAyZlpGSkJCM2R5LU5uMmFTY2gtS3dmVHBhMGRnZ083S3pycEl0OS1jd2g5SngxQQ?oc=5",
-      "description": "Stocks sink on Big Tech cash burn; oil hits $100 for first time since May &nbsp;&nbsp; Reuters"
-    },
-    {
-      "title": "Gold falls 2% as Middle East tensions fuel inflation fears, rate-hike bets",
-      "source": "Reuters",
-      "published": "2026-07-23T01:38:00+00:00",
-      "url": "https://news.google.com/rss/articles/CBMiogFBVV95cUxNSWJ5a0ZfS2ZuNnZ1WEpFWWFfTV9YLWJZT0hmOEhiUFl5OXYtR0UzNEh6UUFSSHFiNURJaHk2dXE1Rmg1V3NRTzlfbGpvQVpoLWVKR1ZjRlprNDJMWFk5SllRRlc1bTkzeFlNM3QyaFZSR2FSRTdIaVo2SWFLbnZqQmJlcTUtV1JOaXVySHNKNGF6TlgxTi1QRnZMeDBHeG9pQlE?oc=5",
-      "description": "Gold falls 2% as Middle East tensions fuel inflation fears, rate-hike bets &nbsp;&nbsp; Reuters"
-    },
-    {
-      "title": "Treasury's Bessent welcomes Pakistan's reforms, push to return to capital markets",
-      "source": "Reuters",
-      "published": "2026-07-22T21:18:18+00:00",
-      "url": "https://news.google.com/rss/articles/CBMixgFBVV95cUxNUmotV1o0c19pVUZXODdpTzljcDZmTzZHYi01WGk5MUcwRlZKaEtYOG53SDlTaWNMSnRfV2NrMGZJdG5zall1b2dxMnpOWUY5di1SaktaNFZSdjVxZ0cwaU5TWTAxSkhtbXNqY2JzMkV6c1A3OFU1NkN0RFJXbTA2eXJmUHF5N0JCdWY2OXJLcm5talZPeHhwc25aVXFTVXRZNjRNNmwwWDA1TXFUMU5qZGV1TEZoU3BZQ05RLTZLZWVFOFFUWlE?oc=5",
-      "description": "Treasury's Bessent welcomes Pakistan's reforms, push to return to capital markets &nbsp;&nbsp; Reuters"
+      "published": "2026-07-23T20:45:09+00:00",
+      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxORDRBdE9tem1TempqN19WQktid095UU55YmIyMDZzOW9pQ1psc0QtOXlPUTJnTG42cEZfd0xseGlyRF9WSE1YNzNFaWRsXzRROFRYNEY0M01BWnB1akxlZnlYalltOXBvOUFFZG56MW1EWTl0RzdOQUM5cUh1TUcyTGNkb3I?oc=5",
+      "description": "Dangote secures record $2.5bn investment to expand Lagos refinery &nbsp;&nbsp; Financial Times"
     }
   ]
 }
