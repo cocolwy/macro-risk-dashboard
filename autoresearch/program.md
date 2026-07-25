@@ -1,227 +1,139 @@
-# autoresearch — Macro Crash Prediction
+# autoresearch — Research Track: Macro Crash Prediction
 
-Autonomous experiment loop for improving the macro crash prediction model.
-You are an AI research agent. Your job: iterate on `experiment_auto.py` to
-lower the composite score's Brier component and raise F1, measured by
-walk-forward validation. You run experiments, keep what works, discard what
-doesn't, and never stop until the human interrupts you.
+Reference document for the macro crash prediction research track.
+Read this file to understand the problem, constraints, prior results,
+and promising research directions.
 
-## Multi-Agent Pipeline
+**Orchestration is handled by the `/experiment` command in agent-system.**
+This file provides context, not execution instructions.
 
-Every experiment goes through a 3-stage pipeline before a decision is made:
+## Problem Definition
 
-```
-┌───────────┐     ┌───────────┐     ┌───────────┐
-│ REVIEWER  │ ──► │  RUNNER   │ ──► │  CRITIC   │
-│           │     │           │     │           │
-│ Code scan │     │ Walk-fwd  │     │ Verdict:  │
-│ Leakage?  │     │ evaluation│     │ keep /    │
-│ Overfit?  │     │ F1, Brier │     │ discard / │
-│ Correct?  │     │ composite │     │ flag      │
-└───────────┘     └───────────┘     └───────────┘
-  BLOCK → fix       crash → fix       discard → git reset
-  WARN → log        ok → continue     keep → advance
-```
+**Target**: Binary — 1 if S&P 500 max drawdown in next 20 trading days exceeds -5%
 
-- **REVIEWER** (`review_checklist.py`): Static analysis of `experiment_auto.py`
-  before running. Catches data leakage (negative shift), balanced training,
-  forbidden imports, interface violations. If BLOCK → fix code, do not run.
+**Features**: Rate-of-change transforms on macro indicators:
+- VIX (level, 20d change)
+- Turbulence index (20d change)
+- Absorption ratio (20d change)
+- Term spread (level, 20d change)
+- Credit spread (10d change)
+- Market breadth (level, 10d change)
+- SP500 relative to 50MA
+- Event calendar (FOMC/CPI/NFP proximity)
 
-- **RUNNER** (`evaluate_harness.py`): Walk-forward evaluation on the fixed
-  harness. Produces composite_score, mean_f1, mean_brier per fold.
+**Evaluation**: Walk-forward expanding window (378d min train, 126d test, 20d embargo)
 
-- **CRITIC** (`critic.py`): Compares results against baseline. Checks:
-  statistical significance (Δ > 0.002), fold stability (>50% folds improved),
-  complexity budget (features per improvement point), regression detection
-  (F1 up but Brier worse). Issues keep/discard/flag verdict.
+**Metric**: `composite_score = 0.6 × mean_F1 + 0.4 × (1 − mean_Brier)`
 
-## Setup
+**Verified baseline**: composite=0.4723 (F1=0.216, Brier=0.1431, 19 features)
 
-1. **Agree on a run tag** with the user (e.g. `jul25`). Create branch
-   `autoresearch/<tag>` from current HEAD.
-2. **Read the in-scope files** for full context:
-   - This file (`program.md`) — your instructions
-   - `experiment_auto.py` — **the file you modify** (features + model)
-   - `evaluate_harness.py` — fixed evaluation (DO NOT MODIFY)
-   - `run.py` — fixed pipeline runner (DO NOT MODIFY)
-   - `review_checklist.py` — code reviewer (DO NOT MODIFY)
-   - `critic.py` — result critic (DO NOT MODIFY)
-   - `../dashboard/predict_model.py` — reference: existing feature builders
-   - `../dashboard/experiment_phase3.py` — reference: model variants tested
-3. **Establish the baseline**:
-   ```bash
-   python autoresearch/run.py --save-baseline > run.log 2>&1
-   ```
-   This saves `baseline_result.json` for the Critic to compare against.
-4. **Log baseline** to `results.tsv` and confirm with user.
+## File Structure
 
-Once confirmed, begin the experiment loop.
+| File | Role | Who modifies |
+|------|------|-------------|
+| `experiment_auto.py` | Features + model definition | Coder subagent |
+| `evaluate_harness.py` | Walk-forward evaluation | Nobody (ground truth) |
+| `run.py` | 3-stage pipeline (Reviewer → Runner → Critic) | Nobody |
+| `review_checklist.py` | Static code analysis | Nobody |
+| `critic.py` | Result validation | Nobody |
+| `configs.py` | Research track configs | Human (new tracks) |
+| `baseline_result.json` | Current best for comparison | Auto-updated on keep |
+| `results.tsv` | Experiment log | Auto-appended |
 
-## What you CAN modify
+## Constraints (hard rules)
 
-Only `experiment_auto.py`. Everything is fair game:
+1. **Only modify `experiment_auto.py`** — all other files are read-only
+2. **No `class_weight='balanced'`** — inflates probabilities (F1 jumps 0.467→0.588 artificially)
+3. **No new packages** — only what's in requirements.txt
+4. **Walk-forward is the only valid test** — single-split results are unreliable
+5. **Overfit ceiling: F1 > 0.80 = suspicious** — the harness auto-flags this
+6. **Max 30 features** — each added feature is an overfitting degree of freedom
+7. **Max feature correlation < 0.85** — redundant features waste capacity
 
-- **Feature engineering** (`build_features`):
-  - Add/remove/transform features
-  - Change lookback windows (5d, 10d, 20d, 50d, ...)
-  - Add interaction terms (e.g. `vix * credit_spread`)
-  - Add Z-score normalization, rolling percentile ranks
-  - Add regime features (use `extra_data` param for regime_df)
-  - Add polynomial features, ratios, diffs
-  - Remove features to simplify
+## Interface Contract
 
-- **Model definition** (`train_model`):
-  - Switch model type (LR, GBDT, RF, Ridge, ElasticNet, ...)
-  - Tune hyperparameters (C, max_depth, learning_rate, ...)
-  - Add feature selection (mutual information, L1 path, ...)
-  - Ensemble multiple models
-  - Add calibration (isotonic, Platt)
-  - Change scaler (StandardScaler, RobustScaler, QuantileTransformer)
+`experiment_auto.py` must define:
 
-- `DESCRIPTION` string (update every experiment)
+```python
+DESCRIPTION: str  # logged to results.tsv
 
-## What you CANNOT modify
+def build_features(df: pd.DataFrame, extra_data=None) -> pd.DataFrame:
+    """df has columns: vix, turbulence, absorption_ratio, term_spread,
+    credit_spread, breadth, sp500. extra_data = regime DataFrame.
+    Return feature matrix (may contain NaN from lookbacks)."""
 
-- `evaluate_harness.py` — the ground truth evaluation
-- `run.py` — the pipeline runner
-- `review_checklist.py` — the code reviewer
-- `critic.py` — the result critic
-- Any file in `../dashboard/` — production code
-- Do NOT install new packages
-- Do NOT use `class_weight='balanced'` or equivalent sample_weight
-  (known to inflate probabilities — see eval-metrics.mdc)
-
-## The goal
-
-**Maximize `composite_score`** (printed in the `---` summary block):
-
-```
-composite_score = 0.6 × mean_F1 + 0.4 × (1 − mean_Brier)
+def train_model(X_train, y_train, X_test) -> (model, scaler, probs_test):
+    """Train on X_train/y_train, predict probabilities on X_test.
+    X_train/X_test are already percentile-clipped by the harness."""
 ```
 
-Both components are walk-forward averages across expanding-window folds.
-Higher is better. The verified baseline is **0.4723** (F1=0.216, Brier=0.1431).
+## Pipeline Exit Codes
 
-## Output format
+| Code | Meaning | Action |
+|------|---------|--------|
+| 0 | keep (Critic approved) | Advance branch, update baseline |
+| 1 | discard (no improvement or crash) | `git reset --hard HEAD~1` |
+| 2 | review blocked (code issue) | Fix code, recommit |
+| 3 | flag (marginal) | Keep commit, log as "flag" |
 
-The pipeline now prints three stages. The key outputs to grep:
+## Reviewer Blocks These
 
-```bash
-# From RUNNER stage (evaluation metrics)
-grep "^composite_score:" run.log
+- `class_weight='balanced'` in code
+- `.shift(-N)` (future leakage)
+- `X_test` in `fit_transform()` (data leakage)
+- `GridSearchCV` (overfits validation)
+- `torch` / `tensorflow` imports
+- Missing `build_features` or `train_model`
+- Importing `evaluate_harness`
 
-# From CRITIC stage (decision)
-grep "^verdict:" run.log
-grep "^composite_delta:" run.log
-```
+## Critic Rejects These
 
-Exit codes:
-- `0` = keep (Critic approved)
-- `1` = discard (no improvement or crash)
-- `2` = review blocked (fix code first)
-- `3` = flag (marginal, needs human)
+- Δ composite < 0.002 (too small)
+- < 50% folds improved (unstable)
+- F1 up but Brier regressed > 0.01 (tradeoff, not win)
+- > 50 features per 0.01 composite improvement (complexity not worth it)
+- mean_f1 > 0.80 (overfit flag)
 
-## The experiment loop
+## Known Results from Prior Experiments
 
-LOOP FOREVER:
+Source: `dashboard/experiment_phase3.py` + `dashboard/experiment_walkforward.py`
 
-1. Look at git state and current results.tsv
-2. Modify `experiment_auto.py` with an experimental idea
-3. Update `DESCRIPTION` to describe what this experiment tries
-4. `git add autoresearch/experiment_auto.py && git commit -m "exp: <description>"`
-5. Run: `python autoresearch/run.py > run.log 2>&1`
-6. Check result:
-   ```bash
-   grep "^verdict:\|^composite_score:\|^composite_delta:" run.log
-   ```
-7. If exit code = 2 → **review blocked**. Read `run.log` for BLOCK reasons, fix code, recommit
-8. If exit code = 1 → **discard**. `git reset --hard HEAD~1`
-9. If exit code = 0 → **keep**. Advance branch, update `baseline_result.json`:
-   ```bash
-   python autoresearch/run.py --save-baseline > /dev/null 2>&1
-   ```
-10. If exit code = 3 → **flag**. Log as "flag" in results.tsv, keep commit but note it
-11. Log to results.tsv (do NOT commit results.tsv or baseline_result.json)
-12. GOTO 1
+| Finding | Implication |
+|---------|------------|
+| LR Slim (10 feat) ≈ LR Full (23 feat) | Fewer features is often better |
+| GBDT single-split F1 high, WF F1 collapses | GBDT overfits on small macro data |
+| Event features give marginal LR improvement | Worth keeping, low cost |
+| Regime interactions help Brier, may hurt F1 | Tradeoff — try carefully |
+| Time decay (half-life=252d) gives Δ≈0 | Probably not worth the complexity |
+| `class_weight='balanced'` inflates F1 0.467→0.588 | Forbidden — artificial |
 
-## Research directions to explore
-
-Ordered roughly by expected impact:
+## Research Directions (prioritized)
 
 ### Tier 1: Most likely to help
-- **Feature selection**: Remove low-importance features, test mutual info ranking
-- **Interaction terms**: `vix_level × credit_spread_10d_chg`, `term_spread × breadth_level`
-- **Better event encoding**: Exponential decay (`exp(-days_to/5)`) instead of binary windows
-- **Regime conditioning**: Add `tight × vix_level` interaction (tight = inverted curve or hiking)
-- **Lookback window search**: Test 10d vs 20d vs 50d for each indicator
+- Feature selection: mutual info ranking, remove low-importance features
+- Interaction terms: `vix_level × credit_spread_10d_chg`
+- Event encoding: exponential decay `exp(-days_to/5)` instead of binary windows
+- Regime conditioning: `tight × vix_level` interaction
+- Lookback window search: 10d vs 20d vs 50d per indicator
 
 ### Tier 2: Worth trying
-- **GBDT instead of LR**: HistGradientBoostingClassifier (max_depth=4, lr=0.05, max_iter=200)
-- **Feature Z-scores**: Rolling 60d Z-score instead of raw pct_change
-- **Non-linear transforms**: Log(VIX), sqrt(turbulence)
-- **Rolling rank**: `df[col].rolling(252).rank(pct=True)`
-- **Volatility of volatility**: `vix.rolling(10).std()`
-- **Cross-indicator ratios**: `credit_spread / term_spread`
+- GBDT with heavy regularization (max_depth=3, min_samples_leaf=30)
+- Rolling Z-scores instead of raw pct_change
+- Non-linear transforms: log(VIX), sqrt(turbulence)
+- Rolling rank: `df[col].rolling(252).rank(pct=True)`
+- Vol of vol: `vix.rolling(10).std()`
 
 ### Tier 3: Speculative
-- **Ensemble**: Average LR + GBDT probabilities
-- **Stacking**: Use LR probs as feature for GBDT
-- **Time decay weighting**: Recent samples weighted higher
-- **Target engineering**: Different horizon (10d, 30d) or threshold (-3%, -7%)
-  — note: harness fixes target at 20d/-5%, but you can add auxiliary targets as features
-- **Momentum of features**: 2nd derivative (acceleration of VIX change)
+- LR + GBDT probability averaging
+- Stacking (LR probs as GBDT feature)
+- Feature momentum (acceleration of VIX change)
+- Cross-indicator ratios: `credit_spread / term_spread`
 
-## Known results from previous experiments
+## Data Characteristics
 
-(Read `../dashboard/experiment_phase3.py` for details)
-
-- LR Slim (10 features) is competitive with LR Full (23 features) — fewer is often better
-- GBDT shows higher single-split F1 but collapses under walk-forward (overfitting)
-- Event features (FOMC/CPI proximity) provide marginal improvement to LR
-- Regime interaction terms help Brier but may hurt F1
-- `class_weight='balanced'` inflates F1 from 0.467 → 0.588 but is artificial
-
-## Important constraints
-
-- **Overfitting is the enemy.** Walk-forward with embargo is the only valid test.
-  If mean_f1 > 0.80, it's almost certainly overfit — the harness flags this.
-- **Data is small.** ~950 samples, ~60 crash episodes since 2022. Every feature
-  added is a degree of freedom that can overfit.
-- **Simplicity wins.** All else equal, fewer features is better. A 0.001
-  improvement from adding 5 features is not worth it. A 0.001 improvement
-  from removing features is a great result.
-- **Each experiment takes ~3 seconds** (no GPU needed, small dataset).
-  You can run ~1200 experiments/hour, ~10000 overnight.
-
-## Reviewer will catch these mistakes
-
-Don't waste experiments on code the Reviewer will block:
-- `class_weight='balanced'` → BLOCK
-- `.shift(-N)` in features → BLOCK (future leakage)
-- `X_test` in `fit_transform()` → BLOCK (data leakage)
-- `GridSearchCV` → BLOCK (overfits validation within experiment)
-- Importing `torch` / `tensorflow` → BLOCK (unnecessary)
-- Missing `build_features` or `train_model` → BLOCK (interface)
-- Importing `evaluate_harness` → BLOCK (safety)
-
-## Critic will reject these results
-
-Don't be surprised when the Critic discards:
-- Δ composite < 0.002 → too small to be meaningful
-- Only 1 of 4 folds improved → not stable
-- F1 improved but Brier regressed significantly → tradeoff, not improvement
-- 10 features added for 0.003 improvement → complexity not worth it
-- mean_f1 > 0.80 → overfit flag
-
-## NEVER STOP
-
-Once the loop begins, do NOT pause to ask the human if you should continue.
-Do NOT ask "should I keep going?" or "is this a good stopping point?".
-The human may be asleep. You run until manually stopped.
-
-If you run out of ideas:
-1. Re-read `experiment_phase3.py` for angles you haven't tried
-2. Combine previous near-misses (e.g. "decay events" + "interaction terms")
-3. Try more radical changes (different model entirely, feature selection)
-4. Ablate: remove features one at a time to find what's actually helping
-5. Try the opposite of your last failed idea
+- ~950 samples (2022-01 to 2026-07)
+- ~60 crash episodes (positive rate ~6%)
+- Walk-forward produces 4-5 folds
+- Each fold has 10-20 positive samples in test
+- **Implication**: Very small dataset. Every feature competes for limited signal.
+  Simpler is almost always better.
