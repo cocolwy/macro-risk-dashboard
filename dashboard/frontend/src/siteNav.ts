@@ -9,7 +9,8 @@ export type PageId =
   | 'ch3'
   | 'ch3_risk'
   | 'factorlab'
-  | 'company';
+  | 'company'
+  | 'survey';
 
 export interface NavItem {
   id: PageId;
@@ -120,6 +121,15 @@ export const SITE_NAV: Record<PageId, NavItem> = {
     badge: 'NEW',
     metrics: 'valuation · fundamentals',
   },
+  survey: {
+    id: 'survey',
+    hash: 'survey',
+    title: 'Research Survey',
+    subtitle: '美股因子与策略调研 · 8 个方向 · 一键 Prompt 启动',
+    level: 1,
+    badge: 'NEW',
+    metrics: '8 directions · P0–P3',
+  },
 };
 
 export type CompanyTab = 'valuation' | 'fundamentals';
@@ -153,6 +163,7 @@ const HASH_ALIASES: Record<string, PageId> = {
   earnings: 'company',
   financials: 'company',
   company: 'company',
+  survey: 'survey',
 };
 
 export function pageFromHash(hash: string): PageId {
@@ -188,7 +199,7 @@ export const HOME_SECTIONS = [
     level: 1,
     label: '一级 · 量化整体架构',
     hint: 'Pipeline / News Agent / Alpha Deck / Company Research — 彼此并列的独立研究线',
-    items: ['pipeline', 'ch3', 'factorlab', 'company'] as PageId[],
+    items: ['pipeline', 'ch3', 'factorlab', 'company', 'survey'] as PageId[],
   },
   {
     level: 2,

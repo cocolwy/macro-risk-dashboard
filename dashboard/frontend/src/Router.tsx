@@ -20,6 +20,7 @@ const AgentLab = lazy(() => import('./AgentLab').then(m => ({ default: m.AgentLa
 const ProjectBoard = lazy(() => import('./ProjectBoard').then(m => ({ default: m.ProjectBoard })));
 const FactorLab = lazy(() => import('./FactorLab').then(m => ({ default: m.FactorLab })));
 const CompanyLab = lazy(() => import('./CompanyLab').then(m => ({ default: m.CompanyLab })));
+const ResearchSurvey = lazy(() => import('./ResearchSurvey').then(m => ({ default: m.ResearchSurvey })));
 
 const RISK_CHILDREN: PageId[] = ['ch1', 'ch2', 'ch2_1', 'ch3_risk'];
 
@@ -88,6 +89,15 @@ export function Router() {
           {SITE_NAV.company.badge && <span className="nav-badge-dev">{SITE_NAV.company.badge}</span>}
         </button>
 
+        <button
+          className={`nav-btn ${page === 'survey' ? 'nav-active' : ''}`}
+          onClick={() => navigate('survey')}
+        >
+          <span className="nav-level">L1</span>
+          Survey
+          {SITE_NAV.survey.badge && <span className="nav-badge-dev">{SITE_NAV.survey.badge}</span>}
+        </button>
+
         <div className="nav-group">
           <button
             className={`nav-btn ${page === 'risk' ? 'nav-active' : ''}`}
@@ -146,6 +156,7 @@ export function Router() {
             {page === 'ch3' && <AgentLab />}
             {page === 'factorlab' && <FactorLab />}
             {page === 'company' && <CompanyLab />}
+            {page === 'survey' && <ResearchSurvey />}
           </Suspense>
         </motion.div>
       </AnimatePresence>
