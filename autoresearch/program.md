@@ -6,6 +6,35 @@ lower the composite score's Brier component and raise F1, measured by
 walk-forward validation. You run experiments, keep what works, discard what
 doesn't, and never stop until the human interrupts you.
 
+## Multi-Agent Pipeline
+
+Every experiment goes through a 3-stage pipeline before a decision is made:
+
+```
+┌───────────┐     ┌───────────┐     ┌───────────┐
+│ REVIEWER  │ ──► │  RUNNER   │ ──► │  CRITIC   │
+│           │     │           │     │           │
+│ Code scan │     │ Walk-fwd  │     │ Verdict:  │
+│ Leakage?  │     │ evaluation│     │ keep /    │
+│ Overfit?  │     │ F1, Brier │     │ discard / │
+│ Correct?  │     │ composite │     │ flag      │
+└───────────┘     └───────────┘     └───────────┘
+  BLOCK → fix       crash → fix       discard → git reset
+  WARN → log        ok → continue     keep → advance
+```
+
+- **REVIEWER** (`review_checklist.py`): Static analysis of `experiment_auto.py`
+  before running. Catches data leakage (negative shift), balanced training,
+  forbidden imports, interface violations. If BLOCK → fix code, do not run.
+
+- **RUNNER** (`evaluate_harness.py`): Walk-forward evaluation on the fixed
+  harness. Produces composite_score, mean_f1, mean_brier per fold.
+
+- **CRITIC** (`critic.py`): Compares results against baseline. Checks:
+  statistical significance (Δ > 0.002), fold stability (>50% folds improved),
+  complexity budget (features per improvement point), regression detection
+  (F1 up but Brier worse). Issues keep/discard/flag verdict.
+
 ## Setup
 
 1. **Agree on a run tag** with the user (e.g. `jul25`). Create branch
@@ -14,12 +43,17 @@ doesn't, and never stop until the human interrupts you.
    - This file (`program.md`) — your instructions
    - `experiment_auto.py` — **the file you modify** (features + model)
    - `evaluate_harness.py` — fixed evaluation (DO NOT MODIFY)
-   - `run.py` — fixed runner (DO NOT MODIFY)
+   - `run.py` — fixed pipeline runner (DO NOT MODIFY)
+   - `review_checklist.py` — code reviewer (DO NOT MODIFY)
+   - `critic.py` — result critic (DO NOT MODIFY)
    - `../dashboard/predict_model.py` — reference: existing feature builders
    - `../dashboard/experiment_phase3.py` — reference: model variants tested
-3. **Initialize `results.tsv`**: header only (the runner auto-creates it)
-4. **Run the baseline**: `python autoresearch/run.py > run.log 2>&1`
-5. **Log baseline** to `results.tsv` and confirm with user.
+3. **Establish the baseline**:
+   ```bash
+   python autoresearch/run.py --save-baseline > run.log 2>&1
+   ```
+   This saves `baseline_result.json` for the Critic to compare against.
+4. **Log baseline** to `results.tsv` and confirm with user.
 
 Once confirmed, begin the experiment loop.
 
@@ -49,7 +83,9 @@ Only `experiment_auto.py`. Everything is fair game:
 ## What you CANNOT modify
 
 - `evaluate_harness.py` — the ground truth evaluation
-- `run.py` — the experiment runner
+- `run.py` — the pipeline runner
+- `review_checklist.py` — the code reviewer
+- `critic.py` — the result critic
 - Any file in `../dashboard/` — production code
 - Do NOT install new packages
 - Do NOT use `class_weight='balanced'` or equivalent sample_weight
@@ -68,25 +104,22 @@ Higher is better. The verified baseline is **0.4723** (F1=0.216, Brier=0.1431).
 
 ## Output format
 
-The runner prints a summary block:
+The pipeline now prints three stages. The key outputs to grep:
 
-```
----
-composite_score:  0.512345
-mean_f1:          0.250 ± 0.150
-mean_brier:       0.0800 ± 0.0200
-n_features:       19
-n_samples:        953
-n_folds:          4/4
-overfit_flag:     False
-elapsed_seconds:  12.3
----
-```
-
-Extract the key metric:
 ```bash
+# From RUNNER stage (evaluation metrics)
 grep "^composite_score:" run.log
+
+# From CRITIC stage (decision)
+grep "^verdict:" run.log
+grep "^composite_delta:" run.log
 ```
+
+Exit codes:
+- `0` = keep (Critic approved)
+- `1` = discard (no improvement or crash)
+- `2` = review blocked (fix code first)
+- `3` = flag (marginal, needs human)
 
 ## The experiment loop
 
@@ -97,12 +130,19 @@ LOOP FOREVER:
 3. Update `DESCRIPTION` to describe what this experiment tries
 4. `git add autoresearch/experiment_auto.py && git commit -m "exp: <description>"`
 5. Run: `python autoresearch/run.py > run.log 2>&1`
-6. Read results: `grep "^composite_score:\|^mean_f1:\|^mean_brier:\|^overfit_flag:" run.log`
-7. If grep is empty → crash. Run `tail -n 50 run.log` for the traceback
-8. Log to results.tsv (do NOT commit results.tsv — keep it untracked)
-9. If composite_score improved → **keep** (advance the branch)
-10. If composite_score equal or worse → **discard** (`git reset --hard HEAD~1`)
-11. GOTO 1
+6. Check result:
+   ```bash
+   grep "^verdict:\|^composite_score:\|^composite_delta:" run.log
+   ```
+7. If exit code = 2 → **review blocked**. Read `run.log` for BLOCK reasons, fix code, recommit
+8. If exit code = 1 → **discard**. `git reset --hard HEAD~1`
+9. If exit code = 0 → **keep**. Advance branch, update `baseline_result.json`:
+   ```bash
+   python autoresearch/run.py --save-baseline > /dev/null 2>&1
+   ```
+10. If exit code = 3 → **flag**. Log as "flag" in results.tsv, keep commit but note it
+11. Log to results.tsv (do NOT commit results.tsv or baseline_result.json)
+12. GOTO 1
 
 ## Research directions to explore
 
@@ -152,6 +192,26 @@ Ordered roughly by expected impact:
   from removing features is a great result.
 - **Each experiment takes ~3 seconds** (no GPU needed, small dataset).
   You can run ~1200 experiments/hour, ~10000 overnight.
+
+## Reviewer will catch these mistakes
+
+Don't waste experiments on code the Reviewer will block:
+- `class_weight='balanced'` → BLOCK
+- `.shift(-N)` in features → BLOCK (future leakage)
+- `X_test` in `fit_transform()` → BLOCK (data leakage)
+- `GridSearchCV` → BLOCK (overfits validation within experiment)
+- Importing `torch` / `tensorflow` → BLOCK (unnecessary)
+- Missing `build_features` or `train_model` → BLOCK (interface)
+- Importing `evaluate_harness` → BLOCK (safety)
+
+## Critic will reject these results
+
+Don't be surprised when the Critic discards:
+- Δ composite < 0.002 → too small to be meaningful
+- Only 1 of 4 folds improved → not stable
+- F1 improved but Brier regressed significantly → tradeoff, not improvement
+- 10 features added for 0.003 improvement → complexity not worth it
+- mean_f1 > 0.80 → overfit flag
 
 ## NEVER STOP
 
