@@ -197,19 +197,17 @@ export function breadcrumbTrail(page: PageId): NavItem[] {
 export const HOME_SECTIONS = [
   {
     level: 1,
-    label: '一级 · 量化整体架构',
-    hint: 'Pipeline / News Agent / Alpha Deck / Company Research — 彼此并列的独立研究线',
+    label: '量化架构',
     items: ['pipeline', 'ch3', 'factorlab', 'company', 'survey'] as PageId[],
   },
   {
     level: 2,
-    label: '二级 · 项目',
+    label: '风控研究',
     items: ['risk', 'ch2_2'] as PageId[],
   },
   {
     level: 3,
-    label: '三级 · 风控模型实验（Ch.1 → Ch.2，独立于 Alpha Deck）',
-    hint: 'LR / GBDT 模型演进，服务 #risk 看板；不是因子流水线',
+    label: '模型实验',
     parent: 'risk' as PageId,
     items: ['ch1', 'ch2', 'ch2_1', 'ch3_risk'] as PageId[],
   },
@@ -225,6 +223,31 @@ export interface HomeTodo {
   summary: string;
   caseFile: string;
 }
+
+export interface SidebarGroup {
+  label: string;
+  items: { id: PageId; children?: PageId[] }[];
+}
+
+export const SIDEBAR_TREE: SidebarGroup[] = [
+  {
+    label: '量化架构',
+    items: [
+      { id: 'pipeline' },
+      { id: 'ch3' },
+      { id: 'factorlab' },
+      { id: 'company' },
+      { id: 'survey' },
+    ],
+  },
+  {
+    label: '风控研究',
+    items: [
+      { id: 'risk', children: ['ch1', 'ch2', 'ch2_1', 'ch3_risk'] },
+      { id: 'ch2_2' },
+    ],
+  },
+];
 
 export const HOME_TODOS = {
   updated: '2026-07-19',
