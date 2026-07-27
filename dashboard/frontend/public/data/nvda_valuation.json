@@ -1,0 +1,421 @@
+{
+  "title": "Company Valuation",
+  "subtitle": "DCF + \u76f8\u5bf9\u4f30\u503c\u4e09\u89d2 \u00b7 NVDA \u6848\u4f8b",
+  "ticker": "NVDA",
+  "name": "NVIDIA Corporation",
+  "as_of": "2026-07-20",
+  "disclaimer": "\u7814\u7a76/\u6559\u80b2\u7528\u9014\uff0c\u975e\u6295\u8d44\u5efa\u8bae\u3002\u6570\u636e\u6765\u81ea yfinance\uff0c\u8bf7\u4ee5\u5b98\u65b9\u8d22\u62a5\u4e3a\u51c6\u3002",
+  "snapshot": {
+    "price": 202.81,
+    "market_cap": 4912260841472.0,
+    "shares_out": 24221000000,
+    "cash": 53171998720.0,
+    "total_debt": 12814000128.0,
+    "beta": 2.211,
+    "sector": "Technology",
+    "industry": "Semiconductors",
+    "chg_3m": 0.0067750029863096195,
+    "chg_12m": 0.17789056448168838,
+    "ltm_revenue": 253491000000.0,
+    "ltm_revenue_growth": null,
+    "ltm_ebit": 162285000000.0,
+    "ltm_ebitda": 165514000000.0,
+    "gross_margin": 0.74144995,
+    "operating_margin": 0.65596,
+    "forward_eps": 12.84363,
+    "trailing_eps": 6.53,
+    "forward_pe": 15.790708,
+    "ev_revenue": 19.202,
+    "ev_ebitda": 29.409
+  },
+  "verdict": {
+    "blended": 221.9,
+    "dcf": 133.6,
+    "relative": 310.2,
+    "current": 202.81,
+    "upside": 0.0941,
+    "headline": "NVDA \u516c\u5141\u4ef7\u503c\u7ea6 $222\uff08\u6df7\u5408\uff09\uff0c\u73b0\u4ef7 $202.8 \u2192 +9%\uff1bDCF $134\uff0c\u76f8\u5bf9\u4f30\u503c $310\u3002"
+  },
+  "methods": [
+    {
+      "name": "DCF",
+      "price": 133.6,
+      "weight": 0.5,
+      "note": "5 \u5e74 FCFF\uff0cWACC \u6298\u73b0\uff0c\u7ec8\u503c = Gordon \u4e0e 20\u00d7 EBITDA \u4e2d\u4f4d"
+    },
+    {
+      "name": "Relative",
+      "price": 310.2,
+      "weight": 0.5,
+      "note": "\u540c\u4e1a\u4e2d\u4f4d P/E\u00b7EV/Sales\u00b7EV/EBITDA \u00d7 1.15 \u6210\u957f\u6ea2\u4ef7\uff08\u5254\u6781\u7aef\u503c\uff09"
+    },
+    {
+      "name": "SOTP",
+      "price": null,
+      "weight": 0.0,
+      "note": "yfinance \u65e0\u5206\u90e8\u6570\u636e\uff0c\u672c\u6b21\u8df3\u8fc7"
+    }
+  ],
+  "dcf": {
+    "assumptions": {
+      "horizon_years": 5,
+      "y1_growth": 0.42159998,
+      "growth_path": [
+        0.4216,
+        0.3249,
+        0.2283,
+        0.1316,
+        0.035
+      ],
+      "ebit_margin": 0.6038168363141272,
+      "da_pct_rev": 0.014283853268657517,
+      "capex_pct_rev": 0.024797504923484832,
+      "nwc_pct_rev": 0.07190203606213169,
+      "tax_rate": 0.15,
+      "rf": 0.045410000000000006,
+      "beta": 2.211,
+      "erp": 0.055,
+      "ke": 0.167015,
+      "kd": 0.02021226763015684,
+      "equity_weight": 0.9973982121002983,
+      "wacc": 0.16662516222227514,
+      "terminal_g": 0.025,
+      "exit_ebitda_multiple": 20.0,
+      "tv_method": "midpoint of Gordon and exit multiple"
+    },
+    "projection": [
+      {
+        "year": 1,
+        "growth": 0.42159998,
+        "revenue": 360362800530.18,
+        "ebit": 217593126141.43216,
+        "nopat": 184954157220.21732,
+        "da": 5147369366.255589,
+        "capex": 8936098320.38792,
+        "nwc": 25910819079.171772,
+        "fcff": 155254609186.9132
+      },
+      {
+        "year": 2,
+        "growth": 0.324949985,
+        "revenue": 477462687157.01996,
+        "ebit": 288300009217.19366,
+        "nopat": 245055007834.6146,
+        "da": 6820006964.609801,
+        "capex": 11839883335.5565,
+        "nwc": 34330539350.28635,
+        "fcff": 205704592113.38156
+      },
+      {
+        "year": 3,
+        "growth": 0.22829999,
+        "revenue": 586467413860.3407,
+        "ebit": 354118898438.4788,
+        "nopat": 301001063672.707,
+        "da": 8377014486.430148,
+        "capex": 14542928582.665215,
+        "nwc": 42168201140.65133,
+        "fcff": 252666948435.8206
+      },
+      {
+        "year": 4,
+        "growth": 0.13164999500000002,
+        "revenue": 663675845962.7175,
+        "ebit": 400738649647.3101,
+        "nopat": 340627852200.2136,
+        "da": 9479848401.683605,
+        "capex": 16457505057.858448,
+        "nwc": 47719644609.97707,
+        "fcff": 285930550934.0617
+      },
+      {
+        "year": 5,
+        "growth": 0.035,
+        "revenue": 686904500571.4126,
+        "ebit": 414764502384.96594,
+        "nopat": 352549827027.22107,
+        "da": 9811643095.74253,
+        "capex": 17033517734.883493,
+        "nwc": 49389832171.32627,
+        "fcff": 295938120216.75385
+      }
+    ],
+    "bridge": {
+      "pv_fcff": 734656168961.6035,
+      "tv_gordon": 2141826836858.9602,
+      "tv_exit": 8491522909614.17,
+      "tv_base": 5316674873236.565,
+      "pv_tv": 2460273602615.2974,
+      "enterprise_value": 3194929771576.901,
+      "cash": 53171998720.0,
+      "debt": 12814000128.0,
+      "equity_value": 3235287770168.901,
+      "shares": 24221000000,
+      "implied_price": 133.57366624701297,
+      "tv_share_of_ev": 0.7700556126468457
+    },
+    "sensitivity": {
+      "wacc_grid": [
+        0.1566,
+        0.1616,
+        0.1666,
+        0.1716,
+        0.1766
+      ],
+      "g_grid": [
+        0.015,
+        0.02,
+        0.025,
+        0.03,
+        0.035
+      ],
+      "rows": [
+        {
+          "wacc": 0.1566,
+          "prices": [
+            138.6,
+            139.5,
+            140.5,
+            141.5,
+            142.6
+          ]
+        },
+        {
+          "wacc": 0.1616,
+          "prices": [
+            135.3,
+            136.1,
+            136.9,
+            137.9,
+            138.9
+          ]
+        },
+        {
+          "wacc": 0.1666,
+          "prices": [
+            132.0,
+            132.8,
+            133.6,
+            134.4,
+            135.3
+          ]
+        },
+        {
+          "wacc": 0.1716,
+          "prices": [
+            128.9,
+            129.6,
+            130.4,
+            131.1,
+            132.0
+          ]
+        },
+        {
+          "wacc": 0.1766,
+          "prices": [
+            126.0,
+            126.6,
+            127.3,
+            128.0,
+            128.8
+          ]
+        }
+      ],
+      "base_wacc": 0.1666,
+      "base_g": 0.025
+    },
+    "scenarios": [
+      {
+        "name": "Bull",
+        "price": 155.9,
+        "levers": "\u589e\u901f +3pp \u00b7 \u5229\u6da6\u7387 +2pp \u00b7 WACC \u22121pp \u00b7 g=3%"
+      },
+      {
+        "name": "Base",
+        "price": 133.6,
+        "levers": "\u4e0a\u8868 Base \u5047\u8bbe"
+      },
+      {
+        "name": "Bear",
+        "price": 113.1,
+        "levers": "\u589e\u901f \u22123pp \u00b7 \u5229\u6da6\u7387 \u22122pp \u00b7 WACC +1pp \u00b7 g=1.5%"
+      }
+    ]
+  },
+  "relative": {
+    "peers": [
+      {
+        "ticker": "AMD",
+        "pe_fwd": 36.81913,
+        "ev_rev": 21.357,
+        "ev_ebitda": 107.66,
+        "gross_margin": 0.5306,
+        "revenue_growth": 0.378,
+        "operating_margin": 0.14396
+      },
+      {
+        "ticker": "AVGO",
+        "pe_fwd": 19.098053,
+        "ev_rev": 23.978,
+        "ev_ebitda": 42.998,
+        "gross_margin": 0.76284,
+        "revenue_growth": 0.479,
+        "operating_margin": 0.48988
+      },
+      {
+        "ticker": "INTC",
+        "pe_fwd": 58.897167,
+        "ev_rev": 9.365,
+        "ev_ebitda": 35.523,
+        "gross_margin": 0.372,
+        "revenue_growth": 0.072,
+        "operating_margin": 0.06879
+      },
+      {
+        "ticker": "QCOM",
+        "pe_fwd": 15.542775,
+        "ev_rev": 4.193,
+        "ev_ebitda": 14.349,
+        "gross_margin": 0.54799,
+        "revenue_growth": -0.035,
+        "operating_margin": 0.22059
+      },
+      {
+        "ticker": "MRVL",
+        "pe_fwd": 30.435202,
+        "ev_rev": 19.099,
+        "ev_ebitda": 61.39,
+        "gross_margin": 0.51502997,
+        "revenue_growth": 0.276,
+        "operating_margin": 0.14479999
+      }
+    ],
+    "medians": {
+      "pe_fwd": 30.435202,
+      "ev_rev": 19.099,
+      "ev_ebitda": 39.2605
+    },
+    "premium": 1.15,
+    "implied": {
+      "from_pe": 449.5332444827489,
+      "from_ev_rev": 231.53446591561038,
+      "from_ev_ebitda": 310.1954814063003,
+      "median": 310.1954814063003
+    },
+    "self_multiples": {
+      "pe_fwd": 15.790708,
+      "ev_rev": 19.202,
+      "ev_ebitda": 29.409
+    }
+  },
+  "risks": [
+    "\u7ec8\u503c\u5360 EV \u6bd4\u91cd\u9ad8\uff1aAI \u8d44\u672c\u5f00\u652f\u653e\u7f13\u65f6\u500d\u6570\u4e0e\u589e\u901f\u53ef\u80fd\u540c\u65f6\u4e0b\u4fee",
+    "\u03b2\u22482.2 \u2192 WACC \u504f\u9ad8\uff0c\u662f DCF \u4f4e\u4e8e\u5e02\u4ef7/\u76f8\u5bf9\u4f30\u503c\u7684\u4e3b\u56e0",
+    "\u5ba2\u6237\u96c6\u4e2d\u4e0e\u81ea\u7814 ASIC / AMD \u7ade\u4e89\u53ef\u80fd\u538b\u7f29\u8d85\u9ad8\u5229\u6da6\u7387",
+    "\u76f8\u5bf9\u4f30\u503c\u4f9d\u8d56\u540c\u4e1a\u500d\u6570\uff1b\u884c\u4e1a\u6740\u4f30\u503c\u65f6\u951a\u5931\u6548",
+    "yfinance \u975e\u5b98\u65b9\u6570\u636e\uff0c\u51b3\u7b56\u524d\u5e94\u5bf9\u7167 10-K/10-Q"
+  ],
+  "glossary": [
+    {
+      "term": "DCF",
+      "zh": "\u73b0\u91d1\u6d41\u6298\u73b0",
+      "def": "\u628a\u516c\u53f8\u672a\u6765\u9884\u8ba1\u80fd\u4ea7\u751f\u7684\u81ea\u7531\u73b0\u91d1\u6d41\uff0c\u6309\u8d44\u91d1\u6210\u672c\u6298\u6210\u4eca\u5929\u7684\u4ef7\u503c\uff0c\u518d\u6263\u51c0\u503a\u52a1\u5f97\u5230\u80a1\u6743\u4ef7\u503c\u4e0e\u6bcf\u80a1\u516c\u5141\u4ef7\u503c\u3002"
+    },
+    {
+      "term": "FCFF",
+      "zh": "\u4f01\u4e1a\u81ea\u7531\u73b0\u91d1\u6d41",
+      "def": "\u7ed9\u6240\u6709\u8d44\u672c\u63d0\u4f9b\u8005\uff08\u80a1\u6743+\u503a\u6743\uff09\u7684\u73b0\u91d1\uff1a\u7a0e\u540e\u7ecf\u8425\u5229\u6da6 + \u6298\u65e7 \u2212 \u8d44\u672c\u5f00\u652f \u2212 \u8425\u8fd0\u8d44\u91d1\u589e\u52a0\u3002"
+    },
+    {
+      "term": "WACC",
+      "zh": "\u52a0\u6743\u5e73\u5747\u8d44\u672c\u6210\u672c",
+      "def": "\u80a1\u6743\u4e0e\u503a\u52a1\u878d\u8d44\u6210\u672c\u7684\u52a0\u6743\u5e73\u5747\uff0c\u7528\u4f5c\u6298\u73b0\u7387\u3002\u8d8a\u9ad8\uff0c\u672a\u6765\u73b0\u91d1\u7684\u4eca\u5929\u4ef7\u503c\u8d8a\u4f4e\u3002"
+    },
+    {
+      "term": "rf",
+      "zh": "\u65e0\u98ce\u9669\u5229\u7387",
+      "def": "\u901a\u5e38\u7528 10 \u5e74\u671f\u7f8e\u503a\u6536\u76ca\u7387\uff0c\u4f5c\u4e3a\u8981\u6c42\u56de\u62a5\u7684\u5e95\u5ea7\u3002"
+    },
+    {
+      "term": "Beta (\u03b2)",
+      "zh": "\u8d1d\u5854",
+      "def": "\u76f8\u5bf9\u5e02\u573a\u7684\u6ce2\u52a8\u654f\u611f\u5ea6\u3002\u03b2>1 \u8868\u793a\u6bd4\u5927\u76d8\u66f4\u6ce2\u52a8\uff0c\u80a1\u6743\u8981\u6c42\u56de\u62a5\u66f4\u9ad8\u3002"
+    },
+    {
+      "term": "ERP",
+      "zh": "\u80a1\u6743\u98ce\u9669\u6ea2\u4ef7",
+      "def": "\u80a1\u7968\u76f8\u5bf9\u65e0\u98ce\u9669\u8d44\u4ea7\u957f\u671f\u591a\u8981\u6c42\u7684\u8d85\u989d\u56de\u62a5\uff08\u672c\u6a21\u578b\u7528 5.5%\uff09\u3002"
+    },
+    {
+      "term": "ke",
+      "zh": "\u80a1\u6743\u6210\u672c",
+      "def": "ke = rf + \u03b2 \u00d7 ERP\uff0c\u80a1\u4e1c\u8981\u6c42\u7684\u5e74\u5316\u56de\u62a5\u7387\u3002"
+    },
+    {
+      "term": "kd",
+      "zh": "\u503a\u52a1\u6210\u672c",
+      "def": "\u516c\u53f8\u501f\u94b1\u7684\u6709\u6548\u5229\u7387\uff1b\u7a0e\u540e\u8fdb\u5165 WACC\uff08\u5229\u606f\u53ef\u62b5\u7a0e\uff09\u3002"
+    },
+    {
+      "term": "EBIT margin",
+      "zh": "\u7ecf\u8425\u5229\u6da6\u7387",
+      "def": "\u7ecf\u8425\u5229\u6da6 \u00f7 \u6536\u5165\u3002\u8861\u91cf\u4e3b\u8425\u4e1a\u52a1\u8d5a\u94b1\u6548\u7387\u3002"
+    },
+    {
+      "term": "g / \u6c38\u4e45\u589e\u957f",
+      "zh": "\u7ec8\u503c\u589e\u957f\u7387",
+      "def": "\u663e\u5f0f\u9884\u6d4b\u671f\u7ed3\u675f\u540e\uff0c\u73b0\u91d1\u6d41\u6c38\u7eed\u589e\u957f\u7684\u5047\u8bbe\uff0c\u901a\u5e38\u63a5\u8fd1\u957f\u671f GDP\uff08\u7ea6 2\u20133%\uff09\u3002"
+    },
+    {
+      "term": "Terminal Value",
+      "zh": "\u7ec8\u503c",
+      "def": "\u7b2c 5 \u5e74\u4e4b\u540e\u6240\u6709\u73b0\u91d1\u6d41\u7684\u6253\u5305\u4ef7\u503c\uff0c\u5e38\u7528 Gordon \u6c38\u7eed\u589e\u957f\u4e0e\u9000\u51fa\u500d\u6570\u4e24\u79cd\u65b9\u6cd5\u53d6\u4e2d\u3002"
+    },
+    {
+      "term": "Gordon",
+      "zh": "\u6208\u767b\u589e\u957f\u6a21\u578b",
+      "def": "TV = FCFF\u2085 \u00d7 (1+g) / (WACC \u2212 g)\uff0c\u5047\u8bbe\u73b0\u91d1\u6d41\u6c38\u7eed\u6309 g \u589e\u957f\u3002"
+    },
+    {
+      "term": "Exit multiple",
+      "zh": "\u9000\u51fa\u500d\u6570",
+      "def": "\u7528\u7b2c 5 \u5e74 EBITDA \u00d7 \u540c\u4e1a\u5408\u7406 EV/EBITDA\uff0c\u6a21\u62df\u672a\u6765\u51fa\u552e/\u518d\u4f30\u503c\u3002"
+    },
+    {
+      "term": "NOPAT",
+      "zh": "\u7a0e\u540e\u51c0\u8425\u4e1a\u5229\u6da6",
+      "def": "EBIT \u00d7 (1 \u2212 \u7a0e\u7387)\uff0c\u4e0d\u542b\u5229\u606f\u7684\u7a0e\u540e\u7ecf\u8425\u5229\u6da6\u3002"
+    },
+    {
+      "term": "D&A",
+      "zh": "\u6298\u65e7\u4e0e\u644a\u9500",
+      "def": "\u975e\u73b0\u91d1\u8d39\u7528\uff1b\u7b97 FCFF \u65f6\u52a0\u56de\uff08\u56e0\u4e3a\u6ca1\u771f\u7684\u82b1\u73b0\u91d1\uff09\u3002"
+    },
+    {
+      "term": "CapEx",
+      "zh": "\u8d44\u672c\u5f00\u652f",
+      "def": "\u4e70\u8bbe\u5907\u3001\u5efa\u5382\u7b49\u957f\u671f\u6295\u8d44\u73b0\u91d1\u6d41\u51fa\uff1b\u7b97 FCFF \u65f6\u51cf\u53bb\u3002"
+    },
+    {
+      "term": "\u0394NWC",
+      "zh": "\u8425\u8fd0\u8d44\u91d1\u53d8\u52a8",
+      "def": "\u5e94\u6536\u3001\u5b58\u8d27\u7b49\u5360\u7528\u7684\u73b0\u91d1\u589e\u52a0\uff1b\u589e\u957f\u65f6\u901a\u5e38\u662f\u73b0\u91d1\u6d41\u51fa\u3002"
+    },
+    {
+      "term": "EV",
+      "zh": "\u4f01\u4e1a\u4ef7\u503c",
+      "def": "\u80a1\u6743\u4ef7\u503c + \u51c0\u503a\u52a1\uff08\u503a\u52a1 \u2212 \u73b0\u91d1\uff09\uff0c\u5bf9\u5e94\u6574\u5bb6\u516c\u53f8\u7684\u8fd0\u8425\u4ef7\u503c\u3002"
+    }
+  ],
+  "dcf_explain": {
+    "what": "DCF\uff08Discounted Cash Flow\uff0c\u73b0\u91d1\u6d41\u6298\u73b0\uff09\u56de\u7b54\u7684\u95ee\u9898\u662f\uff1a\u5982\u679c\u516c\u53f8\u672a\u6765\u6bcf\u5e74\u80fd\u6323\u5230\u8fd9\u4e9b\u73b0\u91d1\uff0c\u6309\u4f60\u8981\u6c42\u7684\u56de\u62a5\u7387\u6298\u56de\u4eca\u5929\uff0c\u503c\u591a\u5c11\u94b1\uff1f",
+    "steps": [
+      "\u9884\u6d4b\u672a\u6765\u51e0\u5e74\u6536\u5165\u4e0e\u5229\u6da6\uff08\u663e\u5f0f\u9884\u6d4b\u671f\uff0c\u8fd9\u91cc 5 \u5e74\uff09",
+      "\u628a\u5229\u6da6\u8c03\u6210\u81ea\u7531\u73b0\u91d1\u6d41 FCFF\uff08\u52a0\u56de\u6298\u65e7\u3001\u51cf\u53bb\u6295\u8d44\uff09",
+      "\u7528 WACC \u628a\u6bcf\u5e74 FCFF \u6298\u6210\u73b0\u503c\u5e76\u52a0\u603b",
+      "\u4f30\u7b97\u7b2c 5 \u5e74\u4e4b\u540e\u7684\u7ec8\u503c\u5e76\u6298\u73b0",
+      "\u5f97\u5230\u4f01\u4e1a\u4ef7\u503c EV\uff0c\u52a0\u4e0a\u73b0\u91d1\u3001\u51cf\u53bb\u503a\u52a1\uff0c\u518d\u9664\u4ee5\u80a1\u6570 \u2192 \u6bcf\u80a1\u516c\u5141\u4ef7\u503c"
+    ],
+    "intuition": "\u94b1\u5728\u4eca\u5929\u6bd4\u5728\u4e94\u5e74\u540e\u66f4\u503c\u94b1\uff1b\u98ce\u9669\u8d8a\u9ad8\uff08WACC \u8d8a\u9ad8\uff09\uff0c\u540c\u6837\u4e00\u7b14\u672a\u6765\u73b0\u91d1\u7684\u4eca\u5929\u51fa\u4ef7\u8d8a\u4f4e\u3002"
+  }
+}

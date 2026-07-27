@@ -101,6 +101,23 @@ interface TargetSensitivityData {
   best_wf_config: TargetGridRow | null;
   verdict: string[];
 }
+interface EpisodeEvalSummary {
+  hit_at_10: number | null;
+  hit_at_15: number | null;
+  hit_at_20: number | null;
+  mean_lead_days: number | null;
+  total_episodes: number;
+  false_alarms_per_year_mean: number | null;
+  n_folds: number;
+}
+interface EpisodeEvalData {
+  title: string;
+  role: string;
+  primary_metrics_unchanged: string;
+  design: Record<string, unknown>;
+  summary_by_model: Record<string, EpisodeEvalSummary>;
+  verdict: string[];
+}
 interface Phase3Data {
   phase: number; title: string;
   experiments: ExperimentData[];
@@ -110,12 +127,30 @@ interface Phase3Data {
   correlation_analysis?: CorrelationAnalysis;
   walk_forward?: WalkForwardData;
   target_sensitivity?: TargetSensitivityData;
+  episode_eval?: EpisodeEvalData;
+  regime_models?: RegimeModelsData;
   summary: {
     lr_slim_auc: number; lr_full_auc: number;
     gbdt_slim_auc: number; gbdt_full_auc: number;
     rf_slim_auc: number; rf_full_auc?: number;
     best_model: string; data_range: string; total_samples: number;
   };
+}
+
+interface RegimeModelWFSummary {
+  auc_mean: number; auc_std: number;
+  f1_mean: number; f1_std: number;
+  brier_mean: number;
+}
+interface RegimeModelsData {
+  title: string;
+  data_range: string;
+  n_samples: number;
+  positive_rate: number;
+  tight_regime_pct: number;
+  walk_forward_config: { min_train_years: number; step_years: number; embargo_days: number; n_folds: number };
+  walk_forward_summary: Record<string, RegimeModelWFSummary>;
+  verdict: string[];
 }
 
 const COLORS = ['#d6457a', '#3a82d6', '#16a34a', '#ea580c', '#8b5cf6', '#0d9488'];
@@ -401,6 +436,112 @@ function TargetSensitivitySection({ data }: { data: TargetSensitivityData }) {
   );
 }
 
+function RegimeModelsSection({ data }: { data: RegimeModelsData }) {
+  const sorted = Object.entries(data.walk_forward_summary)
+    .sort(([, a], [, b]) => b.f1_mean - a.f1_mean);
+  const bestF1 = sorted[0]?.[1]?.f1_mean ?? 0;
+
+  return (
+    <section className="lab-card">
+      <div className="ab-header">
+        <h2>Regime-Conditional & Non-Linear (1990+)</h2>
+        <span className="ab-badge" style={{ background: '#fef3c7', color: '#92400e', border: '1px solid #fcd34d' }}>
+          {data.walk_forward_config.n_folds} folds · {data.n_samples} samples
+        </span>
+      </div>
+      <p className="lab-card-desc">
+        延长历史至 1990+（{data.n_samples} 交易日，正样本率 {(data.positive_rate * 100).toFixed(1)}%，
+        tight regime {data.tight_regime_pct}%）。比较 LR vs GBDT × Slim vs Regime+Interact。
+      </p>
+      <div className="lab-table-wrap">
+        <table className="lab-table">
+          <thead>
+            <tr><th>Model</th><th>WF F1</th><th>WF AUC</th><th>Brier ↓</th></tr>
+          </thead>
+          <tbody>
+            {sorted.map(([name, s]) => (
+              <tr key={name}>
+                <td style={{ fontWeight: 600 }}>
+                  {Math.abs(s.f1_mean - bestF1) < 0.001 && <span className="ab-best-tag">BEST</span>}
+                  {name}
+                </td>
+                <td className="lab-td-mono" style={Math.abs(s.f1_mean - bestF1) < 0.001 ? { color: '#16a34a', fontWeight: 700 } : undefined}>
+                  {s.f1_mean.toFixed(4)} ± {s.f1_std.toFixed(4)}
+                </td>
+                <td className="lab-td-mono">{s.auc_mean.toFixed(4)} ± {s.auc_std.toFixed(4)}</td>
+                <td className="lab-td-mono">{s.brier_mean.toFixed(4)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      {data.verdict.length > 0 && (
+        <div style={{ marginTop: 12, padding: '10px 14px', background: '#f8fafc', borderRadius: 8, borderLeft: '3px solid #8b5cf6' }}>
+          <div style={{ fontWeight: 700, fontSize: 12, color: '#8b5cf6', marginBottom: 4 }}>Verdict</div>
+          {data.verdict.map((v, i) => (
+            <div key={i} style={{ fontSize: 12, color: '#374151', lineHeight: 1.7 }}>• {v}</div>
+          ))}
+        </div>
+      )}
+    </section>
+  );
+}
+
+function EpisodeEvalSection({ data }: { data: EpisodeEvalData }) {
+  const models = Object.keys(data.summary_by_model);
+  return (
+    <section className="lab-card">
+      <div className="ab-header">
+        <h2>Episode 评估（辅指标）</h2>
+        <span className="ab-badge" style={{ background: '#f0f9ff', color: '#0369a1', border: '1px solid #bae6fd' }}>SUPPLEMENTARY</span>
+      </div>
+      <p className="lab-card-desc">
+        按 crash 事件统计 Hit/Miss（非逐日 F1）。阈值 = train 上 best_f1_threshold；默认解读 Hit@20。
+        Primary 仍为 Best F1 + Brier。
+      </p>
+      <div className="lab-table-wrap">
+        <table className="lab-table" style={{ fontSize: 12 }}>
+          <thead>
+            <tr>
+              <th>模型</th>
+              <th>Hit@10</th>
+              <th>Hit@15</th>
+              <th>Hit@20</th>
+              <th>Mean Lead</th>
+              <th>Episodes</th>
+              <th>FA / yr</th>
+            </tr>
+          </thead>
+          <tbody>
+            {models.map(name => {
+              const s = data.summary_by_model[name];
+              const fmt = (v: number | null) => v != null ? v.toFixed(3) : '—';
+              return (
+                <tr key={name}>
+                  <td>{name.replace('LR ', '')}</td>
+                  <td className="lab-td-mono">{fmt(s.hit_at_10)}</td>
+                  <td className="lab-td-mono">{fmt(s.hit_at_15)}</td>
+                  <td className="lab-td-mono" style={s.hit_at_20 != null && s.hit_at_20 >= 0.5 ? { color: '#16a34a', fontWeight: 600 } : undefined}>
+                    {fmt(s.hit_at_20)}
+                  </td>
+                  <td className="lab-td-mono">{s.mean_lead_days != null ? `${s.mean_lead_days}d` : '—'}</td>
+                  <td>{s.total_episodes}</td>
+                  <td className="lab-td-mono">{s.false_alarms_per_year_mean?.toFixed(1) ?? '—'}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+      {data.verdict.length > 0 && (
+        <div style={{ marginTop: 12, padding: '10px 12px', background: '#f0f9ff', borderRadius: 8, border: '1px solid #bae6fd', fontSize: 12, lineHeight: 1.7 }}>
+          {data.verdict.map((v, i) => <div key={i}>{v}</div>)}
+        </div>
+      )}
+    </section>
+  );
+}
+
 function OptimizationJourney() {
   return (
     <section className="lab-card">
@@ -501,7 +642,7 @@ function Phase3LabInner() {
   if (error) return <div className="lab-container"><div className="lab-card"><p>Phase 3 data not available: {error}</p></div></div>;
   if (!data) return <div className="loading">Loading Phase 3 data...</div>;
 
-  const { experiments, pairwise, feature_importances, practical_summary, walk_forward, target_sensitivity } = data;
+  const { experiments, pairwise, feature_importances, practical_summary, walk_forward, target_sensitivity, episode_eval, regime_models } = data;
 
   return (
     <div className="lab-container">
@@ -518,11 +659,56 @@ function Phase3LabInner() {
 
       <ResearchTrackNotice track="risk-model" />
 
+      <section className="lab-card" style={{ borderLeft: '4px solid #8b5cf6', background: '#faf5ff' }}>
+        <div className="ab-header">
+          <h2 style={{ color: '#6b21a8' }}>研究结论：为什么换算法没用</h2>
+          <span className="ab-badge" style={{ background: '#f3e8ff', color: '#7c3aed', border: '1px solid #c4b5fd' }}>INSIGHT</span>
+        </div>
+        <div style={{ fontSize: 13, lineHeight: 1.9, color: '#374151' }}>
+          <p style={{ margin: '0 0 10px', fontWeight: 600 }}>
+            核心矛盾：每次崩盘/回撤的触发源不同（关税、疫情、杠杆爆仓），且同一宏观事件在不同市场环境下的影响也不同。
+          </p>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, margin: '12px 0' }}>
+            <div style={{ padding: '10px 12px', background: '#fff', borderRadius: 8, border: '1px solid #e9d5ff' }}>
+              <div style={{ fontWeight: 700, color: '#dc2626', fontSize: 12 }}>换算法 → 几乎无效</div>
+              <div style={{ fontSize: 12, marginTop: 4, color: '#6b7280' }}>
+                LR F1=0.306 vs GBDT F1=0.312<br/>
+                模型复杂度不是瓶颈，因为映射 f(features)→crash 本身不稳定
+              </div>
+            </div>
+            <div style={{ padding: '10px 12px', background: '#fff', borderRadius: 8, border: '1px solid #bbf7d0' }}>
+              <div style={{ fontWeight: 700, color: '#16a34a', fontSize: 12 }}>加数据 → 有效但有天花板</div>
+              <div style={{ fontSize: 12, marginTop: 4, color: '#6b7280' }}>
+                1000天 → 9000天，WF F1: 0.19→0.31 (+63%)<br/>
+                见过的 pattern 越多，匹配概率越高，但新型崩盘仍会失败
+              </div>
+            </div>
+          </div>
+          <p style={{ margin: '10px 0 6px', fontWeight: 600 }}>验证：Fold 4 为何独占 F1=0.71？</p>
+          <p style={{ margin: 0, fontSize: 12, color: '#6b7280' }}>
+            因为训练集包含了 2025.4 关税冲击（41天正样本），而测试期的 2026.2 回撤特征指纹几乎相同
+            （VIX~22、跌破50MA、利差走阔）。Fold 1-3 的训练集没见过类似 pattern → F1≈0。
+          </p>
+          <div style={{ marginTop: 12, padding: '10px 14px', background: '#f0fdf4', borderRadius: 8, border: '1px solid #86efac' }}>
+            <div style={{ fontWeight: 700, fontSize: 12, color: '#166534' }}>下一步方向</div>
+            <div style={{ fontSize: 12, color: '#374151', marginTop: 4, lineHeight: 1.8 }}>
+              ① 换目标：不预测「是否崩盘」，改为度量「市场脆弱性」— 绕开触发源不可预测的问题<br/>
+              ② 异常检测：检测微观因子是否偏离正常状态，不依赖崩盘类型<br/>
+              ③ 增量信号：期权 skew、资金流等结构性数据，可能在 price 之前反应
+            </div>
+          </div>
+        </div>
+      </section>
+
       <OptimizationJourney />
 
       {walk_forward && <WalkForwardSection wf={walk_forward} />}
 
       {target_sensitivity && <TargetSensitivitySection data={target_sensitivity} />}
+
+      {episode_eval && <EpisodeEvalSection data={episode_eval} />}
+
+      {regime_models && <RegimeModelsSection data={regime_models} />}
 
       {/* ============ SECTION 1: 核心问题 ============ */}
       <section className="lab-card">

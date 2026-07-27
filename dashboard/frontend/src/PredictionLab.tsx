@@ -179,7 +179,7 @@ function ProductionModelsSection({ block, sp500Timeline }: {
 }) {
   const wf = block.walk_forward;
   return (
-    <section className="lab-card">
+    <section className="lab-card" id="ch2-production-models">
       <div className="ab-header">
         <h2>Ch.2 推荐模型（双轨）</h2>
         <span className="ab-badge" style={{ background: '#eff6ff', color: '#1e40af', border: '1px solid #bfdbfe' }}>PRODUCTION</span>

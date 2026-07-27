@@ -100,12 +100,13 @@ export function ChartCard({
         <div style={{
           marginTop: '12px',
           padding: '10px 12px',
-          background: '#f3f8ff',
-          borderLeft: '3px solid #8cc3ff',
+          background: 'var(--bg-3)',
+          borderLeft: '3px solid var(--blue-300)',
           borderRadius: '0 8px 8px 0',
           fontSize: '12px',
-          lineHeight: '1.6',
-          color: '#3a82d6',
+          lineHeight: '1.7',
+          color: 'var(--blue-500)',
+          letterSpacing: '0.005em',
         }}>
           {explanation}
         </div>

@@ -1,4 +1,16 @@
-export type PageId = 'home' | 'pipeline' | 'risk' | 'ch1' | 'ch2' | 'ch2_1' | 'ch2_2' | 'ch3' | 'factorlab';
+export type PageId =
+  | 'home'
+  | 'pipeline'
+  | 'risk'
+  | 'ch1'
+  | 'ch2'
+  | 'ch2_1'
+  | 'ch2_2'
+  | 'ch3'
+  | 'ch3_risk'
+  | 'factorlab'
+  | 'company'
+  | 'survey';
 
 export interface NavItem {
   id: PageId;
@@ -63,6 +75,16 @@ export const SITE_NAV: Record<PageId, NavItem> = {
     parent: 'risk',
     metrics: 'GBDT vs LR walk-forward',
   },
+  ch3_risk: {
+    id: 'ch3_risk',
+    hash: 'ch3-risk',
+    title: 'Ch.3 Fragility & Anomaly',
+    subtitle: '风控模型线 · 脆弱性目标 · 异常检测 · 非 Alpha Deck',
+    level: 3,
+    parent: 'risk',
+    badge: 'NEW',
+    metrics: 'fragility target · anomaly detection',
+  },
   ch2_1: {
     id: 'ch2_1',
     hash: 'ch2-1',
@@ -90,7 +112,29 @@ export const SITE_NAV: Record<PageId, NavItem> = {
     badge: 'NEW',
     metrics: 'F001/F002/F003 dead',
   },
+  company: {
+    id: 'company',
+    hash: 'valuation',
+    title: 'Company Research',
+    subtitle: 'NVDA · DCF / 相对估值 / 三表财报 · 分析师预期',
+    level: 1,
+    badge: 'NEW',
+    metrics: 'valuation · fundamentals',
+  },
+  survey: {
+    id: 'survey',
+    hash: 'survey',
+    title: 'Research Survey',
+    subtitle: '美股因子与策略调研 · 8 个方向 · 一键 Prompt 启动',
+    level: 1,
+    badge: 'NEW',
+    metrics: '8 directions · P0–P3',
+  },
 };
+
+export type CompanyTab = 'valuation' | 'fundamentals';
+
+const FUNDAMENTALS_HASHES = new Set(['fundamentals', 'earnings', 'financials']);
 
 const HASH_ALIASES: Record<string, PageId> = {
   '': 'home',
@@ -109,8 +153,17 @@ const HASH_ALIASES: Record<string, PageId> = {
   eventvol: 'ch2_2',
   ch3: 'ch3',
   agent: 'ch3',
+  'ch3-risk': 'ch3_risk',
+  fragility: 'ch3_risk',
   factorlab: 'factorlab',
   alphadeck: 'factorlab',
+  valuation: 'company',
+  dcf: 'company',
+  fundamentals: 'company',
+  earnings: 'company',
+  financials: 'company',
+  company: 'company',
+  survey: 'survey',
 };
 
 export function pageFromHash(hash: string): PageId {
@@ -121,6 +174,15 @@ export function pageFromHash(hash: string): PageId {
 export function hashForPage(page: PageId): string {
   const item = SITE_NAV[page];
   return item.hash ? `#${item.hash}` : '';
+}
+
+export function companyTabFromHash(hash: string): CompanyTab {
+  const key = hash.replace('#', '').trim();
+  return FUNDAMENTALS_HASHES.has(key) ? 'fundamentals' : 'valuation';
+}
+
+export function hashForCompanyTab(tab: CompanyTab): string {
+  return tab === 'fundamentals' ? '#fundamentals' : '#valuation';
 }
 
 export function breadcrumbTrail(page: PageId): NavItem[] {
@@ -135,21 +197,19 @@ export function breadcrumbTrail(page: PageId): NavItem[] {
 export const HOME_SECTIONS = [
   {
     level: 1,
-    label: '一级 · 量化整体架构',
-    hint: 'Alpha Deck = 单因子线；Pipeline / News Agent = 其他架构项目',
-    items: ['pipeline', 'ch3', 'factorlab'] as PageId[],
+    label: '量化架构',
+    items: ['pipeline', 'ch3', 'factorlab', 'company', 'survey'] as PageId[],
   },
   {
     level: 2,
-    label: '二级 · 项目',
+    label: '风控研究',
     items: ['risk', 'ch2_2'] as PageId[],
   },
   {
     level: 3,
-    label: '三级 · 风控模型实验（Ch.1 → Ch.2，独立于 Alpha Deck）',
-    hint: 'LR / GBDT 模型演进，服务 #risk 看板；不是因子流水线',
+    label: '模型实验',
     parent: 'risk' as PageId,
-    items: ['ch1', 'ch2', 'ch2_1'] as PageId[],
+    items: ['ch1', 'ch2', 'ch2_1', 'ch3_risk'] as PageId[],
   },
 ];
 
@@ -163,6 +223,31 @@ export interface HomeTodo {
   summary: string;
   caseFile: string;
 }
+
+export interface SidebarGroup {
+  label: string;
+  items: { id: PageId; children?: PageId[] }[];
+}
+
+export const SIDEBAR_TREE: SidebarGroup[] = [
+  {
+    label: '量化架构',
+    items: [
+      { id: 'pipeline' },
+      { id: 'ch3' },
+      { id: 'factorlab' },
+      { id: 'company' },
+      { id: 'survey' },
+    ],
+  },
+  {
+    label: '风控研究',
+    items: [
+      { id: 'risk', children: ['ch1', 'ch2', 'ch2_1', 'ch3_risk'] },
+      { id: 'ch2_2' },
+    ],
+  },
+];
 
 export const HOME_TODOS = {
   updated: '2026-07-19',

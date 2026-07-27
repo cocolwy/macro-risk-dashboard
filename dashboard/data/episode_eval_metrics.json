@@ -1,0 +1,962 @@
+{
+  "title": "Episode-Based Evaluation (Supplementary)",
+  "role": "supplementary",
+  "primary_metrics_unchanged": "Best F1 (primary) \u00b7 Brier (secondary)",
+  "design": {
+    "threshold": "best_f1_threshold from TRAIN sweep (same grid as F1)",
+    "hit_windows_days": [
+      10,
+      15,
+      20
+    ],
+    "default_hit_window": 20,
+    "episode_definition": "contiguous target=1 clusters; peak = worst forward 20d DD in cluster",
+    "false_alarm": "target=0 day with prob\u2265threshold; consecutive elevated days deduped",
+    "models": [
+      "LR Slim+Events",
+      "LR Events+Interact"
+    ],
+    "walk_forward": "expanding window, same folds as experiment_walkforward.py"
+  },
+  "results": [
+    {
+      "model": "LR Slim+Events",
+      "fold": 1,
+      "test_period": "2024-04-30 ~ 2024-10-28",
+      "train_threshold": 0.15,
+      "train_best_f1": 0.421,
+      "test_best_f1": 0.069,
+      "test_brier": 0.1155,
+      "episode_eval": {
+        "n_episodes": 3,
+        "hit_at_10": 0.0,
+        "hit_at_15": 0.0,
+        "hit_at_20": 0.0,
+        "mean_lead_days": null,
+        "episodes": [
+          {
+            "peak_date": "2024-07-16",
+            "cluster_start": "2024-07-08",
+            "cluster_end": "2024-07-23",
+            "n_positive_days": 12,
+            "max_forward_dd_pct": -8.49,
+            "hit_at_10": false,
+            "hit_at_15": false,
+            "hit_at_20": false,
+            "lead_days": null,
+            "peak_prob": 0.0353
+          },
+          {
+            "peak_date": "2024-07-29",
+            "cluster_start": "2024-07-29",
+            "cluster_end": "2024-07-29",
+            "n_positive_days": 1,
+            "max_forward_dd_pct": -5.07,
+            "hit_at_10": false,
+            "hit_at_15": false,
+            "hit_at_20": false,
+            "lead_days": null,
+            "peak_prob": 0.0808
+          },
+          {
+            "peak_date": "2024-07-31",
+            "cluster_start": "2024-07-31",
+            "cluster_end": "2024-07-31",
+            "n_positive_days": 1,
+            "max_forward_dd_pct": -6.08,
+            "hit_at_10": false,
+            "hit_at_15": false,
+            "hit_at_20": false,
+            "lead_days": null,
+            "peak_prob": 0.0696
+          }
+        ]
+      },
+      "false_alarms": {
+        "n_false_alarms": 8,
+        "false_alarms_per_year": 16.0,
+        "alert_day_pct": 22.2,
+        "events": [
+          {
+            "start_date": "2024-05-13",
+            "end_date": "2024-05-14",
+            "duration_days": 2,
+            "max_prob": 0.1769,
+            "forward_20d_dd_pct": -0.21
+          },
+          {
+            "start_date": "2024-06-10",
+            "end_date": "2024-06-11",
+            "duration_days": 2,
+            "max_prob": 0.1879,
+            "forward_20d_dd_pct": 0.27
+          },
+          {
+            "start_date": "2024-08-02",
+            "end_date": "2024-08-02",
+            "duration_days": 1,
+            "max_prob": 0.1535,
+            "forward_20d_dd_pct": -3.0
+          },
+          {
+            "start_date": "2024-08-12",
+            "end_date": "2024-08-14",
+            "duration_days": 3,
+            "max_prob": 0.2934,
+            "forward_20d_dd_pct": -0.86
+          },
+          {
+            "start_date": "2024-08-16",
+            "end_date": "2024-09-03",
+            "duration_days": 12,
+            "max_prob": 0.2051,
+            "forward_20d_dd_pct": -4.25
+          },
+          {
+            "start_date": "2024-09-05",
+            "end_date": "2024-09-05",
+            "duration_days": 1,
+            "max_prob": 0.1511,
+            "forward_20d_dd_pct": -1.73
+          },
+          {
+            "start_date": "2024-09-09",
+            "end_date": "2024-09-10",
+            "duration_days": 2,
+            "max_prob": 0.2718,
+            "forward_20d_dd_pct": 0.45
+          },
+          {
+            "start_date": "2024-10-04",
+            "end_date": "2024-10-10",
+            "duration_days": 5,
+            "max_prob": 0.3286,
+            "forward_20d_dd_pct": -1.49
+          }
+        ]
+      }
+    },
+    {
+      "model": "LR Slim+Events",
+      "fold": 2,
+      "test_period": "2024-10-29 ~ 2025-05-01",
+      "train_threshold": 0.25,
+      "train_best_f1": 0.357,
+      "test_best_f1": 0.031,
+      "test_brier": 0.3067,
+      "episode_eval": {
+        "n_episodes": 3,
+        "hit_at_10": 0.0,
+        "hit_at_15": 0.0,
+        "hit_at_20": 0.0,
+        "mean_lead_days": null,
+        "episodes": [
+          {
+            "peak_date": "2025-02-19",
+            "cluster_start": "2025-02-05",
+            "cluster_end": "2025-03-03",
+            "n_positive_days": 18,
+            "max_forward_dd_pct": -10.13,
+            "hit_at_10": false,
+            "hit_at_15": false,
+            "hit_at_20": false,
+            "lead_days": null,
+            "peak_prob": 0.0457
+          },
+          {
+            "peak_date": "2025-03-25",
+            "cluster_start": "2025-03-05",
+            "cluster_end": "2025-04-03",
+            "n_positive_days": 22,
+            "max_forward_dd_pct": -13.74,
+            "hit_at_10": false,
+            "hit_at_15": false,
+            "hit_at_20": false,
+            "lead_days": null,
+            "peak_prob": 0.0207
+          },
+          {
+            "peak_date": "2025-04-09",
+            "cluster_start": "2025-04-09",
+            "cluster_end": "2025-04-09",
+            "n_positive_days": 1,
+            "max_forward_dd_pct": -5.47,
+            "hit_at_10": false,
+            "hit_at_15": false,
+            "hit_at_20": false,
+            "lead_days": null,
+            "peak_prob": 0.0267
+          }
+        ]
+      },
+      "false_alarms": {
+        "n_false_alarms": 1,
+        "false_alarms_per_year": 2.0,
+        "alert_day_pct": 1.6,
+        "events": [
+          {
+            "start_date": "2024-12-09",
+            "end_date": "2024-12-10",
+            "duration_days": 2,
+            "max_prob": 0.3419,
+            "forward_20d_dd_pct": -3.44
+          }
+        ]
+      }
+    },
+    {
+      "model": "LR Slim+Events",
+      "fold": 3,
+      "test_period": "2025-05-02 ~ 2025-10-30",
+      "train_threshold": 0.25,
+      "train_best_f1": 0.465,
+      "test_best_f1": 0.031,
+      "test_brier": 0.0696,
+      "episode_eval": {
+        "n_episodes": 1,
+        "hit_at_10": 1.0,
+        "hit_at_15": 1.0,
+        "hit_at_20": 1.0,
+        "mean_lead_days": 4.0,
+        "episodes": [
+          {
+            "peak_date": "2025-10-28",
+            "cluster_start": "2025-10-28",
+            "cluster_end": "2025-10-29",
+            "n_positive_days": 2,
+            "max_forward_dd_pct": -5.11,
+            "hit_at_10": true,
+            "hit_at_15": true,
+            "hit_at_20": true,
+            "lead_days": 4,
+            "peak_prob": 0.2205
+          }
+        ]
+      },
+      "false_alarms": {
+        "n_false_alarms": 12,
+        "false_alarms_per_year": 24.0,
+        "alert_day_pct": 38.1,
+        "events": [
+          {
+            "start_date": "2025-06-10",
+            "end_date": "2025-06-10",
+            "duration_days": 1,
+            "max_prob": 0.2503,
+            "forward_20d_dd_pct": -1.18
+          },
+          {
+            "start_date": "2025-07-07",
+            "end_date": "2025-07-07",
+            "duration_days": 1,
+            "max_prob": 0.2595,
+            "forward_20d_dd_pct": -0.07
+          },
+          {
+            "start_date": "2025-07-09",
+            "end_date": "2025-07-14",
+            "duration_days": 4,
+            "max_prob": 0.4342,
+            "forward_20d_dd_pct": -0.68
+          },
+          {
+            "start_date": "2025-07-29",
+            "end_date": "2025-07-29",
+            "duration_days": 1,
+            "max_prob": 0.2942,
+            "forward_20d_dd_pct": -2.09
+          },
+          {
+            "start_date": "2025-07-31",
+            "end_date": "2025-07-31",
+            "duration_days": 1,
+            "max_prob": 0.2642,
+            "forward_20d_dd_pct": -1.6
+          },
+          {
+            "start_date": "2025-08-05",
+            "end_date": "2025-08-05",
+            "duration_days": 1,
+            "max_prob": 0.2759,
+            "forward_20d_dd_pct": 0.65
+          },
+          {
+            "start_date": "2025-08-11",
+            "end_date": "2025-08-12",
+            "duration_days": 2,
+            "max_prob": 0.3028,
+            "forward_20d_dd_pct": -1.17
+          },
+          {
+            "start_date": "2025-08-15",
+            "end_date": "2025-08-15",
+            "duration_days": 1,
+            "max_prob": 0.3315,
+            "forward_20d_dd_pct": -1.23
+          },
+          {
+            "start_date": "2025-08-19",
+            "end_date": "2025-09-16",
+            "duration_days": 20,
+            "max_prob": 0.4867,
+            "forward_20d_dd_pct": -1.33
+          },
+          {
+            "start_date": "2025-09-29",
+            "end_date": "2025-09-30",
+            "duration_days": 2,
+            "max_prob": 0.2745,
+            "forward_20d_dd_pct": -2.03
+          },
+          {
+            "start_date": "2025-10-02",
+            "end_date": "2025-10-03",
+            "duration_days": 2,
+            "max_prob": 0.3318,
+            "forward_20d_dd_pct": -2.43
+          },
+          {
+            "start_date": "2025-10-07",
+            "end_date": "2025-10-22",
+            "duration_days": 12,
+            "max_prob": 0.492,
+            "forward_20d_dd_pct": -2.98
+          }
+        ]
+      }
+    },
+    {
+      "model": "LR Slim+Events",
+      "fold": 4,
+      "test_period": "2025-10-31 ~ 2026-05-04",
+      "train_threshold": 0.2,
+      "train_best_f1": 0.421,
+      "test_best_f1": 0.733,
+      "test_brier": 0.0809,
+      "episode_eval": {
+        "n_episodes": 3,
+        "hit_at_10": 1.0,
+        "hit_at_15": 1.0,
+        "hit_at_20": 1.0,
+        "mean_lead_days": 1.0,
+        "episodes": [
+          {
+            "peak_date": "2026-02-20",
+            "cluster_start": "2026-02-20",
+            "cluster_end": "2026-02-20",
+            "n_positive_days": 1,
+            "max_forward_dd_pct": -5.83,
+            "hit_at_10": true,
+            "hit_at_15": true,
+            "hit_at_20": true,
+            "lead_days": 1,
+            "peak_prob": 0.2253
+          },
+          {
+            "peak_date": "2026-03-02",
+            "cluster_start": "2026-02-24",
+            "cluster_end": "2026-03-11",
+            "n_positive_days": 12,
+            "max_forward_dd_pct": -7.82,
+            "hit_at_10": true,
+            "hit_at_15": true,
+            "hit_at_20": true,
+            "lead_days": 1,
+            "peak_prob": 0.3063
+          },
+          {
+            "peak_date": "2026-03-17",
+            "cluster_start": "2026-03-16",
+            "cluster_end": "2026-03-17",
+            "n_positive_days": 2,
+            "max_forward_dd_pct": -5.54,
+            "hit_at_10": true,
+            "hit_at_15": true,
+            "hit_at_20": true,
+            "lead_days": 1,
+            "peak_prob": 0.3766
+          }
+        ]
+      },
+      "false_alarms": {
+        "n_false_alarms": 13,
+        "false_alarms_per_year": 26.0,
+        "alert_day_pct": 38.9,
+        "events": [
+          {
+            "start_date": "2025-11-11",
+            "end_date": "2025-11-13",
+            "duration_days": 3,
+            "max_prob": 0.3049,
+            "forward_20d_dd_pct": -4.56
+          },
+          {
+            "start_date": "2025-11-18",
+            "end_date": "2025-11-21",
+            "duration_days": 4,
+            "max_prob": 0.25,
+            "forward_20d_dd_pct": -1.56
+          },
+          {
+            "start_date": "2025-11-25",
+            "end_date": "2025-11-25",
+            "duration_days": 1,
+            "max_prob": 0.201,
+            "forward_20d_dd_pct": -0.66
+          },
+          {
+            "start_date": "2025-12-09",
+            "end_date": "2025-12-09",
+            "duration_days": 1,
+            "max_prob": 0.2023,
+            "forward_20d_dd_pct": -1.74
+          },
+          {
+            "start_date": "2026-01-12",
+            "end_date": "2026-01-13",
+            "duration_days": 2,
+            "max_prob": 0.2837,
+            "forward_20d_dd_pct": -2.59
+          },
+          {
+            "start_date": "2026-01-15",
+            "end_date": "2026-01-15",
+            "duration_days": 1,
+            "max_prob": 0.2222,
+            "forward_20d_dd_pct": -2.13
+          },
+          {
+            "start_date": "2026-01-20",
+            "end_date": "2026-01-20",
+            "duration_days": 1,
+            "max_prob": 0.2319,
+            "forward_20d_dd_pct": 0.02
+          },
+          {
+            "start_date": "2026-02-04",
+            "end_date": "2026-02-19",
+            "duration_days": 11,
+            "max_prob": 0.3613,
+            "forward_20d_dd_pct": -3.87
+          },
+          {
+            "start_date": "2026-02-23",
+            "end_date": "2026-02-23",
+            "duration_days": 1,
+            "max_prob": 0.2625,
+            "forward_20d_dd_pct": -4.84
+          },
+          {
+            "start_date": "2026-03-12",
+            "end_date": "2026-03-13",
+            "duration_days": 2,
+            "max_prob": 0.3332,
+            "forward_20d_dd_pct": -4.93
+          },
+          {
+            "start_date": "2026-03-19",
+            "end_date": "2026-03-23",
+            "duration_days": 3,
+            "max_prob": 0.3533,
+            "forward_20d_dd_pct": -3.98
+          },
+          {
+            "start_date": "2026-03-26",
+            "end_date": "2026-03-27",
+            "duration_days": 2,
+            "max_prob": 0.2276,
+            "forward_20d_dd_pct": -2.06
+          },
+          {
+            "start_date": "2026-04-13",
+            "end_date": "2026-04-14",
+            "duration_days": 2,
+            "max_prob": 0.2375,
+            "forward_20d_dd_pct": 0.8
+          }
+        ]
+      }
+    },
+    {
+      "model": "LR Slim+Events",
+      "fold": 5,
+      "test_period": "2026-05-05 ~ 2026-07-17",
+      "train_threshold": 0.15,
+      "train_best_f1": 0.384,
+      "test_best_f1": 0,
+      "test_brier": 0.0145,
+      "episode_eval": {
+        "n_episodes": 0,
+        "hit_at_10": null,
+        "hit_at_15": null,
+        "hit_at_20": null,
+        "mean_lead_days": null,
+        "episodes": []
+      },
+      "false_alarms": {
+        "n_false_alarms": 3,
+        "false_alarms_per_year": 14.82,
+        "alert_day_pct": 25.5,
+        "events": [
+          {
+            "start_date": "2026-06-16",
+            "end_date": "2026-06-16",
+            "duration_days": 1,
+            "max_prob": 0.2421,
+            "forward_20d_dd_pct": -2.09
+          },
+          {
+            "start_date": "2026-06-24",
+            "end_date": "2026-07-06",
+            "duration_days": 8,
+            "max_prob": 0.2411,
+            "forward_20d_dd_pct": null
+          },
+          {
+            "start_date": "2026-07-13",
+            "end_date": "2026-07-16",
+            "duration_days": 4,
+            "max_prob": 0.2246,
+            "forward_20d_dd_pct": null
+          }
+        ]
+      }
+    },
+    {
+      "model": "LR Events+Interact",
+      "fold": 1,
+      "test_period": "2024-04-30 ~ 2024-10-28",
+      "train_threshold": 0.15,
+      "train_best_f1": 0.404,
+      "test_best_f1": 0.071,
+      "test_brier": 0.1146,
+      "episode_eval": {
+        "n_episodes": 3,
+        "hit_at_10": 0.0,
+        "hit_at_15": 0.0,
+        "hit_at_20": 0.0,
+        "mean_lead_days": null,
+        "episodes": [
+          {
+            "peak_date": "2024-07-16",
+            "cluster_start": "2024-07-08",
+            "cluster_end": "2024-07-23",
+            "n_positive_days": 12,
+            "max_forward_dd_pct": -8.49,
+            "hit_at_10": false,
+            "hit_at_15": false,
+            "hit_at_20": false,
+            "lead_days": null,
+            "peak_prob": 0.0354
+          },
+          {
+            "peak_date": "2024-07-29",
+            "cluster_start": "2024-07-29",
+            "cluster_end": "2024-07-29",
+            "n_positive_days": 1,
+            "max_forward_dd_pct": -5.07,
+            "hit_at_10": false,
+            "hit_at_15": false,
+            "hit_at_20": false,
+            "lead_days": null,
+            "peak_prob": 0.0806
+          },
+          {
+            "peak_date": "2024-07-31",
+            "cluster_start": "2024-07-31",
+            "cluster_end": "2024-07-31",
+            "n_positive_days": 1,
+            "max_forward_dd_pct": -6.08,
+            "hit_at_10": false,
+            "hit_at_15": false,
+            "hit_at_20": false,
+            "lead_days": null,
+            "peak_prob": 0.0672
+          }
+        ]
+      },
+      "false_alarms": {
+        "n_false_alarms": 8,
+        "false_alarms_per_year": 16.0,
+        "alert_day_pct": 21.4,
+        "events": [
+          {
+            "start_date": "2024-05-13",
+            "end_date": "2024-05-14",
+            "duration_days": 2,
+            "max_prob": 0.1742,
+            "forward_20d_dd_pct": -0.21
+          },
+          {
+            "start_date": "2024-06-10",
+            "end_date": "2024-06-11",
+            "duration_days": 2,
+            "max_prob": 0.1853,
+            "forward_20d_dd_pct": 0.27
+          },
+          {
+            "start_date": "2024-08-02",
+            "end_date": "2024-08-02",
+            "duration_days": 1,
+            "max_prob": 0.1503,
+            "forward_20d_dd_pct": -3.0
+          },
+          {
+            "start_date": "2024-08-12",
+            "end_date": "2024-08-14",
+            "duration_days": 3,
+            "max_prob": 0.2927,
+            "forward_20d_dd_pct": -0.86
+          },
+          {
+            "start_date": "2024-08-16",
+            "end_date": "2024-09-03",
+            "duration_days": 12,
+            "max_prob": 0.2175,
+            "forward_20d_dd_pct": -4.25
+          },
+          {
+            "start_date": "2024-09-05",
+            "end_date": "2024-09-05",
+            "duration_days": 1,
+            "max_prob": 0.1563,
+            "forward_20d_dd_pct": -1.73
+          },
+          {
+            "start_date": "2024-09-09",
+            "end_date": "2024-09-10",
+            "duration_days": 2,
+            "max_prob": 0.2634,
+            "forward_20d_dd_pct": 0.45
+          },
+          {
+            "start_date": "2024-10-07",
+            "end_date": "2024-10-10",
+            "duration_days": 4,
+            "max_prob": 0.2964,
+            "forward_20d_dd_pct": -1.49
+          }
+        ]
+      }
+    },
+    {
+      "model": "LR Events+Interact",
+      "fold": 2,
+      "test_period": "2024-10-29 ~ 2025-05-01",
+      "train_threshold": 0.25,
+      "train_best_f1": 0.376,
+      "test_best_f1": 0,
+      "test_brier": 0.3134,
+      "episode_eval": {
+        "n_episodes": 3,
+        "hit_at_10": 0.0,
+        "hit_at_15": 0.0,
+        "hit_at_20": 0.0,
+        "mean_lead_days": null,
+        "episodes": [
+          {
+            "peak_date": "2025-02-19",
+            "cluster_start": "2025-02-05",
+            "cluster_end": "2025-03-03",
+            "n_positive_days": 18,
+            "max_forward_dd_pct": -10.13,
+            "hit_at_10": false,
+            "hit_at_15": false,
+            "hit_at_20": false,
+            "lead_days": null,
+            "peak_prob": 0.0229
+          },
+          {
+            "peak_date": "2025-03-25",
+            "cluster_start": "2025-03-05",
+            "cluster_end": "2025-04-03",
+            "n_positive_days": 22,
+            "max_forward_dd_pct": -13.74,
+            "hit_at_10": false,
+            "hit_at_15": false,
+            "hit_at_20": false,
+            "lead_days": null,
+            "peak_prob": 0.0104
+          },
+          {
+            "peak_date": "2025-04-09",
+            "cluster_start": "2025-04-09",
+            "cluster_end": "2025-04-09",
+            "n_positive_days": 1,
+            "max_forward_dd_pct": -5.47,
+            "hit_at_10": false,
+            "hit_at_15": false,
+            "hit_at_20": false,
+            "lead_days": null,
+            "peak_prob": 0.0156
+          }
+        ]
+      },
+      "false_alarms": {
+        "n_false_alarms": 0,
+        "false_alarms_per_year": 0.0,
+        "alert_day_pct": 0.0,
+        "events": []
+      }
+    },
+    {
+      "model": "LR Events+Interact",
+      "fold": 3,
+      "test_period": "2025-05-02 ~ 2025-10-30",
+      "train_threshold": 0.2,
+      "train_best_f1": 0.48,
+      "test_best_f1": 0,
+      "test_brier": 0.0525,
+      "episode_eval": {
+        "n_episodes": 1,
+        "hit_at_10": 1.0,
+        "hit_at_15": 1.0,
+        "hit_at_20": 1.0,
+        "mean_lead_days": 4.0,
+        "episodes": [
+          {
+            "peak_date": "2025-10-28",
+            "cluster_start": "2025-10-28",
+            "cluster_end": "2025-10-29",
+            "n_positive_days": 2,
+            "max_forward_dd_pct": -5.11,
+            "hit_at_10": true,
+            "hit_at_15": true,
+            "hit_at_20": true,
+            "lead_days": 4,
+            "peak_prob": 0.0949
+          }
+        ]
+      },
+      "false_alarms": {
+        "n_false_alarms": 10,
+        "false_alarms_per_year": 20.0,
+        "alert_day_pct": 28.6,
+        "events": [
+          {
+            "start_date": "2025-07-10",
+            "end_date": "2025-07-10",
+            "duration_days": 1,
+            "max_prob": 0.2063,
+            "forward_20d_dd_pct": -0.68
+          },
+          {
+            "start_date": "2025-08-01",
+            "end_date": "2025-08-01",
+            "duration_days": 1,
+            "max_prob": 0.2527,
+            "forward_20d_dd_pct": 0.98
+          },
+          {
+            "start_date": "2025-08-05",
+            "end_date": "2025-08-05",
+            "duration_days": 1,
+            "max_prob": 0.2439,
+            "forward_20d_dd_pct": 0.65
+          },
+          {
+            "start_date": "2025-08-07",
+            "end_date": "2025-08-07",
+            "duration_days": 1,
+            "max_prob": 0.2082,
+            "forward_20d_dd_pct": 0.48
+          },
+          {
+            "start_date": "2025-08-11",
+            "end_date": "2025-08-12",
+            "duration_days": 2,
+            "max_prob": 0.2866,
+            "forward_20d_dd_pct": -1.17
+          },
+          {
+            "start_date": "2025-08-15",
+            "end_date": "2025-08-15",
+            "duration_days": 1,
+            "max_prob": 0.2034,
+            "forward_20d_dd_pct": -1.23
+          },
+          {
+            "start_date": "2025-08-19",
+            "end_date": "2025-09-10",
+            "duration_days": 16,
+            "max_prob": 0.5161,
+            "forward_20d_dd_pct": -1.33
+          },
+          {
+            "start_date": "2025-10-02",
+            "end_date": "2025-10-03",
+            "duration_days": 2,
+            "max_prob": 0.2221,
+            "forward_20d_dd_pct": -2.43
+          },
+          {
+            "start_date": "2025-10-07",
+            "end_date": "2025-10-07",
+            "duration_days": 1,
+            "max_prob": 0.2136,
+            "forward_20d_dd_pct": -2.41
+          },
+          {
+            "start_date": "2025-10-09",
+            "end_date": "2025-10-22",
+            "duration_days": 10,
+            "max_prob": 0.5393,
+            "forward_20d_dd_pct": -2.71
+          }
+        ]
+      }
+    },
+    {
+      "model": "LR Events+Interact",
+      "fold": 4,
+      "test_period": "2025-10-31 ~ 2026-05-04",
+      "train_threshold": 0.2,
+      "train_best_f1": 0.404,
+      "test_best_f1": 0.714,
+      "test_brier": 0.0756,
+      "episode_eval": {
+        "n_episodes": 3,
+        "hit_at_10": 1.0,
+        "hit_at_15": 1.0,
+        "hit_at_20": 1.0,
+        "mean_lead_days": 1.0,
+        "episodes": [
+          {
+            "peak_date": "2026-02-20",
+            "cluster_start": "2026-02-20",
+            "cluster_end": "2026-02-20",
+            "n_positive_days": 1,
+            "max_forward_dd_pct": -5.83,
+            "hit_at_10": true,
+            "hit_at_15": true,
+            "hit_at_20": true,
+            "lead_days": 1,
+            "peak_prob": 0.2287
+          },
+          {
+            "peak_date": "2026-03-02",
+            "cluster_start": "2026-02-24",
+            "cluster_end": "2026-03-11",
+            "n_positive_days": 12,
+            "max_forward_dd_pct": -7.82,
+            "hit_at_10": true,
+            "hit_at_15": true,
+            "hit_at_20": true,
+            "lead_days": 1,
+            "peak_prob": 0.3394
+          },
+          {
+            "peak_date": "2026-03-17",
+            "cluster_start": "2026-03-16",
+            "cluster_end": "2026-03-17",
+            "n_positive_days": 2,
+            "max_forward_dd_pct": -5.54,
+            "hit_at_10": true,
+            "hit_at_15": true,
+            "hit_at_20": true,
+            "lead_days": 1,
+            "peak_prob": 0.4467
+          }
+        ]
+      },
+      "false_alarms": {
+        "n_false_alarms": 6,
+        "false_alarms_per_year": 12.0,
+        "alert_day_pct": 35.7,
+        "events": [
+          {
+            "start_date": "2025-11-12",
+            "end_date": "2025-11-13",
+            "duration_days": 2,
+            "max_prob": 0.2845,
+            "forward_20d_dd_pct": -4.56
+          },
+          {
+            "start_date": "2025-11-17",
+            "end_date": "2025-11-21",
+            "duration_days": 5,
+            "max_prob": 0.3284,
+            "forward_20d_dd_pct": -2.0
+          },
+          {
+            "start_date": "2026-02-04",
+            "end_date": "2026-02-19",
+            "duration_days": 11,
+            "max_prob": 0.3791,
+            "forward_20d_dd_pct": -3.87
+          },
+          {
+            "start_date": "2026-02-23",
+            "end_date": "2026-02-23",
+            "duration_days": 1,
+            "max_prob": 0.3236,
+            "forward_20d_dd_pct": -4.84
+          },
+          {
+            "start_date": "2026-03-12",
+            "end_date": "2026-03-13",
+            "duration_days": 2,
+            "max_prob": 0.4385,
+            "forward_20d_dd_pct": -4.93
+          },
+          {
+            "start_date": "2026-03-18",
+            "end_date": "2026-03-30",
+            "duration_days": 9,
+            "max_prob": 0.4573,
+            "forward_20d_dd_pct": -4.24
+          }
+        ]
+      }
+    },
+    {
+      "model": "LR Events+Interact",
+      "fold": 5,
+      "test_period": "2026-05-05 ~ 2026-07-17",
+      "train_threshold": 0.3,
+      "train_best_f1": 0.422,
+      "test_best_f1": 0,
+      "test_brier": 0.0101,
+      "episode_eval": {
+        "n_episodes": 0,
+        "hit_at_10": null,
+        "hit_at_15": null,
+        "hit_at_20": null,
+        "mean_lead_days": null,
+        "episodes": []
+      },
+      "false_alarms": {
+        "n_false_alarms": 0,
+        "false_alarms_per_year": 0.0,
+        "alert_day_pct": 0.0,
+        "events": []
+      }
+    }
+  ],
+  "summary_by_model": {
+    "LR Slim+Events": {
+      "n_folds": 5,
+      "hit_at_10": 0.4,
+      "hit_at_15": 0.4,
+      "hit_at_20": 0.4,
+      "mean_lead_days": 1.8,
+      "total_episodes": 10,
+      "false_alarms_per_year_mean": 16.56
+    },
+    "LR Events+Interact": {
+      "n_folds": 5,
+      "hit_at_10": 0.4,
+      "hit_at_15": 0.4,
+      "hit_at_20": 0.4,
+      "mean_lead_days": 1.8,
+      "total_episodes": 10,
+      "false_alarms_per_year_mean": 9.6
+    }
+  },
+  "verdict": [
+    "\u8f85\u6307\u6807\uff1a\u4e0d\u53c2\u4e0e primary F1 \u6a21\u578b\u6392\u5e8f\u3002",
+    "\u9ed8\u8ba4\u89e3\u8bfb Hit@20\uff08\u4e0e 20d target horizon \u5bf9\u9f50\uff09\uff1bHit@10/15 \u4f9b\u63a7\u4ed3\u63d0\u524d\u91cf\u654f\u611f\u6027\u53c2\u8003\u3002",
+    "LR Slim+Events: Hit@20 \u5747\u503c=0.4, FA/yr=16.56",
+    "LR Events+Interact: Hit@20 \u5747\u503c=0.4, FA/yr=9.6"
+  ]
+}

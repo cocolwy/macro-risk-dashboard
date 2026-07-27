@@ -1,4 +1,13 @@
+import { motion } from 'framer-motion';
 import { SITE_NAV, HOME_SECTIONS, HOME_TODOS, PageId } from './siteNav';
+
+const staggerGrid = {
+  animate: { transition: { staggerChildren: 0.04 } },
+};
+const cardPop = {
+  initial: { opacity: 0, y: 10 },
+  animate: { opacity: 1, y: 0, transition: { duration: 0.28, ease: [0.25, 0.1, 0.25, 1] } },
+};
 
 interface HomeProps {
   onNavigate: (page: PageId) => void;
@@ -9,9 +18,6 @@ export function Home({ onNavigate }: HomeProps) {
     <div className="home-container">
       <header className="home-header">
         <h1>{SITE_NAV.home.title}</h1>
-        <p className="home-subtitle">
-          两条独立研究线：<strong>Alpha Deck</strong>（单因子 S0–S7）与 <strong>风控模型 Ch.1→Ch.2</strong>（LR/GBDT 崩盘预测）
-        </p>
       </header>
 
       <section className="home-section home-todos-section">
@@ -40,33 +46,26 @@ export function Home({ onNavigate }: HomeProps) {
       {HOME_SECTIONS.map(section => (
         <section key={section.level} className="home-section">
           <div className="home-section-title">{section.label}</div>
-          {'hint' in section && section.hint && (
-            <p className="home-section-hint">{section.hint}</p>
-          )}
 
-          {section.level === 3 && section.parent && (
-            <div className="home-parent-hint">
-              隶属 <button className="home-parent-link" onClick={() => onNavigate(section.parent!)}>
-                {SITE_NAV[section.parent].title}
-              </button>
-            </div>
-          )}
-
-          <div className={`home-grid ${section.level === 3 ? 'home-grid-nested' : ''}`}>
+          <motion.div
+            className={`home-grid ${section.level === 3 ? 'home-grid-nested' : ''}`}
+            variants={staggerGrid}
+            initial="initial"
+            animate="animate"
+          >
             {section.items.map(id => {
               const item = SITE_NAV[id];
               return (
-                <button key={id} className="home-card" onClick={() => onNavigate(id)}>
+                <motion.button key={id} className="home-card" onClick={() => onNavigate(id)} variants={cardPop}>
                   <span className="home-card-accent" />
-                  <span className={`home-card-level l${item.level}`}>L{item.level}</span>
                   {item.badge && <span className="home-card-badge">{item.badge}</span>}
                   <h3>{item.title}</h3>
                   <p className="home-card-desc">{item.subtitle}</p>
                   {item.metrics && <div className="home-card-meta">{item.metrics}</div>}
-                </button>
+                </motion.button>
               );
             })}
-          </div>
+          </motion.div>
         </section>
       ))}
 
