@@ -1,40 +1,103 @@
 {
-  "fetched_at": "2026-07-28T03:48:17.232764+00:00",
+  "fetched_at": "2026-07-29T03:51:27.841738+00:00",
   "headlines": [
     {
-      "title": "AI anxiety sparks tech rout, broad selloff in Asian markets",
+      "title": "US stocks mixed ahead key tech earnings, Fed",
       "source": "Reuters",
-      "published": "2026-07-28T02:30:00+00:00",
+      "published": "2026-07-28T20:51:51+00:00",
       "url": "https://news.google.com/rss/articles/CBMigwFBVV95cUxNWUF6MHN4NmxzbUxRX0JpZGFFTlliRjB0WW1DQ3NvVUpQVFJ3aFNoUFJ6cG0tNGx2anJ3OFFTWXk3VUdQQVowWHdoRnVzZTZsZV9KdTR1cWxDeFpXTTFidGxCR25jc2ZYUXp1Z2lYRzJwZDcweHNJalJfamhJT0lvTXRKWQ?oc=5",
-      "description": "AI anxiety sparks tech rout, broad selloff in Asian markets &nbsp;&nbsp; Reuters"
+      "description": "US stocks mixed ahead key tech earnings, Fed &nbsp;&nbsp; Reuters"
     },
     {
-      "title": "AI stock sell-off continues as investors dump chipmakers",
+      "title": "Chip stocks tumble as AI sell-off deepens",
       "source": "FT",
-      "published": "2026-07-28T02:21:27+00:00",
+      "published": "2026-07-28T20:15:12+00:00",
       "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxQOU5EQzYzM1h5cUFtRE1hbWhzLW5KMm9ZVjZ4SFY0SE5Xc3IweTFEbS1XRTBjbThoVUJodHphUUprdWlEV2dyZ0tsazM0S01adW5EM255NXNhdmV1Vi1fR0dkVXNaRjNvT08ydm1GRlE2TC1XMVBrR3MxRkVwSEVRTnR1Nkc?oc=5",
-      "description": "AI stock sell-off continues as investors dump chipmakers &nbsp;&nbsp; Financial Times"
+      "description": "Chip stocks tumble as AI sell-off deepens &nbsp;&nbsp; Financial Times"
     },
     {
-      "title": "Korean chip stocks tumble with SK Hynix below US listing price amid China competition fears",
+      "title": "Persistently high inflation to nag global economy, say economists: Reuters poll",
       "source": "Reuters",
-      "published": "2026-07-28T02:13:09+00:00",
+      "published": "2026-07-28T12:28:09+00:00",
+      "url": "https://news.google.com/rss/articles/CBMivwFBVV95cUxPeEo2VHZ0SXF4SFdaOU1LQ2pOaTRfUzBmUUJ0V0wxakdjbE03bkRzWmVMQU5VNXo4SzhrbGZnN3hSdm5vR1dLM2kxTU5NZi1aYVhlejVfQXlrZm5menB6VjE1TElMQUVpSmZyS0FnUWo3VDJScTFiTmJkQWFLcG1KTjZZZFBvbmU2SHM5U3UtbTVJYjhkS29HUHVpQjlwMlVUU3loQmRFQVFCNDV2Z0pLWDQtRHVlSzVpZzRqbHh3RQ?oc=5",
+      "description": "Persistently high inflation to nag global economy, say economists: Reuters poll &nbsp;&nbsp; Reuters"
+    },
+    {
+      "title": "How China’s grip on electrification metals could affect inflation",
+      "source": "FT",
+      "published": "2026-07-28T11:00:03+00:00",
+      "url": "https://news.google.com/rss/articles/CBMicEFVX3lxTE02WDBlOVVIT1ZVUm0tU2NuNm1HYXIxMHFId29BY3ZMTXFsZVQ4TVZLSzFJQkFJMzZPTlp2R2FiSDZWRHVISU94STZJQkdERHQxMGR4ZkVhWFN5ZlVVZjJjWll1dXBoaHhRd2liVWNaTV8?oc=5",
+      "description": "How China’s grip on electrification metals could affect inflation &nbsp;&nbsp; Financial Times"
+    },
+    {
+      "title": "Bar to Fed rate hike this week remains high even as markets see a chance",
+      "source": "Reuters",
+      "published": "2026-07-28T10:23:44+00:00",
+      "url": "https://news.google.com/rss/articles/CBMirgFBVV95cUxNRE5uc1NXMlVkdDgwWjJzNVpnMTRMUFlyUllXQk82SXRTWXRiT1NYdmhZc2hLMWRoZDZvT1ZudFU0V2NobWYxWXMxNTFYeFByakoyTVc2cHVzUGljb254a285MnZaeGN4LVIzRWhJQTcxdHIwMUxzYkZfNUMwUHFDMDlONFVlUldtc0Zxa1FHMGg0ZGU3RktDT0JueWRZU2xoY2h5YzYtTGg1M2pwNUE?oc=5",
+      "description": "Bar to Fed rate hike this week remains high even as markets see a chance &nbsp;&nbsp; Reuters"
+    },
+    {
+      "title": "US bond market avoids big rate bets as inflation dims Fed outlook",
+      "source": "Reuters",
+      "published": "2026-07-28T10:20:00+00:00",
+      "url": "https://news.google.com/rss/articles/CBMiqwFBVV95cUxOa3Bldlk3YjRqNDRPX1pMd0JXT2w1WVY0VVI4QjlxU3BLbU13d0llU25ndjZZbzVZcnB5Q0d1bS13UEgtYmdOalZISzRpcjdyT090R055b04zeU54cm9PNUJxOVcxQ0lFM0pKMEdUak5IZFRhcGhhMEowakpwc0dsZ29ZemNLNW11UGVNaVNDNmRZT2kyaFZLazRndGRKcVMtSVVoY2E3aEhucHc?oc=5",
+      "description": "US bond market avoids big rate bets as inflation dims Fed outlook &nbsp;&nbsp; Reuters"
+    },
+    {
+      "title": "Asian chip stocks slide as China competition fears rattle AI trade",
+      "source": "Reuters",
+      "published": "2026-07-28T09:51:44+00:00",
       "url": "https://news.google.com/rss/articles/CBMiugFBVV95cUxNbm9DUFBRMVNrTExpUDkzSlpGZGxTaEtRbTVWZTNjTVlzRklHX0lBVW9fcU5ULTFBbFlZb040TlVRR0pkNGZsRUo1TkhiLU95SzVwX0N0OC1PU2x3bXkySE1ZSmlDcldEZjF1OWR5NnU1M3RVQ3lvQ2pLeHlMNjQxT3dienkwRERwZlhWWlZwMXpTRVQ1czlFVVZReFpoelhHb202ZVB1VnFpR0llQ1Fsd2N0RDNsa0hiRlE?oc=5",
-      "description": "Korean chip stocks tumble with SK Hynix below US listing price amid China competition fears &nbsp;&nbsp; Reuters"
+      "description": "Asian chip stocks slide as China competition fears rattle AI trade &nbsp;&nbsp; Reuters"
     },
     {
-      "title": "Wall Street ends mixed as investors focus on tech earnings",
-      "source": "Reuters",
-      "published": "2026-07-27T22:55:06+00:00",
-      "url": "https://news.google.com/rss/articles/CBMilgFBVV95cUxPbWNrM2R3eVRRWVNNdGhKSnJLUzVjQ0Qwb21PVmFUcXd2OEpDRnVsZDVCMGtFV3RTbE5aM3ZuS2xRWkZtcDZ1VWFseVBLSXBoZWVqV083TV9TQVAyUVYzLXQ5S2g4WDdLRDJQbUhodXhGSlg1a28yaU5laUFEbG8zaWp0X0xESkxsYkV0d2lYZnc2VTRIYlE?oc=5",
-      "description": "Wall Street ends mixed as investors focus on tech earnings &nbsp;&nbsp; Reuters"
+      "title": "Singapore warns of economic risks if global AI boom falters",
+      "source": "FT",
+      "published": "2026-07-28T09:30:11+00:00",
+      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxNR3NmVnFLeGFwN2l2MWVuSVhsendzYUhUbzk5TFdodDFXaTlSTnpIcXVneE5qak5kVDJocjM3MXE2cEhjelh5ZElPM2NqaElpdktCb1VPYUJCb0xVbUNwelcwblVBQWM4VDFaQ1YzYVlxYmNiQmRRdWxzeGpCZXg0VVlTdUo?oc=5",
+      "description": "Singapore warns of economic risks if global AI boom falters &nbsp;&nbsp; Financial Times"
     },
     {
-      "title": "Trump says Fed should lower interest rates",
+      "title": "CXMT’s blockbuster IPO delivers windfall for its home city",
+      "source": "FT",
+      "published": "2026-07-28T05:35:45+00:00",
+      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxNRFZfVTU5OHQxbjZWNzFjM1FrWWc5bnlORzFocHhPd0FtWmNkYUs0V0pDMjczM3YzUldwM1p6bXFpQktQTWVNSFJpZGZiZW5oWExLSVpmVVVzRXhoQ0JKZ1RIZUlXUlkzQzlWdnpURXdDaGtIcTEtRU8tbGhBV29PSWZVeWo?oc=5",
+      "description": "CXMT’s blockbuster IPO delivers windfall for its home city &nbsp;&nbsp; Financial Times"
+    },
+    {
+      "title": "Australia's sudden housing chill seeps into economy",
       "source": "Reuters",
-      "published": "2026-07-27T21:19:01+00:00",
-      "url": "https://news.google.com/rss/articles/CBMikAFBVV95cUxOVlpWNk9HMDBFMndqTlZjSnJiZFNRNGdELUFkNC1tX0NiV1ZubmYwenRmOGRLdzdTYmtGcV8tNXU0YlNMby1MNnc2WmNlWS1fN1RIN3NMeVcwRUZXd1pxMFBLSUNhd0wyTGxTajRiRXpCLUJBRDMxU05TeU1HREZtY3g4MUpNTGtMOWtKWTJNYjE?oc=5",
-      "description": "Trump says Fed should lower interest rates &nbsp;&nbsp; Reuters"
+      "published": "2026-07-28T05:09:00+00:00",
+      "url": "https://news.google.com/rss/articles/CBMiqAFBVV95cUxQa05lZUJTaG8wYTlVT0lram5HbXFDNFp4dHJzY0VJVnRsQWp4VnNlTnV3TU1EWWZEYjg4QW9ld2x1NTk5SFB2c2pieUVSam52a1l4cmRTRjRaOEVkdnhLM2VFQlVqQVg3VTlZVDZBVnZfR09qMnYtc3JIWUpPUGtxWnBoemZlZUhyaEdFQkFNUmZYaWRaQ2cyRDNSSzI3VFFHTEFqOGhJVW0?oc=5",
+      "description": "Australia's sudden housing chill seeps into economy &nbsp;&nbsp; Reuters"
+    },
+    {
+      "title": "Trump’s ability to talk down oil prices is being tested",
+      "source": "FT",
+      "published": "2026-07-28T04:00:15+00:00",
+      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxOb0lTRi16bHhqV25BX3R5RUlpeFN1T0NQVVM2V01vVkd3bTBQYmtUNDRWcF83QmkycUI3RjJDamNVTHlGOWl6dXMyaE84NkFyNjRKaUxGRHlUU0k1YmhkNHM2d19CcWhKTDdYTXplWFd1MTBzWUMzQ2ViM0YtSFhkUDZrcUY?oc=5",
+      "description": "Trump’s ability to talk down oil prices is being tested &nbsp;&nbsp; Financial Times"
+    },
+    {
+      "title": "China needs a new growth model",
+      "source": "FT",
+      "published": "2026-07-28T04:00:15+00:00",
+      "url": "https://news.google.com/rss/articles/CBMicEFVX3lxTE5IdHRqY2QzVVNWdjdEclVHY0xsR3NkQ0UteXEyeHNZSjhZLWJyZnVXaVRaOWFKTzVYWmZBM1dodkNCVkhDZTJCdkhDU1FhVGNCR21pbGtRYkZ2Q3BIOC1DZTNEeEdOVVQ0LWE5U2kyT24?oc=5",
+      "description": "China needs a new growth model &nbsp;&nbsp; Financial Times"
+    },
+    {
+      "title": "To create wealth, Europe must reap the dividends of radio spectrum",
+      "source": "FT",
+      "published": "2026-07-28T04:00:15+00:00",
+      "url": "https://news.google.com/rss/articles/CBMicEFVX3lxTE8zR20zRDFkcExCNmc3SzRLU19BU1ZoSWkxemR5YmM0WHdYWklhVkl5QkdLNjFUaFNUWlVfTXdWN1JBajk0dlRNal9IVlZ5ZEtkTzJUclozSGVCUU0tUGFQSWg0UUd1VUI5cmNzRXlybXo?oc=5",
+      "description": "To create wealth, Europe must reap the dividends of radio spectrum &nbsp;&nbsp; Financial Times"
+    },
+    {
+      "title": "Dollar eases as markets await Fed decision",
+      "source": "Reuters",
+      "published": "2026-07-28T00:36:00+00:00",
+      "url": "https://news.google.com/rss/articles/CBMiowFBVV95cUxQTVNBcUd0dURQNWZPam9LcTlYQ2xPQXBXSWR4SUxHWGRKZDNGdmxDSUlBa2dHUVVhRk4zc2JSMlRVQzc4akxza2NqZ3BXRjJzOGwwWEJqSmpJa1Q5VUhGam8xQ0RVRElkRlp0THZyMWRTbzFtRzA1dUZqdGtXWXFKWVVyUVJ1NDRJMjYzWHd3bGtnT2hkVUlrR3pIM0dPb1lpSjB3?oc=5",
+      "description": "Dollar eases as markets await Fed decision &nbsp;&nbsp; Reuters"
     },
     {
       "title": "Judge blocks Minnesota's first-in-nation prediction markets ban",
@@ -44,74 +107,11 @@
       "description": "Judge blocks Minnesota's first-in-nation prediction markets ban &nbsp;&nbsp; Reuters"
     },
     {
-      "title": "Oil price tumbles as Iran and US pause strikes over Strait of Hormuz",
+      "title": "Big Tech credit risks rise sharply as AI spending soars",
       "source": "FT",
-      "published": "2026-07-27T17:24:50+00:00",
-      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxPU2VGeTlMSlMzSzVSVHh1VWF4R084c3Nid196WXNjcXNGVktlWVdIN1JPVEItcTdJMDRqc1NZZjhQaFFzQXIyQlNfUFhCYWZUMUgzM2p1U0pEZmp6ZHBNNFo3aGZKVzFzcHpQcEpTblQtbVktUDN5MG5JZ3VWLUxITlBoUHU?oc=5",
-      "description": "Oil price tumbles as Iran and US pause strikes over Strait of Hormuz &nbsp;&nbsp; Financial Times"
-    },
-    {
-      "title": "Trump economy at 18 months is a tale of shocks, resilience, and signs of stalled progress",
-      "source": "Reuters",
-      "published": "2026-07-27T15:37:59+00:00",
-      "url": "https://news.google.com/rss/articles/CBMiuAFBVV95cUxNbkFGX2kwR3FDOVZ3NEt5Y2VBYjNlTW1lOFlFNWVzWmptZUxxTkZqOUlDVHVaVjVrMklERjdRZEFsU2pLZ1BnWlBUNzhCRi1mMFMtZzBpRzlQZlE4djhfMGYtTFJpdHJ3eXd6TGU1UEZYNjFlY2dIcU5yLVVJZWNFc2hKTV9DYUhZOTBWSWFCUjlROTBETVA2UHVZRzZLd0VaMVd1bjlHbXptNEpUTFZna2RFRXdic0dq?oc=5",
-      "description": "Trump economy at 18 months is a tale of shocks, resilience, and signs of stalled progress &nbsp;&nbsp; Reuters"
-    },
-    {
-      "title": "Hedge fund bets on rising US healthcare stocks near 5-year high, Goldman says",
-      "source": "Reuters",
-      "published": "2026-07-27T13:19:15+00:00",
-      "url": "https://news.google.com/rss/articles/CBMiwgFBVV95cUxOVW93MVZ5bU02ZlpZdVRia2l2c3VrOS1XU3JHLVRXTkxQOHktQ1dGYVhlS3F2bHVTSlBQWXdvaXBNSERsWlZUc3BXWUpDam5MNy1yNFhNY3VQRjJJREI1b1ZWdF9lY2NjSmlwS0ZOY3pYVkFERDJPdU9pYjAwa2ZIQWVTVEFDMC0wSFZkOWstSWlDcVpjMEQxbm04YVBwQlR1dUdnbVNEYThoTnR3dm91LW9zOHV2NHhKOC1mUV9vVEhIZw?oc=5",
-      "description": "Hedge fund bets on rising US healthcare stocks near 5-year high, Goldman says &nbsp;&nbsp; Reuters"
-    },
-    {
-      "title": "Growing number of brokerages see July Fed decision as 'a close call'",
-      "source": "Reuters",
-      "published": "2026-07-27T10:27:44+00:00",
-      "url": "https://news.google.com/rss/articles/CBMiqAFBVV95cUxNa1VuQzdOeGxfQ1pnN09BTURpVUtqalhFNmNiaGtBOXJENWhzMjFZYzJxdC1zNGVFMjNKUmdneFA5Qkx2NU1PVWxLdHhSS1kzRGN0Q1VxUW1JaTNFalMyZWhMY2ZWSlBlY01EakRDY1lPaFlQZ3BzdXhoUVUteDRWNGhxeUUyNFBfMlpLSnI1NlVvNjE0ajVRMWVTX2ViUDBVMkxHaUVDVno?oc=5",
-      "description": "Growing number of brokerages see July Fed decision as 'a close call' &nbsp;&nbsp; Reuters"
-    },
-    {
-      "title": "Chinese chip champion CXMT soars 466% in market debut",
-      "source": "FT",
-      "published": "2026-07-27T07:29:15+00:00",
-      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxOVnc2VGF5dERKYWpOSGVGTXNpU2t0WXN4bGdyX2VFOHdUXzlpVlNPT0lPNDA2SnVZVkYxRzdldkUta0pyZXk3ZUhGc3RIMHg3UzlSN2lZb2hwMWtrZ2tINm1PUk5vYXhBZUdQSUJZMDJ5SWxLSGJsMWw1bkRvbG1TbHl0X0w?oc=5",
-      "description": "Chinese chip champion CXMT soars 466% in market debut &nbsp;&nbsp; Financial Times"
-    },
-    {
-      "title": "Indonesia’s central bank chief resigns",
-      "source": "FT",
-      "published": "2026-07-27T04:59:04+00:00",
-      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxPM0NvMm1OSVJ5NVNlLS1vSlB0bFFkdkJTdjJncjRGTV9xeGVNb1A5bGl4WmdVN0J2VS1zaDUteWk2VmYxaklXWDJaVU0zTWVjSVkxaS14ZDQ2Ti1keHU2cm5tVk9sUjJIU0lHc0Q4N0dHWkM2X2pmSHZmRi1KdlpfTE5yQzA?oc=5",
-      "description": "Indonesia’s central bank chief resigns &nbsp;&nbsp; Financial Times"
-    },
-    {
-      "title": "Beware the shimmer of holographic markets",
-      "source": "FT",
-      "published": "2026-07-27T04:00:14+00:00",
-      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxOTDR1WEowWDFHR01HeTV3WFhQckxTQ3hhV3ByQjQ3aS13NnFIYlFfZVBJMjhkYjFtNXlOd3pMMGxHZlF5NG1ma2UyM3RaM29lYmptS2M3QnhZR1Q0OVFkVkdXenh2Zi1QSFFEWExPOEpzQ0hBUkdXSTRBbUdQNHhGelY5QVk?oc=5",
-      "description": "Beware the shimmer of holographic markets &nbsp;&nbsp; Financial Times"
-    },
-    {
-      "title": "Greek shipping carve-out on Russia sanctions prompts EU rethink",
-      "source": "FT",
-      "published": "2026-07-27T04:00:14+00:00",
-      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxNdGRIdTU2RDFJNVNLNV9YNW40THJYWWxsek9nNTdiWGQ5RkZKZkEtcDVCam5VV3d4TF9UODB5ZlVTLS1ISmVhNWNUN1Q3aHVlZkNEWFRnMGJnLTVMQU9nQmM1MnlnT0FYZm1ncXFiTFltcXFXQndGV0dCbjNOWm9kX3ZVR3k?oc=5",
-      "description": "Greek shipping carve-out on Russia sanctions prompts EU rethink &nbsp;&nbsp; Financial Times"
-    },
-    {
-      "title": "Bank of England expected to hold rates despite jump in oil prices",
-      "source": "FT",
-      "published": "2026-07-27T04:00:14+00:00",
-      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxOT3Vkd1ZRTVpCSmYzMU9IM2ZENFZqelRla0ZmVUpzMkpuMDdKSThsdVprZ2JSaDB4Q3NERnhkUFVQal9PVG5zMllWRXRWb0EtN3BGUy1sTnE1aHZUTGtoUng5aHZaam9aSzJpMXZveVAyTEVrc1dxb1MyNk9ZYlpSRERraHM?oc=5",
-      "description": "Bank of England expected to hold rates despite jump in oil prices &nbsp;&nbsp; Financial Times"
-    },
-    {
-      "title": "Asian private credit fundraising sinks to 12-year low amid bankruptcy fears",
-      "source": "FT",
-      "published": "2026-07-27T01:24:04+00:00",
-      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxPbk5LdnVkbm1CR0Y2b2x3MmZISGFGZGg4ZzJzUmJLQkY2R2otblo0OHZMM3Y1WURvb3kyemNXWlpBREFHaDlCcjhtdmFhZmh1X0hqd1lMeUJtWjNacXJ4ckk4OG9ucVNSaDdvOHp6NTRvSE5XdnJVT1U0T2FsNFowMi1aeUc?oc=5",
-      "description": "Asian private credit fundraising sinks to 12-year low amid bankruptcy fears &nbsp;&nbsp; Financial Times"
+      "published": "2026-07-27T20:55:03+00:00",
+      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxQbGJpSkxiOTR3dnY2dWFiRkdBc0FOY3ZDVVNkVVRNSzNVaVlhTnBiTFZ4YkFRN0l5N0JtYWN6NVZnckw4NHFqTFUtVWVPUi1ib3BXWV92RXJ4TmRkM3BuYXJrZ3Zqa3ExQUpyQ2t2cDRIdmdjTW1oN0I5Q284RHY0cmFaWTc?oc=5",
+      "description": "Big Tech credit risks rise sharply as AI spending soars &nbsp;&nbsp; Financial Times"
     }
   ]
 }
