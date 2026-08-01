@@ -1,26 +1,110 @@
 {
-  "fetched_at": "2026-07-31T04:02:18.058594+00:00",
+  "fetched_at": "2026-08-01T04:02:40.825091+00:00",
   "headlines": [
     {
-      "title": "Asia stocks surge, yen steals spotlight after suspected intervention",
+      "title": "Bond sell-off sent warning on Federal Reserve’s credibility, says top central bank official",
+      "source": "FT",
+      "published": "2026-07-31T23:10:23+00:00",
+      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxOUlJuWU9UQlBuWUdqeXowNUhVdnpTTVMtb0hqRVB0X2dDNUNLbDBfd1k4eVB3T0VfR25sUjNDcjhZcVZwZXpOVnJCNkRieGE0MFBVMjBKc0xSZ251WDhnU2ZCczFBZlpXU09LQWZKenpPbFFCSGRuVUJldjZhWUZkUDhGZFk?oc=5",
+      "description": "Bond sell-off sent warning on Federal Reserve’s credibility, says top central bank official &nbsp;&nbsp; Financial Times"
+    },
+    {
+      "title": "Warsh raised changing frequency of Fed policy meetings, NYT reports",
+      "source": "Reuters",
+      "published": "2026-07-31T22:12:35+00:00",
+      "url": "https://news.google.com/rss/articles/CBMirAFBVV95cUxOVi1xRlR6T2lCSURoVzBka2VpQXp0TmdSeEw4R2U0a0c2LWRjWDV2MURrbXdkS0VvQWZjRHJoRHVFb2lzOUdOTnhjSnNfZjZOWDZNNjJXR0s2Y2RhTEsyT1gzLTJISXRfZE9HVlJEQ05fWGdFWFVwNmZTZWZSOGpSNl9MUnJXa2xZOE0yOG15SkFPN0x3YzEwN0pkZmRib0lvcWNDMWo5X1diX2lV?oc=5",
+      "description": "Warsh raised changing frequency of Fed policy meetings, NYT reports &nbsp;&nbsp; Reuters"
+    },
+    {
+      "title": "Fed chief Warsh faces hard choice on inflation after bond market's 'red flag'",
+      "source": "Reuters",
+      "published": "2026-07-31T17:56:01+00:00",
+      "url": "https://news.google.com/rss/articles/CBMitwFBVV95cUxOMERpMHRBTzlIVWdUcV9memhfa19FRnM0UGY3YnpwdjRLYjJyQ1A1UXRrZU5FTDZSejhiV3VmeC00TEg2RUFhZ1VlQ0pieEJicEw2MTBIaWFBSEtBVUJfbVA1MnBfc0F5bTl6bFNTRno3RHItN1MwTWpnQ21JLUZGZmFONXZyY1pfMHVJXzFnM3ZzZk1rSW1MblBzSlcxSk15dkJMRDYtRW1adDMxNE94anZDelY1NWM?oc=5",
+      "description": "Fed chief Warsh faces hard choice on inflation after bond market's 'red flag' &nbsp;&nbsp; Reuters"
+    },
+    {
+      "title": "Canadian economy set for best quarterly growth in more than three years",
+      "source": "Reuters",
+      "published": "2026-07-31T13:35:00+00:00",
+      "url": "https://news.google.com/rss/articles/CBMipwFBVV95cUxPQ0FzQll1aTFYRm5WUmtXcG9QVUVwNzJ6UF81Y1hCU0x2UHhrZC1zaTI3RkcwTzZjaUoxa3R3eEZMZHdkeEhmSFZXZjNnQTJSdndvck8xN3JtOE5hbGZ0ZE85SEZPa1FrdXg1cXZzd21wQ1ExTTZRamlLNUpzaWNjU0NramZTSVl2cTd1bXlIM0lVUG1fVm9CRWNwT3dLNjhrVFlkZ240SQ?oc=5",
+      "description": "Canadian economy set for best quarterly growth in more than three years &nbsp;&nbsp; Reuters"
+    },
+    {
+      "title": "Markets are getting AI right",
+      "source": "FT",
+      "published": "2026-07-31T13:00:07+00:00",
+      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxQMFJpT05ZcHQzRHNlUjY4TU9IT05xd3Q2WFE5aFFrUXJoMDQwNUgxZlIzdmRmeWZNQTJnOVE5aXBwWXRxMl81UjBPejBSLTloaFZsMzFuQkU0a2VJTEtBNWR4X2k3Y1RVU0I3clBDek4xUVlLa1JKYmxDUnEtM3F0R3BmMkI?oc=5",
+      "description": "Markets are getting AI right &nbsp;&nbsp; Financial Times"
+    },
+    {
+      "title": "US Treasury yield curve 'twist' reflects view Fed may not hike again",
+      "source": "Reuters",
+      "published": "2026-07-31T12:54:23+00:00",
+      "url": "https://news.google.com/rss/articles/CBMisAFBVV95cUxNYV9RSEpUbFlMdVRmTnBZamJ5d3I2MlNGYkNUVTlKRFhPVGxjZHp1NElVdFdFdXNDVEc4N3F1bF9MRzBpeER2cTk1a01pdWUxUUVnVlVfcllveE03UHNKaDM3N3dZeGVHYVJjLWtGUXh2dzhReUhZUmxsdUg3VGpScFpuQWcyMEphSG9mRkJnMjQ0Ry1oanktYWlSOUxwOHp3Y1NtZXhrTzhnQ2YyMXh6aA?oc=5",
+      "description": "US Treasury yield curve 'twist' reflects view Fed may not hike again &nbsp;&nbsp; Reuters"
+    },
+    {
+      "title": "Federal Reserve rate dissenters warn of challenges in taming inflation",
+      "source": "FT",
+      "published": "2026-07-31T12:00:54+00:00",
+      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxPOUtNOEdGUm9xWnktX292Q2VubE1iRFJiRnZ6MVQtSzlHRk1wZUd1Um4wSjR1ZEkwX2pYMFRKdmVjZ1ZUbUZaWE5TR3hlQnNsU3RIMTJPdzljWHVGV0tVX09kWWRmNjNLLV9fUHlRczA1eS1GSkI2ZEUzV1pyazBxX21iQkg?oc=5",
+      "description": "Federal Reserve rate dissenters warn of challenges in taming inflation &nbsp;&nbsp; Financial Times"
+    },
+    {
+      "title": "US Treasury undertakes historic intervention in yen market",
+      "source": "FT",
+      "published": "2026-07-31T10:47:29+00:00",
+      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxQSnZOcHllaFNMdUl5LS1aYWhSczEydGFfX1U4bVhKZnJMS1hJREtCNG9jX0VLYmxYZ056M0hNSm9JaDFDNHpudi1PRXRqRTVPeEZ2c2ZHeW1Mc05RLUMyR1NWa1JoVHdCMW9vcEthNVVoQk8yX2VrWlAwU3lIcE01ckNOSXU?oc=5",
+      "description": "US Treasury undertakes historic intervention in yen market &nbsp;&nbsp; Financial Times"
+    },
+    {
+      "title": "Ares secures biggest flagship credit fund commitments in three years",
+      "source": "FT",
+      "published": "2026-07-31T10:03:44+00:00",
+      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxNVHkyTEhPZ0Y4aXJvNVdkcmxFb3ZPNEtpNHlBd3Q4SS0xYjJaMVhKejFOLWRvcVkta0lKaFZOeFExR1NpNTI3Nnc4TVliYmxQSUZZbmZyRmhEZElsTl9iRUEweVJENkNYVU5nMjVST1FLa2dMSlBocnEtMzVoYk1vcnh3MXk?oc=5",
+      "description": "Ares secures biggest flagship credit fund commitments in three years &nbsp;&nbsp; Financial Times"
+    },
+    {
+      "title": "Eurozone inflation rises to 2.9% in July",
+      "source": "FT",
+      "published": "2026-07-31T09:01:41+00:00",
+      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxNcE1zZkwwUGtMVmswTDV2WFJ6TUZlbzNHQmotekw3a3JtbWxLVlQ2V1VYdGNKcHB3b2FjaDJFakN2LVBvdUg4RjF4SGpLODEtMk9ReGFla1lBbEdDYjl5NGxJeUwxT3QtbDZOMmlTM0dVRTAxTGF0VkkyYTI0eXdFWXQtM00?oc=5",
+      "description": "Eurozone inflation rises to 2.9% in July &nbsp;&nbsp; Financial Times"
+    },
+    {
+      "title": "What Warsh is (probably) up to",
+      "source": "FT",
+      "published": "2026-07-31T05:30:06+00:00",
+      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxNaGZOTXFVbUEwUlNkRXlPRDU0S3pHQTRVNVpSQlhyVlBaTTJHQjQ4VjM5eGJ4YldlWkNsckVINFlkU1VFYkxDaGczRWxKREU3ODg4QzdoOGVPTTBxUGh6ZXgtd1ZIdllrT1k1M1FmNFpXblVvRFMzY1FlUllvRUdhN1JRcVk?oc=5",
+      "description": "What Warsh is (probably) up to &nbsp;&nbsp; Financial Times"
+    },
+    {
+      "title": "New York sues Kalshi, says its prediction markets are illegal gambling",
+      "source": "Reuters",
+      "published": "2026-07-31T04:10:00+00:00",
+      "url": "https://news.google.com/rss/articles/CBMimwFBVV95cUxQRnNJcUllRGYxM2JsZ2JCa1F3dmNRbkt3SWI4eE54U0dhblllSzBBc216dmVHYU9xSkpBV3ZaQktFTWZ2RXVlbThDVGdGaTVKWDl4cXhidmNwelJNNjRRd2NyUGdiTXNVM3lVcUJoSHBEdkJCd0xxVGxmRDl0eTlEQlFPUHRLd3lJcnByNHFsaGx4YnhCRnhTSW93Yw?oc=5",
+      "description": "New York sues Kalshi, says its prediction markets are illegal gambling &nbsp;&nbsp; Reuters"
+    },
+    {
+      "title": "Ken Griffin’s Situational Awareness",
+      "source": "FT",
+      "published": "2026-07-31T04:00:25+00:00",
+      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxOWjk4Tm04MnN3cUhwbXZMOEhDZk5UY2tnOTRybjZrQTZTVURoWWw4QVB3SDF3UEd0RnpKX0FoRDIzN3ZZbzU2VHQ3RW1SVTNVX3NwV2UyRVhNdUVoSnZZVXFDMHdGaXQ2R25ieXltZHhLbWkzd3JyUXdFazV0elNwZmZPdzY?oc=5",
+      "description": "Ken Griffin’s Situational Awareness &nbsp;&nbsp; Financial Times"
+    },
+    {
+      "title": "Rare joint currency intervention sends strong message to markets",
+      "source": "Reuters",
+      "published": "2026-07-31T03:48:00+00:00",
+      "url": "https://news.google.com/rss/articles/CBMiqgFBVV95cUxNakNEam12bmtyQWRfdFVMZXBJSmc1N2Z0WUM5RHVVMDM4ZEkzNndTeVlCNXdzUXBjUS14NUUwaFliRDk3MThnNC04enZ2MWxfXzBYUTdYbDd6TDNVdlBrN0dRWXMtdGZQb1RJWTBnaUFfbXBRZVZQbms3amtBMmFGZThHOHNpVXhCMlJHNHZRQXZxa2ZHVWoyaEV4WXNzNE9qSGt6RmtlYXpsUQ?oc=5",
+      "description": "Rare joint currency intervention sends strong message to markets &nbsp;&nbsp; Reuters"
+    },
+    {
+      "title": "Stocks boosted by tech earnings; bond yields hit multi-year highs",
       "source": "Reuters",
       "published": "2026-07-31T01:31:00+00:00",
       "url": "https://news.google.com/rss/articles/CBMigwFBVV95cUxPNlVXYXdFRjZLcGRvZUdsRkVNc0ZwYUJzNE1rcHdzN3VQOC00WF90TVNOdXhudGZVY3BqWlJ5ZUVTUDZYLVVhd2VEekFRX25rdnZwck13QThNMUhLOEpuVUZHUDhMV3d5ZmlKbDJOTmJmRDQ2Y29uTDBONzZSZ2d5aGtNZw?oc=5",
-      "description": "Asia stocks surge, yen steals spotlight after suspected intervention &nbsp;&nbsp; Reuters"
-    },
-    {
-      "title": "Gold on track to end four-month slump as investors weigh Fed signals",
-      "source": "Reuters",
-      "published": "2026-07-31T01:25:00+00:00",
-      "url": "https://news.google.com/rss/articles/CBMiqwFBVV95cUxPd2tTZWFrV1E2TTVkdXlnRkRoZ1ZyZlJaUE5IQmREM1BWNWdKa2JWWHpuQm91NkltbXRaWWllTHNiWDJQQWRiYVBqd2xWN1FKdUxrQ0tucTE4S0VkcjhfcktHZEdvcTdJbVlvNnh2dDVURkU2OE9tbC1weWkxN2NFcFJrQ1JwT2xKNkhFZUF6NFhTQmFrR2M3cld6aGNYOXlLMmt2aVVSTjAyTUk?oc=5",
-      "description": "Gold on track to end four-month slump as investors weigh Fed signals &nbsp;&nbsp; Reuters"
-    },
-    {
-      "title": "Wall Street ends sharply higher, lifted by soaring Microsoft",
-      "source": "Reuters",
-      "published": "2026-07-30T22:49:38+00:00",
-      "url": "https://news.google.com/rss/articles/CBMioAFBVV95cUxNTkwycXd5d3BqNDVILVR4WkY3UERXYktQdm13QlEwNkd3MXF6Nm9EcTdWNEQ0dmIyV2lPOTFqaU9icm1kYTVoaFIyS3ZUSTRqLWI5THZ0TjM3WEp3aE5XV28zUTBzWkJzcURDNC1Jb21GeXE4eGJjU2tvbkNCR1Qxc2VTeFJPNlFLS0tydFBYdS1ZUnJoWUJqajF4akF0S2NE?oc=5",
-      "description": "Wall Street ends sharply higher, lifted by soaring Microsoft &nbsp;&nbsp; Reuters"
+      "description": "Stocks boosted by tech earnings; bond yields hit multi-year highs &nbsp;&nbsp; Reuters"
     },
     {
       "title": "UK's IG Group bets big on US prediction markets with $1.3 billion Underdog deal",
@@ -28,97 +112,6 @@
       "published": "2026-07-30T18:03:07+00:00",
       "url": "https://news.google.com/rss/articles/CBMipAFBVV95cUxPNHRFQ0l6THdnTnlidG5EZmJBXzdmNVhTdVd2UzhKQlJHZWFpT2NsSUJvLVp6c29NN2kxck5ob1dvazc0Ni1nVXZ2QkllTS1ZajBnbHFwcGZhRl9Ya0JMZGRCcElZTHFWNEVYOXBYR0pWWGRCaWo3eUZUejJDU1hlVERUZWpzU3NNaGNOYkVsZEh4VUU3TEYyR1UxM3FpR3hkQVRyZQ?oc=5",
       "description": "UK's IG Group bets big on US prediction markets with $1.3 billion Underdog deal &nbsp;&nbsp; Reuters"
-    },
-    {
-      "title": "Bank of England holds rates at 3.75% as it waits to see impact of Iran war",
-      "source": "FT",
-      "published": "2026-07-30T15:41:45+00:00",
-      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxOVTY1WTdUREVvM2N5WFVteTFrZlh3WDZPQjlzVmVnVkpUUnZjTU0wX3R5aVA3N01Ydk5XakwwZDRobkRsMmlVRHFtTVBqSlJiZi00RHo5U19NRnJFOEZKX0owWlo1X1ZoVzVWOTNlSkE1eTZQaTVXSE5BNGhOcmN3SXNIU2U?oc=5",
-      "description": "Bank of England holds rates at 3.75% as it waits to see impact of Iran war &nbsp;&nbsp; Financial Times"
-    },
-    {
-      "title": "Japan’s yen jumps 3% as speculation over intervention swirls",
-      "source": "FT",
-      "published": "2026-07-30T15:07:45+00:00",
-      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxQTTRiS3pGbDFnUEhkQU9TeTA4NVlqa1ZZWEpGZ0U1TDZ1WkhQR29jLWhMQ0tlVWdOWXVNWEhOSmhmTlhlMUlpa1JLR0lCX2hHSTdqODFwZktyUWpyQUdJUDNMb0Rpc3l3UWd4TGoyLWx0cXY2YzN2cVQyTkRYU3BtZ1FFdEc?oc=5",
-      "description": "Japan’s yen jumps 3% as speculation over intervention swirls &nbsp;&nbsp; Financial Times"
-    },
-    {
-      "title": "US economy grew less than expected at 1.5% rate in second quarter",
-      "source": "FT",
-      "published": "2026-07-30T12:31:52+00:00",
-      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxOUm55NHF2ZlBnZlpBMEhuaExldVR3aFpYa0NKcFR1R1ljZFRnUE5VX1phRGk3U19GTkw5VURDM1g1cmRQVUJycVBHelJ1UzYzTV9CbWczaWtMYkZvWTZRX1h6QUdFX0hyengzTWRwc2dGUTcyRjJPQ0dPWHl4bXB5dzJkblk?oc=5",
-      "description": "US economy grew less than expected at 1.5% rate in second quarter &nbsp;&nbsp; Financial Times"
-    },
-    {
-      "title": "Kevin Warsh’s stripped-back Fed communication ‘already backfiring’, say investors",
-      "source": "FT",
-      "published": "2026-07-30T10:24:26+00:00",
-      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxPRWIzU2FjQVhvWXBGaU5YTVhrVzIxRXlpMkllRUZabjJ0WFlXSmhtWWZ3NUNIM3BBOUZra2xvZjh6WTlXazhiOXVWaTZWOHlmaTV0a2Y0SVE4VWZpSXZwN2tUaFNQQlNKTWV6YU1RTHFrR1d6UDhreWFFY185UmVWRzdDTHQ?oc=5",
-      "description": "Kevin Warsh’s stripped-back Fed communication ‘already backfiring’, say investors &nbsp;&nbsp; Financial Times"
-    },
-    {
-      "title": "China's leaders pledge to support economy without big new stimulus plans",
-      "source": "Reuters",
-      "published": "2026-07-30T09:39:14+00:00",
-      "url": "https://news.google.com/rss/articles/CBMiuAFBVV95cUxOYTJEeFp5c3pveGFrLXM5dGxlVjVOMDRDR3I3RUhVWmhyd19nWUVfNW8ySjdsbVNoUVpqVm0wZWhvN09WYW5TV0hnaGpKVGFWa216c0tNNF9FNVVDQS13dE9mMW1yaERQZURieVNrNXE0ajJoU01xbkIydzJMQzg1endNaEg0ZGxnZTZ0bzc1VE4tRFR6NE1rZDFFZ3RwdTh3cWFaQzBBVGVvN1Fuc3luNS01aXhsU25i?oc=5",
-      "description": "China's leaders pledge to support economy without big new stimulus plans &nbsp;&nbsp; Reuters"
-    },
-    {
-      "title": "US borrowing costs hit 19-year high as Federal Reserve defies inflation fears",
-      "source": "FT",
-      "published": "2026-07-30T09:03:36+00:00",
-      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxQNWlwWE1SVGJMZDJtQ2d4emRtWmtPdExyZnRtWGI5cWdfT2d2NXFmenRpWGFEdE9UTTVTVGRfMmFnX044YTk0Uk5oMlloV3NVUGljd0tueHVFbkhoMVhXT3p0dHFlZkk4VXREaHVnSm5IbDJNcTZYb0hGQ09JZXRBTEdWWDI?oc=5",
-      "description": "US borrowing costs hit 19-year high as Federal Reserve defies inflation fears &nbsp;&nbsp; Financial Times"
-    },
-    {
-      "title": "Kevin Warsh is confusing markets",
-      "source": "FT",
-      "published": "2026-07-30T05:30:09+00:00",
-      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxNTnlUT3YybEtkcU10RHJYbTNJTFdPWG56RlJzMjh2T2ktMlJrT3dEMXRfSFAxWjlDSWNRTWJxS1gtdlgzQ2MwUjdjQXoxR0NfdEhBSURoUU1wZnpKbE0zQVJNU3NKYjZueWF5UlNRMFR6S1Vrb3JwQzJHMk1ER3U3Z1VLS1A?oc=5",
-      "description": "Kevin Warsh is confusing markets &nbsp;&nbsp; Financial Times"
-    },
-    {
-      "title": "Fed's 'hawkish hold' muddies path for stocks and bonds",
-      "source": "Reuters",
-      "published": "2026-07-30T05:04:00+00:00",
-      "url": "https://news.google.com/rss/articles/CBMikgFBVV95cUxQa1p2OVhIcEZCRHRLTU1sZFJjV1JLTUs1VXVQRElaZHEyWnltRlc5UnhGWFNDSkRqdlltUXAyMl9CMENVaTBseVlVbzJBa2RLcU0wVnJWUDZGMlA1bDJObU03UTE0aE1NQmlwYkhySjNJMUtZYVNmNVZDb1lzN2JOZndjZ2dVWXk1NXBTcFlRaTg0dw?oc=5",
-      "description": "Fed's 'hawkish hold' muddies path for stocks and bonds &nbsp;&nbsp; Reuters"
-    },
-    {
-      "title": "How exposed is the UK economy to the second China shock?",
-      "source": "FT",
-      "published": "2026-07-30T04:01:13+00:00",
-      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxNQkhYMmdYaDRSYXVOaTYweDdCZ2tibGp0U2xVX1NuT3RJSmFfLVJ2ejdjRXhjWDNhcF8tMUhWeVBTSW11WXk5anFRMllVOFpGd3VYcmFfaXBmSjdRT3BkcTl5RG9FeXJBU21uQkM1SXVUR3IyZ2wtOUtWc2F5YVBiUC1SZjk?oc=5",
-      "description": "How exposed is the UK economy to the second China shock? &nbsp;&nbsp; Financial Times"
-    },
-    {
-      "title": "Investors warn Bank of Japan faces test to inflation-fighting credibility",
-      "source": "FT",
-      "published": "2026-07-30T03:43:53+00:00",
-      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxNb09lamFVMXoxQ2g2cENsdW9LNDBwX0ZGRmNLakJxX2Vqa1lyWWRnOGtkemdvSGc2UmZPVkd5WGtwMVp4SnpzN0RsdjdSOG8wenc1VDhUdUdmTlJJYy1wSk1fU0NEUndreWVrUlJSWjVqclBZeWRucnVreWEydmFWUXNleGI?oc=5",
-      "description": "Investors warn Bank of Japan faces test to inflation-fighting credibility &nbsp;&nbsp; Financial Times"
-    },
-    {
-      "title": "Autos lead rise in Indian shares; Fed, oil cap gains",
-      "source": "Reuters",
-      "published": "2026-07-30T02:38:00+00:00",
-      "url": "https://news.google.com/rss/articles/CBMilwFBVV95cUxOSXY3cW5ibmJJM1M3bmQ5SFZoc1VNaVhBQ0lxUFdnQUVLb1c3eTV5dzJoM3k1UUFkam5rZW80QkJncmdJZFNfNnJiNENnZnVZOFRDQXg4bVBPdjV0b1dRRGVLS3VaQWk1OEJtZnFwN19UVVZ3NTd4TVR1azNXZHEyTEJONktiWC1nb3VhTUlrTnI0bE1kb1Fz?oc=5",
-      "description": "Autos lead rise in Indian shares; Fed, oil cap gains &nbsp;&nbsp; Reuters"
-    },
-    {
-      "title": "Microsoft rally lifts stocks, 30-year Treasury yield hits 19-year peak",
-      "source": "Reuters",
-      "published": "2026-07-30T01:46:00+00:00",
-      "url": "https://news.google.com/rss/articles/CBMie0FVX3lxTE1tZUpRQXhBTWNiQUpVakxxTnVOaEhBMEFFRHF5Q241a2dseHJ0NHpZQ1NNWnc1V3hrU3dVeThuUEp0RjFCaDlraTB1YldrUUloc3hOMHJKd2h5WlJla2JBQVJEbThYTDV4NEhPX2d6YmRibnoxQ1NaZWFhOA?oc=5",
-      "description": "Microsoft rally lifts stocks, 30-year Treasury yield hits 19-year peak &nbsp;&nbsp; Reuters"
-    },
-    {
-      "title": "Federal Reserve issues FOMC statement",
-      "source": "Fed FOMC",
-      "published": "2026-07-29T18:00:00+00:00",
-      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260729a.htm",
-      "description": "Federal Reserve issues FOMC statement"
     }
   ]
 }
