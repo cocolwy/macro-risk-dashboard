@@ -1,19 +1,110 @@
 {
-  "fetched_at": "2026-08-03T04:07:40.958811+00:00",
+  "fetched_at": "2026-08-04T03:50:10.116618+00:00",
   "headlines": [
     {
-      "title": "Japan vows to intervene again with US over yen if needed",
-      "source": "FT",
-      "published": "2026-08-03T02:08:26+00:00",
-      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxOa1BZYkpxbTJJTU4xdUtjeGluTTBtZm9CZjRlSjAtQ2oxcEg3NWt0eG5HVzlqX0dlZHJDc2FvU3VTTlNCQ1ZrVzB5UWtOSnNpZGZKMl9MXzlUN2ZycFdDcXZhTTY2Vk9aLWsya0VzZnFUSVRCSDBfMmdHUFRCR1pCSUVaaVc?oc=5",
-      "description": "Japan vows to intervene again with US over yen if needed &nbsp;&nbsp; Financial Times"
+      "title": "Asia stocks move higher on Wall Street lead, oil steady",
+      "source": "Reuters",
+      "published": "2026-08-04T00:38:00+00:00",
+      "url": "https://news.google.com/rss/articles/CBMie0FVX3lxTE9FbUhCcDNQSE1IQ3dnM055RTJNZ0N1WHYtTUswbUtjZmRTS3FwbEtKZkd5Ti1WT0JndWtUSEJJTktud19OQzRELW93em1SMFdjcnphTVBMQ1BPMzBJLTdEYmxMbnJ2bFB4NVN4ZVlKYjIyZUlFZGx3RUljSQ?oc=5",
+      "description": "Asia stocks move higher on Wall Street lead, oil steady &nbsp;&nbsp; Reuters"
     },
     {
-      "title": "Oil slumps on hopes of Iran deal, yen spikes suddenly after intervention",
+      "title": "US states accuse Trump administration of ‘sham’ tariff probe",
+      "source": "FT",
+      "published": "2026-08-03T21:35:03+00:00",
+      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxNbV9vbG1EaVJ2RXl1N0xyaUZ4Z005WTVHSEZEUVVFM0NGSWMxeFFua0lnckZNaFJRcHFaZW5JYUxocW9jZHRyWDFxb0g5OU85akZEQzJpc0dJMENYWE16TWhvU0pSWksxS0lnd1QtYWRMZ1dlb2NNN3dnN2Ita0ZETS1hWFE?oc=5",
+      "description": "US states accuse Trump administration of ‘sham’ tariff probe &nbsp;&nbsp; Financial Times"
+    },
+    {
+      "title": "Voters prefer Democrats over Republicans on economy for first time in a decade, Reuters/Ipsos poll finds",
+      "source": "Reuters",
+      "published": "2026-08-03T20:18:00+00:00",
+      "url": "https://news.google.com/rss/articles/CBMiwgFBVV95cUxNWE5YTnBRcFkwQUx5NXBHMGMtaFFHTWh3d1pSRmVodEV1SkRnQmVHbUQ2RDRVZ1U0SUROd2U4YUo4VW95WmFHNWlnQUVkOU1NelRpd0VSVzNTa3o1d1ZqT0JfbjBtTTFTVW9JZVFFbUdsT1Y4U045WElfZFhabjRUZWdKY3BMVVIxWnEwRXlZcjE3bWNTV3UzbGNzdjdOM3FhX2lpckxaR2RJQkhfNlFwc080VEV3RUJUVzNRNFQySkxYQQ?oc=5",
+      "description": "Voters prefer Democrats over Republicans on economy for first time in a decade, Reuters/Ipsos poll finds &nbsp;&nbsp; Reuters"
+    },
+    {
+      "title": "How big was the American JPY intervention?",
+      "source": "FT",
+      "published": "2026-08-03T17:14:10+00:00",
+      "url": "https://news.google.com/rss/articles/CBMicEFVX3lxTE8tM1h0VXFFZzdjLTZXYlBlUk53Y2hJSHYycmQzX3JURUJRazlxREpZOGVHbHFscEREejRMSnZUQzRGRmFiUk5Vb3Qyd1pVTENlemNaSkxvdW1Fa1pTeHVSNzFrdW16Uk82c0hVMUhTVjY?oc=5",
+      "description": "How big was the American JPY intervention? &nbsp;&nbsp; Financial Times"
+    },
+    {
+      "title": "Japan vows further yen intervention with US if needed",
+      "source": "FT",
+      "published": "2026-08-03T15:09:56+00:00",
+      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxOa1BZYkpxbTJJTU4xdUtjeGluTTBtZm9CZjRlSjAtQ2oxcEg3NWt0eG5HVzlqX0dlZHJDc2FvU3VTTlNCQ1ZrVzB5UWtOSnNpZGZKMl9MXzlUN2ZycFdDcXZhTTY2Vk9aLWsya0VzZnFUSVRCSDBfMmdHUFRCR1pCSUVaaVc?oc=5",
+      "description": "Japan vows further yen intervention with US if needed &nbsp;&nbsp; Financial Times"
+    },
+    {
+      "title": "US shakes up currency markets with unusual yen-buying via selling euros",
+      "source": "Reuters",
+      "published": "2026-08-03T14:08:20+00:00",
+      "url": "https://news.google.com/rss/articles/CBMiyAFBVV95cUxOYWhwczdTVFV2eTBMeUpacllrZ0VhMWhPa1FrX0p0VFN4N1pNeU9QN3BiWVNJdVR1MDZybUYxUjh2aDB2Rmw4NDdJcXFPM3M3cXU2TnJ1OEh1S2oyTF9QLURJc1NPM3g0Z09MczFneVBYWUwxWnNPRGF2U1YzM3BLeEdFRDAyN3lHNU5zY2wzdWl3TFF6Ump1RXI3V2x0aXB2M2RpM0luaHBWN1pVSXJ3VmRaS3NEWkhWUkFqSHhYWXJOemNicnBjcg?oc=5",
+      "description": "US shakes up currency markets with unusual yen-buying via selling euros &nbsp;&nbsp; Reuters"
+    },
+    {
+      "title": "ASML’s hold over the future of chipmaking is weakening",
+      "source": "FT",
+      "published": "2026-08-03T12:54:56+00:00",
+      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxQX1R5S09FREZ0OHFZVm84cDFLUGtLTUM2OTVldWc0cEtNM0h6Q3cteWRiRXhNV2Q1Y0tGbm5kRmFFR0FGZUNRUko2dFZuNjI0Mk1zMmQ1NnpESGk0TEpUX0NJbkZIaHZIeV84bllFLTlkdEZSV2diVWhYTThfNm9Ib0d5aGM?oc=5",
+      "description": "ASML’s hold over the future of chipmaking is weakening &nbsp;&nbsp; Financial Times"
+    },
+    {
+      "title": "EXCLUSIVE: Fed's Williams expects inflation to ease, says Fed will act if it doesn't",
+      "source": "Reuters",
+      "published": "2026-08-03T10:20:30+00:00",
+      "url": "https://news.google.com/rss/articles/CBMisgFBVV95cUxNSW5GWU1oN1VmZjRKVjJXb2p0NENaV2VXcEU5a094OWJwTy1HbGk5UHZRNl9hT2UwVU01bnhJMDg1RS1YWTM0Z1F6SFp0RmttanY3dVprbENuMGlnQndRNWh0VmEzTEp4Tm9pOHJNQlMxbktWN1dLeThZWEhVSVpTRkdTRFozaDJ1Zmx0R2dxTnhaaXdmaHJ0WHR3cHpmcHVoeTN2QjBzYjhtemVocWFvQmln?oc=5",
+      "description": "EXCLUSIVE: Fed's Williams expects inflation to ease, says Fed will act if it doesn't &nbsp;&nbsp; Reuters"
+    },
+    {
+      "title": "Team America: Yen police",
+      "source": "FT",
+      "published": "2026-08-03T05:30:02+00:00",
+      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxOMUZrVmtYd3NGMUozbWh2NUxjWUtkU1hMc0p3NXJGNjdrQmRfZ0JkdmtDZ2xZMjROM3VVUE01QTJXN1RlcmZFSDNlbjVYclhTMnliRHVSYnktell0Um0yY3hNeUEzVnJzV1pBVjNzSTlJbmttZ3dQckNLczM5TkdvMjB3V0c?oc=5",
+      "description": "Team America: Yen police &nbsp;&nbsp; Financial Times"
+    },
+    {
+      "title": "A digital iron curtain is threatening the global economy",
+      "source": "FT",
+      "published": "2026-08-03T04:00:13+00:00",
+      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxNWXBpSkVDd3dBYklxcF9uS0lWQ1ZqSzlXSjluaml1dmZ0MHFiQmFTdmZ2SDlBVW02S3ZncXB5U2RVVkg0T1R4Tk0zcmdpT05SZG83VFNRSjFHemQzdExXRjRUcDBEcVA1UVV0bkJmei1RbXFlTVFOOElyb3BBYkZfOU9RTW4?oc=5",
+      "description": "A digital iron curtain is threatening the global economy &nbsp;&nbsp; Financial Times"
+    },
+    {
+      "title": "Whatever happened to prudence?",
+      "source": "FT",
+      "published": "2026-08-03T04:00:13+00:00",
+      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxQM3k3d0w1ZE45dW1Ca0tOQkJLYkRiMGhKZ2NJTFU2WUljbjF6UVlUUE52UFNrTjJ6ZUdJZDlBdE9BMlc4ZjVveFNuWm40c0F0UFN4UzVsdTAxTk1acWtOY2xZakRJak9DQWpZd1JGZFVFWEMzdm5YaEZNZi1YMzNVWUMxVnY?oc=5",
+      "description": "Whatever happened to prudence? &nbsp;&nbsp; Financial Times"
+    },
+    {
+      "title": "A second act for high-yield bonds",
+      "source": "FT",
+      "published": "2026-08-03T04:00:13+00:00",
+      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxQb0JQc3gzcS1PQlFxMFk5TWR3VWY1UlpCcUNyZUNxMDdnNk5saklEOGc4RHRNSS1na2dsSVB3V2NWQzlmVWRGTFdDQi1Gcno1RkxhRnJ2cktvWVluY3Z6eVlOLUx3aFlhdUJWVGpkV005bng2UkZaM0c3QjJWR2lRT0pPcGM?oc=5",
+      "description": "A second act for high-yield bonds &nbsp;&nbsp; Financial Times"
+    },
+    {
+      "title": "Indian stocks rise on Brent dip, shock-free earnings season",
+      "source": "Reuters",
+      "published": "2026-08-03T02:39:00+00:00",
+      "url": "https://news.google.com/rss/articles/CBMingFBVV95cUxPMmpzT2p3MGlZN3V1QkI3c1I0X0dqVTk4Z3BsMjNqcWljM1BGZ19FbThiNHUyR3FXTjE5SE5IZGJnUHR3UHloUUZNZkdtS3phVGRRUTVQdTR3WW9FSHM5Q3VQY2czUFhEZE5JLW5UN0pkNWh3LS1tXzlvRzhfUWdJMjZ5blQtUENIR2NwaktkcVJiX0dHQ3hLS3FnVUlIdw?oc=5",
+      "description": "Indian stocks rise on Brent dip, shock-free earnings season &nbsp;&nbsp; Reuters"
+    },
+    {
+      "title": "Oil drops, stocks gain amid Iran peace hopes; yen firms as investors watch for further intervention",
       "source": "Reuters",
       "published": "2026-08-03T01:03:00+00:00",
       "url": "https://news.google.com/rss/articles/CBMigwFBVV95cUxQUjBjdHpEdEdMdVNpbVprQmRvNG9JTzl0ZHB4SkNmWUxqT2hNUG8xcW96U1R2czNKWHVMYXRqY2gxR1pHTzZ4RjlpaDgzUnM3U0dCNURmZDhPUUhVTnRuUFhYcGFmVHdoOWg2a3RJNTNGQktBU3pvZVZGSS1EVUJ1QzlVbw?oc=5",
-      "description": "Oil slumps on hopes of Iran deal, yen spikes suddenly after intervention &nbsp;&nbsp; Reuters"
+      "description": "Oil drops, stocks gain amid Iran peace hopes; yen firms as investors watch for further intervention &nbsp;&nbsp; Reuters"
+    },
+    {
+      "title": "Gold eases as markets weigh Middle East uncertainty, inflation risks",
+      "source": "Reuters",
+      "published": "2026-08-03T00:41:00+00:00",
+      "url": "https://news.google.com/rss/articles/CBMipgFBVV95cUxNTnkxZDh5TElCa1dZeUtDT2JfblI5ZFJuQkZNQ1pvbHlkcWxHRUVfMk51N2t0ZDUtbEhOYW9aVjg5d3lMSkNXYlFMc0I5Z3o1bjh4c0pkZ3BsWkRYeWhOalNoOUZPN3pvYVRSb1NnT21rZy1TamRFMHN2MUp1WjhoSmZaT0prMExjTVk1aThUbHAwNEo3MmpsbTI2UFdsY2Z2Y0RlT2RB?oc=5",
+      "description": "Gold eases as markets weigh Middle East uncertainty, inflation risks &nbsp;&nbsp; Reuters"
     },
     {
       "title": "Bessent ready to repeat joint yen intervention, urges bigger Fed backstop",
@@ -21,97 +112,6 @@
       "published": "2026-08-03T00:40:00+00:00",
       "url": "https://news.google.com/rss/articles/CBMiwgFBVV95cUxNSnRfSWRsRG9LTGxHRGtVT2ZUR2VkVm9oSWRFWHBpV1pLYmwzeWI5VGdDQWNQNGdHUWhMTThMbUVCVXN4NkdlS2dGckxRdUNfNFNmay1rNXdVOXpJTklSUjd0cGNncmxxZFdGN3lyUnRRWWdVS1REZENIZVdQVm5UYWc5LXAzMFlzVng1SDdnb3hwbHk5SUR6eUZFWEtGZW01UjB6ZFhHeGw5SlNscmJFWXhacUtvRHZjaEptWmRpUW5LZw?oc=5",
       "description": "Bessent ready to repeat joint yen intervention, urges bigger Fed backstop &nbsp;&nbsp; Reuters"
-    },
-    {
-      "title": "China's Chery to invest $75 mln in Korea's KG Mobility, eyes overseas markets",
-      "source": "Reuters",
-      "published": "2026-08-03T00:02:00+00:00",
-      "url": "https://news.google.com/rss/articles/CBMizgFBVV95cUxNMHcyblFseVdpWUdPVVdaYy01XzhlWFBObENialpfdWZoeW5hemhtODBRd0ZkbG9QeDVqR2RBYzZDV3NQcGRoWVgxY3dXa1d4UlFoRDEwR0lkSVl6QTRrZmFaU2ZpazIxdUQ4TWtmQzJKVHg3Q2FPd0VIMk1NaTBFdUV5VE9kQ3hlRVo1RGx3aHp2ZHhKY1RkcDdtcUc0SmVaVUM2T2sxVjVDdlJQdmNTTUpwam9CenQ3SjZIVWd5RUFmbGJiMUxuekl2UHpnUQ?oc=5",
-      "description": "China's Chery to invest $75 mln in Korea's KG Mobility, eyes overseas markets &nbsp;&nbsp; Reuters"
-    },
-    {
-      "title": "Young South Koreans look for jobs in Japan as they struggle to find work at home​",
-      "source": "Reuters",
-      "published": "2026-08-03T00:02:00+00:00",
-      "url": "https://news.google.com/rss/articles/CBMiwAFBVV95cUxQR1JWMkpuQ1gyX1lnRWpVWktLazExOWJ1UVlkUkFqSV9FOGxZNmFtVXA3TFRyVjBCM0tpdlRYbVp0WEl0VDlFMVhwSlVKX3J2S2NHdUlYd01BOE1WS3JaTTUzTHFhd2VZYW5RRzZ6VGVoX1ZHcmpWNjlXMTRoTDA2eVREZlVydlRSb3JPeV9pMGpYRXVuZ2t2Z3RfZlB6UUVFTFUzSjVQUFNoZlJiMVc4ZTI5Vll2WGpRT2hFUld5N3g?oc=5",
-      "description": "Young South Koreans look for jobs in Japan as they struggle to find work at home​ &nbsp;&nbsp; Reuters"
-    },
-    {
-      "title": "Japan, US confirm joint yen-buying intervention, signal more action",
-      "source": "Reuters",
-      "published": "2026-08-02T21:01:00+00:00",
-      "url": "https://news.google.com/rss/articles/CBMirwFBVV95cUxNYWxCY2xleXI0czB5WEhyRThFYVhWT0pYcFE1TzY5NnZSbVBvc0Vsc05hM2hwd0sySWFGT213d2hFSkhqRlJ5LXg4djlZXzRBZmZ1Y2c2VHhnUHlmUlpwTlFqbDI5U25KT0NPajF2eWsya0k1UXVVOHZyZEdrZGZTQXRycGt4R0oySUc2TVk3T01XemExNEJOMDJ2MkU0a0dtMTFkNDRIYTlwaWRGR2hB?oc=5",
-      "description": "Japan, US confirm joint yen-buying intervention, signal more action &nbsp;&nbsp; Reuters"
-    },
-    {
-      "title": "EXCLUSIVE Japan to announce Tokyo, Washington took joint action on yen, sources say",
-      "source": "Reuters",
-      "published": "2026-08-02T20:00:23+00:00",
-      "url": "https://news.google.com/rss/articles/CBMivAFBVV95cUxNeWRxZmUtQUZfS21oaHA2QVRaX0FYX09hRTBYRXZ6dnZ4dzAxamMzREtPN2laazBKdDNacXg3UUcxbS1fM3VSNGV4bDFNVkJPU3RCUWFDZjlDQ3VaTV9zTmQzaDgxYlV1MmNJcFZZcmJvRG9qSlRWTnZlQ1MyTm14OVItU2M2cDJfcklTdERRR2xBZ09FVWtYVkhZaTJiQXE5S0Q1eUNFdE5fbGl1X3VyUko1bHFiQ1M2SExvVw?oc=5",
-      "description": "EXCLUSIVE Japan to announce Tokyo, Washington took joint action on yen, sources say &nbsp;&nbsp; Reuters"
-    },
-    {
-      "title": "Earnings season reaches a peak",
-      "source": "FT",
-      "published": "2026-08-02T17:15:09+00:00",
-      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxQdThQdmt0RVNaQklqUC04aWNTTWpnOVhqb0RxTS12QU4ydzdLSTdSSnptQVB0dUp5SVN3V1VLU2FzRHgzU3FUQW9Da2kyaVV5MDAyb1A5QWIxQ0xncVpKeW54bjZ0MzFrLV9NWlVXMXQ4aC1TX0FURkU0MjdBaERDSmJacHg?oc=5",
-      "description": "Earnings season reaches a peak &nbsp;&nbsp; Financial Times"
-    },
-    {
-      "title": "China draws 'red lines' around its economic model ahead of EU, US trade talks",
-      "source": "Reuters",
-      "published": "2026-08-02T17:05:00+00:00",
-      "url": "https://news.google.com/rss/articles/CBMiuwFBVV95cUxQQWk1MXJvXzVGTkx2SW9Kak03MTJDSUlsYWtZREhuT1MwcjJUOWcyOFFwcXFHYlNrV1dlUUdHVG9yZk5JbFJwS1JzWWg4ZE9pY0NQWWdpSVhoT0g1ZERwVlBvTm51dklQLWlGU0UxeEF1NVJfQ1pvdnZUa1dRQ3RUU09lUE50NGJLcE4wYmNtUGNXT0xLV1BkNnlmR1p4ZTkwQ0pIRnpQUVQ3TGkyakUwRm5RRzNJZi1Id3Bv?oc=5",
-      "description": "China draws 'red lines' around its economic model ahead of EU, US trade talks &nbsp;&nbsp; Reuters"
-    },
-    {
-      "title": "America’s biggest companies report ‘rock solid’ profits as consumers face higher costs",
-      "source": "FT",
-      "published": "2026-08-02T16:00:06+00:00",
-      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxOcXhWdm9xZmVLQTk0REljakVERGdieTE4OG1od3gwNHJTUTNOYkNscEhXb1JvTjZOdzViZFprQTRSekRxNkFSalMwTTZ6bzdXQzNuUUxTbkF4enZUcmFQb2RiQVVIMFZGLTd5ZzJGQ1V1Ykpxb3U5M3hYN0NUSFlsWUh1OHc?oc=5",
-      "description": "America’s biggest companies report ‘rock solid’ profits as consumers face higher costs &nbsp;&nbsp; Financial Times"
-    },
-    {
-      "title": "Gulf stocks rise as Iran de-escalation hopes, earnings lift sentiment",
-      "source": "Reuters",
-      "published": "2026-08-02T12:48:52+00:00",
-      "url": "https://news.google.com/rss/articles/CBMiuwFBVV95cUxOZnZ5dk1rM0dBSk5iSjEwVV9FNUJRVWJhLXlEY2lKRHAwb0ZSUU5INVUwVFpKV3M3aGhVNmZNSDMxV1JQNnZDWjhwaFhITnVhUUt5X0tCZ2pBTk1rNEg4ZTQ5MUJzRVI2b2hCS1BqYXpKTHBabmc5WHpQajZuS3BfNU5FUHR1cHlfUmQ0bWtFLWdyUFZoaXF6d2ZCUWRPX2JROU5fclRkM3NyOVNXZW52YzdRUkRBRWEtZ3ZF?oc=5",
-      "description": "Gulf stocks rise as Iran de-escalation hopes, earnings lift sentiment &nbsp;&nbsp; Reuters"
-    },
-    {
-      "title": "Walter insurers paid millions of dollars to credit rating provider Egan-Jones",
-      "source": "FT",
-      "published": "2026-08-02T12:00:05+00:00",
-      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxNalJXVmFXZ2NYRHdXcG81UTFiSU1RM3NKdS1MSlpwSkpQeTFrRTZSeExiX0JZbHdyenFvTEoxXzZEWERFRjVwdElpT2Y0MnAtQmY2WEkyaFVldmk2VExYVzJiTUlwc0dSMUI5a3FXYVk5VnR1eWNJcXhRZG02OVQwemJWMGs?oc=5",
-      "description": "Walter insurers paid millions of dollars to credit rating provider Egan-Jones &nbsp;&nbsp; Financial Times"
-    },
-    {
-      "title": "Will July’s US employment data prompt a rethink on rates?",
-      "source": "FT",
-      "published": "2026-08-02T11:00:05+00:00",
-      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxQbVJsT1dBaXZ4NV9GZTJuUFZOZW5qV2NRWWtJVEItOUJIM3A3S2EzUDN6V1hfV1FPZUxaWTU2eWNzMDBuWGFDVHVZd01ZU1hHZnkzSjZIakJXUVBPd0loVlJ1RGFXWHNURzRvQnhEQno2S3FXalF2a0RHZTQ2V0tsMXo2aEM?oc=5",
-      "description": "Will July’s US employment data prompt a rethink on rates? &nbsp;&nbsp; Financial Times"
-    },
-    {
-      "title": "Morgan Stanley’s IPO after-party: a wealth management bonanza",
-      "source": "FT",
-      "published": "2026-08-02T10:00:05+00:00",
-      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxQOV9Ia3ZGN09FaE81ODJWUVBNNVB3eGxfbVdVUHhBdGtjQmR4ODVhZ1JJSVlIalhFMmM4cnZZbTBMbnNoaHJJUWlUa0k4ZE15ZTBkeGh0a3NqTkw4S1N3YXRDRVNwUnB4aG42b3RQTGU0OFY0Si1xc2Rsci1tUFZfMXpmVzA?oc=5",
-      "description": "Morgan Stanley’s IPO after-party: a wealth management bonanza &nbsp;&nbsp; Financial Times"
-    },
-    {
-      "title": "Who needs junior markets like Aim anyway?",
-      "source": "FT",
-      "published": "2026-08-02T04:00:27+00:00",
-      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxObllxa0ZhSm4yYi0xbnVyVWpmWGJhLU12M2dQSENVNlBxdmF3cU1GT25XTkJYWHVmVE5FWlZpQnB0TUlhWWxHVzExd09DTWRvMVdDRzRWeGRZVU02TWFLVWp1bVpoM2ZybTcxUnR5SzZndlpIMzFQdHFNUkdFNGtXUkQybzM?oc=5",
-      "description": "Who needs junior markets like Aim anyway? &nbsp;&nbsp; Financial Times"
-    },
-    {
-      "title": "Australian farmers in trade dispute over pineapple import plan",
-      "source": "FT",
-      "published": "2026-08-02T02:26:13+00:00",
-      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxNeVRob2NjZ20zOHBmcG0wenQ3TFRPUVFzY0xjVEIxcmNaYzViVGl0bXYyRFE1V2k0SWozZi13bjhmdURjNE5INWV3SzZTRzVPbDdqU2VRM2lGS0dPb1didWIzTVVvT1RMbVF6VzlpTXJfcXc5cjdfdEpoQ0lEM1RubEV1S2E?oc=5",
-      "description": "Australian farmers in trade dispute over pineapple import plan &nbsp;&nbsp; Financial Times"
     }
   ]
 }
