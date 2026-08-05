@@ -1,19 +1,110 @@
 {
-  "fetched_at": "2026-08-04T03:50:10.116618+00:00",
+  "fetched_at": "2026-08-05T03:46:02.934664+00:00",
   "headlines": [
     {
-      "title": "Asia stocks move higher on Wall Street lead, oil steady",
+      "title": "China AI hardware stocks slump after news US plans to ban imports of Chinese components",
       "source": "Reuters",
-      "published": "2026-08-04T00:38:00+00:00",
-      "url": "https://news.google.com/rss/articles/CBMie0FVX3lxTE9FbUhCcDNQSE1IQ3dnM055RTJNZ0N1WHYtTUswbUtjZmRTS3FwbEtKZkd5Ti1WT0JndWtUSEJJTktud19OQzRELW93em1SMFdjcnphTVBMQ1BPMzBJLTdEYmxMbnJ2bFB4NVN4ZVlKYjIyZUlFZGx3RUljSQ?oc=5",
-      "description": "Asia stocks move higher on Wall Street lead, oil steady &nbsp;&nbsp; Reuters"
+      "published": "2026-08-05T01:42:00+00:00",
+      "url": "https://news.google.com/rss/articles/CBMiyAFBVV95cUxOU1dRTlJ3dWthcTVkQnd1NFVJTFZSeHV4TXNiZlZOaVlNa1lSNFVnQWZxZkxEQkV2NGZ3YV8wZ21mbjhRYUg3Z05nci1Ua3o1M0FyTGxIT0VLXzhYUlFpajhQVEEwYmFuZnhZNjZPdjdPcFh2elVnNlFvdVZjYlVTNWU5M21VempmYUVMSzNNMURjeEtwcFFUa2NvY2MwYVE1M0k2RDVpTFR1V0VGUVBBNHNaRkQ3UzlhX2FMUDJFNXpOX1RVU2ZZRQ?oc=5",
+      "description": "China AI hardware stocks slump after news US plans to ban imports of Chinese components &nbsp;&nbsp; Reuters"
     },
     {
-      "title": "US states accuse Trump administration of ‘sham’ tariff probe",
+      "title": "US yen intervention signals perfect storm rising in FX and bond markets",
+      "source": "Reuters",
+      "published": "2026-08-04T23:30:25+00:00",
+      "url": "https://news.google.com/rss/articles/CBMizgFBVV95cUxQOVhFamJnNjNYd1piUGFvMUR6WV9tSWVOdkdaa1lsYmd2UEp3blppbXVKYnZma2E5YjBHQWV1MlJoQjNSZFlQMW04RWRMSEQ3Ykl6Um9DNzJOTFBvSkxuMTVNSC1xWlpzbmtJZFpRMm5NWkxSUFZZRGlpcmpXYjBrNmJHR19UendSQUJzRElnZEtBal94dUUtVlhjN1pacWZNZE10Vlp3Qjk3ZTZzd3ZlZG5FWDROSkUybHNUZE1LamlkYm1heFFFNEhTVEF4UQ?oc=5",
+      "description": "US yen intervention signals perfect storm rising in FX and bond markets &nbsp;&nbsp; Reuters"
+    },
+    {
+      "title": "Stock indexes register records after upbeat company forecasts; oil drops",
+      "source": "Reuters",
+      "published": "2026-08-04T23:03:39+00:00",
+      "url": "https://news.google.com/rss/articles/CBMie0FVX3lxTE9FbUhCcDNQSE1IQ3dnM055RTJNZ0N1WHYtTUswbUtjZmRTS3FwbEtKZkd5Ti1WT0JndWtUSEJJTktud19OQzRELW93em1SMFdjcnphTVBMQ1BPMzBJLTdEYmxMbnJ2bFB4NVN4ZVlKYjIyZUlFZGx3RUljSQ?oc=5",
+      "description": "Stock indexes register records after upbeat company forecasts; oil drops &nbsp;&nbsp; Reuters"
+    },
+    {
+      "title": "US diesel prices overtake Biden-era average in blow to Trump - ft.com",
       "source": "FT",
-      "published": "2026-08-03T21:35:03+00:00",
-      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxNbV9vbG1EaVJ2RXl1N0xyaUZ4Z005WTVHSEZEUVVFM0NGSWMxeFFua0lnckZNaFJRcHFaZW5JYUxocW9jZHRyWDFxb0g5OU85akZEQzJpc0dJMENYWE16TWhvU0pSWksxS0lnd1QtYWRMZ1dlb2NNN3dnN2Ita0ZETS1hWFE?oc=5",
-      "description": "US states accuse Trump administration of ‘sham’ tariff probe &nbsp;&nbsp; Financial Times"
+      "published": "2026-08-04T17:51:17+00:00",
+      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxQRFBDSWdseER2dWM0Y2pxNEQwUFFTMXNrWjA0UEZzcDdhUEZwVHd3Z0FpelVwbW9MZWdDM25xLTl5UjdYbENrY1RPaUNZc1NJbUpLWjNlRkw2SVpHYk9pcUVmTjJ6VExxa1k2NHVZR0NSY00yOE5jYmRnZ09xX2xKYWZjYnc?oc=5",
+      "description": "US diesel prices overtake Biden-era average in blow to Trump &nbsp;&nbsp; ft.com"
+    },
+    {
+      "title": "Developing countries have ‘less to fear’ from AI than rich nations - ft.com",
+      "source": "FT",
+      "published": "2026-08-04T13:00:10+00:00",
+      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxNOTNfa2ZpRkhDNXRCVGRPcEQ4aWEycDFobTFZTnZ4TGI4WGhVZV9GcDFyb2RGdGN3MVB2UWgzSkY5TW1peERKRXdUSE9aSXVwZEk4Q0ZCOUlzSjRSRHBLS0pGZWFURGNTRlZzeXpMUllIdG9oTFNMV3FrekRza3k2MnhJWUw?oc=5",
+      "description": "Developing countries have ‘less to fear’ from AI than rich nations &nbsp;&nbsp; ft.com"
+    },
+    {
+      "title": "The Federal Reserve goes Wacko - ft.com",
+      "source": "FT",
+      "published": "2026-08-04T11:30:01+00:00",
+      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxNUkFWYmN6RWRoU1pHc2dkTmxONHd1VUVYYy1OQUxXTG9Zc3gyZWVXMUVpQW1fUDFjT2dnR1V1WGlDNHc1ejkwTVA3UHFsRlZ1ajhoaWg0OThUM3JtMkg5M29iQ2J4RS1NU3NkWlQxekRvZjBHU3hzeGNiQlpzM3lNX3FUMEc?oc=5",
+      "description": "The Federal Reserve goes Wacko &nbsp;&nbsp; ft.com"
+    },
+    {
+      "title": "FirstFT: Progressives versus traditionalists in Michigan - ft.com",
+      "source": "FT",
+      "published": "2026-08-04T10:40:50+00:00",
+      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxNcHYxQ0M4eENydHhGZEtJZzdKWUpoN1dhVEllVzRseEszVWNnVjljVW5Za1lOOU00RnBrZFhCZm10eXp0aVRyRktlMndyNXAwdnJYSmx0Y3RsbE9RaVN3TGZoX3g1dExMX0c5MjBKYjAzMFpqZHV5T21wSUplZjg0d0JwOTg?oc=5",
+      "description": "FirstFT: Progressives versus traditionalists in Michigan &nbsp;&nbsp; ft.com"
+    },
+    {
+      "title": "Scott Bessent’s yen intervention signals new era of US ‘currency activism’ - ft.com",
+      "source": "FT",
+      "published": "2026-08-04T10:37:51+00:00",
+      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxPcDhQblNJaDRoYUVyMXpGUXNMeGZMd3JSMThHRVAzZWxhdmVLeUVVT1hHQ0hWYnVlR1ZpRFdueDVqdURmellaeWc5NnF6MVBzajZhNE9QZVdaS3VJNXIwTnJ2TW9lTGxKQWViTlVnWHhSTDlYRlRJN2NkdWZXNTNmX3VvTXA?oc=5",
+      "description": "Scott Bessent’s yen intervention signals new era of US ‘currency activism’ &nbsp;&nbsp; ft.com"
+    },
+    {
+      "title": "Ukrainian drones hit Wildberries warehouses in overnight strikes - ft.com",
+      "source": "FT",
+      "published": "2026-08-04T08:57:29+00:00",
+      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxNaFVON0JHckRuaDZvLWFUcUpsY1ZJQk1CalV3b1JuQXozNTRQazJJNnhkQkQ5Z01nZDl1a3FGTWxNeURKX1hVSzNzcE9nR0tJV0Z5Y1JMTzhVdDA3UElQNnc2REp5UkJpZElCWU5sR3FVRG1jM0FDSWFYS3J0dld4MUwwQmc?oc=5",
+      "description": "Ukrainian drones hit Wildberries warehouses in overnight strikes &nbsp;&nbsp; ft.com"
+    },
+    {
+      "title": "US economy is overstimulated — and bond markets fear it",
+      "source": "Reuters",
+      "published": "2026-08-04T06:00:00+00:00",
+      "url": "https://news.google.com/rss/articles/CBMiugFBVV95cUxOOEZFQkFyNE41ZEZVYjFwVVdyeV9WaGtIalV3LUhpUDUxald1WDFnQm05WmxPN2pTbk9iaUlnSzJNUGplbDJScnNSMU9XdTVzcWFsVVFXZXlMS0Y5dWc4Z0FCQUJKOF82ZWJGVDZXZFFzSGxEVURGSkNwUjkxbDVQSTJfWHRxYm13VDZKeHZDR2JRNVI0WDQwa05pZHRCbVh1NGIydm9sSzg4Z2RIOUc5NWxiRFRXSnVtSXc?oc=5",
+      "description": "US economy is overstimulated — and bond markets fear it &nbsp;&nbsp; Reuters"
+    },
+    {
+      "title": "Inside Google’s $200bn Wall Street finance machine for Anthropic - ft.com",
+      "source": "FT",
+      "published": "2026-08-04T04:00:16+00:00",
+      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxQQlV0a0ZQV0NYRkVGM0Z4QndJSmV0U1ctNjlKT1d2dHZEcDRuVHRXZDJwRm94MXM4TUE0akFsOE9IU1ZQcU9WblJVVzMxY1pyUnNZVHRIb2l2MkhsaXhQRDVBLV96RVhIRmgxQ3ZxUU9RRkxpYjF4bC0wREZLanR6MHB2U3c?oc=5",
+      "description": "Inside Google’s $200bn Wall Street finance machine for Anthropic &nbsp;&nbsp; ft.com"
+    },
+    {
+      "title": "America’s puzzling yen intervention - ft.com",
+      "source": "FT",
+      "published": "2026-08-04T04:00:00+00:00",
+      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxNYmFnY05IQ3V6US00X05UZjYzbjcxcFV5eXZybWh3dXFmb1dMTGJ1VHU5dnJ1Mk80UkNXZnBaMk43UTBtaGFPWFV0dS1IaVEtT0ZzWHNZT1U1OVRaTFluNzA0MVRDRmFCRllUN2pwNTU5SUt3R1p1b2dtNjJCS0FtdTZJWkg?oc=5",
+      "description": "America’s puzzling yen intervention &nbsp;&nbsp; ft.com"
+    },
+    {
+      "title": "Japan's economy minister offers sanguine view on inflation",
+      "source": "Reuters",
+      "published": "2026-08-04T02:40:00+00:00",
+      "url": "https://news.google.com/rss/articles/CBMiuAFBVV95cUxOeGdFdlZRcGJ3bllUd0hBZ2w3eVkxeDVLRFdsUmVVNjkyWG9PMFQ1ZVZiS2hfQTVsR3RlcEw0YmVuV09jNlVNQW9HMUZxaFJFWXR3b1hGTkhKRVI4UDVEMXMyOWhUbGtnUG9oQTFnNmFFRzZTUmpOOUpPWXpYNTFEUS1oQjZTTjdVYm4xRU1sSjdNei1PcGFiZXMzRlgwYy01eHdrWkp2TEZKTlR5LVRiS1FpYmlRaHVu?oc=5",
+      "description": "Japan's economy minister offers sanguine view on inflation &nbsp;&nbsp; Reuters"
+    },
+    {
+      "title": "Gold rises on softer oil prices; US jobs data, Fed rate outlook on tap",
+      "source": "Reuters",
+      "published": "2026-08-04T01:05:00+00:00",
+      "url": "https://news.google.com/rss/articles/CBMipgFBVV95cUxPdzFHZFRoSEVvd0hvWk5nQl9nYVZPdGJSSTRMcWdPMFc5MS1NYnVtNFdvOEpwQVJHbmZtMWJYTzRmcnJCNkt1bmpBb0ZfTUsycW5SZXFDTWdiU0JrOUl1ek9lVC1qZWVMYjJ5bVQwTy11MkNpVDF6RW8xMm9GY0d1YnB0RDJ5REhSZjZ5QXAzOE15QzVWNk5SRERBUjJOM1oxc1VXdHNR?oc=5",
+      "description": "Gold rises on softer oil prices; US jobs data, Fed rate outlook on tap &nbsp;&nbsp; Reuters"
+    },
+    {
+      "title": "Oil drops, stocks gain amid Iran peace hopes; yen firms as investors watch for further intervention",
+      "source": "Reuters",
+      "published": "2026-08-03T21:29:38+00:00",
+      "url": "https://news.google.com/rss/articles/CBMigwFBVV95cUxQUjBjdHpEdEdMdVNpbVprQmRvNG9JTzl0ZHB4SkNmWUxqT2hNUG8xcW96U1R2czNKWHVMYXRqY2gxR1pHTzZ4RjlpaDgzUnM3U0dCNURmZDhPUUhVTnRuUFhYcGFmVHdoOWg2a3RJNTNGQktBU3pvZVZGSS1EVUJ1QzlVbw?oc=5",
+      "description": "Oil drops, stocks gain amid Iran peace hopes; yen firms as investors watch for further intervention &nbsp;&nbsp; Reuters"
     },
     {
       "title": "Voters prefer Democrats over Republicans on economy for first time in a decade, Reuters/Ipsos poll finds",
@@ -21,97 +112,6 @@
       "published": "2026-08-03T20:18:00+00:00",
       "url": "https://news.google.com/rss/articles/CBMiwgFBVV95cUxNWE5YTnBRcFkwQUx5NXBHMGMtaFFHTWh3d1pSRmVodEV1SkRnQmVHbUQ2RDRVZ1U0SUROd2U4YUo4VW95WmFHNWlnQUVkOU1NelRpd0VSVzNTa3o1d1ZqT0JfbjBtTTFTVW9JZVFFbUdsT1Y4U045WElfZFhabjRUZWdKY3BMVVIxWnEwRXlZcjE3bWNTV3UzbGNzdjdOM3FhX2lpckxaR2RJQkhfNlFwc080VEV3RUJUVzNRNFQySkxYQQ?oc=5",
       "description": "Voters prefer Democrats over Republicans on economy for first time in a decade, Reuters/Ipsos poll finds &nbsp;&nbsp; Reuters"
-    },
-    {
-      "title": "How big was the American JPY intervention?",
-      "source": "FT",
-      "published": "2026-08-03T17:14:10+00:00",
-      "url": "https://news.google.com/rss/articles/CBMicEFVX3lxTE8tM1h0VXFFZzdjLTZXYlBlUk53Y2hJSHYycmQzX3JURUJRazlxREpZOGVHbHFscEREejRMSnZUQzRGRmFiUk5Vb3Qyd1pVTENlemNaSkxvdW1Fa1pTeHVSNzFrdW16Uk82c0hVMUhTVjY?oc=5",
-      "description": "How big was the American JPY intervention? &nbsp;&nbsp; Financial Times"
-    },
-    {
-      "title": "Japan vows further yen intervention with US if needed",
-      "source": "FT",
-      "published": "2026-08-03T15:09:56+00:00",
-      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxOa1BZYkpxbTJJTU4xdUtjeGluTTBtZm9CZjRlSjAtQ2oxcEg3NWt0eG5HVzlqX0dlZHJDc2FvU3VTTlNCQ1ZrVzB5UWtOSnNpZGZKMl9MXzlUN2ZycFdDcXZhTTY2Vk9aLWsya0VzZnFUSVRCSDBfMmdHUFRCR1pCSUVaaVc?oc=5",
-      "description": "Japan vows further yen intervention with US if needed &nbsp;&nbsp; Financial Times"
-    },
-    {
-      "title": "US shakes up currency markets with unusual yen-buying via selling euros",
-      "source": "Reuters",
-      "published": "2026-08-03T14:08:20+00:00",
-      "url": "https://news.google.com/rss/articles/CBMiyAFBVV95cUxOYWhwczdTVFV2eTBMeUpacllrZ0VhMWhPa1FrX0p0VFN4N1pNeU9QN3BiWVNJdVR1MDZybUYxUjh2aDB2Rmw4NDdJcXFPM3M3cXU2TnJ1OEh1S2oyTF9QLURJc1NPM3g0Z09MczFneVBYWUwxWnNPRGF2U1YzM3BLeEdFRDAyN3lHNU5zY2wzdWl3TFF6Ump1RXI3V2x0aXB2M2RpM0luaHBWN1pVSXJ3VmRaS3NEWkhWUkFqSHhYWXJOemNicnBjcg?oc=5",
-      "description": "US shakes up currency markets with unusual yen-buying via selling euros &nbsp;&nbsp; Reuters"
-    },
-    {
-      "title": "ASML’s hold over the future of chipmaking is weakening",
-      "source": "FT",
-      "published": "2026-08-03T12:54:56+00:00",
-      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxQX1R5S09FREZ0OHFZVm84cDFLUGtLTUM2OTVldWc0cEtNM0h6Q3cteWRiRXhNV2Q1Y0tGbm5kRmFFR0FGZUNRUko2dFZuNjI0Mk1zMmQ1NnpESGk0TEpUX0NJbkZIaHZIeV84bllFLTlkdEZSV2diVWhYTThfNm9Ib0d5aGM?oc=5",
-      "description": "ASML’s hold over the future of chipmaking is weakening &nbsp;&nbsp; Financial Times"
-    },
-    {
-      "title": "EXCLUSIVE: Fed's Williams expects inflation to ease, says Fed will act if it doesn't",
-      "source": "Reuters",
-      "published": "2026-08-03T10:20:30+00:00",
-      "url": "https://news.google.com/rss/articles/CBMisgFBVV95cUxNSW5GWU1oN1VmZjRKVjJXb2p0NENaV2VXcEU5a094OWJwTy1HbGk5UHZRNl9hT2UwVU01bnhJMDg1RS1YWTM0Z1F6SFp0RmttanY3dVprbENuMGlnQndRNWh0VmEzTEp4Tm9pOHJNQlMxbktWN1dLeThZWEhVSVpTRkdTRFozaDJ1Zmx0R2dxTnhaaXdmaHJ0WHR3cHpmcHVoeTN2QjBzYjhtemVocWFvQmln?oc=5",
-      "description": "EXCLUSIVE: Fed's Williams expects inflation to ease, says Fed will act if it doesn't &nbsp;&nbsp; Reuters"
-    },
-    {
-      "title": "Team America: Yen police",
-      "source": "FT",
-      "published": "2026-08-03T05:30:02+00:00",
-      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxOMUZrVmtYd3NGMUozbWh2NUxjWUtkU1hMc0p3NXJGNjdrQmRfZ0JkdmtDZ2xZMjROM3VVUE01QTJXN1RlcmZFSDNlbjVYclhTMnliRHVSYnktell0Um0yY3hNeUEzVnJzV1pBVjNzSTlJbmttZ3dQckNLczM5TkdvMjB3V0c?oc=5",
-      "description": "Team America: Yen police &nbsp;&nbsp; Financial Times"
-    },
-    {
-      "title": "A digital iron curtain is threatening the global economy",
-      "source": "FT",
-      "published": "2026-08-03T04:00:13+00:00",
-      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxNWXBpSkVDd3dBYklxcF9uS0lWQ1ZqSzlXSjluaml1dmZ0MHFiQmFTdmZ2SDlBVW02S3ZncXB5U2RVVkg0T1R4Tk0zcmdpT05SZG83VFNRSjFHemQzdExXRjRUcDBEcVA1UVV0bkJmei1RbXFlTVFOOElyb3BBYkZfOU9RTW4?oc=5",
-      "description": "A digital iron curtain is threatening the global economy &nbsp;&nbsp; Financial Times"
-    },
-    {
-      "title": "Whatever happened to prudence?",
-      "source": "FT",
-      "published": "2026-08-03T04:00:13+00:00",
-      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxQM3k3d0w1ZE45dW1Ca0tOQkJLYkRiMGhKZ2NJTFU2WUljbjF6UVlUUE52UFNrTjJ6ZUdJZDlBdE9BMlc4ZjVveFNuWm40c0F0UFN4UzVsdTAxTk1acWtOY2xZakRJak9DQWpZd1JGZFVFWEMzdm5YaEZNZi1YMzNVWUMxVnY?oc=5",
-      "description": "Whatever happened to prudence? &nbsp;&nbsp; Financial Times"
-    },
-    {
-      "title": "A second act for high-yield bonds",
-      "source": "FT",
-      "published": "2026-08-03T04:00:13+00:00",
-      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxQb0JQc3gzcS1PQlFxMFk5TWR3VWY1UlpCcUNyZUNxMDdnNk5saklEOGc4RHRNSS1na2dsSVB3V2NWQzlmVWRGTFdDQi1Gcno1RkxhRnJ2cktvWVluY3Z6eVlOLUx3aFlhdUJWVGpkV005bng2UkZaM0c3QjJWR2lRT0pPcGM?oc=5",
-      "description": "A second act for high-yield bonds &nbsp;&nbsp; Financial Times"
-    },
-    {
-      "title": "Indian stocks rise on Brent dip, shock-free earnings season",
-      "source": "Reuters",
-      "published": "2026-08-03T02:39:00+00:00",
-      "url": "https://news.google.com/rss/articles/CBMingFBVV95cUxPMmpzT2p3MGlZN3V1QkI3c1I0X0dqVTk4Z3BsMjNqcWljM1BGZ19FbThiNHUyR3FXTjE5SE5IZGJnUHR3UHloUUZNZkdtS3phVGRRUTVQdTR3WW9FSHM5Q3VQY2czUFhEZE5JLW5UN0pkNWh3LS1tXzlvRzhfUWdJMjZ5blQtUENIR2NwaktkcVJiX0dHQ3hLS3FnVUlIdw?oc=5",
-      "description": "Indian stocks rise on Brent dip, shock-free earnings season &nbsp;&nbsp; Reuters"
-    },
-    {
-      "title": "Oil drops, stocks gain amid Iran peace hopes; yen firms as investors watch for further intervention",
-      "source": "Reuters",
-      "published": "2026-08-03T01:03:00+00:00",
-      "url": "https://news.google.com/rss/articles/CBMigwFBVV95cUxQUjBjdHpEdEdMdVNpbVprQmRvNG9JTzl0ZHB4SkNmWUxqT2hNUG8xcW96U1R2czNKWHVMYXRqY2gxR1pHTzZ4RjlpaDgzUnM3U0dCNURmZDhPUUhVTnRuUFhYcGFmVHdoOWg2a3RJNTNGQktBU3pvZVZGSS1EVUJ1QzlVbw?oc=5",
-      "description": "Oil drops, stocks gain amid Iran peace hopes; yen firms as investors watch for further intervention &nbsp;&nbsp; Reuters"
-    },
-    {
-      "title": "Gold eases as markets weigh Middle East uncertainty, inflation risks",
-      "source": "Reuters",
-      "published": "2026-08-03T00:41:00+00:00",
-      "url": "https://news.google.com/rss/articles/CBMipgFBVV95cUxNTnkxZDh5TElCa1dZeUtDT2JfblI5ZFJuQkZNQ1pvbHlkcWxHRUVfMk51N2t0ZDUtbEhOYW9aVjg5d3lMSkNXYlFMc0I5Z3o1bjh4c0pkZ3BsWkRYeWhOalNoOUZPN3pvYVRSb1NnT21rZy1TamRFMHN2MUp1WjhoSmZaT0prMExjTVk1aThUbHAwNEo3MmpsbTI2UFdsY2Z2Y0RlT2RB?oc=5",
-      "description": "Gold eases as markets weigh Middle East uncertainty, inflation risks &nbsp;&nbsp; Reuters"
-    },
-    {
-      "title": "Bessent ready to repeat joint yen intervention, urges bigger Fed backstop",
-      "source": "Reuters",
-      "published": "2026-08-03T00:40:00+00:00",
-      "url": "https://news.google.com/rss/articles/CBMiwgFBVV95cUxNSnRfSWRsRG9LTGxHRGtVT2ZUR2VkVm9oSWRFWHBpV1pLYmwzeWI5VGdDQWNQNGdHUWhMTThMbUVCVXN4NkdlS2dGckxRdUNfNFNmay1rNXdVOXpJTklSUjd0cGNncmxxZFdGN3lyUnRRWWdVS1REZENIZVdQVm5UYWc5LXAzMFlzVng1SDdnb3hwbHk5SUR6eUZFWEtGZW01UjB6ZFhHeGw5SlNscmJFWXhacUtvRHZjaEptWmRpUW5LZw?oc=5",
-      "description": "Bessent ready to repeat joint yen intervention, urges bigger Fed backstop &nbsp;&nbsp; Reuters"
     }
   ]
 }
