@@ -2,7 +2,7 @@
   "alerts": {
     "term_spread": {
       "level": "ok",
-      "message": "Normal: 0.45%"
+      "message": "Normal: 0.44%"
     },
     "credit_spread": {
       "level": "ok",
@@ -10,7 +10,7 @@
     },
     "vix": {
       "level": "ok",
-      "message": "Normal: 15.8"
+      "message": "Normal: 15.2"
     },
     "absorption_ratio": {
       "level": "ok",
@@ -18,10 +18,10 @@
     },
     "turbulence": {
       "level": "ok",
-      "message": "Normal: 14.7"
+      "message": "Normal: 4.3"
     }
   },
-  "last_updated": "2026-08-06T03:51:10.995181",
+  "last_updated": "2026-08-07T03:31:08.210663",
   "indicators_available": [
     "term_spread",
     "credit_spread",
@@ -35,18 +35,18 @@
     "momentum"
   ],
   "composite_score": {
-    "score": 18.0,
+    "score": 13.5,
     "label": "Low Risk",
     "level": "low",
     "color": "#34d399",
     "action": "\u6b63\u5e38\u6301\u4ed3",
     "components": {
-      "term_spread": 32.1,
-      "vix": 17.5,
-      "absorption_ratio": 5.4,
-      "turbulence": 27.8,
+      "term_spread": 32.7,
+      "vix": 15.3,
+      "absorption_ratio": 5.3,
+      "turbulence": 6.6,
       "breadth": 7.3
     },
-    "date": "2026-08-05"
+    "date": "2026-08-06"
   }
 }
