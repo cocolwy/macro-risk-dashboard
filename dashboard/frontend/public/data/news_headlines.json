@@ -1,117 +1,117 @@
 {
-  "fetched_at": "2026-08-12T03:05:42.800396+00:00",
+  "fetched_at": "2026-08-13T03:09:37.969349+00:00",
   "headlines": [
     {
-      "title": "Dollar drifts as markets await US inflation data for Fed clues",
+      "title": "Asian stocks rise as US inflation data dents September Fed hike bets",
       "source": "Reuters",
-      "published": "2026-08-12T01:45:36+00:00",
+      "published": "2026-08-13T01:02:00+00:00",
+      "url": "https://news.google.com/rss/articles/CBMigwFBVV95cUxNazlfTWozZlI1am8yV1pmREdVZGswQ1NPWl92dGhIN3lVbWJRaFA2YWhWNDQ4NWwweXZpbmpLOGFmcDlUdDhBSGFyU1piOVBzam1JOEN2RVFDOXdWOFk2LTB1MklsRzRfVmlaR3BTb2ZFNmw2U0hjUnhNLUd3cVV0WElxVQ?oc=5",
+      "description": "Asian stocks rise as US inflation data dents September Fed hike bets &nbsp;&nbsp; Reuters"
+    },
+    {
+      "title": "US consumer inflation mild in July, economy still not out of the woods",
+      "source": "Reuters",
+      "published": "2026-08-12T22:27:21+00:00",
+      "url": "https://news.google.com/rss/articles/CBMijwFBVV95cUxONVo4RlREbjZCeDFybnNPaTFlMDl0SnhGblQ3ZjE4NzA2WlVKU0diWDJqN1lPWXFvVk13eDY5TVhKYXROYXVJb2tLRzM0YVFaNXEzRWxLNWI0blFUSHZqbVN6aVRrMWFPR3Foa0hJd1FLZTluRVAtWlp0d3k1U1doeUhRVlRoRFltSzRneHcyYw?oc=5",
+      "description": "US consumer inflation mild in July, economy still not out of the woods &nbsp;&nbsp; Reuters"
+    },
+    {
+      "title": "FlightAware withdraws lawsuit against Kalshi over flight-cancellation markets",
+      "source": "Reuters",
+      "published": "2026-08-12T18:01:29+00:00",
+      "url": "https://news.google.com/rss/articles/CBMiygFBVV95cUxPNzlHTUg4V1E1T2pCZHZvSl9WOXB5UkRyZ0FFRmVlb1FnRDR4cjN5ei0tbjY0dDJnSXZYSWhOMzV6UFQxbUUxM0tnXzlSczJ1c3ZPeHRPVWduMHRfaXlGcXpPQ2sxVlA4elYwQ2JmMGFxOVgwbnBlUkZLUnVNdjZSWEZjdWs2eDgtazk4RllqcElqLTN4RDBjNmFOV3hSRGRCeTN6QUxna2RrNU91NktGTDRKc01WWlRQUnRwWmk1dnRSZlE2S01WMXln?oc=5",
+      "description": "FlightAware withdraws lawsuit against Kalshi over flight-cancellation markets &nbsp;&nbsp; Reuters"
+    },
+    {
+      "title": "US press groups sue Donald Trump over fast access to Truth Social posts",
+      "source": "FT",
+      "published": "2026-08-12T16:35:58+00:00",
+      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxNdkxLMXZHbFhsX3dzS0xkYnNyNGx2c3BLYU9BMXJ1YUI1MWNZUndDeEF1VENLN19rc1BYNVpHeFlSN0lmYm9vdldHeXpuRVJzLW9fSXVHMkEwVFlLd1NGMzZTTFZ3UmFBbFA3Mms4bG56Y3hxakphWnpoQmtjQ0dDeXF1UDY?oc=5",
+      "description": "US press groups sue Donald Trump over fast access to Truth Social posts &nbsp;&nbsp; Financial Times"
+    },
+    {
+      "title": "Zhu Rongji, Chinese premier who cajoled economy into modern era, dies at 97",
+      "source": "Reuters",
+      "published": "2026-08-12T14:28:51+00:00",
+      "url": "https://news.google.com/rss/articles/CBMitwFBVV95cUxQUWFOSl9NWnkxNHllQ1VVWW1LWURuSFo4UllLX19rdUFIMWlNTmRMZFVOTU9pdHJ5aUVaU0NJQVQ3LVhVV3RGYy1WVWUzdkh1SFhtYVlQdzBWNWt5Zno5dE1TUUYwU1NMUFMzd3NJdmlrZ1NRRkpuM2RSdHNwRFpyX3BsVXAtaFZ6cGVWeVVSd3IxVml6Z09tb2JzVjAxRmxiWFFmS2s4Y0hEYlE2Qlc3MmRLWWRNZUU?oc=5",
+      "description": "Zhu Rongji, Chinese premier who cajoled economy into modern era, dies at 97 &nbsp;&nbsp; Reuters"
+    },
+    {
+      "title": "US inflation falls to 3.4% in July",
+      "source": "FT",
+      "published": "2026-08-12T12:31:43+00:00",
+      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxPdjR6U2Z3QVUyNzNVQUNsNFBPbm9uMTdwS0gzQy1VVnUwc05zb09iT1M3NjJXMFRUTmpxQ1lLNDRTMGxJWGhzS05lTkVmM3RGRVU0ZFVGS0JPbS16UUdUSkZzSm9kTFUwV2JPeWJsZXJ3T3hJMnE5SDdQNlBueGp6d3pWVlY?oc=5",
+      "description": "US inflation falls to 3.4% in July &nbsp;&nbsp; Financial Times"
+    },
+    {
+      "title": "Switzerland pushes ahead with post-Credit Suisse crackdown",
+      "source": "FT",
+      "published": "2026-08-12T12:05:02+00:00",
+      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxOSDNvWW9QTGpYc3hsZjZkZmJsZEVnY0hLR1RnbkktaElsVHBJSk1XMmVELVo2UTRnTzdYdnlCOElFaWpIY09RZ0Iya1BQcXVmU2tuSjBmRjc1UEtQYVV0SkRvZ0N5MldyX2NZMHJoX1dKM1pPS0FJV1NYaW5UanNYdnRvNS0?oc=5",
+      "description": "Switzerland pushes ahead with post-Credit Suisse crackdown &nbsp;&nbsp; Financial Times"
+    },
+    {
+      "title": "How will El Niño hit the world economy?",
+      "source": "FT",
+      "published": "2026-08-12T11:00:03+00:00",
+      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxNUV83SGJDcHc4ZnBDVmxaOTQ2dktnUE5QUnlBTV9XQnpxQ2I3YUplbjhEdHpLb2F0dmNzaEV6cGczSU92QVJpNzJpdlpkWDVDdlZteFlrY3luSzJjcUVNQ2VHdnFYMy1qYk1OVEQtVnE1SjBieUNYWDlsY19Ca01JX3RlN2o?oc=5",
+      "description": "How will El Niño hit the world economy? &nbsp;&nbsp; Financial Times"
+    },
+    {
+      "title": "Investors worry leaner Fed guidance may come at a price",
+      "source": "Reuters",
+      "published": "2026-08-12T10:29:14+00:00",
+      "url": "https://news.google.com/rss/articles/CBMipgFBVV95cUxOUzF6bWRnZTAtRTVySFB0cnNKV1FtaDlUMlhpNVl4dmM1Vy1SQnBmem9MRVFISG1Ta1VicWtOWDlOdzFKWGRrS2hyWURSTlZQS1RRU0FfZk9nMUp6Wm45S3hKOEcxMUl1VW5iNWNBVEZhaVUtMkV2eU01WnJobTM2MnpYOUx5SlpmTlc0RUkwbXV3WHc5Y0g5dkxLMXpNSkJZODlwdDdB?oc=5",
+      "description": "Investors worry leaner Fed guidance may come at a price &nbsp;&nbsp; Reuters"
+    },
+    {
+      "title": "Kevin Warsh’s monetary hall of mirrors",
+      "source": "FT",
+      "published": "2026-08-12T05:30:06+00:00",
+      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxNc0Q3cWM2Z0xTazJnUVgtNTlZZHQ0ZC0tT1k3YS1iN3YwN2EyamwwRjVfRUdZYXo1MHNwckJ4WG45N0c1ZzhndUpoWTFrZHpmOG1DZUFSMzJQMkE0cjVsQmlad3llTVREM19sZmRuXzA5T2JNeENxZlJwQS1mVUVFT0plc20?oc=5",
+      "description": "Kevin Warsh’s monetary hall of mirrors &nbsp;&nbsp; Financial Times"
+    },
+    {
+      "title": "Poorer Americans are struggling to make ‘ends meet’, top Fed official says",
+      "source": "FT",
+      "published": "2026-08-12T04:00:27+00:00",
+      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxQTVRVckpDcUFYcml5OXhISVFZQUxDMm12dlQ0QW1LaXlhMUZxbDk4T2d1Nm1GcjVGQjlHaVltWVBqR0FWRnc0SG5RbXBGRTJIS21RQ04yUjU3VEplU05rNFpKQW5wU00ya011Ul93cFphWWdHcTlTQmI4WDJ4cDItTkUwemg?oc=5",
+      "description": "Poorer Americans are struggling to make ‘ends meet’, top Fed official says &nbsp;&nbsp; Financial Times"
+    },
+    {
+      "title": "China’s great jobs squeeze",
+      "source": "FT",
+      "published": "2026-08-12T04:00:19+00:00",
+      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxNY09IaHNLWmtzUS1CTzdVZ3QtaDBHVUlxX3k3T2M5TzB1c1RDQWVRem5aSC1BMDVXLTgyODQ5b0VyOHAyOWo1TVdnQVFOdzhtaTNDZzFTVEs4X21BZWlXR0FCZndDek1JRVo3QkhId3Q4dy1WZU9WTTZHYjh2QlZMajRVeUk?oc=5",
+      "description": "China’s great jobs squeeze &nbsp;&nbsp; Financial Times"
+    },
+    {
+      "title": "US asks Ukraine to stop strikes on tankers using Russian port",
+      "source": "FT",
+      "published": "2026-08-12T04:00:00+00:00",
+      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxOMXpBWWt1Szh3WGR1WjBvOFpyaFA4SGlvVFAyWFl2a0VtWjE2dE5qSmlrcTdVRFltRWJ0ODBZUWlGelZxbjVyMWlGWnBPb01uUV9waXlLajlRZ2xZdWlaSjBod2s3b0hRQkttQWhxOVUycWxBQWJkRUpoT1VfSHZ1cUNaek4?oc=5",
+      "description": "US asks Ukraine to stop strikes on tankers using Russian port &nbsp;&nbsp; Financial Times"
+    },
+    {
+      "title": "Higher oil, fall in Tata stocks drag Indian shares lower; inflation data in focus",
+      "source": "Reuters",
+      "published": "2026-08-12T02:41:00+00:00",
+      "url": "https://news.google.com/rss/articles/CBMiqAFBVV95cUxOMzU1RG9ES2Uycy1MN0ZfZzR5V2lwd0NuaGZ2QVJsRVMxMmp0YkFQNElpUXd1cTU1RUtLWkU5Y0dmNnhsSU5jbWVYaFpfYTA2bHhrYVN1ODZKc1FtMkFFM0liNXc5U0lodzU3TEE0dDNGV3plOHdkTUE3MGxVdmxGSHZhVDhvdEhIQ001LU5uN3ZxS3dxUWNNWWRkd3hMdjVBQ2tzZl9xVDM?oc=5",
+      "description": "Higher oil, fall in Tata stocks drag Indian shares lower; inflation data in focus &nbsp;&nbsp; Reuters"
+    },
+    {
+      "title": "Oil prices climb again, as global stocks gain",
+      "source": "Reuters",
+      "published": "2026-08-12T02:19:00+00:00",
+      "url": "https://news.google.com/rss/articles/CBMigwFBVV95cUxQTnAyM2F1aXRKeVZFQU5yVzdLbmplRS1vV28zVXZ0Slo3bmszQjM1enJHU2RlOG5EZWtLYUNmVHdjcHprM19fTnhjUE8tV3VGTFBrelZXM1pOekphNVF1S3EtSTlDcDl5Skw0R19ud3U5NmdhWEk5eVJjV1dudFNhSlhoRQ?oc=5",
+      "description": "Oil prices climb again, as global stocks gain &nbsp;&nbsp; Reuters"
+    },
+    {
+      "title": "Dollar gains, yen slips as US CPI meets expectations",
+      "source": "Reuters",
+      "published": "2026-08-12T00:57:00+00:00",
       "url": "https://news.google.com/rss/articles/CBMiowFBVV95cUxNZnhDSnpIWUFyU185anRuZ0lKYjItT2RJaWU3czNGbGdwVVBTbzRlaEF1QjJ3cERWVEZUVkV2Q0kwc3FtQVBpVWx3SmFnbTVlcEkyX0ZYb0lhd2tDQ0ZXcXl1RHl4aTR6dXVjYnRYZjZVUlN0TDE1QXJ4cF9SaHNueElkRF94cGlXbHJZdnlBSExxZzhaMVAxa0lKblNReU0tdFJJ?oc=5",
-      "description": "Dollar drifts as markets await US inflation data for Fed clues &nbsp;&nbsp; Reuters"
-    },
-    {
-      "title": "US fires on ship it says violated Iran blockade",
-      "source": "FT",
-      "published": "2026-08-11T20:51:47+00:00",
-      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxQVXhtZ2RtNUQxbDFEejNGc2FXWlZlcG16dVp5cDgwZi1QSkwzeExvbjBNN0E0WHc1NUFCM2FyQkxwaDBNam5nb1pfWGVEWHhLeUNuQVk5SHdPV0hBT3VXMmFNMkIxazltVmdHeFY1c1pFSjVuZEdqUFRacFhKeUJsbkZENDk?oc=5",
-      "description": "US fires on ship it says violated Iran blockade &nbsp;&nbsp; Financial Times"
-    },
-    {
-      "title": "Gold edges lower as markets await key US inflation data",
-      "source": "Reuters",
-      "published": "2026-08-11T18:47:17+00:00",
-      "url": "https://news.google.com/rss/articles/CBMipwFBVV95cUxOQ3pfajk5NldmMDliSlhNU3ZYd1J6UGt3cWM4ZHBzTkxnYTVGbnVWU0ZOVFFqLUk2eFYyQnhxdUxiUFp5Y0lXTnpEOGIwMHBveTR5bzBvZmxjWTA4TmR6OUt0U1ZSd2V0dDhkMlg4TkpFdlFCSEtJN3BXYXJQMFZLZDgyZjR6UTRXeU5fRFZ1MHM1WXpCMEtTOF9CNmptQTJmNzBQN1JyMA?oc=5",
-      "description": "Gold edges lower as markets await key US inflation data &nbsp;&nbsp; Reuters"
-    },
-    {
-      "title": "Inflation is the biggest problem, Fed's Goolsbee says",
-      "source": "Reuters",
-      "published": "2026-08-11T18:07:13+00:00",
-      "url": "https://news.google.com/rss/articles/CBMimgFBVV95cUxPZDltR2o0ZVZseWpZbFpveU1hMUxTTjZCQ1lDa2FkMzNRR0VtRW5fMENiaHVyNWVnZ0UwcTkta1IwM05ON29kNjZMQ1dfNjktNnNrWlZPUHE5cVhfZjFoVjZaWERyMDBuWUxrMTZ0b1EybmZjMjIyMXpEdkZwdmF5dmNPeEVOaE5WelZSczMzSmwyRGdFSzNOcHVn?oc=5",
-      "description": "Inflation is the biggest problem, Fed's Goolsbee says &nbsp;&nbsp; Reuters"
-    },
-    {
-      "title": "FlightAware sues Kalshi over flight-cancellation markets",
-      "source": "Reuters",
-      "published": "2026-08-11T16:26:32+00:00",
-      "url": "https://news.google.com/rss/articles/CBMirgFBVV95cUxQM1hSR282WnlrOEkxc2hWeDJYdkFHWjBIVm9tb0p1bmViU0steWR2ZW9JUnVHRjVZZ3NXb2s0RFZqOVVCRVFERjB5N2RtcmtfbllJQm1MdnVGaThvbjVpaEs4XzVCeFZ4U1BQdS13V21JS0lnNHRvLWxRQ0xQT2NuTXd1VW5pS1EyTF9aM2JIcmZza3EtWVg1Z18tcUpIcDJYbkNISkY4M05aTE1ub0E?oc=5",
-      "description": "FlightAware sues Kalshi over flight-cancellation markets &nbsp;&nbsp; Reuters"
-    },
-    {
-      "title": "US auto loans hit record high in second quarter, New York Fed says",
-      "source": "Reuters",
-      "published": "2026-08-11T15:54:43+00:00",
-      "url": "https://news.google.com/rss/articles/CBMi2gFBVV95cUxPc3I0VDd6ZnRQTjE3dmVYOHNUazFTMmVSR3NDTDBfbFo5bm56Z2pXRzNudU9KQUdfa05BTEh5V3BFWEhvM0hyMC0wWXBOd2ROZlhVS1dtNUxWS29Ld0RRVWh2UGFVdmZGSG5ONUxlZHpQV0JnMGlIX0c3alNRT3pGNjdzaF9sN21IN2ZkTVRLaWRITDl0Sm1wSFlNdVc5NC1zeEFBaXNuM2h2U1FQZG91M3RVVHBUdDFPSEdQc0xEMGtRbkhQaENlaDlHU2tJZjJTYU5DRjZBTFA5QQ?oc=5",
-      "description": "US auto loans hit record high in second quarter, New York Fed says &nbsp;&nbsp; Reuters"
-    },
-    {
-      "title": "Volatility tumbles as markets shrug off Middle East risks",
-      "source": "FT",
-      "published": "2026-08-11T12:20:41+00:00",
-      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxQUnl0RGNNaXNiSm9ndFNYRVJEWVVvVEVSY3ViZ3c1MUs4UnRSZERnRHRxN21RZGw5WU0tT2pTWHFkb2pMRmh5RWZwSXpZMEZFaUMyNFN6ZDJsd1Q3U1VEUWFkSlBkWEIxb1l4bkNwcDhHQ0NFOUZtSnJxVkoxclZfUXk2V2k?oc=5",
-      "description": "Volatility tumbles as markets shrug off Middle East risks &nbsp;&nbsp; Financial Times"
-    },
-    {
-      "title": "China's car sales extend slide as shift accelerates to overseas markets",
-      "source": "Reuters",
-      "published": "2026-08-11T10:13:16+00:00",
-      "url": "https://news.google.com/rss/articles/CBMiuwFBVV95cUxNaTYwb00xY1NfcjFuMXpQZ1lFWklIN0ZESEVoazVxR1dIbkRSR1NqQS1IM3JQNTI2LXgtcW5GYS1PeEN3VTlLLV9UWkFILXNJYjFPWThEU2FGdHZzZ3ljNHVGLUkwZnBlUElSZjVNTmlER1hmNWtXTF80ODZJTzRJT0FzRHdtanRsRnZaTHVFaG5IaEIwMkxDUVdUTlNHeHVTblN6LVNtN0JLTFRiaW9JVVg2YXkyVmNreTUw?oc=5",
-      "description": "China's car sales extend slide as shift accelerates to overseas markets &nbsp;&nbsp; Reuters"
-    },
-    {
-      "title": "Deutsche becomes first European clearing bank for renminbi",
-      "source": "FT",
-      "published": "2026-08-11T09:00:58+00:00",
-      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxPbTJLSWhMVWlXbGYzUm1mZEVHZXZDdndSN0VONDJTbXZxZFZ6R0pFamdjbWhqVWtZY3pVM2pudU4wZkZ3SDFFbmlKOGhZbXk0Y3VJU0poYmNDRE1DRVNhNll4d3hucjdqSEtJV1IwNFQ0SzIxNFJ0WUY2WEd2dy1KTXlEV2o?oc=5",
-      "description": "Deutsche becomes first European clearing bank for renminbi &nbsp;&nbsp; Financial Times"
-    },
-    {
-      "title": "Why Morocco’s ‘forgotten’ young are fleeing to Europe",
-      "source": "FT",
-      "published": "2026-08-11T04:00:13+00:00",
-      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxNR2txcEl1SkVUVkRUbjdFdHFLaE12MmtiVFJ0cDc0RWpWU1BrSVFJbTFPYUctZS1jM1I0UnpyM1UyVHdiekxUSmM0ZkR2czV5WDRrY19uLXpSY2FVZzVqeWhNN3JNVlZHNTE3dmd4TnNPVWZUcVdBT3hfbFVaLVJjdVdubnA?oc=5",
-      "description": "Why Morocco’s ‘forgotten’ young are fleeing to Europe &nbsp;&nbsp; Financial Times"
-    },
-    {
-      "title": "German states suspend Sunday truck ban as low Rhine levels disrupt shipping",
-      "source": "FT",
-      "published": "2026-08-11T04:00:13+00:00",
-      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxQa3pJczF2VFFxdEFXdVFTZkpkV04tQkx5Y2M5NDJuSmpHNEEtSWpfaEZKaTFPOWR6ZmhSNHZDV1RheThvZTlaazBDYWxkcWRPckl6NFNZT0JkN2s5eDN6RW16RFN2enhPMG9GcktsZDBXamJKeFZJUnRuRVlaa1N1TV8tMzI?oc=5",
-      "description": "German states suspend Sunday truck ban as low Rhine levels disrupt shipping &nbsp;&nbsp; Financial Times"
-    },
-    {
-      "title": "Spain’s migrant crisis exposes serious challenges for young Moroccans",
-      "source": "FT",
-      "published": "2026-08-11T04:00:00+00:00",
-      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxOWDV5WWptUjBHbnZUZVNkWEc4TG1ydS1rTE1qOFU1cXpkZ2s4dkpRNkdjSUtGM19XZEM0SV9qUHFSU0pXUTRiWjR3VDNlazFza0ZvNHVPR2ZHeHllWmNwZXc2dUg1VTkwLTVialR2OGFTQWZrNjZ1RkFETWhGX3A5blN0OEY?oc=5",
-      "description": "Spain’s migrant crisis exposes serious challenges for young Moroccans &nbsp;&nbsp; Financial Times"
-    },
-    {
-      "title": "Oil prices continue climb on US-Iran deal doubts; stocks retreat",
-      "source": "Reuters",
-      "published": "2026-08-11T01:41:00+00:00",
-      "url": "https://news.google.com/rss/articles/CBMigwFBVV95cUxPRnpVTlc5WDU3ZUFOMTJjSFRLNGFCWUItblV4clc0UnVXUi05VVBaRkFleHpsdWtmcl9YZDRtN3BkaDhqUy1PTWx1aDhjalNDc09RNGh5eDFYN2FnTGxraUlhRWtFUnl0UTJrbV82Yi1CaFEyNmNwaHlvQVdobElUNEZVaw?oc=5",
-      "description": "Oil prices continue climb on US-Iran deal doubts; stocks retreat &nbsp;&nbsp; Reuters"
-    },
-    {
-      "title": "Iran’s supreme leader elevates loyalists as he tightens grip",
-      "source": "FT",
-      "published": "2026-08-10T21:30:27+00:00",
-      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxNbmNudlNxTExRNW1uVWVvZXlCNDBkTWdMOXZTRjZ5b3BHcWstaE8xaFhIWVh6QWFjS2pUTDVmRk5obGlacUl3cmpmVXBCMXJrYnJkME1hVlk0Vk1rcUVHcFYyaXhkUnRxdjZhaWViS3JTTmhoS2VYaUY5aU5SR3RUUTRWako?oc=5",
-      "description": "Iran’s supreme leader elevates loyalists as he tightens grip &nbsp;&nbsp; Financial Times"
-    },
-    {
-      "title": "Oil prices rally, Wall Street retreats with Hormuz, inflation in focus",
-      "source": "Reuters",
-      "published": "2026-08-10T21:14:14+00:00",
-      "url": "https://news.google.com/rss/articles/CBMigwFBVV95cUxQa0JfVHdob1VJM3o3c2RjRHBySGdOb0h0OFVfVTNUdGo5ems0NjhoaGhMaVhpWG9iR3J4dlJkZVBlYVgwS0w2SUd6ZGZiLUtMUndydTZycjNJQ1l0MENqTmdpOTFycEZBRkJ3ZUEyWlM3RERCOGhoYk5ISEdLZnNIUm9HYw?oc=5",
-      "description": "Oil prices rally, Wall Street retreats with Hormuz, inflation in focus &nbsp;&nbsp; Reuters"
-    },
-    {
-      "title": "AI will boost oil and gas production more than green energy, report finds",
-      "source": "FT",
-      "published": "2026-08-10T17:38:07+00:00",
-      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxNQUdkZzBsUmpXSHFsbVctdkRkMzU5eVNxcDVMTER1eEo4T05QbUU1UDBIRW81dFA0SU9EMWVsUUl6QmVoQUh0Z19rR0QtX0J3QmwzOEREa0FjVjI0ejJzeHZicG93UGs5N3JYZHRtM0tkLWtNR2hlaC1VVGRETVB3QXhvT3M?oc=5",
-      "description": "AI will boost oil and gas production more than green energy, report finds &nbsp;&nbsp; Financial Times"
+      "description": "Dollar gains, yen slips as US CPI meets expectations &nbsp;&nbsp; Reuters"
     }
   ]
 }
